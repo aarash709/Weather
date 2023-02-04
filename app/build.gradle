@@ -1,0 +1,146 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'dagger.hilt.android.plugin'
+    id 'org.jetbrains.kotlin.plugin.serialization'
+    id 'kotlin-kapt'
+//    id 'com.google.devtools.ksp'
+}
+
+kapt {
+    correctErrorTypes true
+}
+
+android {
+    namespace 'com.experiment.weather'
+
+    compileSdk 33
+
+    defaultConfig {
+        applicationId "com.experiment.weather"
+        minSdk 23
+        targetSdk 32
+        versionCode 1
+        versionName "0.1"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = '11'
+        //useIR = true
+    }
+    buildFeatures {
+        compose = true
+        dataBinding = false
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = compose_compiler_version
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+
+}
+
+dependencies {
+    //Kotlin-Core
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.appcompat:appcompat:1.6.0'
+
+    //Arrow
+//    implementation platform("io.arrow-kt:arrow-stack:$arrow_version")
+//    implementation "io.arrow-kt:arrow-core"
+//    implementation "io.arrow-kt:arrow-fx-coroutines"
+//    kapt "io.arrow-kt:arrow-meta:1.6.0" //bom file version is not set correctly
+
+    //Coroutines
+    //implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutine_google_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutine"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlin_coroutine"
+
+    //Material
+    implementation 'com.google.android.material:material:1.7.0'
+
+    //Compose
+    implementation platform("androidx.compose:compose-bom:2023.01.00")
+    implementation "androidx.compose.ui:ui:"
+    implementation "androidx.compose.material:material:"
+    implementation "androidx.compose.material:material-icons-extended:"
+    implementation "androidx.compose.ui:ui-tooling-preview:"
+    implementation("androidx.compose.runtime:runtime:")
+    implementation("androidx.compose.runtime:runtime-livedata:")
+    implementation("androidx.compose.foundation:foundation:")
+    implementation("androidx.compose.animation:animation:")
+
+    //navigation
+    implementation("androidx.navigation:navigation-compose:$compose_nav_version")
+
+    //LifeCycle Components
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-runtime-compose:2.6.0-alpha04" //experimental
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version" //experimental
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
+    implementation 'androidx.activity:activity-compose:1.6.1'
+    //datastore
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    //room
+    implementation ("androidx.room:room-common:$room_version")
+    implementation ("androidx.room:room-ktx:$room_version")
+    annotationProcessor ("androidx.room:room-compiler:$room_version")
+    kapt ("androidx.room:room-compiler:$room_version")
+    implementation ("androidx.room:room-runtime:$room_version")
+
+    //Timber Logging
+    implementation 'com.jakewharton.timber:timber:5.0.1'
+
+    //Retrofit
+    //implementation("com.squareup.retrofit2:retrofit:$retrofit_version")
+    implementation("com.squareup.retrofit2:converter-moshi:$retrofit_version")
+
+    //Moshi For Json
+    implementation("com.squareup.moshi:moshi:$moshi_version")
+    implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
+
+    //Ktor client
+    implementation("io.ktor:ktor-client-core:$ktor_version")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
+    implementation("io.ktor:ktor-serialization-gson:$ktor_version")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
+    implementation("io.ktor:ktor-client-android:$ktor_version")
+    implementation("io.ktor:ktor-client-logging:$ktor_version")
+//    implementation("io.ktor:ktor-client-cio:$ktor_version")
+//    implementation("io.ktor:ktor-client-okhttp:$ktor_version")
+
+    //serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+
+    //Hilt
+    implementation 'com.google.dagger:hilt-android:2.44.2'
+    implementation "androidx.hilt:hilt-navigation-compose:1.0.0"
+    kapt 'com.google.dagger:hilt-compiler:2.44.2'
+
+    //Testing
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:1.3.3"
+    debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
+}
