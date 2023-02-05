@@ -2,8 +2,8 @@ package com.experiment.weather.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.model.ManageLocationsData
 import com.weather.core.repository.WeatherRepository
+import com.weather.model.ManageLocationsData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject

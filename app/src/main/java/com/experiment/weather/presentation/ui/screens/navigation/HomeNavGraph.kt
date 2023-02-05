@@ -6,7 +6,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
-import com.experiment.weather.presentation.ui.screens.WeatherForecastScreen
+import com.weather.feature.forecast.WeatherForecastScreen
 import timber.log.Timber
 
 fun NavGraphBuilder.homeNavGraph(navController: NavController) {

@@ -1,10 +1,10 @@
 package com.weather.core.repository
 
-import com.example.model.Coordinates
-import com.example.model.ManageLocationsData
-import com.example.model.Resource
-import com.example.model.WeatherData
-import com.example.model.geocode.GeoSearchItem
+import com.weather.model.Coordinates
+import com.weather.model.ManageLocationsData
+import com.weather.model.Resource
+import com.weather.model.WeatherData
+import com.weather.model.geocode.GeoSearchItem
 import kotlinx.coroutines.flow.Flow
 
 interface WeatherRepository {

@@ -1,6 +1,6 @@
 package com.weather.core.network.model.geosearch
 
-import com.example.model.geocode.LocalNames
+import com.weather.model.geocode.LocalNames
 import kotlinx.serialization.Serializable
 
 @Serializable

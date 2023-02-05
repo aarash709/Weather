@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.experiment.weather.presentation.ui.theme.WeatherTheme
+import com.weather.core.design.theme.WeatherTheme
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

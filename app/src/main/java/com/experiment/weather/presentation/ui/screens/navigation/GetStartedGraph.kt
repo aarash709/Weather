@@ -12,7 +12,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.experiment.weather.presentation.ui.screens.ManageLocations
-import com.experiment.weather.presentation.ui.screens.SearchScreen
+import com.weather.feature.search.SearchScreen
 
 
 fun NavGraphBuilder.getStartedNavGraph(navController: NavController) {

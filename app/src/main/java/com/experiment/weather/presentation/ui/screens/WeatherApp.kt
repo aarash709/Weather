@@ -1,14 +1,12 @@
-package com.experiment.weather.presentation.ui.screens.Components
+package com.experiment.weather.presentation.ui.screens
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.rememberNavController
 import com.experiment.weather.presentation.ui.screens.navigation.WeatherNavigation
-import com.experiment.weather.presentation.ui.theme.WeatherTheme
 
 @Composable
 fun WeatherApp() {
-    WeatherTheme {
-        val navController = rememberNavController()
-        WeatherNavigation(navController)
-    }
+    val navController = rememberNavController()
+    WeatherNavigation(navController)
+
 }

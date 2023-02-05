@@ -3,10 +3,10 @@ package com.experiment.weather.presentation.viewmodel
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.model.Coordinates
-import com.example.model.Resource
-import com.example.model.geocode.GeoSearchItem
 import com.weather.core.repository.WeatherRepository
+import com.weather.model.Coordinates
+import com.weather.model.Resource
+import com.weather.model.geocode.GeoSearchItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*

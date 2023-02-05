@@ -1,10 +1,10 @@
 package com.weather.core.network
 
-import com.example.model.Coordinates
-import com.example.model.Resource
-import com.example.model.geocode.GeoSearchItem
 import com.weather.core.network.model.weather.NetworkOneCall
 import com.weather.core.network.retrofit.RetrofitApiService
+import com.weather.model.Coordinates
+import com.weather.model.Resource
+import com.weather.model.geocode.GeoSearchItem
 import kotlinx.coroutines.delay
 import timber.log.Timber
 import java.io.IOException

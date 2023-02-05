@@ -18,11 +18,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.model.ManageLocationsData
 import com.experiment.weather.presentation.ui.screens.Components.common.ShowLoading
-import com.experiment.weather.presentation.ui.theme.WeatherTheme
 import com.experiment.weather.presentation.viewmodel.LocationsUIState
 import com.experiment.weather.presentation.viewmodel.ManageLocationsViewModel
+import com.weather.core.design.theme.WeatherTheme
+import com.weather.model.ManageLocationsData
 import kotlin.math.roundToInt
 
 @Composable

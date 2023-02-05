@@ -1,13 +1,13 @@
 package com.weather.core.repository
 
-import com.example.entities.onecall.OneCallCurrentEntity
-import com.example.entities.onecall.OneCallEntity
-import com.example.entities.onecall.OneCallMinutelyEntity
-import com.example.entities.onecall.OneCallWeatherEntity
 import com.weather.core.network.model.weather.NetworkCurrent
 import com.weather.core.network.model.weather.NetworkMinutely
 import com.weather.core.network.model.weather.NetworkOneCall
 import com.weather.core.network.model.weather.NetworkWeather
+import com.weather.entities.onecall.OneCallCurrentEntity
+import com.weather.entities.onecall.OneCallEntity
+import com.weather.entities.onecall.OneCallMinutelyEntity
+import com.weather.entities.onecall.OneCallWeatherEntity
 
 fun NetworkOneCall.toEntity(cityName: String): OneCallEntity {
     return OneCallEntity(

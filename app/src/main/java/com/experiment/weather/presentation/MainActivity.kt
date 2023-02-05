@@ -3,8 +3,8 @@ package com.experiment.weather.presentation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.experiment.weather.presentation.ui.screens.Components.WeatherApp
-import com.experiment.weather.presentation.ui.theme.WeatherTheme
+import com.experiment.weather.presentation.ui.screens.WeatherApp
+import com.weather.core.design.theme.WeatherTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
 //            }
 //        }
         setContent {
-            WeatherTheme(false) {
+            WeatherTheme {
                 WeatherApp()
             }
         }

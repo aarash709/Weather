@@ -1,6 +1,6 @@
 package com.weather.core.network.model.geosearch
 
-import com.example.model.geocode.GeoSearchItem
+import com.weather.model.geocode.GeoSearchItem
 import kotlinx.serialization.Serializable
 
 @Serializable

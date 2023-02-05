@@ -1,6 +1,7 @@
 package com.experiment.weather.presentation.util
 
-import com.example.model.geocode.GeoSearchItem
+import com.weather.model.geocode.GeoSearchItem
+
 
 data class GeoSearchState(
     val geoSearchItems: List<GeoSearchItem> = emptyList(),
