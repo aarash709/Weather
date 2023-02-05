@@ -22,9 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.experiment.weather.data.remote.model.weatherData.Current
-import com.experiment.weather.data.remote.model.weatherData.OneCallCoordinates
-import com.experiment.weather.data.remote.model.weatherData.WeatherData
+import com.example.model.Current
+import com.example.model.OneCallCoordinates
+import com.example.model.WeatherData
 import com.experiment.weather.presentation.ui.theme.WeatherTheme
 import com.experiment.weather.presentation.viewmodel.ForecastViewModel
 import com.experiment.weather.presentation.viewmodel.WeatherUIState

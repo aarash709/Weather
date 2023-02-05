@@ -8,14 +8,13 @@ import android.net.NetworkCapabilities.*
 import android.os.Build
 import androidx.lifecycle.AndroidViewModel
 import com.experiment.weather.WeatherApplication
-import com.experiment.weather.domain.usecase.WeatherUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     app: Application,
-    private val useCases: WeatherUseCases,
+//    private val useCases: WeatherUseCases,
 ) : AndroidViewModel(app) {
 
 //    private val _address = MutableLiveData<List<Address>?>()

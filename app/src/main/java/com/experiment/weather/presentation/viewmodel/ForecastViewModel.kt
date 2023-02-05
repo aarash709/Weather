@@ -8,9 +8,9 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.experiment.weather.data.remote.model.weatherData.WeatherData
+import com.example.model.WeatherData
 import com.experiment.weather.presentation.viewmodel.WeatherUIState.Success
-import com.experiment.weather.repository.WeatherRepository
+import com.weather.core.repository.WeatherRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*

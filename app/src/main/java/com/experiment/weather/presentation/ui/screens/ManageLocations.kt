@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.experiment.weather.data.remote.model.ManageLocationsData
+import com.example.model.ManageLocationsData
 import com.experiment.weather.presentation.ui.screens.Components.common.ShowLoading
 import com.experiment.weather.presentation.ui.theme.WeatherTheme
 import com.experiment.weather.presentation.viewmodel.LocationsUIState

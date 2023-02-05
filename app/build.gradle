@@ -4,7 +4,7 @@ plugins {
     id 'dagger.hilt.android.plugin'
     id 'org.jetbrains.kotlin.plugin.serialization'
     id 'kotlin-kapt'
-//    id 'com.google.devtools.ksp'
+//  id 'com.google.devtools.ksp'
 }
 
 kapt {
@@ -18,7 +18,7 @@ android {
 
     defaultConfig {
         applicationId "com.experiment.weather"
-        minSdk 23
+        minSdk 24
         targetSdk 32
         versionCode 1
         versionName "0.1"
@@ -60,6 +60,12 @@ android {
 }
 
 dependencies {
+
+    implementation(project(":core:database"))
+    implementation(project(":core:network"))
+    implementation(project(":core:model"))
+    implementation(project(":core:repository"))
+
     //Kotlin-Core
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.6.0'
@@ -95,18 +101,20 @@ dependencies {
     //LifeCycle Components
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-runtime-compose:2.6.0-alpha04" //experimental
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version" //experimental
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
+    //experimental
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
     implementation 'androidx.activity:activity-compose:1.6.1'
     //datastore
     implementation("androidx.datastore:datastore-preferences:1.0.0")
+
     //room
-    implementation ("androidx.room:room-common:$room_version")
-    implementation ("androidx.room:room-ktx:$room_version")
-    annotationProcessor ("androidx.room:room-compiler:$room_version")
-    kapt ("androidx.room:room-compiler:$room_version")
-    implementation ("androidx.room:room-runtime:$room_version")
+    implementation("androidx.room:room-common:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+    annotationProcessor("androidx.room:room-compiler:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
+    implementation("androidx.room:room-runtime:$room_version")
 
     //Timber Logging
     implementation 'com.jakewharton.timber:timber:5.0.1'

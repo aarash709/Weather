@@ -1,8 +1,9 @@
 package com.experiment.weather.presentation.util
 
-import com.experiment.weather.data.remote.dto.oncecall.OneCallDto
+import com.weather.core.network.model.weather.NetworkOneCall
+
 
 data class OneCallState(
-    val oneCallData: OneCallDto? = null,
+    val oneCallData: NetworkOneCall? = null,
     val loading: Boolean = false,
 )

@@ -9,7 +9,7 @@ buildscript {
         room_version = '2.4.3'
         lifecycle_version = '2.5.1'
         kotlin_coroutine = '1.6.4'
-        moshi_version = '1.13.0'
+        moshi_version = '1.14.0'
         retrofit_version = '2.9.0'
         ktor_version ='2.0.2'
         arrow_version = "1.1.2"
