@@ -1,4 +1,4 @@
-package com.experiment.weather.presentation.ui.screens.Components.common
+package com.experiment.weather.presentation.ui.components.common
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

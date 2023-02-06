@@ -1,4 +1,4 @@
-package com.experiment.weather.presentation.ui.screens.navigation
+package com.experiment.weather.presentation.ui.navigation
 
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavController

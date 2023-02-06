@@ -1,4 +1,4 @@
-package com.experiment.weather.presentation.ui.screens.Components
+package com.experiment.weather.presentation.ui.components
 
 import android.content.Context
 import android.widget.Toast

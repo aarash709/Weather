@@ -1,4 +1,4 @@
-package com.experiment.weather.data.datastore
+package com.experiment.weather.datastore
 
 //const val WEATHER_DATA_STORE = "weatherDataStore"
 //val Context.userDataPreferences by preferencesDataStore(WEATHER_DATA_STORE)

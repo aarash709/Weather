@@ -1,4 +1,4 @@
-package com.experiment.weather.data.datastore
+package com.experiment.weather.datastore
 
 import kotlinx.coroutines.flow.Flow
 

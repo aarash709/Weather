@@ -17,7 +17,6 @@ class WeatherLocalDataSource(
 
     fun getAllLocalWeatherData(): Flow<List<OneCallAndCurrent>> {
         return dao.getAllOneCallAndCurrent()
-
     }
 
     fun databaseIsEmpty(): Int = dao.databaseIsEmpty()
@@ -45,25 +44,12 @@ class WeatherLocalDataSource(
         current: OneCallCurrentEntity,
         currentWeather: List<OneCallWeatherEntity>,
     ) {
-//        removeExpired(cityName)
-        //insert latest
         withContext(Dispatchers.IO) {
             dao.insertData(
                 oneCall,
                 current,
                 currentWeather
             )
-//            dao.insertOneCall(remoteData.toOneCallEntity(cityName))
-//            dao.insertOneCallCurrent(remoteData.current.asDatabaseModel(cityName))
-//            dao.insertOneCallCurrentWeather(remoteData.current.weather.map {
-//                it.asDatabaseModel(cityName)
-//            })
         }
-    }
-
-    private suspend fun removeExpired(cityName: String) {
-        dao.deleteOneCallByCityName(cityName)
-        dao.deleteOneCallCurrentByCityName(cityName)
-        dao.deleteCurrentWeatherByCityName(cityName)
     }
 }

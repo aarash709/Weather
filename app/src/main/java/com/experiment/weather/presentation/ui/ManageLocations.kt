@@ -1,4 +1,4 @@
-package com.experiment.weather.presentation.ui.screens
+package com.experiment.weather.presentation.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.experiment.weather.presentation.ui.screens.Components.common.ShowLoading
+import com.experiment.weather.presentation.ui.components.common.ShowLoading
 import com.experiment.weather.presentation.viewmodel.LocationsUIState
 import com.experiment.weather.presentation.viewmodel.ManageLocationsViewModel
 import com.weather.core.design.theme.WeatherTheme
@@ -33,12 +33,15 @@ fun ManageLocations(
     onItemSelected: (String) -> Unit,
 ) {
     //stateful
-    val dataState by viewModel.state.collectAsStateWithLifecycle()
+    val dataState by viewModel.locationsState.collectAsStateWithLifecycle()
     ManageLocations(
         dataState = dataState,
         onNavigateToSearch = { onNavigateToSearch() },
         onBackPressed = onBackPressed,
-        onItemSelected = { cityName -> onItemSelected(cityName) }
+        onItemSelected = { cityName ->
+            viewModel.saveFavoriteCity(cityName = cityName)
+            onItemSelected(cityName)
+        }
     )
 }
 

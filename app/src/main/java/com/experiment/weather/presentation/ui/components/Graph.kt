@@ -1,4 +1,4 @@
-package com.experiment.weather.presentation.ui.screens.Components
+package com.experiment.weather.presentation.ui.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview

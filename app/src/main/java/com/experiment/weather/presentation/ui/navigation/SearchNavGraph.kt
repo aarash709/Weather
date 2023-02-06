@@ -1,10 +1,10 @@
-package com.experiment.weather.presentation.ui.screens.navigation
+package com.experiment.weather.presentation.ui.navigation
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import com.experiment.weather.presentation.ui.screens.ManageLocations
+import com.experiment.weather.presentation.ui.ManageLocations
 import com.weather.feature.search.SearchScreen
 
 fun NavGraphBuilder.searchNavGraph(navController: NavController) {

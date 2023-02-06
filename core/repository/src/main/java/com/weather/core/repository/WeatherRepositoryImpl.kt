@@ -52,7 +52,6 @@ class WeatherRepositoryImpl @Inject constructor(
 
     override fun weatherLocalDataStream(cityName: String): Flow<WeatherData> {
         return localWeather.getLocalData(cityName = cityName)
-
     }
 
     override suspend fun syncLatestWeather(cityName: String, coordinates: Coordinates) {

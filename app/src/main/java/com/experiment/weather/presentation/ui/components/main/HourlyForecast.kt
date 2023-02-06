@@ -1,4 +1,4 @@
-package com.experiment.weather.presentation.ui.screens.Components.main
+package com.experiment.weather.presentation.ui.components.main
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
