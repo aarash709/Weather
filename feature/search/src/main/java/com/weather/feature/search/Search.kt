@@ -138,25 +138,6 @@ private fun TopSearchBar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-//        CustomWeatherTextField(
-//            value = searchText,
-//            onValueChange = { onTextChange(it) },
-//            modifier = Modifier
-//                .weight(.9f)
-//                .background(
-//                    color = Color.LightGray,
-//                    shape = CircleShape
-//                )
-//                .weight(0.8f, fill = false),
-//            placeHolder = {
-//                Text(
-//                    text = "Enter Location",
-//                    color = Color.DarkGray
-//                )
-//            },
-//            singleLine = true,
-//            maxLine = 1
-//        )
         TextField(
             value = searchText,
             onValueChange = { onTextChange(it) },
@@ -406,7 +387,7 @@ private fun SearchPreview() {
         var inputText by remember {
             mutableStateOf("input text")
         }
-        val items = listOf<GeoSearchItem>(
+        val items = listOf(
             GeoSearchItem("Iran", name = "Tehran"),
             GeoSearchItem("Iran2", name = "Tehran2"),
             GeoSearchItem("Iran3", name = "Tehran3"),
@@ -463,6 +444,7 @@ fun SearchItemPreview() {
 @Composable
 private fun SearchCityWeatherPreview() {
     WeatherTheme {
-        //HourlyDailyTemps()
+        Text(text = "text")
+//        HourlyDailyTemps()
     }
 }

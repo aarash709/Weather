@@ -61,7 +61,7 @@ fun MaterialTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composab
 @Composable
 fun WeatherTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable() () -> Unit) {
     val colors = if (darkTheme) {
-        DarkColorPalette
+        LightColorPalette
     } else {
         LightColorPalette
     }

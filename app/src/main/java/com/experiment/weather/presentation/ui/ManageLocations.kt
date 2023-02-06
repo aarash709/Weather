@@ -171,8 +171,7 @@ fun SavedLocationItem(
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
                         text = "Real Feel: ${
-                            data.feelsLike.toFloat().minus(273.15f).roundToInt()
-                        }°",
+                            data.feelsLike.toFloat().minus(273.15f).roundToInt()}°",
                         fontSize = 12.sp
                     )
 //                    Text(text = "30°/20°")
@@ -259,9 +258,9 @@ fun CityItemPreview() {
         SavedLocationItem(
             data = ManageLocationsData(
                 locationName = "Tehran",
-                currentTemp = "2°",
-                humidity = "46%",
-                feelsLike = "1°"
+                currentTemp = "2",
+                humidity = "46",
+                feelsLike = "1"
             ),
             onItemSelected = {}
         )
@@ -275,15 +274,15 @@ fun ManageLocationsPreview() {
         listOf(
             ManageLocationsData(
                 locationName = "Tehran",
-                currentTemp = "2°",
-                humidity = "46%",
-                feelsLike = "1°"
+                currentTemp = "2",
+                humidity = "46",
+                feelsLike = "1"
             ),
             ManageLocationsData(
                 locationName = "Tabriz",
-                currentTemp = "0°",
-                humidity = "55%",
-                feelsLike = "0°"
+                currentTemp = "0",
+                humidity = "55",
+                feelsLike = "0"
             )
         )
     )
