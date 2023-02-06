@@ -544,19 +544,20 @@ fun MainPagePreview() {
     }
 }
 
-@Preview(showBackground = true)
 @Composable
+@Preview(showBackground = true)
 fun CurrentWeatherPreview() {
     WeatherTheme {
         CurrentTempAndCondition(temp = "5", feelsLikeTemp = "3")
     }
 }
 
-@Preview(showBackground = true)
 @Composable
+@Preview(showBackground = true)
 fun FourDayPreview() {
     WeatherTheme {
-        DailyForecastItem()
+    Text(text = "hello")
+//        DailyForecastItem()
     }
 }
 
