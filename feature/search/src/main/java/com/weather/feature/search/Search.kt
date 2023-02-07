@@ -175,39 +175,37 @@ private fun TopSearchBar(
     }
 }
 
-//forecastpreview
+//@Composable
+//private fun ForecastPreview(
+//    geoSearchItems: List<GeoSearchItem>,
+//    onSearchItemSelected: (GeoSearchItem) -> Unit,
+//) {
+//    Column {
+//        SearchCityName()
+//        Row(
+//            Modifier
+//                .fillMaxWidth()
+//                .padding(end = 8.dp),
+//            horizontalArrangement = Arrangement.SpaceBetween
+//        ) {
+//            WeatherForecastItemPreview()
+//            WeatherForecastItemPreview()
+//            WeatherForecastItemPreview()
+//            WeatherForecastItemPreview()
+//            WeatherForecastItemPreview()
+//        }
+//        Spacer(modifier = Modifier.height(16.dp))
+//        SearchItems(
+//            geoSearchItems,
+//            onSearchItemSelected = { onSearchItemSelected(it) }
+//        )
+//    }
+//}
 
 @Composable
-private fun ForecastPreview(
-    geoSearchItems: List<GeoSearchItem>,
-    onSearchItemSelected: (GeoSearchItem) -> Unit,
-) {
-    Column {
-        SearchCityName()
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(end = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            WeatherForecastItemPreview()
-            WeatherForecastItemPreview()
-            WeatherForecastItemPreview()
-            WeatherForecastItemPreview()
-            WeatherForecastItemPreview()
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        SearchItems(
-            geoSearchItems,
-            onSearchItemSelected = { onSearchItemSelected(it) }
-        )
-    }
-}
-
-@Composable
-private fun SearchCityName() {
+fun SearchCityName() {
     Column(
-        modifier = Modifier
+        modifier = Modifier.fillMaxSize()
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

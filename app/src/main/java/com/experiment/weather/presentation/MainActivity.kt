@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.experiment.weather.presentation.ui.WeatherApp
+import com.weather.core.design.theme.WeatherTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -24,7 +25,9 @@ class MainActivity : ComponentActivity() {
 //            }
 //        }
         setContent {
-            WeatherApp()
+            WeatherTheme() {
+                WeatherApp()
+            }
         }
     }
 }

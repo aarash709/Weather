@@ -9,6 +9,6 @@ import com.weather.core.design.theme.WeatherTheme
 fun WeatherApp() {
     WeatherTheme {
     val navController = rememberNavController()
-        WeatherNavigation(navController)
+    WeatherNavigation(navController)
     }
 }

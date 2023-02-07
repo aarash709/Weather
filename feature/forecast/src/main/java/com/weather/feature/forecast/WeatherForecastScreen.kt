@@ -1,5 +1,6 @@
 package com.weather.feature.forecast
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
@@ -321,7 +322,7 @@ private fun CurrentTempAndCondition(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun MainPagePreview() {
     WeatherTheme {
@@ -329,10 +330,10 @@ fun MainPagePreview() {
             data = WeatherData(
                 coordinates = OneCallCoordinates(
                     name = "Tehran",
-                    lat = null,
-                    lon = null,
+                    lat = 0.0,
+                    lon = 0.0,
                     timezone = "tehran",
-                    timezone_offset = null
+                    timezone_offset = 0
                 ),
                 current = Current(
                     clouds = 27,
