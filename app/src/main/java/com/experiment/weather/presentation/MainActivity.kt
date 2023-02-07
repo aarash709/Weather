@@ -25,9 +25,7 @@ class MainActivity : ComponentActivity() {
 //            }
 //        }
         setContent {
-            WeatherTheme() {
-                WeatherApp()
-            }
+            WeatherApp()
         }
     }
 }

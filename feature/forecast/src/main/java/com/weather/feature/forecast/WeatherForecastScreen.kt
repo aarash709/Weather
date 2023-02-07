@@ -3,10 +3,7 @@ package com.weather.feature.forecast
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Menu
@@ -40,27 +37,22 @@ fun WeatherForecastScreen(
     val databaseIsEmpty by viewModel.dataBaseOrCityIsEmpty.collectAsStateWithLifecycle()
     val weatherUIState by viewModel
         .weatherUIState.collectAsStateWithLifecycle()
-    var showHome by remember {
-        mutableStateOf(false)
-    }
     LaunchedEffect(
         key1 = databaseIsEmpty
     ) {
-//        launch {
-//            viewModel.checkDatabase()
-//        }
         Timber.e("ui: $databaseIsEmpty")
-//        showHome = !databaseIsEmpty
     }
     if (databaseIsEmpty) {
         LaunchedEffect(key1 = Unit) {
             navigateToGetStarted()
         }
     } else {
-        WeatherForecastScreen(
-            weatherUIState = weatherUIState,
-            onNavigateToManageLocations = { navigateToSearch() }
-        )
+        Surface {
+            WeatherForecastScreen(
+                weatherUIState = weatherUIState,
+                onNavigateToManageLocations = { navigateToSearch() }
+            )
+        }
     }
 }
 

@@ -8,7 +8,7 @@ import com.weather.core.design.theme.WeatherTheme
 @Composable
 fun WeatherApp() {
     WeatherTheme {
-    val navController = rememberNavController()
-    WeatherNavigation(navController)
+        val navController = rememberNavController()
+        WeatherNavigation(navController)
     }
 }

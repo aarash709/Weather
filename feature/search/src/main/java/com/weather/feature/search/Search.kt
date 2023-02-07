@@ -39,34 +39,36 @@ fun SearchScreen(
 //    val saved by searchViewModel.saved
     val size = LocalConfiguration.current.screenWidthDp
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 24.dp)
-            .padding(top = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-//        Text(text = "selected Item is: $selectedItem", color = Color.Red) //debug
-        SearchScreen(
-            searchUIState = searchUIState,
-            searchInputText = inputText,
-            onSearchTextChange = {
-                inputText = it.trim()
-                searchViewModel.searchCity(it)
-            },
-            onClearSearch = {
-                inputText = ""
-            },
-            selectedSearchItem = {searchItem->
-                selectedItem = searchItem.name + searchItem.country //debug
-                searchViewModel.saveSearchWeatherItem(searchItem)
+    Surface {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 24.dp)
+                .padding(top = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            //        Text(text = "selected Item is: $selectedItem", color = Color.Red) //debug
+            SearchScreen(
+                searchUIState = searchUIState,
+                searchInputText = inputText,
+                onSearchTextChange = {
+                    inputText = it.trim()
+                    searchViewModel.searchCity(it)
+                },
+                onClearSearch = {
+                    inputText = ""
+                },
+                selectedSearchItem = { searchItem ->
+                    selectedItem = searchItem.name + searchItem.country //debug
+                    searchViewModel.saveSearchWeatherItem(searchItem)
 
-//                if (saved)
+                    //                if (saved)
                     onSelectSearchItem()
-                // sending the city name as arg then fetch related data
-            }
-        )
+                    // sending the city name as arg then fetch related data
+                }
+            )
 
+        }
     }
 }
 

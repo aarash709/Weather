@@ -34,15 +34,17 @@ fun ManageLocations(
 ) {
     //stateful
     val dataState by viewModel.locationsState.collectAsStateWithLifecycle()
-    ManageLocations(
-        dataState = dataState,
-        onNavigateToSearch = { onNavigateToSearch() },
-        onBackPressed = onBackPressed,
-        onItemSelected = { cityName ->
-            viewModel.saveFavoriteCity(cityName = cityName)
-            onItemSelected(cityName)
-        }
-    )
+    Surface {
+        ManageLocations(
+            dataState = dataState,
+            onNavigateToSearch = { onNavigateToSearch() },
+            onBackPressed = onBackPressed,
+            onItemSelected = { cityName ->
+                viewModel.saveFavoriteCity(cityName = cityName)
+                onItemSelected(cityName)
+            }
+        )
+    }
 }
 
 @Composable
@@ -54,6 +56,7 @@ fun ManageLocations(
 ) {
     //stateless
     when (dataState) {
+        is LocationsUIState.Loading -> ShowLoading()
         is LocationsUIState.Success -> {
             Column(
                 modifier = Modifier
@@ -77,9 +80,6 @@ fun ManageLocations(
                         onItemSelected(cityName)
                     })
             }
-        }
-        is LocationsUIState.Loading -> {
-            ShowLoading()
         }
     }
 }
