@@ -47,8 +47,9 @@ class ForecastViewModel @Inject constructor(
     )
 
     private fun getWeatherData(): Flow<WeatherUIState> {
+//        return weatherRepository.getLocalWeatherByCityName(cityName = cityName)
         return weatherRepository.getAllForecastWeatherData()
-            .combine(getFavoriteCity()) { allWeather, cityName ->
+            .zip(getFavoriteCity()) { allWeather, cityName ->
                 allWeather.first { it.coordinates.name == cityName }
             }.map { weather ->
                 Timber.e("invoked data stream")
@@ -64,9 +65,9 @@ class ForecastViewModel @Inject constructor(
 
     private fun checkDatabase() {
         viewModelScope.launch {
-            val isEmpty = weatherRepository.databaseIsEmpty() == 0
+            val isEmpty = weatherRepository.isDatabaseEmpty() == 0
             _dataBaseOrCityIsEmpty.value = isEmpty
-            Timber.e("vm database method count: ${weatherRepository.databaseIsEmpty()}")
+            Timber.e("vm database method count: ${weatherRepository.isDatabaseEmpty()}")
             Timber.e("vm database is empty: $isEmpty")
         }
     }

@@ -23,7 +23,7 @@ class ManageLocationsViewModel @Inject constructor(
     private val context: Application,
 ) : ViewModel() {
 
-    val locationsState = weatherRepository.getAllLocationsWeatherData().map {
+    val locationsState = weatherRepository.getAllWeatherLocations().map {
         LocationsUIState.Success(it)
     }.stateIn(
         viewModelScope,

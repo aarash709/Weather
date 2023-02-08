@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.weather.core.repository.WeatherRepository
 import com.weather.model.Coordinates
 import com.weather.model.Resource
+import com.weather.model.WeatherData
 import com.weather.model.geocode.GeoSearchItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -21,6 +22,9 @@ class SearchViewModel @Inject constructor(
     private val _searchUIState = MutableStateFlow<SearchUIState>(SearchUIState.Loading)
     val searchUIState: StateFlow<SearchUIState> = _searchUIState.asStateFlow()
 
+    private val _weatherPreview = MutableSharedFlow<WeatherData>()
+    val weatherPreview: SharedFlow<WeatherData> = _weatherPreview.asSharedFlow()
+
     val saved = mutableStateOf(false)
 
     fun searchCity(cityName: String) {
@@ -28,10 +32,10 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             delay(500)
             weatherRepository.searchLocation(cityName)
-                .map {
-                    when (it) {
+                .map {search->
+                    when (search) {
                         is Resource.Success -> {
-                            _searchUIState.value = SearchUIState.Success(it.data!!)
+                            _searchUIState.value = SearchUIState.Success(search.data!!)
                         }
                         is Resource.Loading -> {
                             _searchUIState.value = SearchUIState.Loading
@@ -47,7 +51,7 @@ class SearchViewModel @Inject constructor(
     fun saveSearchWeatherItem(searchItem: GeoSearchItem){
         val coordinates = Coordinates(searchItem.lat.toString(), searchItem.lon.toString())
         viewModelScope.launch{
-            weatherRepository.syncLatestWeather(
+            weatherRepository.syncWeather(
                 searchItem.name.toString(),
                 coordinates
             )

@@ -1,13 +1,8 @@
 package com.weather.core.repository
 
-import com.weather.core.network.model.weather.NetworkCurrent
-import com.weather.core.network.model.weather.NetworkMinutely
-import com.weather.core.network.model.weather.NetworkOneCall
-import com.weather.core.network.model.weather.NetworkWeather
-import com.weather.entities.onecall.OneCallCurrentEntity
-import com.weather.entities.onecall.OneCallEntity
-import com.weather.entities.onecall.OneCallMinutelyEntity
-import com.weather.entities.onecall.OneCallWeatherEntity
+import com.weather.core.network.model.weather.*
+import com.weather.entities.onecall.*
+import com.weather.model.FeelsLike
 
 fun NetworkOneCall.toEntity(cityName: String): OneCallEntity {
     return OneCallEntity(
@@ -74,5 +69,41 @@ fun NetworkCurrent.toEntity(cityName: String): OneCallCurrentEntity {
         wind_deg,
         wind_gust,
         wind_speed
+    )
+}
+
+fun NetworkDaily.toEntity(cityName: String): DailyEntity {
+    return DailyEntity(
+        cityName,
+        clouds,
+        dew_point,
+        dt,
+        humidity,
+        moon_phase,
+        moonrise,
+        moonset,
+        pop,
+        pressure,
+        sunrise,
+        sunset,
+        temp.day,
+        temp.night,
+        weather.first().id,
+        weather.first().main,
+        weather.first().description,
+        weather.first().icon,
+        uvi,
+        wind_deg,
+        wind_gust,
+        wind_speed
+    )
+}
+
+fun NetworkFeelsLike.toFeelsLike(): FeelsLike {
+    return FeelsLike(
+        day,
+        eve,
+        morn,
+        night
     )
 }

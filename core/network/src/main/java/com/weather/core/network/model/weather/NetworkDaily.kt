@@ -22,29 +22,4 @@ data class NetworkDaily(
     val wind_deg: Int,
     val wind_gust: Double,
     val wind_speed: Double
-){
-//    fun asDatabaseModel(cityName: String): List<OneCallDaily> {
-//        return listOf(OneCallDaily(
-//            0,
-//            cityName,
-//            clouds,
-//            dew_point,
-//            dt,
-//            feels_like,
-//            humidity,
-//            moon_phase,
-//            moonrise,
-//            moonset,
-//            pop,
-//            pressure,
-//            sunrise,
-//            sunset,
-//            temp,
-//            weather.first(),
-//            uvi,
-//            wind_deg,
-//            wind_gust,
-//            wind_speed
-//        ))
-//    }
-}
+)

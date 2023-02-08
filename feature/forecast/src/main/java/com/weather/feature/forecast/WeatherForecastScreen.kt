@@ -83,6 +83,7 @@ fun WeatherForecastScreen(
                 CurrentWeather(
                     weatherData = weatherUIState.data.current
                 )
+                Daily(dailyList = emptyList())
             }
         }
 //        Box(
@@ -343,7 +344,8 @@ fun MainPagePreview() {
                     wind_gust = 1.71,
                     wind_speed = 2.64,
                     weather = null
-                )
+                ),
+                daily = emptyList()
             )
         )
         WeatherForecastScreen(weatherUIState = data,

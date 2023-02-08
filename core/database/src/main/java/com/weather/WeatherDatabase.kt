@@ -2,6 +2,7 @@ package com.weather
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.weather.core.database.WeatherDao
 import com.weather.entities.geoSearch.GeoSearchItemEntity
 import com.weather.entities.onecall.*
 
@@ -12,7 +13,7 @@ import com.weather.entities.onecall.*
         OneCallWeatherEntity::class,
         OneCallEntity::class,
         OneCallCurrentEntity::class,
-        OneCallDailyEntity::class,
+        DailyEntity::class,
         OneCallHourlyEntity::class
     ],
     version = 1,

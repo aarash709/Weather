@@ -4,9 +4,9 @@ package com.weather.model
 data class WeatherData(
     val coordinates: OneCallCoordinates,
     val current: Current,
-//    val minutely: List<MinutelyDto>,
-//    val daily: List<Daily?>,
+    val daily: List<Daily>,
 //    val hourly: List<Hourly>,
+//    val minutely: List<MinutelyDto>,
 )
 
 data class OneCallCoordinates(
@@ -39,7 +39,8 @@ data class Daily(
     val clouds: Int,
     val dew_point: Double,
     val dt: Int,
-    val feels_like: FeelsLike,
+//    val feels_like: FeelsLike,
+
     val humidity: Int,
     val moon_phase: Double,
     val moonrise: Int,
@@ -48,9 +49,15 @@ data class Daily(
     val pressure: Int,
     val sunrise: Int,
     val sunset: Int,
-    val temp: Temp,
+//    val temp: Temp,
+    val dayTemp: Double,
+    val nightTemp: Double,
     val uvi: Double,
-    val weather: List<Weather>,
+//    val weather: List<Weather>,
+    val id: Int,
+    val main: String,
+    val description: String,
+    val icon: String,
     val wind_deg: Int,
     val wind_gust: Double,
     val wind_speed: Double,

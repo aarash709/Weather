@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.weather.entities.onecall.OneCallCurrentEntity
-import com.weather.entities.onecall.OneCallDailyEntity
+import com.weather.entities.onecall.DailyEntity
 import com.weather.entities.onecall.OneCallEntity
 import kotlin.math.roundToInt
 
@@ -93,36 +93,36 @@ fun WeatherDetails(modifier: Modifier, current: OneCallCurrentEntity?) {
     }
 }
 
-@Composable
-fun FourDayForecast(modifier: Modifier = Modifier, dailyData: List<OneCallDailyEntity>?) {
-    Row(
-        modifier.wrapContentSize(),
-        horizontalArrangement = Arrangement.spacedBy(15.dp)
-    ) {
-        dailyData?.forEachIndexed { index, it ->
-            if (index <= 3) {
-                DayDetail(it)
-            }
-        }
-    }
-}
-
-@Composable
-fun DayDetail(dailyDetail: OneCallDailyEntity?) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(2.dp),
-    ) {
-        Text(text = dailyDetail?.weather?.description.toString())
-        Text(
-            text = "day: " + dailyDetail?.temp?.max?.minus(273.15)
-                ?.roundToInt().toString()
-        )
-        Text(
-            text = "night: " + dailyDetail?.temp?.night?.minus(273.15)
-                ?.roundToInt().toString()
-        )
-    }
-}
+//@Composable
+//fun FourDayForecast(modifier: Modifier = Modifier, dailyData: List<DailyEntity>?) {
+//    Row(
+//        modifier.wrapContentSize(),
+//        horizontalArrangement = Arrangement.spacedBy(15.dp)
+//    ) {
+//        dailyData?.forEachIndexed { index, it ->
+//            if (index <= 3) {
+//                DayDetail(it)
+//            }
+//        }
+//    }
+//}
+//
+//@Composable
+//fun DayDetail(dailyDetail: DailyEntity?) {
+//    Column(
+//        verticalArrangement = Arrangement.spacedBy(2.dp),
+//    ) {
+//        Text(text = dailyDetail?.weather?.description.toString())
+//        Text(
+//            text = "day: " + dailyDetail?.temp?.max?.minus(273.15)
+//                ?.roundToInt().toString()
+//        )
+//        Text(
+//            text = "night: " + dailyDetail?.temp?.night?.minus(273.15)
+//                ?.roundToInt().toString()
+//        )
+//    }
+//}
 
 @Composable
 fun addOrUpdateSection(

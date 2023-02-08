@@ -19,7 +19,11 @@ class WeatherRepositoryImpl @Inject constructor(
     private val localWeather: WeatherLocalDataSource,
 ) : WeatherRepository {
 
-    override fun databaseIsEmpty(): Int = localWeather.databaseIsEmpty()
+    override fun isDatabaseEmpty(): Int = localWeather.databaseIsEmpty()
+
+//    fun getWeatherPreviewByCityName(cityName: String, coordinates: Coordinates): Resource<Flow<WeatherData>>{
+//        return remoteWeather.getRemoteData(cityName,coordinates).data.
+//    }
 
     override fun getAllForecastWeatherData(): Flow<List<WeatherData>> {
         return localWeather.getAllLocalWeatherData().map {
@@ -29,14 +33,15 @@ class WeatherRepositoryImpl @Inject constructor(
                     coordinates = it.oneCall.asDomainModel(),
                     current = it.current.asDomainModel(
                         weather = emptyList()
-                    )
+                    ),
+                    daily = emptyList()
                 )
             }
         }
     }
 
 
-    override fun getAllLocationsWeatherData(): Flow<List<ManageLocationsData>> {
+    override fun getAllWeatherLocations(): Flow<List<ManageLocationsData>> {
         return localWeather.getAllLocalWeatherData().map {
             it.map {
                 Timber.e("Saved Locations:${it.oneCall.cityName}")
@@ -50,11 +55,11 @@ class WeatherRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun weatherLocalDataStream(cityName: String): Flow<WeatherData> {
-        return localWeather.getLocalData(cityName = cityName)
+    override fun getLocalWeatherByCityName(cityName: String): Flow<WeatherData> {
+        return localWeather.getLocalWeatherDataByCityName(cityName = cityName)
     }
 
-    override suspend fun syncLatestWeather(cityName: String, coordinates: Coordinates) {
+    override suspend fun syncWeather(cityName: String, coordinates: Coordinates) {
         //work in progress
         val remoteWeatherInfo = remoteWeather.getRemoteData(
             coordinates = coordinates,
@@ -67,7 +72,8 @@ class WeatherRepositoryImpl @Inject constructor(
                 current = remoteWeatherInfo.data!!.current.toEntity(cityName = cityName),
                 currentWeather = remoteWeatherInfo.data!!.current.weather.map {
                     it.toEntity(cityName= cityName)
-                }
+                },
+                daily = remoteWeatherInfo.data!!.daily.map { it.toEntity(cityName = cityName) }
             )
         }
     }

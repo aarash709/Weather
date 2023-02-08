@@ -11,15 +11,15 @@ interface WeatherRepository {
 
     suspend fun searchLocation(cityName: String): Flow<Resource<List<GeoSearchItem>>>
 
-    suspend fun syncLatestWeather(cityName: String, coordinates: Coordinates)
+    suspend fun syncWeather(cityName: String, coordinates: Coordinates)
 
-    fun weatherLocalDataStream(cityName: String): Flow<WeatherData>
+    fun getLocalWeatherByCityName(cityName: String): Flow<WeatherData>
 
-    fun getAllLocationsWeatherData(): Flow<List<ManageLocationsData>>
+    fun getAllWeatherLocations(): Flow<List<ManageLocationsData>>
 
     fun getAllForecastWeatherData(): Flow<List<WeatherData>>
 
-    fun databaseIsEmpty(): Int
+    fun isDatabaseEmpty(): Int
 
 
 }
