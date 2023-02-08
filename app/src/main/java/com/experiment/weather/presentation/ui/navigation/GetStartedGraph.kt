@@ -1,9 +1,11 @@
 package com.experiment.weather.presentation.ui.navigation
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Button
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,17 +23,21 @@ fun NavGraphBuilder.getStartedNavGraph(navController: NavController) {
 //        arguments = listOf(navArgument(name = "cityName") {})
     ) {
         composable(route = Screen.Welcome.route) {
-            Column(modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center) {
-                Text(text = "Welcome")
-                Button(onClick = {
-                    navController.navigate(Screen.Search.route) {
-                        popUpTo(Graph.Home)
-                        launchSingleTop = true
+            Surface {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(text = "Welcome")
+                    Button(onClick = {
+                        navController.navigate(Screen.Search.route) {
+                            popUpTo(Graph.Home)
+                            launchSingleTop = true
+                        }
+                    }) {
+                        Text(text = "Let`s Go")
                     }
-                }) {
-                    Text(text = "Let`s Go")
                 }
             }
         }

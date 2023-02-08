@@ -24,7 +24,19 @@ class WeatherLocalDataSource(
 
     fun databaseIsEmpty(): Int = dao.databaseIsEmpty()
 
-//    fun getForecastData(cityName: String): Flow<WeatherData> = dao.
+    fun getAllForecastData(): Flow<List<WeatherData>> =
+        dao.getAllOneCallWithCurrentAndDailyAndHourly().map { weatherList ->
+            weatherList.map { weather ->
+                WeatherData(
+                    weather.oneCall.asDomainModel(),
+                    weather.current.current.asDomainModel(
+                        weather.current.weather.map { it ->
+                            it.asDomainModel()
+                        }),
+                    weather.daily.map { it.asDomainModel() }
+                )
+            }
+        }
 
     fun getLocalWeatherDataByCityName(cityName: String): Flow<WeatherData> = combine(
         dao.getOneCallAndCurrentByCityName(cityName),

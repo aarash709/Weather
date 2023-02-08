@@ -14,7 +14,6 @@ data class CurrentWithWeather(
     )
     val weather : List<OneCallWeatherEntity>
 ){
-
 //    fun asDomainModel(): List<Weather>{
 //        return listOf(
 //

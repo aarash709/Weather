@@ -47,7 +47,6 @@ class ForecastViewModel @Inject constructor(
     )
 
     private fun getWeatherData(): Flow<WeatherUIState> {
-//        return weatherRepository.getLocalWeatherByCityName(cityName = cityName)
         return weatherRepository.getAllForecastWeatherData()
             .zip(getFavoriteCity()) { allWeather, cityName ->
                 allWeather.first { it.coordinates.name == cityName }

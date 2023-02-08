@@ -83,7 +83,7 @@ fun WeatherForecastScreen(
                 CurrentWeather(
                     weatherData = weatherUIState.data.current
                 )
-                Daily(dailyList = emptyList())
+                Daily(dailyList = weatherUIState.data.daily.map { it.toDailyPreview() })
             }
         }
 //        Box(

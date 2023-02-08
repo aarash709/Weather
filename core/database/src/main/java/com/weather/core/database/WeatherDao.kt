@@ -2,14 +2,13 @@ package com.weather.core.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import androidx.room.OnConflictStrategy.REPLACE
+import androidx.room.OnConflictStrategy.Companion.REPLACE
 import com.weather.entities.geoSearch.GeoSearchItemEntity
 import com.weather.entities.onecall.*
 import com.weather.entities.relation.CurrentWithWeather
 import com.weather.entities.relation.OneCallAndCurrent
-import com.weather.model.WeatherData
+import com.weather.entities.relation.OneCallWithCurrentAndDailyAndHourly
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 
 @Dao
 interface WeatherDao {
@@ -26,7 +25,7 @@ interface WeatherDao {
     @Insert(onConflict = REPLACE)
     suspend fun insertOneCallCurrentWeather(weather: List<OneCallWeatherEntity>)
 
-    @Insert(onConflict = REPLACE)
+    @Upsert()
     suspend fun insertDaily(daily: List<DailyEntity>)
 
 //    @Insert(onConflict = REPLACE)
@@ -93,10 +92,13 @@ interface WeatherDao {
     @Query("select * from one_call_hourly order by cityName")
     fun getAllOneCallHourly(): LiveData<List<OneCallHourlyEntity>>
 
-
     // geo
     @Insert(onConflict = REPLACE)
     suspend fun insertGeoSearch(geoSearch: GeoSearchItemEntity)
+
+    @Transaction
+    @Query("select * from one_call")
+    fun getAllOneCallWithCurrentAndDailyAndHourly(): Flow<List<OneCallWithCurrentAndDailyAndHourly>> //experimental
 
     @Transaction
     suspend fun insertData(
@@ -111,26 +113,5 @@ interface WeatherDao {
         insertDaily(daily = daily)
     }
 
-//    @Transaction
-//    fun getWeatherDataByCityName(
-//        cityName: String,
-//    ): Flow<WeatherData> =
-//        combine(
-//            getOneCallAndCurrentByCityName(cityName = cityName),
-//            getCurrentWithWeatherByCityName(cityName = cityName),
-//            getDailyByCityName(cityName = cityName)
-//        ) { oneCallAndCurrent, currentWeather, daily ->
-//            WeatherData(
-//                coordinates = oneCallAndCurrent.oneCall.asDomainModel(),
-//                current = currentWeather.current.asDomainModel(
-//                    weather = currentWeather.weather.map {
-//                        it.asDomainModel()
-//                    }
-//                ),
-//                daily = daily.map {
-//                    it.asDomainModel()
-//                }
-//            )
-//        }
 
 }

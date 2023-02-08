@@ -22,22 +22,11 @@ class WeatherRepositoryImpl @Inject constructor(
     override fun isDatabaseEmpty(): Int = localWeather.databaseIsEmpty()
 
 //    fun getWeatherPreviewByCityName(cityName: String, coordinates: Coordinates): Resource<Flow<WeatherData>>{
-//        return remoteWeather.getRemoteData(cityName,coordinates).data.
+//        return remoteWeather.getRemoteData(cityName,coordinates)
 //    }
 
     override fun getAllForecastWeatherData(): Flow<List<WeatherData>> {
-        return localWeather.getAllLocalWeatherData().map {
-            it.map {
-                Timber.e("forecast: ${it.oneCall.cityName}")
-                WeatherData(
-                    coordinates = it.oneCall.asDomainModel(),
-                    current = it.current.asDomainModel(
-                        weather = emptyList()
-                    ),
-                    daily = emptyList()
-                )
-            }
-        }
+        return localWeather.getAllForecastData()
     }
 
 

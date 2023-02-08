@@ -7,8 +7,8 @@ import com.weather.model.Daily
 
 @Entity(tableName = "one_call_daily")
 data class DailyEntity(
-    @PrimaryKey(autoGenerate = false)
-    val cityName : String="",
+    @PrimaryKey
+    val cityName: String,
     val clouds: Int,
     val dew_point: Double,
     val dt: Int,
@@ -37,9 +37,9 @@ data class DailyEntity(
     val uvi: Double,
     val wind_deg: Int,
     val wind_gust: Double,
-    val wind_speed: Double
-){
-    fun asDomainModel(): Daily{
+    val wind_speed: Double,
+) {
+    fun asDomainModel(): Daily {
         return Daily(
             clouds,
             dew_point,
