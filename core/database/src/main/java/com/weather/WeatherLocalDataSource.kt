@@ -1,10 +1,10 @@
 package com.weather
 
 import com.weather.core.database.WeatherDao
-import com.weather.entities.onecall.OneCallCurrentEntity
+import com.weather.entities.onecall.CurrentEntity
 import com.weather.entities.onecall.DailyEntity
 import com.weather.entities.onecall.OneCallEntity
-import com.weather.entities.onecall.OneCallWeatherEntity
+import com.weather.entities.onecall.CurrentWeatherEntity
 import com.weather.entities.relation.OneCallAndCurrent
 import com.weather.model.WeatherData
 import kotlinx.coroutines.Dispatchers
@@ -58,8 +58,8 @@ class WeatherLocalDataSource(
 
     suspend fun insertLocalData(
         oneCall: OneCallEntity,
-        current: OneCallCurrentEntity,
-        currentWeather: List<OneCallWeatherEntity>,
+        current: CurrentEntity,
+        currentWeather: List<CurrentWeatherEntity>,
         daily: List<DailyEntity>,
     ) {
         withContext(Dispatchers.IO) {

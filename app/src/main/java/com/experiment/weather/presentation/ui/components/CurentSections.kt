@@ -10,13 +10,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.weather.entities.onecall.OneCallCurrentEntity
-import com.weather.entities.onecall.DailyEntity
+import com.weather.entities.onecall.CurrentEntity
 import com.weather.entities.onecall.OneCallEntity
 import kotlin.math.roundToInt
 
 @Composable
-fun CurrentWeatherTemp(oneCall: OneCallEntity?, current: OneCallCurrentEntity?) {
+fun CurrentWeatherTemp(oneCall: OneCallEntity?, current: CurrentEntity?) {
     Column(
         Modifier
             .padding(horizontal = 0.dp, vertical = 0.dp)
@@ -39,7 +38,7 @@ fun CurrentWeatherTemp(oneCall: OneCallEntity?, current: OneCallCurrentEntity?) 
 }
 
 @Composable
-fun WeatherDetails(modifier: Modifier, current: OneCallCurrentEntity?) {
+fun WeatherDetails(modifier: Modifier, current: CurrentEntity?) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier,

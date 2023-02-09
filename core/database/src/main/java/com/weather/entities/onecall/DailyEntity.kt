@@ -2,12 +2,20 @@ package com.weather.entities.onecall
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.PrimaryKey
 import com.weather.model.Daily
 
-@Entity(tableName = "one_call_daily")
+@Entity(tableName = "one_call_daily", foreignKeys = [ForeignKey(
+    entity = OneCallEntity::class,
+    parentColumns = arrayOf("cityName"),
+    childColumns = arrayOf("cityName"),
+    onDelete = CASCADE,
+    onUpdate = CASCADE
+)]
+)
 data class DailyEntity(
-    @PrimaryKey
     val cityName: String,
     val clouds: Int,
     val dew_point: Double,
@@ -38,6 +46,8 @@ data class DailyEntity(
     val wind_deg: Int,
     val wind_gust: Double,
     val wind_speed: Double,
+    @PrimaryKey(true)
+    val dailyId: Int = 0,
 ) {
     fun asDomainModel(): Daily {
         return Daily(

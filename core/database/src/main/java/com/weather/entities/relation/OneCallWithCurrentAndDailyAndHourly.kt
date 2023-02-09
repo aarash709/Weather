@@ -3,7 +3,7 @@ package com.weather.entities.relation
 import androidx.room.Embedded
 import androidx.room.Relation
 import com.weather.entities.onecall.DailyEntity
-import com.weather.entities.onecall.OneCallCurrentEntity
+import com.weather.entities.onecall.CurrentEntity
 import com.weather.entities.onecall.OneCallEntity
 import com.weather.entities.onecall.OneCallHourlyEntity
 
@@ -11,7 +11,7 @@ class OneCallWithCurrentAndDailyAndHourly(
     @Embedded
     val oneCall: OneCallEntity,
     @Relation(
-        entity = OneCallCurrentEntity::class,
+        entity = CurrentEntity::class,
         parentColumn = "cityName",
         entityColumn = "cityName"
     )

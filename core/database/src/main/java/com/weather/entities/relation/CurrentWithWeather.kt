@@ -2,17 +2,17 @@ package com.weather.entities.relation
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import com.weather.entities.onecall.OneCallCurrentEntity
-import com.weather.entities.onecall.OneCallWeatherEntity
+import com.weather.entities.onecall.CurrentEntity
+import com.weather.entities.onecall.CurrentWeatherEntity
 
 data class CurrentWithWeather(
     @Embedded
-    val current : OneCallCurrentEntity,
+    val current : CurrentEntity,
     @Relation(
         parentColumn = "cityName",
         entityColumn = "cityName"
     )
-    val weather : List<OneCallWeatherEntity>
+    val weather : List<CurrentWeatherEntity>
 ){
 //    fun asDomainModel(): List<Weather>{
 //        return listOf(

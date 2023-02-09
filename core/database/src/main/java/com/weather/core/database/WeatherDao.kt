@@ -20,10 +20,10 @@ interface WeatherDao {
     suspend fun insertOneCall(oneCall: OneCallEntity)
 
     @Insert(onConflict = REPLACE)
-    suspend fun insertOneCallCurrent(current: OneCallCurrentEntity)
+    suspend fun insertOneCallCurrent(current: CurrentEntity)
 
     @Insert(onConflict = REPLACE)
-    suspend fun insertOneCallCurrentWeather(weather: List<OneCallWeatherEntity>)
+    suspend fun insertOneCallCurrentWeather(weather: List<CurrentWeatherEntity>)
 
     @Upsert()
     suspend fun insertDaily(daily: List<DailyEntity>)
@@ -75,13 +75,13 @@ interface WeatherDao {
     fun getOneCallByCityName(cityName: String): Flow<OneCallEntity>
 
     @Query("select * from one_call_current where cityName= :cityName")
-    fun getOneCallCurrentByCityName(cityName: String): Flow<OneCallCurrentEntity>
+    fun getOneCallCurrentByCityName(cityName: String): Flow<CurrentEntity>
 
     @Query("select * from one_call_daily where cityName= :cityName")
     fun getDailyByCityName(cityName: String): Flow<List<DailyEntity>>
 
     @Query("select * from one_call_current order by cityName")
-    fun getAllOneCallCurrent(): Flow<List<OneCallCurrentEntity>>
+    fun getAllOneCallCurrent(): Flow<List<CurrentEntity>>
 
     @Query("select * from one_call order by cityName")
     fun getAllOneCall(): LiveData<List<OneCallEntity>>
@@ -103,8 +103,8 @@ interface WeatherDao {
     @Transaction
     suspend fun insertData(
         oneCall: OneCallEntity,
-        oneCallCurrent: OneCallCurrentEntity,
-        currentWeatherList: List<OneCallWeatherEntity>,
+        oneCallCurrent: CurrentEntity,
+        currentWeatherList: List<CurrentWeatherEntity>,
         daily: List<DailyEntity>,
     ) {
         insertOneCall(oneCall = oneCall)

@@ -22,8 +22,8 @@ fun NetworkMinutely.toMinutelyEntity(cityName: String): OneCallMinutelyEntity {
     )
 }
 
-fun NetworkCurrent.toCurrentEntity(cityName: String): OneCallCurrentEntity {
-    return OneCallCurrentEntity(
+fun NetworkCurrent.toCurrentEntity(cityName: String): CurrentEntity {
+    return CurrentEntity(
         clouds = clouds,
         dew_point = dew_point,
         dt = dt,
@@ -42,8 +42,8 @@ fun NetworkCurrent.toCurrentEntity(cityName: String): OneCallCurrentEntity {
     )
 }
 
-fun NetworkWeather.toEntity(cityName: String): OneCallWeatherEntity {
-    return OneCallWeatherEntity(
+fun NetworkWeather.toEntity(cityName: String): CurrentWeatherEntity {
+    return CurrentWeatherEntity(
         cityName = cityName,
         description = description,
         icon = icon,
@@ -52,8 +52,8 @@ fun NetworkWeather.toEntity(cityName: String): OneCallWeatherEntity {
     )
 }
 
-fun NetworkCurrent.toEntity(cityName: String): OneCallCurrentEntity {
-    return OneCallCurrentEntity(
+fun NetworkCurrent.toEntity(cityName: String): CurrentEntity {
+    return CurrentEntity(
         cityName = cityName,
         clouds,
         dew_point,

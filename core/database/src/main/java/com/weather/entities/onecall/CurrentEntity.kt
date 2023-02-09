@@ -8,14 +8,15 @@ import com.weather.model.Weather
 
 @Entity(
     tableName = "one_call_current", foreignKeys = [ForeignKey(
-        entity = OneCallCurrentEntity::class,
+        entity = OneCallEntity::class,
         parentColumns = arrayOf("cityName"),
         childColumns = arrayOf("cityName"),
         onDelete = ForeignKey.CASCADE,
+        onUpdate = ForeignKey.CASCADE,
         deferred = true
     )]
 )
-data class OneCallCurrentEntity(
+data class CurrentEntity(
     @PrimaryKey(autoGenerate = false)
     val cityName: String,
     val clouds: Int,

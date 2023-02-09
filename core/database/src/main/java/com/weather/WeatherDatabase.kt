@@ -10,9 +10,9 @@ import com.weather.entities.onecall.*
     entities = [
         GeoSearchItemEntity::class,
         OneCallMinutelyEntity::class,
-        OneCallWeatherEntity::class,
+        CurrentWeatherEntity::class,
         OneCallEntity::class,
-        OneCallCurrentEntity::class,
+        CurrentEntity::class,
         DailyEntity::class,
         OneCallHourlyEntity::class
     ],

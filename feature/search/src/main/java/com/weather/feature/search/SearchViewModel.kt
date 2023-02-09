@@ -9,6 +9,7 @@ import com.weather.model.Resource
 import com.weather.model.WeatherData
 import com.weather.model.geocode.GeoSearchItem
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -27,11 +28,12 @@ class SearchViewModel @Inject constructor(
 
     val saved = mutableStateOf(false)
 
+    @FlowPreview
     fun searchCity(cityName: String) {
         if (cityName.isEmpty()) return
         viewModelScope.launch {
-            delay(500)
             weatherRepository.searchLocation(cityName)
+                .debounce(500L)
                 .map {search->
                     when (search) {
                         is Resource.Success -> {

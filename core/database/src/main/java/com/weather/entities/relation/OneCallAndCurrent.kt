@@ -2,7 +2,7 @@ package com.weather.entities.relation
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import com.weather.entities.onecall.OneCallCurrentEntity
+import com.weather.entities.onecall.CurrentEntity
 import com.weather.entities.onecall.OneCallEntity
 
 data class OneCallAndCurrent(
@@ -12,5 +12,5 @@ data class OneCallAndCurrent(
         parentColumn = "cityName",
         entityColumn = "cityName"
     )
-    val current: OneCallCurrentEntity
+    val current: CurrentEntity
 )
