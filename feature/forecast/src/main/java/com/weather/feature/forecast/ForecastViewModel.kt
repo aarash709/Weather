@@ -49,7 +49,11 @@ class ForecastViewModel @Inject constructor(
     private fun getWeatherData(): Flow<WeatherUIState> {
         return weatherRepository.getAllForecastWeatherData()
             .zip(getFavoriteCity()) { allWeather, cityName ->
-                allWeather.first { it.coordinates.name == cityName }
+                Timber.e("cityName: $cityName")
+                if (cityName.isBlank())
+                    allWeather.first()
+                else
+                    allWeather.first { it.coordinates.name == cityName }
             }.map { weather ->
                 Timber.e("invoked data stream")
                 WeatherUIState.Success(weather)
@@ -77,6 +81,7 @@ class ForecastViewModel @Inject constructor(
             Timber.e("store city is: $city")
             city
         }
+
     }
 //    suspend fun sync(cityName: String, coords: Coordinates) {
 //        weatherRepository.syncLatestWeather(cityName = cityName, coords)
