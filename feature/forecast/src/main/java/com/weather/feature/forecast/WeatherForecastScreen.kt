@@ -83,7 +83,10 @@ fun WeatherForecastScreen(
                 CurrentWeather(
                     weatherData = weatherUIState.data.current
                 )
+                Text(text = "Daily")
                 Daily(dailyList = weatherUIState.data.daily.map { it.toDailyPreview() })
+                Text(text = "Today")
+                HourlyForecast(data = weatherUIState.data.hourly)
             }
         }
 //        Box(
@@ -345,7 +348,8 @@ fun MainPagePreview() {
                     wind_speed = 2.64,
                     weather = null
                 ),
-                daily = emptyList()
+                daily = emptyList(),
+                hourly = emptyList()
             )
         )
         WeatherForecastScreen(weatherUIState = data,

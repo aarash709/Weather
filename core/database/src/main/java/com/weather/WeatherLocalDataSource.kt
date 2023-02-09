@@ -1,14 +1,13 @@
 package com.weather
 
 import com.weather.core.database.WeatherDao
-import com.weather.entities.onecall.CurrentEntity
-import com.weather.entities.onecall.DailyEntity
-import com.weather.entities.onecall.OneCallEntity
-import com.weather.entities.onecall.CurrentWeatherEntity
+import com.weather.entities.onecall.*
 import com.weather.entities.relation.OneCallAndCurrent
 import com.weather.model.WeatherData
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 class WeatherLocalDataSource(
@@ -33,7 +32,8 @@ class WeatherLocalDataSource(
                         weather.current.weather.map { it ->
                             it.asDomainModel()
                         }),
-                    weather.daily.map { it.asDomainModel() }
+                    weather.daily.map { it.asDomainModel() },
+                    weather.hourly.map { it.asDomainModel() }
                 )
             }
         }
@@ -52,7 +52,7 @@ class WeatherLocalDataSource(
             coordinates = oneCall,
             current = current,
             daily = daily.map { it.asDomainModel() },
-//            hourly = emptyList()
+            hourly = emptyList()
         )
     }
 
@@ -61,13 +61,15 @@ class WeatherLocalDataSource(
         current: CurrentEntity,
         currentWeather: List<CurrentWeatherEntity>,
         daily: List<DailyEntity>,
+        hourly: List<OneCallHourlyEntity>
     ) {
         withContext(Dispatchers.IO) {
             dao.insertData(
                 oneCall = oneCall,
                 oneCallCurrent = current,
                 currentWeatherList = currentWeather,
-                daily = daily
+                daily = daily,
+                hourly = hourly
             )
         }
     }

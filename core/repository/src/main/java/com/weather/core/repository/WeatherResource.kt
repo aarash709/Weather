@@ -107,3 +107,26 @@ fun NetworkFeelsLike.toFeelsLike(): FeelsLike {
         night
     )
 }
+
+fun NetworkHourly.toEntity(cityName: String): OneCallHourlyEntity {
+    return OneCallHourlyEntity(
+        cityName = cityName,
+        clouds = clouds,
+        dew_point = dew_point,
+        dt = dt,
+        feels_like = feels_like,
+        humidity = humidity,
+        pop = pop,
+        pressure = pressure,
+        temp = temp,
+        uvi = uvi,
+        visibility = visibility,
+        weather.first().id,
+        weather.first().main,
+        weather.first().description,
+        weather.first().icon,
+        wind_deg = wind_deg,
+        wind_gust = wind_gust,
+        wind_speed = wind_speed
+    )
+}

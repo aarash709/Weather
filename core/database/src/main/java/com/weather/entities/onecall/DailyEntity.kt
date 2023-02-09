@@ -51,27 +51,27 @@ data class DailyEntity(
 ) {
     fun asDomainModel(): Daily {
         return Daily(
-            clouds,
-            dew_point,
-            dt,
-            humidity,
-            moon_phase,
-            moonrise,
-            moonset,
-            pop,
-            pressure,
-            sunrise,
-            sunset,
-            dayTemp,
-            nightTemp,
-            uvi,
-            id,
-            main,
-            description,
-            icon,
-            wind_deg,
-            wind_gust,
-            wind_speed
+            clouds = clouds,
+            dew_point = dew_point,
+            dt = dt,
+            humidity = humidity,
+            moon_phase = moon_phase,
+            moonrise = moonrise,
+            moonset = moonset,
+            pop = pop,
+            pressure = pressure,
+            sunrise = sunrise,
+            sunset = sunset,
+            dayTemp = dayTemp,
+            nightTemp = nightTemp,
+            uvi = uvi,
+            id = id,
+            main = main,
+            description = description,
+            icon = icon,
+            wind_deg = wind_deg,
+            wind_gust = wind_gust,
+            wind_speed = wind_speed
         )
     }
 }

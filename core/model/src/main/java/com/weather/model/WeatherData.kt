@@ -5,7 +5,7 @@ data class WeatherData(
     val coordinates: OneCallCoordinates,
     val current: Current,
     val daily: List<Daily>,
-//    val hourly: List<Hourly>,
+    val hourly: List<Hourly>,
 //    val minutely: List<MinutelyDto>,
 )
 
@@ -81,7 +81,11 @@ data class Hourly(
     val temp: Double,
     val uvi: Double,
     val visibility: Int,
-    val weather: List<Weather>,
+//    val weather: List<Weather>,
+    val id: Int,
+    val main: String,
+    val description: String,
+    val icon: String,
     val wind_deg: Int,
     val wind_gust: Double,
     val wind_speed: Double,

@@ -1,6 +1,5 @@
 package com.weather.core.database
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import androidx.room.OnConflictStrategy.Companion.REPLACE
 import com.weather.entities.geoSearch.GeoSearchItemEntity
@@ -27,6 +26,8 @@ interface WeatherDao {
 
     @Upsert()
     suspend fun insertDaily(daily: List<DailyEntity>)
+    @Upsert()
+    suspend fun insertHourly(hourly: List<OneCallHourlyEntity>)
 
 //    @Insert(onConflict = REPLACE)
 //    suspend fun insertOneCallMinutely(minutely: List<OneCallMinutelyEntity>)
@@ -55,42 +56,40 @@ interface WeatherDao {
 //    @Query("SELECT * FROM one_call_current")
 //    fun getAllCurrentWithWeather(): Flow<List<CurrentWithWeather>>
 
-
     //delete
-    @Query("DELETE FROM one_call WHERE cityName = :cityName")
-    suspend fun deleteOneCallByCityName(cityName: String)
-
-    @Query("DELETE FROM one_call_current WHERE cityName = :cityName")
-    suspend fun deleteOneCallCurrentByCityName(cityName: String)
-
-    @Query("DELETE FROM current_weather WHERE cityName = :cityName")
-    suspend fun deleteCurrentWeatherByCityName(cityName: String)
-
-    @Query("DELETE FROM one_call_minutely WHERE cityName = :cityName")
-    suspend fun deleteMinutelyByCityName(cityName: String)
-
+//    @Query("DELETE FROM one_call WHERE cityName = :cityName")
+//    suspend fun deleteOneCallByCityName(cityName: String)
+//
+//    @Query("DELETE FROM one_call_current WHERE cityName = :cityName")
+//    suspend fun deleteOneCallCurrentByCityName(cityName: String)
+//
+//    @Query("DELETE FROM current_weather WHERE cityName = :cityName")
+//    suspend fun deleteCurrentWeatherByCityName(cityName: String)
+//
+//    @Query("DELETE FROM one_call_minutely WHERE cityName = :cityName")
+//    suspend fun deleteMinutelyByCityName(cityName: String)
     //
 
-    @Query("select * from one_call where cityName= :cityName")
-    fun getOneCallByCityName(cityName: String): Flow<OneCallEntity>
-
-    @Query("select * from one_call_current where cityName= :cityName")
-    fun getOneCallCurrentByCityName(cityName: String): Flow<CurrentEntity>
-
+//    @Query("select * from one_call where cityName= :cityName")
+//    fun getOneCallByCityName(cityName: String): Flow<OneCallEntity>
+//
+//    @Query("select * from one_call_current where cityName= :cityName")
+//    fun getOneCallCurrentByCityName(cityName: String): Flow<CurrentEntity>
+//
     @Query("select * from one_call_daily where cityName= :cityName")
     fun getDailyByCityName(cityName: String): Flow<List<DailyEntity>>
-
-    @Query("select * from one_call_current order by cityName")
-    fun getAllOneCallCurrent(): Flow<List<CurrentEntity>>
-
-    @Query("select * from one_call order by cityName")
-    fun getAllOneCall(): LiveData<List<OneCallEntity>>
-
-    @Query("select * from one_call_daily order by cityName")
-    fun getAllOneCallDaily(): LiveData<List<DailyEntity>>
-
-    @Query("select * from one_call_hourly order by cityName")
-    fun getAllOneCallHourly(): LiveData<List<OneCallHourlyEntity>>
+//
+//    @Query("select * from one_call_current order by cityName")
+//    fun getAllOneCallCurrent(): Flow<List<CurrentEntity>>
+//
+//    @Query("select * from one_call order by cityName")
+//    fun getAllOneCall(): LiveData<List<OneCallEntity>>
+//
+//    @Query("select * from one_call_daily order by cityName")
+//    fun getAllOneCallDaily(): LiveData<List<DailyEntity>>
+//
+//    @Query("select * from one_call_hourly order by cityName")
+//    fun getAllOneCallHourly(): LiveData<List<OneCallHourlyEntity>>
 
     // geo
     @Insert(onConflict = REPLACE)
@@ -106,11 +105,13 @@ interface WeatherDao {
         oneCallCurrent: CurrentEntity,
         currentWeatherList: List<CurrentWeatherEntity>,
         daily: List<DailyEntity>,
+        hourly: List<OneCallHourlyEntity>,
     ) {
         insertOneCall(oneCall = oneCall)
         insertOneCallCurrent(current = oneCallCurrent)
         insertOneCallCurrentWeather(weather = currentWeatherList)
         insertDaily(daily = daily)
+        insertHourly(hourly =hourly)
     }
 
 

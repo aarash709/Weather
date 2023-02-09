@@ -6,6 +6,7 @@ import com.weather.entities.onecall.DailyEntity
 import com.weather.entities.onecall.CurrentEntity
 import com.weather.entities.onecall.OneCallEntity
 import com.weather.entities.onecall.OneCallHourlyEntity
+import com.weather.model.Hourly
 
 class OneCallWithCurrentAndDailyAndHourly(
     @Embedded
@@ -27,6 +28,5 @@ class OneCallWithCurrentAndDailyAndHourly(
         parentColumn = "cityName",
         entityColumn = "cityName"
     )
-    val hourlyEntity: List<OneCallHourlyEntity>,
+    val hourly: List<OneCallHourlyEntity>,
 )
-

@@ -32,13 +32,13 @@ class WeatherRepositoryImpl @Inject constructor(
 
     override fun getAllWeatherLocations(): Flow<List<ManageLocationsData>> {
         return localWeather.getAllLocalWeatherData().map {
-            it.map {
-                Timber.e("Saved Locations:${it.oneCall.cityName}")
+            it.map {data->
+                Timber.e("Saved Locations:${data.oneCall.cityName}")
                 ManageLocationsData(
-                    it.oneCall.cityName,
-                    it.current.temp.toString(),
-                    it.current.humidity.toString(),
-                    it.current.feels_like.toString()
+                    data.oneCall.cityName,
+                    data.current.temp.toString(),
+                    data.current.humidity.toString(),
+                    data.current.feels_like.toString()
                 )
             }
         }
@@ -62,7 +62,10 @@ class WeatherRepositoryImpl @Inject constructor(
                 currentWeather = remoteWeatherInfo.data!!.current.weather.map {
                     it.toEntity(cityName= cityName)
                 },
-                daily = remoteWeatherInfo.data!!.daily.map { it.toEntity(cityName = cityName) }
+                daily = remoteWeatherInfo.data!!.daily.map { it.toEntity(cityName = cityName) },
+                hourly = remoteWeatherInfo.data!!.hourly.slice(0..12).map {
+                    it.toEntity(cityName = cityName)
+                }
             )
         }
     }
