@@ -62,7 +62,7 @@ class WeatherRepositoryImpl @Inject constructor(
                 currentWeather = remoteWeatherInfo.data!!.current.weather.map {
                     it.toEntity(cityName= cityName)
                 },
-                daily = remoteWeatherInfo.data!!.daily.map { it.toEntity(cityName = cityName) },
+                daily = remoteWeatherInfo.data!!.daily.slice(0..3).map { it.toEntity(cityName = cityName) },
                 hourly = remoteWeatherInfo.data!!.hourly.slice(0..12).map {
                     it.toEntity(cityName = cityName)
                 }
