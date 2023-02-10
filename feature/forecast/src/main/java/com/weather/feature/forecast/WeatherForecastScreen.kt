@@ -9,7 +9,10 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.outlined.Air
+import androidx.compose.material.icons.outlined.Cloud
+import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.outlined.WaterDrop
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.model.Current
 import com.weather.model.OneCallCoordinates
@@ -209,6 +213,7 @@ private fun CurrentWeather(
             verticalAlignment = Alignment.CenterVertically
         ) {
             CurrentTempAndCondition(
+                icon = weatherData.weather[0].icon,
                 temp = weatherData.temp.minus(273.15).roundToInt().toString(),
                 feelsLikeTemp = weatherData.feels_like.minus(273.15).roundToInt().toString()
             )
@@ -282,20 +287,27 @@ private fun WeatherDetailItem(
 
 @Composable
 private fun CurrentTempAndCondition(
+    modifier: Modifier = Modifier,
+    icon: String,
     temp: String,
     feelsLikeTemp: String,
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Image(
-            imageVector = Icons.Outlined.WbCloudy,
-            contentDescription = "Current Weather",
-            modifier = Modifier.size(128.dp)
+        AsyncImage(
+            model = "https://openweathermap.org/img/wn/$icon@2x.png",
+            contentDescription = "WeatherIcon",
+            modifier = Modifier.size(120.dp)
         )
+//        Image(
+//            imageVector = Icons.Outlined.WbCloudy,
+//            contentDescription = "Current Weather",
+//            modifier = Modifier.size(128.dp)
+//        )
         Column(
             modifier = Modifier,
             horizontalAlignment = Alignment.Start,
@@ -346,7 +358,7 @@ fun MainPagePreview() {
                     wind_deg = 246,
                     wind_gust = 1.71,
                     wind_speed = 2.64,
-                    weather = null
+                    weather = emptyList()
                 ),
                 daily = emptyList(),
                 hourly = emptyList()
@@ -361,7 +373,7 @@ fun MainPagePreview() {
 @Preview(showBackground = true)
 fun CurrentWeatherPreview() {
     WeatherTheme {
-        CurrentTempAndCondition(temp = "5", feelsLikeTemp = "3")
+        CurrentTempAndCondition(temp = "5", feelsLikeTemp = "3", icon = "02d")
     }
 }
 

@@ -40,7 +40,7 @@ data class CurrentEntity(
 //    @PrimaryKey
 //    val currentId: Int? = null
 ) {
-    fun asDomainModel(weather: List<Weather>?): Current {
+    fun asDomainModel(weather: List<Weather>): Current {
         return Current(
             clouds = clouds,
             dew_point = dew_point,

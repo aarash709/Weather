@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.model.Hourly
 
@@ -51,7 +52,12 @@ fun HourlyItem(
         ) {
             Text(text = hourly.dt.toString())
         }
-        Icon(imageVector = Icons.Default.WbSunny, contentDescription = "Weather Icon")
+        AsyncImage(
+            model = "https://openweathermap.org/img/wn/${hourly.icon}@2x.png",
+            contentDescription = "Weather Icon",
+            modifier = Modifier
+        )
+//        Icon(imageVector = Icons.Default.WbSunny, contentDescription = "Weather Icon")
         Text(
             text = hourly.temp.toString(),
             color = Color.Gray

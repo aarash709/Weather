@@ -54,11 +54,13 @@ class ForecastViewModel @Inject constructor(
                     allWeather.first()
                 else
                     allWeather.first { it.coordinates.name == cityName }
-            }.map { weather ->
+            }
+            .flowOn(Dispatchers.IO)
+            .map { weather ->
                 Timber.e("invoked data stream")
                 WeatherUIState.Success(weather)
-            }.retry(1)
-            .flowOn(Dispatchers.IO)
+            }
+            .retry(1)
             .catch {
                 Timber.e("data state:${it.message}")
                 Timber.e("catch2: ${dataBaseOrCityIsEmpty.value}")
