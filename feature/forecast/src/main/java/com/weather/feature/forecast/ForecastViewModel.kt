@@ -14,7 +14,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.minutes
 
 const val FavoriteLocation = "FavoriteLocation"
 const val WEATHER_DATA_STORE = "weatherDataStore"
@@ -58,9 +68,16 @@ class ForecastViewModel @Inject constructor(
             .flowOn(Dispatchers.IO)
             .map { weather ->
                 Timber.e("invoked data stream")
-                WeatherUIState.Success(weather)
+                val daily = weather.daily.map {
+                    it.copy(dt = unixToDate(it.dt.toLong(),"EEE"))
+                }
+                val hourly = weather.hourly.map {
+                    it.copy(dt = unixToDate(it.dt.toLong(),"HH:mm"))
+                }
+                val newWeather = weather.copy(daily = daily, hourly = hourly)
+                WeatherUIState.Success(newWeather)
             }
-            .retry(1)
+            .retry(2)
             .catch {
                 Timber.e("data state:${it.message}")
                 Timber.e("catch2: ${dataBaseOrCityIsEmpty.value}")
@@ -88,6 +105,13 @@ class ForecastViewModel @Inject constructor(
 //    suspend fun sync(cityName: String, coords: Coordinates) {
 //        weatherRepository.syncLatestWeather(cityName = cityName, coords)
 //    }
+
+    private fun unixToDate(unixTimeStamp: Long,pattern: String): String {
+        val formatter = SimpleDateFormat(pattern, Locale.getDefault())
+        val date = Date(unixTimeStamp * 1000)
+        return formatter.format(date)
+    }
+
 }
 
 object DataStoreKeys {

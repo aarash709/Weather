@@ -38,7 +38,7 @@ data class Current(
 data class Daily(
     val clouds: Int,
     val dew_point: Double,
-    val dt: Int,
+    val dt: String,
 //    val feels_like: FeelsLike,
     val humidity: Int,
     val moon_phase: Double,
@@ -63,9 +63,11 @@ data class Daily(
 ){
     fun toDailyPreview(): DailyPreview{
         return DailyPreview(
-            temp = dayTemp.toString(),
-            time = dt.toString(),
-            icon = icon
+            tempDay = dayTemp.toString(),
+            tempNight = nightTemp.toString(),
+            time = dt,
+            icon = icon,
+            condition = main
         )
     }
 }
@@ -73,7 +75,7 @@ data class Daily(
 data class Hourly(
     val clouds: Int,
     val dew_point: Double,
-    val dt: Int,
+    val dt: String,
     val feels_like: Double,
     val humidity: Int,
     val pop: Double, //Was Int should be double

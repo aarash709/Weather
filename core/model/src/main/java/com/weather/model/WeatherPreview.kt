@@ -5,9 +5,12 @@ data class WeatherPreview(
     val countryName: String,
     val daily: DailyPreview,
 
-)
+    )
+
 data class DailyPreview(
-    val temp: String,
+    val tempDay: String,
+    val tempNight: String,
     val time: String,
     val icon: String,
+    val condition: String,
 )

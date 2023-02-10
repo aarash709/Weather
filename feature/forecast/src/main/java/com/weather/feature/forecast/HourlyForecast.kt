@@ -3,6 +3,7 @@ package com.weather.feature.forecast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Icon
@@ -18,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.model.Hourly
+import kotlin.math.roundToInt
 
 
 @Composable
@@ -28,10 +30,10 @@ fun HourlyForecast(
     LazyRow(
         modifier = modifier
             .fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(data) { hourly ->
-            HourlyItem(modifier = Modifier, hourly)
+            HourlyItem(modifier = Modifier.padding(end = 24.dp), hourly)
         }
     }
 }
@@ -59,7 +61,7 @@ fun HourlyItem(
         )
 //        Icon(imageVector = Icons.Default.WbSunny, contentDescription = "Weather Icon")
         Text(
-            text = hourly.temp.toString(),
+            text = "${hourly.temp.toFloat().minus(273.15).roundToInt()}°",
             color = Color.Gray
         )
     }
@@ -78,7 +80,7 @@ val Hourly = listOf(
     Hourly(
         clouds = 0,
         dew_point = 0.0,
-        dt = 123456,
+        dt = "13:00",
         feels_like = 0.0,
         humidity = 1,
         pop = 0.0,
@@ -97,7 +99,7 @@ val Hourly = listOf(
     Hourly(
         clouds = 0,
         dew_point = 0.0,
-        dt = 123457,
+        dt = "14:00",
         feels_like = 0.0,
         humidity = 1,
         pop = 0.0,
@@ -116,7 +118,7 @@ val Hourly = listOf(
     Hourly(
         clouds = 0,
         dew_point = 0.0,
-        dt = 123458,
+        dt = "15:00",
         feels_like = 0.0,
         humidity = 1,
         pop = 0.0,
@@ -135,7 +137,7 @@ val Hourly = listOf(
     Hourly(
         clouds = 0,
         dew_point = 0.0,
-        dt = 123459,
+        dt = "16:00",
         feels_like = 0.0,
         humidity = 1,
         pop = 0.0,
@@ -154,7 +156,7 @@ val Hourly = listOf(
     Hourly(
         clouds = 0,
         dew_point = 0.0,
-        dt = 123460,
+        dt = "17:00",
         feels_like = 0.0,
         humidity = 1,
         pop = 0.0,

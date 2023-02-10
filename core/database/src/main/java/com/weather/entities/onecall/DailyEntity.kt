@@ -19,7 +19,7 @@ data class DailyEntity(
     val cityName: String,
     val clouds: Int,
     val dew_point: Double,
-    val dt: Int,
+    val dt: Long,
 //    @Embedded(prefix = "feels_")
 //    val feels_like: FeelsLike,
     val humidity: Int,
@@ -53,7 +53,7 @@ data class DailyEntity(
         return Daily(
             clouds = clouds,
             dew_point = dew_point,
-            dt = dt,
+            dt = dt.toString(),
             humidity = humidity,
             moon_phase = moon_phase,
             moonrise = moonrise,

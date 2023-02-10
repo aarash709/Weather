@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data class NetworkDaily(
     val clouds: Int,
     val dew_point: Double,
-    val dt: Int,
+    val dt: Long,
     val feels_like: NetworkFeelsLike,
     val humidity: Int,
     val moon_phase: Double,
