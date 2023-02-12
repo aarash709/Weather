@@ -2,7 +2,12 @@ package com.weather.feature.forecast
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.magnifier
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -51,7 +56,7 @@ fun WeatherForecastScreen(
             navigateToGetStarted()
         }
     } else {
-        Surface {
+        Surface(modifier = Modifier.fillMaxSize()) {
             WeatherForecastScreen(
                 weatherUIState = weatherUIState,
                 onNavigateToManageLocations = { navigateToSearch() }
@@ -69,7 +74,10 @@ fun WeatherForecastScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 16.dp)
+            .verticalScroll(
+                rememberScrollState(),
+            reverseScrolling = false),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         when (weatherUIState) {
@@ -90,7 +98,7 @@ fun WeatherForecastScreen(
                 Text(text = "Daily")
                 Daily(dailyList = weatherUIState.data.daily.map { it.toDailyPreview() })
                 Text(text = "Today")
-                HourlyForecast(data = weatherUIState.data.hourly)
+                HourlyForecast(modifier =  Modifier.padding(bottom = 16.dp),data = weatherUIState.data.hourly)
             }
         }
 //        Box(
@@ -167,40 +175,6 @@ private fun TopBar(
 }
 
 @Composable
-private fun DailyForecastItem() {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Image(
-            imageVector = Icons.Outlined.Cloud,
-            contentDescription = "Weather Icon"
-        )
-        Text(
-            text = "Tomorrow-Rainy",
-            modifier = Modifier.padding(start = 16.dp)
-        )
-        Row {
-            Text(
-                text = "19°",
-                fontSize = 12.sp,
-                color = Color.Gray
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "28°",
-                fontSize = 12.sp
-            )
-        }
-    }
-}
-
-//Start use hourly component laterOn
-
-
-//// end
-@Composable
 private fun CurrentWeather(
     weatherData: Current,
 ) {
@@ -208,14 +182,18 @@ private fun CurrentWeather(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp),
+                .padding(vertical = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             CurrentTempAndCondition(
+                modifier = Modifier
+                    .padding(vertical = 48.dp)
+                    .fillMaxWidth(),
                 icon = weatherData.weather[0].icon,
                 temp = weatherData.temp.minus(273.15).roundToInt().toString(),
-                feelsLikeTemp = weatherData.feels_like.minus(273.15).roundToInt().toString()
+                feelsLikeTemp = weatherData.feels_like.minus(273.15).roundToInt().toString(),
+                condition = weatherData.weather.first().main
             )
         }
         Spacer(modifier = Modifier.height(24.dp))
@@ -291,18 +269,17 @@ private fun CurrentTempAndCondition(
     icon: String,
     temp: String,
     feelsLikeTemp: String,
+    condition:String
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+        modifier = modifier,
+        horizontalArrangement = Arrangement.Center
     ) {
-        AsyncImage(
-            model = "https://openweathermap.org/img/wn/$icon@2x.png",
-            contentDescription = "WeatherIcon",
-            modifier = Modifier.size(120.dp)
-        )
+//        AsyncImage(
+//            model = "https://openweathermap.org/img/wn/$icon@2x.png",
+//            contentDescription = "WeatherIcon",
+//            modifier = Modifier.size(120.dp)
+//        )
 //        Image(
 //            imageVector = Icons.Outlined.WbCloudy,
 //            contentDescription = "Current Weather",
@@ -310,20 +287,20 @@ private fun CurrentTempAndCondition(
 //        )
         Column(
             modifier = Modifier,
-            horizontalAlignment = Alignment.Start,
+            horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = "Sunny",
-                fontSize = 18.sp
+                text = condition,
+                fontSize = 24.sp
             )
             Text(
                 text = "$temp°",
-                fontSize = 42.sp
+                fontSize = 60 .sp
             )
             Text(
                 text = "Feels like $feelsLikeTemp°",
-                fontSize = 10.sp,
+                fontSize = 14.sp,
                 color = Color.Gray
             )
         }
@@ -373,7 +350,7 @@ fun MainPagePreview() {
 @Preview(showBackground = true)
 fun CurrentWeatherPreview() {
     WeatherTheme {
-        CurrentTempAndCondition(temp = "5", feelsLikeTemp = "3", icon = "02d")
+        CurrentTempAndCondition(temp = "5", feelsLikeTemp = "3", icon = "02d", condition = "Snow")
     }
 }
 
@@ -381,7 +358,7 @@ fun CurrentWeatherPreview() {
 @Preview(showBackground = true)
 fun FourDayPreview() {
     WeatherTheme {
-    Text(text = "hello")
+        Text(text = "hello")
 //        DailyForecastItem()
     }
 }

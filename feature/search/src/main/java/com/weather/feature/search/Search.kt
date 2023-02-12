@@ -19,9 +19,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.accompanist.flowlayout.*
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.model.geocode.GeoSearchItem
+import kotlinx.coroutines.FlowPreview
 
+@FlowPreview
 @Composable
 fun SearchScreen(
     searchViewModel: SearchViewModel = hiltViewModel(),
@@ -51,6 +54,7 @@ fun SearchScreen(
             SearchScreen(
                 searchUIState = searchUIState,
                 searchInputText = inputText,
+                popularCities = cityList,
                 onSearchTextChange = {
                     inputText = it.trim()
                     searchViewModel.searchCity(it)
@@ -76,14 +80,14 @@ fun SearchScreen(
 fun SearchScreen(
     searchUIState: SearchUIState,
     searchInputText: String,
+    popularCities: List<String>,
     onSearchTextChange: (String) -> Unit,
     onClearSearch: () -> Unit,
-    selectedSearchItem: (GeoSearchItem)-> Unit
+    selectedSearchItem: (GeoSearchItem) -> Unit,
 ) {
     //stateless
     Column(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         TopSearchBar(
             searchText = searchInputText,
@@ -99,16 +103,22 @@ fun SearchScreen(
             is SearchUIState.Success -> {
                 SearchItems(
                     searchList = searchUIState.data,
-                    onSearchItemSelected = {SearchItem->
+                    onSearchItemSelected = { SearchItem ->
                         selectedSearchItem(SearchItem)
                         //fetch and store weather based on selection
                         //maybe navigate to main page after successful IO
                     })
             }
             is SearchUIState.Loading -> {
-                if(searchInputText.isEmpty()){
-                    PopularCities()
-                }else{
+                if (searchInputText.isEmpty()) {
+                    Text(
+                        text = "Popular Cities",
+                        color = Color.DarkGray,
+                        fontSize = 14.sp
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    PopularCities(popularCities = popularCities)
+                } else {
                     ShowLoading()
                 }
             }
@@ -280,87 +290,58 @@ private fun SearchItem(
     modifier: Modifier = Modifier,
     item: GeoSearchItem,
 ) {
-    Card(shape = RoundedCornerShape(16.dp), backgroundColor = Color.LightGray) {
-        Column(modifier = modifier) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column {
-                    Text(
-                        text = item.name.toString(),
-                        fontSize = 14.sp
-                    )
-                    Text(
-                        text = "${item.name}, ${item.country}",
-                        fontSize = 10.sp,
-                        color = Color.DarkGray
-                    )
-                }
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add Icon")
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        backgroundColor = Color.LightGray
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(
+                    text = item.name.toString(),
+                    fontSize = 14.sp
+                )
+                Text(
+                    text = "${item.name}, ${item.country}",
+                    fontSize = 10.sp,
+                    color = Color.DarkGray
+                )
             }
+            Icon(imageVector = Icons.Default.Add, contentDescription = "Add Icon")
         }
     }
 }
 
 //popular city
 @Composable
-private fun PopularCities() {
-    Column(modifier = Modifier.fillMaxSize()) {
-        Text(
-            text = "Popular Cities",
-            color = Color.DarkGray,
-            fontSize = 14.sp
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-//    val list = listOf("tehran",
-//        "london",
-//        "New York",
-//        "Munich",
-//        "neeeee",
-//        "Shiraz",
-//        "anothercityname",
-//        "city")
-//    LazyVerticalGrid(columns = GridCells.Adaptive(128.dp)) {
-//        items(list) {
-//            PopularCityItem(cityName = it)
-//        }
-//
-//    }
-        Row(
-            modifier = Modifier,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            listOf("tehran", "london", "New York"/*,"Munich"*/).forEach {
-                PopularCityItem(cityName = it)
-            }
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Row(
-            modifier = Modifier,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            listOf("Beijing", "Tokyo", "Singapore"/*,"Paris"*/).forEach {
-                PopularCityItem(cityName = it)
-            }
+private fun PopularCities(
+    popularCities: List<String>,
+) {
+    FlowRow(
+        modifier = Modifier,
+//        mainAxisSize= SizeMode.Expand,
+        mainAxisAlignment = MainAxisAlignment.Start,
+        mainAxisSpacing = 16.dp,
+        crossAxisAlignment = FlowCrossAxisAlignment.Center,
+        crossAxisSpacing = 16.dp
+    ) {
+        popularCities.forEach {
+            PopularCityItem(cityName = it)
         }
     }
 
 }
 
 @Composable
-private fun PopularCities(popularCities: List<String>) {
-    LazyColumn() {
-        items(popularCities.size) { index ->
-            PopularCityItem(cityName = popularCities[index])
-        }
-    }
-}
-
-@Composable
-private fun PopularCityItem(cityName: String) {
+private fun PopularCityItem(
+    cityName: String,
+) {
     Box(modifier = Modifier) {
         Surface(
             modifier = Modifier,
@@ -371,7 +352,7 @@ private fun PopularCityItem(cityName: String) {
                 text = cityName,
                 modifier = Modifier.padding(
                     horizontal = 16.dp,
-                    vertical = 4.dp
+                    vertical = 8.dp
                 )
             )
         }
@@ -387,31 +368,13 @@ private fun SearchPreview() {
         var inputText by remember {
             mutableStateOf("input text")
         }
-        val items = listOf(
-            GeoSearchItem("Iran", name = "Tehran"),
-            GeoSearchItem("Iran2", name = "Tehran2"),
-            GeoSearchItem("Iran3", name = "Tehran3"),
-            GeoSearchItem("Iran4", name = "Tehran4"),
-            GeoSearchItem("Iran5", name = "Tehran5"),
-        )
         SearchScreen(
             searchUIState = SearchUIState.Loading,
             searchInputText = "",
+            popularCities = cityList,
             onClearSearch = {},
-            onSearchTextChange = { inputText = it }
-        ) {
-
-        }
-//        SearchScreen(
-//            searchUIState = SearchUIState.Loading,
-//            searchInputText = inputText,
-//            onSearchTextChange = {
-//                inputText = it
-//            },
-//            onClearSearch = {
-//                inputText = ""
-//            }
-//        )
+            onSearchTextChange = { inputText = it },
+        ) {}
     }
 }
 
@@ -427,7 +390,9 @@ private fun TopSearchBarPreview() {
 @Composable
 private fun PopularCityPreview() {
     WeatherTheme {
-        PopularCities()
+        PopularCities(
+            popularCities = cityList,
+        )
     }
 }
 
@@ -444,7 +409,24 @@ fun SearchItemPreview() {
 @Composable
 private fun SearchCityWeatherPreview() {
     WeatherTheme {
-        Text(text = "text")
-//        HourlyDailyTemps()
     }
 }
+
+val cityList = listOf(
+    "Tehran",
+    "London",
+    "New York",
+    "Munich",
+    "Boston",
+    "Shiraz",
+    "Berlin",
+    "City"
+)
+
+val items = listOf(
+    GeoSearchItem("Iran", name = "Tehran"),
+    GeoSearchItem("Iran2", name = "Tehran2"),
+    GeoSearchItem("Iran3", name = "Tehran3"),
+    GeoSearchItem("Iran4", name = "Tehran4"),
+    GeoSearchItem("Iran5", name = "Tehran5"),
+)
