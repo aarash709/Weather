@@ -1,12 +1,17 @@
 package com.experiment.weather.presentation.ui.navigation
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import kotlinx.coroutines.FlowPreview
 
+@FlowPreview
+@ExperimentalAnimationApi
 @Composable
 fun WeatherNavigation(navController: NavHostController) {
-    NavHost(
+    AnimatedNavHost(
         navController = navController,
         startDestination = Graph.Home,
         route = Graph.Root

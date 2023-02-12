@@ -1,5 +1,6 @@
 package com.experiment.weather.presentation.ui.navigation
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,8 +16,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.experiment.weather.presentation.ui.ManageLocations
 import com.weather.feature.search.SearchScreen
+import kotlinx.coroutines.FlowPreview
 
-
+@FlowPreview
+@ExperimentalAnimationApi
 fun NavGraphBuilder.getStartedNavGraph(navController: NavController) {
     navigation(
         startDestination = Screen.Welcome.route, route = Graph.GetStarted,
@@ -31,9 +34,8 @@ fun NavGraphBuilder.getStartedNavGraph(navController: NavController) {
                 ) {
                     Text(text = "Welcome")
                     Button(onClick = {
-                        navController.navigate(Screen.Search.route) {
-                            popUpTo(Graph.Home)
-                            launchSingleTop = true
+                        navController.navigate("search2") {
+//                            launchSingleTop = true
                         }
                     }) {
                         Text(text = "Let`s Go")
@@ -41,10 +43,10 @@ fun NavGraphBuilder.getStartedNavGraph(navController: NavController) {
                 }
             }
         }
-        composable(route = Screen.Search.route) {
+        composable(route = "search2") {
             SearchScreen {
                 navController.navigate(Screen.ManageLocation.route) {
-                    launchSingleTop = true
+//                    launchSingleTop = true
                 }
             }
         }
@@ -58,8 +60,7 @@ fun NavGraphBuilder.getStartedNavGraph(navController: NavController) {
                 onBackPressed = { /*TODO*/ },
                 onItemSelected = {
                     navController.navigate(Graph.passHomeArgument(it)) {
-                        popUpTo(Graph.GetStarted)
-                        launchSingleTop = true
+                        popUpTo(Screen.ManageLocation.route) { inclusive = true}
                     }
                 }
             )

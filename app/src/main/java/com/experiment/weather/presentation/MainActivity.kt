@@ -3,9 +3,11 @@ package com.experiment.weather.presentation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import com.experiment.weather.presentation.ui.WeatherApp
 import com.weather.core.design.theme.WeatherTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.FlowPreview
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -16,6 +18,8 @@ class MainActivity : ComponentActivity() {
 //    private lateinit var binding: ActivityMainBinding
 //    val vm: TestViewModel by viewModels()
 
+    @FlowPreview
+    @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        binding = ActivityMainBinding.inflate(layoutInflater)

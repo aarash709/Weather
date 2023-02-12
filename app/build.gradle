@@ -88,7 +88,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.8.0'
 
     //Compose
-    implementation platform("androidx.compose:compose-bom:2023.01.00")
+    implementation platform("androidx.compose:compose-bom:$compose_bom_version")
     implementation "androidx.compose.ui:ui:"
     implementation "androidx.compose.material:material:"
     implementation "androidx.compose.material:material-icons-extended:"
@@ -99,8 +99,10 @@ dependencies {
     implementation("androidx.compose.foundation:foundation:")
     implementation("androidx.compose.animation:animation:")
 
+
     //navigation
     implementation("androidx.navigation:navigation-compose:$compose_nav_version")
+    implementation "com.google.accompanist:accompanist-navigation-animation:$accompanist_version"
 
     //LifeCycle Components
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
