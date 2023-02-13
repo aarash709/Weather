@@ -2,7 +2,6 @@ package com.experiment.weather.presentation.ui.navigation
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Button
@@ -22,10 +21,10 @@ import kotlinx.coroutines.FlowPreview
 @ExperimentalAnimationApi
 fun NavGraphBuilder.getStartedNavGraph(navController: NavController) {
     navigation(
-        startDestination = Screen.Welcome.route, route = Graph.GetStarted,
+        startDestination = Graph.GetStarted.WelcomeScreen, route = Graph.GetStarted.graph,
 //        arguments = listOf(navArgument(name = "cityName") {})
     ) {
-        composable(route = Screen.Welcome.route) {
+        composable(route = Graph.GetStarted.WelcomeScreen) {
             Surface {
                 Column(
                     modifier = Modifier.fillMaxSize(),
@@ -34,7 +33,7 @@ fun NavGraphBuilder.getStartedNavGraph(navController: NavController) {
                 ) {
                     Text(text = "Welcome")
                     Button(onClick = {
-                        navController.navigate("search2") {
+                        navController.navigate(Graph.GetStarted.SearchScreen) {
 //                            launchSingleTop = true
                         }
                     }) {
@@ -43,14 +42,14 @@ fun NavGraphBuilder.getStartedNavGraph(navController: NavController) {
                 }
             }
         }
-        composable(route = "search2") {
+        composable(route = Graph.GetStarted.SearchScreen) {
             SearchScreen {
                 navController.navigate(Screen.ManageLocation.route) {
 //                    launchSingleTop = true
                 }
             }
         }
-        composable(route = Screen.ManageLocation.route) {
+        composable(route = Graph.GetStarted.ManageLocationScreen) {
             ManageLocations(
                 onNavigateToSearch = {
                     navController.navigate(Screen.Search.route) {
@@ -59,7 +58,7 @@ fun NavGraphBuilder.getStartedNavGraph(navController: NavController) {
                 },
                 onBackPressed = { /*TODO*/ },
                 onItemSelected = {
-                    navController.navigate(Graph.passHomeArgument(it)) {
+                    navController.navigate(Graph.Forecast.passForecastArgument(it)) {
                         popUpTo(Screen.ManageLocation.route) { inclusive = true}
                     }
                 }

@@ -2,10 +2,7 @@ package com.experiment.weather.presentation.ui.navigation
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.EaseIn
-import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -20,8 +17,8 @@ import timber.log.Timber
 @ExperimentalAnimationApi
 fun NavGraphBuilder.homeNavGraph(navController: NavController) {
     navigation(
-        startDestination = Screen.MainForecast.route,
-        route = Graph.Home,
+        startDestination = Graph.Forecast.ForecastScreen,
+        route = Graph.Forecast.graph,
         enterTransition = {
             slideIntoContainer(AnimatedContentScope.SlideDirection.Left, tween(500))
         },
@@ -30,7 +27,7 @@ fun NavGraphBuilder.homeNavGraph(navController: NavController) {
         }
     ) {
         composable(
-            route = Screen.MainForecast.route,
+            route = Graph.Forecast.ForecastScreen,
             arguments = listOf(navArgument(name = "cityName") { nullable = true })
         ) {
             LaunchedEffect(key1 = Unit) {
@@ -38,13 +35,12 @@ fun NavGraphBuilder.homeNavGraph(navController: NavController) {
             }
             WeatherForecastScreen(
                 navigateToSearch = {
-                    navController.navigate(Graph.Search){
-                        popUpTo(Screen.MainForecast.route){
-                        }
+                    navController.navigate(Graph.Search.graph){
+//                        popUpTo(Graph.Search.ManageLocationScreen)
                     }
                 },
                 navigateToGetStarted = {
-                    navController.navigate(Graph.GetStarted) })
+                    navController.navigate(Graph.GetStarted.graph) })
         }
     }
 }

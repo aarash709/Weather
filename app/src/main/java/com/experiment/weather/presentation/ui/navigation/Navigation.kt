@@ -3,7 +3,6 @@ package com.experiment.weather.presentation.ui.navigation
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import kotlinx.coroutines.FlowPreview
 
@@ -13,12 +12,12 @@ import kotlinx.coroutines.FlowPreview
 fun WeatherNavigation(navController: NavHostController) {
     AnimatedNavHost(
         navController = navController,
-        startDestination = Graph.Home,
-        route = Graph.Root
+        startDestination = Graph.Forecast.graph,
+        route = Graph.Root.graph
     ) {
+        getStartedNavGraph(navController)
         homeNavGraph(navController)
         searchNavGraph(navController)
-        getStartedNavGraph(navController)
 
     }
 }
@@ -38,19 +37,31 @@ sealed class Screen(val route: String) {
 }
 
 
-object Graph {
-    const val Home = "homeGraph?cityName={cityName}"
-    const val Search = "searchGraph"
-    const val GetStarted = "getStartedGraph" // this is show when user has no data yet
-    const val Root = "rootGraph"// this is show when user has no data yet
-    fun passHomeArgument(cityName: String):String{
-        return Home.replace("{cityName}",cityName)
-    }
-}
-
-//sealed class Graph(val route: String){
-//    object Home : Graph("appDetails")
-//    object Search :Graph("search")
-//    object GetStarted :Graph("getStarted") // this is show when user has no data yet
-//    object Root :Graph("root") // this is show when user has no data yet
+//object Graph {
+//    const val Home = "homeGraph?cityName={cityName}"
+//    const val Search = "searchGraph"
+//    const val GetStarted = "getStartedGraph" // this is show when user has no data yet
+//    const val Root = "rootGraph"// this is show when user has no data yet
+//    fun passHomeArgument(cityName: String):String{
+//        return Home.replace("{cityName}",cityName)
+//    }
 //}
+
+sealed class Graph(val graph: String){
+    object Forecast : Graph("forecast"){
+        val ForecastScreen = "forecast?cityName={cityName}"
+        fun passForecastArgument(cityName: String): String {
+            return ForecastScreen.replace("{cityName}", cityName)
+        }
+    }
+    object Search :Graph("search"){
+        val ManageLocationScreen = "${graph}manageLocation"
+        val SearchScreen = "${graph}search"
+    }
+    object GetStarted :Graph("getStarted") {
+        val WelcomeScreen = "${graph}welcome"
+        val ManageLocationScreen = "${graph}manageLocation"
+        val SearchScreen = "${graph}search"
+    }
+    object Root :Graph("root") // this is show when user has no data yet
+}

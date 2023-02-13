@@ -17,42 +17,43 @@ import kotlinx.coroutines.FlowPreview
 @ExperimentalAnimationApi
 fun NavGraphBuilder.searchNavGraph(navController: NavController) {
     navigation(
-        startDestination = Screen.ManageLocation.route,
-        route = Graph.Search
+        startDestination = Graph.Search.ManageLocationScreen,
+        route = Graph.Search.graph
     ) {
         composable(
-            route = Screen.ManageLocation.route,
+            route = Graph.Search.ManageLocationScreen,
             enterTransition = {
                 when (initialState.destination.route) {
-                    Screen.Search.route -> fadeIn(tween(500))
+                    Graph.Search.SearchScreen -> fadeIn(tween(500))
                     else -> slideIntoContainer(AnimatedContentScope.SlideDirection.Right,tween(500))
                 }
             },
             exitTransition = {
                 when (targetState.destination.route) {
-                    Screen.Search.route -> fadeOut(tween(500))
+                    Graph.Search.SearchScreen -> fadeOut(tween(500))
                     else -> slideOutOfContainer(AnimatedContentScope.SlideDirection.Left,tween(500))
                 }
             }
         ) {
             ManageLocations(
                 onNavigateToSearch = {
-                    navController.navigate(Screen.Search.route) {
+                    navController.navigate(Graph.Search.SearchScreen) {
+
                     }
                 },
                 onBackPressed = {
-                    navController.navigate(Screen.MainForecast.route) {
-                        popUpTo(Screen.MainForecast.route) { inclusive = true }
+                    navController.navigate(Graph.Forecast.graph) {
+                        popUpTo(Graph.Search.ManageLocationScreen) { inclusive = true }
                     }
                 },
                 onItemSelected = { cityName ->
-                    navController.navigate(Screen.MainForecast.passString(cityName = cityName)) {
-                        popUpTo(Screen.MainForecast.route) { inclusive = true }
+                    navController.navigate(Graph.Forecast.passForecastArgument(cityName = cityName)) {
+                        popUpTo(Graph.Forecast.graph) { inclusive = true }
                     }
                 })
         }
         composable(
-            route = Screen.Search.route,
+            route = Graph.Search.SearchScreen,
             enterTransition = {
                 fadeIn(tween(500))
             },
@@ -62,8 +63,9 @@ fun NavGraphBuilder.searchNavGraph(navController: NavController) {
         ) {
             SearchScreen(
                 onSelectSearchItem = {
-                    navController.navigate(Screen.ManageLocation.route) {
+                    navController.navigate(Graph.Search.ManageLocationScreen) {
                         launchSingleTop = true
+                        popUpTo(Graph.Search.ManageLocationScreen)
                     }
                 }
             )
