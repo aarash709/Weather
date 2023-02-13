@@ -46,8 +46,8 @@ fun SearchScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp)
-                .padding(top = 16.dp),
+                .padding(horizontal = 24.dp),
+//                .padding(top = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             //        Text(text = "selected Item is: $selectedItem", color = Color.Red) //debug
@@ -113,6 +113,7 @@ fun SearchScreen(
                 if (searchInputText.isEmpty()) {
                     Text(
                         text = "Popular Cities",
+                        modifier = Modifier.padding(top = 8.dp),
                         color = Color.DarkGray,
                         fontSize = 14.sp
                     )
@@ -154,31 +155,31 @@ private fun TopSearchBar(
             value = searchText,
             onValueChange = { onTextChange(it) },
             modifier = Modifier
-                .weight(weight = 1f, fill = true)
-                .padding(horizontal = 8.dp),
-            placeholder = { Text(text = "Enter Location") },
+                .weight(weight = 1f, fill = true),
+            placeholder = { Text(text = "Search") },
             leadingIcon = {
-                TextButton(
-                    onClick = {
-                        onClearSearch()
-                        /*TODO navigate back to prev page*/
-                    },
-                    colors = ButtonDefaults.textButtonColors(
-                        backgroundColor = Color.Transparent,
-                        contentColor = Color.Gray
-                    )
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Search Icon"
-                    )
-                }
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    contentDescription = "Search Icon"
+                )
+
             },
             trailingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "Microphone Icon"
-                )
+                if (searchText.isNotBlank()){
+                    TextButton(
+                        onClick = { onClearSearch() },
+                        colors = ButtonDefaults.buttonColors(
+                            contentColor = Color.DarkGray,
+                            backgroundColor = Color.Transparent
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Microphone Icon"
+                        )
+                    }
+                }
             },
             shape = CircleShape,
             colors = textFieldColors,
@@ -324,12 +325,12 @@ private fun PopularCities(
     popularCities: List<String>,
 ) {
     FlowRow(
-        modifier = Modifier,
-//        mainAxisSize= SizeMode.Expand,
+        modifier = Modifier.fillMaxWidth(fraction = 1f),
+//        mainAxisSize = SizeMode.Wrap, //buggy
         mainAxisAlignment = MainAxisAlignment.Start,
         mainAxisSpacing = 16.dp,
         crossAxisAlignment = FlowCrossAxisAlignment.Center,
-        crossAxisSpacing = 16.dp
+        crossAxisSpacing = 16.dp,
     ) {
         popularCities.forEach {
             PopularCityItem(cityName = it)
@@ -414,10 +415,21 @@ private fun SearchCityWeatherPreview() {
 
 val cityList = listOf(
     "Tehran",
-    "London",
+    "Beijing",
+    "Hong Kong",
+    "Rome",
+    "Shang Hai",
+    "Shang Hai",
+    "Moscow",
+    "Los Angeles",
+    "Chicago",
+    "Bangkok",
+    "Seoul",
+    "Kuala Lumpur",
     "New York",
     "Munich",
     "Boston",
+    "Singapore",
     "Shiraz",
     "Berlin",
     "City"
