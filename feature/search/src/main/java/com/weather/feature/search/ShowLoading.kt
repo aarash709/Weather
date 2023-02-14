@@ -3,7 +3,9 @@ package com.weather.feature.search
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -14,13 +16,13 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun ShowLoading() {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Top
     ) {
-       CircularProgressIndicator(
-           modifier = Modifier,
-
-       )
+        LinearProgressIndicator(
+            modifier = Modifier.fillMaxWidth(),
+            color = Color.LightGray
+        )
     }
 }

@@ -15,7 +15,11 @@ import com.weather.feature.forecast.WeatherForecastScreen
 import timber.log.Timber
 
 @ExperimentalAnimationApi
-fun NavGraphBuilder.homeNavGraph(navController: NavController) {
+fun NavGraphBuilder.homeNavGraph(
+    navController: NavController,
+    navigateToManageLocations: () -> Unit,
+    navigateToOnboard: () -> Unit,
+) {
     navigation(
         startDestination = Graph.Forecast.ForecastScreen,
         route = Graph.Forecast.graph,
@@ -34,13 +38,16 @@ fun NavGraphBuilder.homeNavGraph(navController: NavController) {
                 Timber.e(it.arguments?.getString("cityName"))
             }
             WeatherForecastScreen(
-                navigateToSearch = {
-                    navController.navigate(Graph.Search.graph){
-//                        popUpTo(Graph.Search.ManageLocationScreen)
-                    }
+                navigateToManageLocations = {
+                    navigateToManageLocations()
+//                    navController.navigate(Graph.Search.graph){
+////                        popUpTo(Graph.Search.ManageLocationScreen)
+//                    }
                 },
-                navigateToGetStarted = {
-                    navController.navigate(Graph.GetStarted.graph) })
+                navigateToOnboard = {
+                    navigateToOnboard()
+//                    navController.navigate(Graph.Search.SearchScreen)
+                })
         }
     }
 }

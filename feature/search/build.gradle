@@ -57,6 +57,10 @@ dependencies {
     implementation("androidx.compose.foundation:foundation:")
     implementation("androidx.compose.animation:animation:")
 
+    //navigation
+    implementation("androidx.navigation:navigation-compose:$compose_nav_version")
+    implementation "com.google.accompanist:accompanist-navigation-animation:$accompanist_version"
+
     //flowlayout
     implementation "com.google.accompanist:accompanist-flowlayout:0.28.0"
 

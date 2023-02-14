@@ -98,9 +98,9 @@ fun SearchScreen(
                 onClearSearch()
             }
         )
-        Spacer(modifier = Modifier.height(16.dp))
         when (searchUIState) {
             is SearchUIState.Success -> {
+                Spacer(modifier = Modifier.height(16.dp))
                 SearchItems(
                     searchList = searchUIState.data,
                     onSearchItemSelected = { SearchItem ->
@@ -113,7 +113,7 @@ fun SearchScreen(
                 if (searchInputText.isEmpty()) {
                     Text(
                         text = "Popular Cities",
-                        modifier = Modifier.padding(top = 8.dp),
+                        modifier = Modifier.padding(top = 24.dp),
                         color = Color.DarkGray,
                         fontSize = 14.sp
                     )

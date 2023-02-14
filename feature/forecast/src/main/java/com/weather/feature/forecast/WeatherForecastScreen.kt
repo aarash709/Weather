@@ -2,10 +2,7 @@ package com.weather.feature.forecast
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.magnifier
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
@@ -15,7 +12,6 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Air
-import androidx.compose.material.icons.outlined.Cloud
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.WaterDrop
 import androidx.compose.runtime.*
@@ -28,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.model.Current
 import com.weather.model.OneCallCoordinates
@@ -39,8 +34,8 @@ import kotlin.math.roundToInt
 @Composable
 fun WeatherForecastScreen(
     viewModel: ForecastViewModel = hiltViewModel(),
-    navigateToSearch: () -> Unit,
-    navigateToGetStarted: () -> Unit,
+    navigateToManageLocations: () -> Unit,
+    navigateToOnboard: () -> Unit,
 ) {
     //stateful
     val databaseIsEmpty by viewModel.dataBaseOrCityIsEmpty.collectAsStateWithLifecycle()
@@ -53,13 +48,13 @@ fun WeatherForecastScreen(
     }
     if (databaseIsEmpty) {
         LaunchedEffect(key1 = Unit) {
-            navigateToGetStarted()
+            navigateToOnboard()
         }
     } else {
         Surface(modifier = Modifier.fillMaxSize()) {
             WeatherForecastScreen(
                 weatherUIState = weatherUIState,
-                onNavigateToManageLocations = { navigateToSearch() }
+                onNavigateToManageLocations = { navigateToManageLocations() }
             )
         }
     }
@@ -77,7 +72,8 @@ fun WeatherForecastScreen(
             .padding(horizontal = 16.dp)
             .verticalScroll(
                 rememberScrollState(),
-            reverseScrolling = false),
+                reverseScrolling = false
+            ),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         when (weatherUIState) {
@@ -98,7 +94,10 @@ fun WeatherForecastScreen(
                 Text(text = "Daily")
                 Daily(dailyList = weatherUIState.data.daily.map { it.toDailyPreview() })
                 Text(text = "Today")
-                HourlyForecast(modifier =  Modifier.padding(bottom = 16.dp),data = weatherUIState.data.hourly)
+                HourlyForecast(
+                    modifier = Modifier.padding(bottom = 16.dp),
+                    data = weatherUIState.data.hourly
+                )
             }
         }
 //        Box(
@@ -269,7 +268,7 @@ private fun CurrentTempAndCondition(
     icon: String,
     temp: String,
     feelsLikeTemp: String,
-    condition:String
+    condition: String,
 ) {
     Row(
         modifier = modifier,
@@ -296,7 +295,7 @@ private fun CurrentTempAndCondition(
             )
             Text(
                 text = "$temp°",
-                fontSize = 60 .sp
+                fontSize = 60.sp
             )
             Text(
                 text = "Feels like $feelsLikeTemp°",

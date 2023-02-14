@@ -3,21 +3,60 @@ package com.experiment.weather.presentation.ui.navigation
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.navOptions
+import com.experiment.weather.presentation.manageLocationsRoute
+import com.experiment.weather.presentation.manageLocationsScreen
+import com.experiment.weather.presentation.toManageLocations
 import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.weather.feature.search.searchScreen
+import com.weather.feature.search.toSearchScreen
 import kotlinx.coroutines.FlowPreview
 
 @FlowPreview
 @ExperimentalAnimationApi
 @Composable
-fun WeatherNavigation(navController: NavHostController) {
+fun WeatherNavHost(navController: NavHostController) {
     AnimatedNavHost(
         navController = navController,
         startDestination = Graph.Forecast.graph,
-        route = Graph.Root.graph
     ) {
-        getStartedNavGraph(navController)
-        homeNavGraph(navController)
-        searchNavGraph(navController)
+        onboardScreen(navigateToSearch = {
+            navController.toSearchScreen()
+        })
+        homeNavGraph(navController,
+            navigateToManageLocations = {
+//                navController.toManageLocations()
+                navController.navigate(manageLocationsRoute)
+            },
+            navigateToOnboard = {
+                navController.toOnboard()
+            })
+        manageLocationsScreen(
+            onNavigateToSearch = {
+                navController.toSearchScreen(navOptions = navOptions {
+
+                })
+            },
+            onBackPressed = {
+                navController.navigate(Graph.Forecast.graph, navOptions = navOptions {
+                    popUpTo(manageLocationsRoute) { inclusive = true }
+                })
+            },
+            onItemSelected = { cityName ->
+                navController.navigate(
+                    Graph.Forecast.passForecastArgument(cityName),
+                    navOptions = navOptions {
+                        popUpTo(Graph.Forecast.graph) { inclusive = true }
+                    })
+            }
+        )
+        searchScreen (onSearchItemSelected = {
+            navController.toManageLocations(navOptions = navOptions {
+                launchSingleTop = true
+                popUpTo(manageLocationsRoute)
+            })
+        })
+//        searchNavGraph(navController)
 
     }
 }
@@ -47,21 +86,24 @@ sealed class Screen(val route: String) {
 //    }
 //}
 
-sealed class Graph(val graph: String){
-    object Forecast : Graph("forecast"){
+sealed class Graph(val graph: String) {
+    object Forecast : Graph("forecast") {
         val ForecastScreen = "forecast?cityName={cityName}"
         fun passForecastArgument(cityName: String): String {
             return ForecastScreen.replace("{cityName}", cityName)
         }
     }
-    object Search :Graph("search"){
+
+    object Search : Graph("search") {
         val ManageLocationScreen = "${graph}manageLocation"
         val SearchScreen = "${graph}search"
     }
-    object GetStarted :Graph("getStarted") {
+
+    object GetStarted : Graph("getStarted") {
         val WelcomeScreen = "${graph}welcome"
         val ManageLocationScreen = "${graph}manageLocation"
         val SearchScreen = "${graph}search"
     }
-    object Root :Graph("root") // this is show when user has no data yet
+
+    object Root : Graph("root") // this is show when user has no data yet
 }

@@ -44,7 +44,7 @@ fun NavGraphBuilder.getStartedNavGraph(navController: NavController) {
         }
         composable(route = Graph.GetStarted.SearchScreen) {
             SearchScreen {
-                navController.navigate(Screen.ManageLocation.route) {
+                navController.navigate(Graph.GetStarted.ManageLocationScreen) {
 //                    launchSingleTop = true
                 }
             }
@@ -52,14 +52,14 @@ fun NavGraphBuilder.getStartedNavGraph(navController: NavController) {
         composable(route = Graph.GetStarted.ManageLocationScreen) {
             ManageLocations(
                 onNavigateToSearch = {
-                    navController.navigate(Screen.Search.route) {
+                    navController.navigate(Graph.GetStarted.SearchScreen) {
                         launchSingleTop = true
                     }
                 },
                 onBackPressed = { /*TODO*/ },
                 onItemSelected = {
                     navController.navigate(Graph.Forecast.passForecastArgument(it)) {
-                        popUpTo(Screen.ManageLocation.route) { inclusive = true}
+                        popUpTo(Graph.GetStarted.ManageLocationScreen) { inclusive = true}
                     }
                 }
             )
