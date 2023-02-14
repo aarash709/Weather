@@ -15,18 +15,9 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.minutes
 
-const val FavoriteLocation = "FavoriteLocation"
 const val WEATHER_DATA_STORE = "weatherDataStore"
 
 val Context.dataStore by preferencesDataStore(WEATHER_DATA_STORE)
@@ -69,10 +60,10 @@ class ForecastViewModel @Inject constructor(
             .map { weather ->
                 Timber.e("invoked data stream")
                 val daily = weather.daily.map {
-                    it.copy(dt = unixToDate(it.dt.toLong(),"EEE"))
+                    it.copy(dt = unixMillisToHumanDate(it.dt.toLong(), "EEE"))
                 }
                 val hourly = weather.hourly.map {
-                    it.copy(dt = unixToDate(it.dt.toLong(),"HH:mm"))
+                    it.copy(dt = unixMillisToHumanDate(it.dt.toLong(), "HH:mm"))
                 }
                 val newWeather = weather.copy(daily = daily, hourly = hourly)
                 WeatherUIState.Success(newWeather)
@@ -89,15 +80,12 @@ class ForecastViewModel @Inject constructor(
         viewModelScope.launch {
             val isEmpty = weatherRepository.isDatabaseEmpty() == 0
             _dataBaseOrCityIsEmpty.value = isEmpty
-            Timber.e("vm database method count: ${weatherRepository.isDatabaseEmpty()}")
-            Timber.e("vm database is empty: $isEmpty")
         }
     }
 
     private fun getFavoriteCity(): Flow<String> {
         return context.dataStore.data.map { preferences ->
-            val city = preferences[DataStoreKeys.FAVORITE_CITY] ?: ""
-            Timber.e("store city is: $city")
+            val city = preferences[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_String_Key] ?: ""
             city
         }
 
@@ -106,16 +94,18 @@ class ForecastViewModel @Inject constructor(
 //        weatherRepository.syncLatestWeather(cityName = cityName, coords)
 //    }
 
-    private fun unixToDate(unixTimeStamp: Long,pattern: String): String {
+    private fun unixMillisToHumanDate(unixTimeStamp: Long, pattern: String): String {
         val formatter = SimpleDateFormat(pattern, Locale.getDefault())
-        val date = Date(unixTimeStamp * 1000)
+        val date = Date(unixTimeStamp * 1000) //to millisecond
         return formatter.format(date)
     }
 
 }
 
 object DataStoreKeys {
-    val FAVORITE_CITY = stringPreferencesKey("favoriteCity")
+    object WeatherDataStore {
+        val FAVORITE_CITY_String_Key = stringPreferencesKey("favoriteCity")
+    }
 }
 
 sealed class WeatherUIState {

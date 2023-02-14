@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.weather.core.design.theme.WeatherTheme
+import com.weather.feature.forecast.components.Daily
+import com.weather.feature.forecast.components.HourlyForecast
 import com.weather.model.Current
 import com.weather.model.OneCallCoordinates
 import com.weather.model.WeatherData

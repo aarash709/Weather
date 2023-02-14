@@ -1,4 +1,4 @@
-package com.weather.feature.forecast
+package com.weather.feature.forecast.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
@@ -78,16 +78,16 @@ fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview) {
 @Preview(showBackground = true)
 @Composable
 private fun DailyItemPreview() {
-    DailyItem(daily = DailyData[0])
+    DailyItem(daily = DailyStaticData[0])
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun DailyListPreview() {
-    Daily(dailyList = DailyData)
+    Daily(dailyList = DailyStaticData)
 }
 
-val DailyData = listOf(
+val DailyStaticData = listOf(
     DailyPreview(
         tempDay = "283",
         tempNight = "275",

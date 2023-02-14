@@ -101,7 +101,7 @@ fun SearchScreen(
         when (searchUIState) {
             is SearchUIState.Success -> {
                 Spacer(modifier = Modifier.height(16.dp))
-                SearchItems(
+                SearchList(
                     searchList = searchUIState.data,
                     onSearchItemSelected = { SearchItem ->
                         selectedSearchItem(SearchItem)
@@ -188,89 +188,9 @@ private fun TopSearchBar(
     }
 }
 
-//@Composable
-//private fun ForecastPreview(
-//    geoSearchItems: List<GeoSearchItem>,
-//    onSearchItemSelected: (GeoSearchItem) -> Unit,
-//) {
-//    Column {
-//        SearchCityName()
-//        Row(
-//            Modifier
-//                .fillMaxWidth()
-//                .padding(end = 8.dp),
-//            horizontalArrangement = Arrangement.SpaceBetween
-//        ) {
-//            WeatherForecastItemPreview()
-//            WeatherForecastItemPreview()
-//            WeatherForecastItemPreview()
-//            WeatherForecastItemPreview()
-//            WeatherForecastItemPreview()
-//        }
-//        Spacer(modifier = Modifier.height(16.dp))
-//        SearchItems(
-//            geoSearchItems,
-//            onSearchItemSelected = { onSearchItemSelected(it) }
-//        )
-//    }
-//}
-
-@Composable
-fun SearchCityName() {
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(modifier = Modifier.weight(.8f)) {
-                Text(
-                    text = "London",
-                    fontSize = 14.sp
-                )
-                Text(
-                    text = "London, England",
-                    fontSize = 8.sp,
-                    color = Color.LightGray
-                )
-            }
-            Icon(
-
-                imageVector = Icons.Default.AddCircle,
-                contentDescription = "Add Icon"
-            )
-        }
-    }
-
-}
-
-
-@Composable
-private fun WeatherForecastItemPreview() {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = "Today",
-            fontSize = 12.sp
-        )
-        Text(
-            text = "27 Sep",
-            fontSize = 8.sp
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Icon(imageVector = Icons.Default.Cloud, contentDescription = "Weather Icon")
-        Text(
-            text = "32°",
-            color = Color.LightGray,
-            fontSize = 10.sp
-        )
-    }
-}
-
 //search results
 @Composable
-private fun SearchItems(
+private fun SearchList(
     searchList: List<GeoSearchItem>,
     onSearchItemSelected: (GeoSearchItem) -> Unit,
 ) {
@@ -282,7 +202,6 @@ private fun SearchItems(
                 item = searchItemItem
             )
         }
-
     }
 }
 

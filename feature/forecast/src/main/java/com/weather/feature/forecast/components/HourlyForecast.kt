@@ -1,4 +1,4 @@
-package com.weather.feature.forecast
+package com.weather.feature.forecast.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -6,10 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -72,11 +69,11 @@ fun HourlyItem(
 @Composable
 fun HourlyPreview() {
     WeatherTheme {
-        HourlyForecast(data = Hourly)
+        HourlyForecast(data = HourlyStaticData)
     }
 }
 
-val Hourly = listOf(
+val HourlyStaticData = listOf(
     Hourly(
         clouds = 0,
         dew_point = 0.0,

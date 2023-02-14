@@ -13,8 +13,8 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun ShowLoading() {
     Column(
-        modifier = Modifier,
-//            .fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {

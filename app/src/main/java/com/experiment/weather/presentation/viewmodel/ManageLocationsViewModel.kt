@@ -38,7 +38,7 @@ class ManageLocationsViewModel @Inject constructor(
         }
         viewModelScope.launch(Dispatchers.IO) {
             context.dataStore.edit { preference ->
-                preference[DataStoreKeys.FAVORITE_CITY] = cityName
+                preference[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_String_Key] = cityName
             }
         }
     }
