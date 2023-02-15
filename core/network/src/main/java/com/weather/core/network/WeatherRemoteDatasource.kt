@@ -31,7 +31,6 @@ class WeatherRemoteDatasource(
     suspend fun directGeocode(cityName: String): Resource<List<GeoSearchItem>> {
         return try {
             Resource.Loading(data = null)
-            delay(1000)
             val geoData = remoteApi.getGeoSearch(location = cityName, limit = "5")
             Resource.Success(geoData.map { it.toGeoSearchItem() })
         }catch (e: Exception){

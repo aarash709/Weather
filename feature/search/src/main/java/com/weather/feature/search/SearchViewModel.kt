@@ -9,10 +9,9 @@ import com.weather.model.Resource
 import com.weather.model.WeatherData
 import com.weather.model.geocode.GeoSearchItem
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,39 +19,49 @@ class SearchViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository,
 ) : ViewModel() {
 
-    private val _searchUIState = MutableStateFlow<SearchUIState>(SearchUIState.Loading)
-    val searchUIState: StateFlow<SearchUIState> = _searchUIState.asStateFlow()
-
     private val _weatherPreview = MutableSharedFlow<WeatherData>()
     val weatherPreview: SharedFlow<WeatherData> = _weatherPreview.asSharedFlow()
 
-    val saved = mutableStateOf(false)
+    private val _searchQuery = MutableStateFlow("")
+    private val searchQuery = _searchQuery.asStateFlow()
 
+    @ExperimentalCoroutinesApi
     @FlowPreview
-    fun searchCity(cityName: String) {
-        if (cityName.isEmpty()) return
-        viewModelScope.launch {
-            weatherRepository.searchLocation(cityName)
-                .debounce(500L)
-                .map {search->
+    val searchUIState = searchQuery
+        .debounce(500L)
+        .filterNot {
+            it.isBlank()
+        }
+        .flatMapLatest { cityName ->
+            weatherRepository.searchLocation(cityName = cityName)
+                .flowOn(Dispatchers.IO)
+                .map { search ->
                     when (search) {
                         is Resource.Success -> {
-                            _searchUIState.value = SearchUIState.Success(search.data!!)
+                            SearchUIState.Success(search.data!!)
                         }
                         is Resource.Loading -> {
-                            _searchUIState.value = SearchUIState.Loading
+                            SearchUIState.Loading
                         }
                         is Resource.Error -> {
-                            _searchUIState.value = SearchUIState.Error
+                            SearchUIState.Error
                         }
                     }
-                }.collect()
+                }
         }
+        .stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(1000L),
+            initialValue = SearchUIState.Loading
+        )
+
+    fun setSearchQuery(cityName: String) {
+        _searchQuery.value = cityName
     }
 
-    fun saveSearchWeatherItem(searchItem: GeoSearchItem){
+    fun saveSearchWeatherItem(searchItem: GeoSearchItem) {
         val coordinates = Coordinates(searchItem.lat.toString(), searchItem.lon.toString())
-        viewModelScope.launch{
+        viewModelScope.launch {
             weatherRepository.syncWeather(
                 searchItem.name.toString(),
                 coordinates

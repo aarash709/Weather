@@ -7,10 +7,8 @@ import com.weather.model.ManageLocationsData
 import com.weather.model.Resource
 import com.weather.model.WeatherData
 import com.weather.model.geocode.GeoSearchItem
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -70,10 +68,11 @@ class WeatherRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun searchLocation(cityName: String): Flow<Resource<List<GeoSearchItem>>> =
+    override fun searchLocation(cityName: String): Flow<Resource<List<GeoSearchItem>>> =
         flow {
             emit(remoteWeather.directGeocode(cityName = cityName))
-        }.catch {
+        }
+            .catch {
             Timber.e(it.message)
         }
 }

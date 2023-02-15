@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface WeatherRepository {
 
-    suspend fun searchLocation(cityName: String): Flow<Resource<List<GeoSearchItem>>>
+    fun searchLocation(cityName: String): Flow<Resource<List<GeoSearchItem>>>
 
     suspend fun syncWeather(cityName: String, coordinates: Coordinates)
 

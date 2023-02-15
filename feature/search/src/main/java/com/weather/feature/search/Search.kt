@@ -22,8 +22,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.flowlayout.*
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.model.geocode.GeoSearchItem
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
+@ExperimentalCoroutinesApi
 @FlowPreview
 @Composable
 fun SearchScreen(
@@ -55,9 +57,10 @@ fun SearchScreen(
                 searchUIState = searchUIState,
                 searchInputText = inputText,
                 popularCities = cityList,
-                onSearchTextChange = {
-                    inputText = it.trim()
-                    searchViewModel.searchCity(it)
+                onSearchTextChange = { cityName ->
+                    inputText = cityName.trim()
+                    searchViewModel.setSearchQuery(cityName = cityName)
+//                    searchViewModel.searchCity(cityName)
                 },
                 onClearSearch = {
                     inputText = ""
@@ -71,7 +74,6 @@ fun SearchScreen(
                     // sending the city name as arg then fetch related data
                 }
             )
-
         }
     }
 }
@@ -98,36 +100,36 @@ fun SearchScreen(
                 onClearSearch()
             }
         )
-        when (searchUIState) {
-            is SearchUIState.Success -> {
-                Spacer(modifier = Modifier.height(16.dp))
-                SearchList(
-                    searchList = searchUIState.data,
-                    onSearchItemSelected = { SearchItem ->
-                        selectedSearchItem(SearchItem)
-                        //fetch and store weather based on selection
-                        //maybe navigate to main page after successful IO
-                    })
-            }
-            is SearchUIState.Loading -> {
-                if (searchInputText.isEmpty()) {
-                    Text(
-                        text = "Popular Cities",
-                        modifier = Modifier.padding(top = 24.dp),
-                        color = Color.DarkGray,
-                        fontSize = 14.sp
-                    )
+        if (searchInputText.isEmpty()) {
+            Text(
+                text = "Popular Cities",
+                modifier = Modifier.padding(top = 24.dp),
+                color = Color.DarkGray,
+                fontSize = 14.sp
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            PopularCities(popularCities = popularCities)
+
+        } else {
+            when (searchUIState) {
+                is SearchUIState.Loading -> ShowLoading()
+                is SearchUIState.Success -> {
                     Spacer(modifier = Modifier.height(16.dp))
-                    PopularCities(popularCities = popularCities)
-                } else {
-                    ShowLoading()
+                    SearchList(
+                        searchList = searchUIState.data,
+                        onSearchItemSelected = { SearchItem ->
+                            selectedSearchItem(SearchItem)
+                            //fetch and store weather based on selection
+                            //maybe navigate to main page after successful IO
+                        })
+                }
+                is SearchUIState.Error -> {
+                    //inform user of network problems
+                    //network error NOT implemented yet
+                    //should implement a network monitor
                 }
             }
-            is SearchUIState.Error -> {
-                //inform user of network problems
-                //network error NOT implemented yet
-                //should implement a network monitor
-            }
+
         }
     }
 }
@@ -166,7 +168,7 @@ private fun TopSearchBar(
 
             },
             trailingIcon = {
-                if (searchText.isNotBlank()){
+                if (searchText.isNotBlank()) {
                     TextButton(
                         onClick = { onClearSearch() },
                         colors = ButtonDefaults.buttonColors(
