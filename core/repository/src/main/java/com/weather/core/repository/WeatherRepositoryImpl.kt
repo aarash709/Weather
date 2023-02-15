@@ -30,7 +30,7 @@ class WeatherRepositoryImpl @Inject constructor(
 
     override fun getAllWeatherLocations(): Flow<List<ManageLocationsData>> {
         return localWeather.getAllLocalWeatherData().map {
-            it.map {data->
+            it.map { data ->
                 Timber.e("Saved Locations:${data.oneCall.cityName}")
                 ManageLocationsData(
                     data.oneCall.cityName,
@@ -58,9 +58,10 @@ class WeatherRepositoryImpl @Inject constructor(
                 oneCall = remoteWeatherInfo.data!!.toEntity(cityName = cityName),
                 current = remoteWeatherInfo.data!!.current.toEntity(cityName = cityName),
                 currentWeather = remoteWeatherInfo.data!!.current.weather.map {
-                    it.toEntity(cityName= cityName)
+                    it.toEntity(cityName = cityName)
                 },
-                daily = remoteWeatherInfo.data!!.daily.slice(0..3).map { it.toEntity(cityName = cityName) },
+                daily = remoteWeatherInfo.data!!.daily.slice(0..3)
+                    .map { it.toEntity(cityName = cityName) },
                 hourly = remoteWeatherInfo.data!!.hourly.slice(0..12).map {
                     it.toEntity(cityName = cityName)
                 }
@@ -70,9 +71,12 @@ class WeatherRepositoryImpl @Inject constructor(
 
     override fun searchLocation(cityName: String): Flow<Resource<List<GeoSearchItem>>> =
         flow {
-            emit(remoteWeather.directGeocode(cityName = cityName))
-        }
-            .catch {
+            emit(Resource.Loading())
+            val remoteData = remoteWeather.directGeocode(cityName = cityName)
+            if (remoteData.isNotEmpty())
+                emit(Resource.Success(remoteData))
+        }.catch {
             Timber.e(it.message)
+            emit(Resource.Error(message = "Network Error: ${it.message}"))
         }
 }

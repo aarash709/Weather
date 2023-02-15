@@ -28,14 +28,14 @@ class WeatherRemoteDatasource(
 
     }
 
-    suspend fun directGeocode(cityName: String): Resource<List<GeoSearchItem>> {
+    suspend fun directGeocode(cityName: String): List<GeoSearchItem> {
         return try {
-            Resource.Loading(data = null)
-            val geoData = remoteApi.getGeoSearch(location = cityName, limit = "5")
-            Resource.Success(geoData.map { it.toGeoSearchItem() })
-        }catch (e: Exception){
+            remoteApi.getGeoSearch(location = cityName, limit = "5").map {
+                it.toGeoSearchItem()
+            }
+        } catch (e: Exception) {
             Timber.e("direct geo error: ${e.message}")
-            Resource.Error(message = e.message.toString())
+            return emptyList()
         }
     }
 
