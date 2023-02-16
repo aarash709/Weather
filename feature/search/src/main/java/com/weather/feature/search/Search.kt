@@ -8,7 +8,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,7 +21,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.flowlayout.*
+import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
+import com.google.accompanist.flowlayout.FlowRow
+import com.google.accompanist.flowlayout.MainAxisAlignment
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.model.geocode.GeoSearchItem
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -37,13 +41,6 @@ fun SearchScreen(
     var inputText by remember {
         mutableStateOf("")
     }
-
-    var selectedItem by remember {
-        mutableStateOf("")
-    }
-//    val saved by searchViewModel.saved
-    val size = LocalConfiguration.current.screenWidthDp
-
     Surface {
         Column(
             modifier = Modifier
@@ -58,20 +55,17 @@ fun SearchScreen(
                 searchInputText = inputText,
                 popularCities = cityList,
                 onSearchTextChange = { cityName ->
-                    inputText = cityName.trim()
-                    searchViewModel.setSearchQuery(cityName = cityName)
-//                    searchViewModel.searchCity(cityName)
+                    inputText = cityName.ifBlank {
+                        cityName.trim()
+                    }
+                    searchViewModel.setSearchQuery(cityName = inputText)
                 },
                 onClearSearch = {
                     inputText = ""
                 },
                 selectedSearchItem = { searchItem ->
-                    selectedItem = searchItem.name + searchItem.country //debug
                     searchViewModel.saveSearchWeatherItem(searchItem)
-
-                    //                if (saved)
                     onSelectSearchItem()
-                    // sending the city name as arg then fetch related data
                 }
             )
         }
@@ -92,6 +86,7 @@ fun SearchScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         TopSearchBar(
+            modifier = Modifier.padding(top = 16.dp),
             searchText = searchInputText,
             onTextChange = {
                 onSearchTextChange(it)
@@ -112,7 +107,8 @@ fun SearchScreen(
 
         } else {
             when (searchUIState) {
-                is SearchUIState.Loading -> ShowLoading()
+                is SearchUIState.Loading -> ShowLoading(modifier = Modifier.padding(horizontal = 24.dp))
+                is SearchUIState.Error -> Unit
                 is SearchUIState.Success -> {
                     Spacer(modifier = Modifier.height(16.dp))
                     SearchList(
@@ -123,11 +119,6 @@ fun SearchScreen(
                             //maybe navigate to main page after successful IO
                         })
                 }
-                is SearchUIState.Error -> {
-                    //inform user of network problems
-                    //network error NOT implemented yet
-                    //should implement a network monitor
-                }
             }
 
         }
@@ -137,6 +128,7 @@ fun SearchScreen(
 
 @Composable
 private fun TopSearchBar(
+    modifier: Modifier,
     searchText: String,
     onTextChange: (String) -> Unit,
     onClearSearch: () -> Unit,
@@ -147,9 +139,8 @@ private fun TopSearchBar(
         errorIndicatorColor = Color.Transparent,
         backgroundColor = Color.LightGray
     )
-
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
@@ -304,7 +295,7 @@ private fun SearchPreview() {
 @Composable
 private fun TopSearchBarPreview() {
     WeatherTheme {
-        TopSearchBar(searchText = "", onTextChange = {}, onClearSearch = {})
+        TopSearchBar(Modifier,searchText = "", onTextChange = {}, onClearSearch = {})
     }
 }
 

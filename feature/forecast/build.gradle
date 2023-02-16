@@ -61,6 +61,9 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:$compose_nav_version")
     implementation "com.google.accompanist:accompanist-navigation-animation:$accompanist_version"
 
+    //serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+
     //Image Loader
     implementation("io.coil-kt:coil-compose:2.2.2")
 

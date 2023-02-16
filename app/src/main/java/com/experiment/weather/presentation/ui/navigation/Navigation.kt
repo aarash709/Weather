@@ -10,8 +10,10 @@ import com.experiment.weather.presentation.toManageLocations
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.weather.feature.search.searchScreen
 import com.weather.feature.search.toSearchScreen
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
+@ExperimentalCoroutinesApi
 @FlowPreview
 @ExperimentalAnimationApi
 @Composable
@@ -20,17 +22,17 @@ fun WeatherNavHost(navController: NavHostController) {
         navController = navController,
         startDestination = Graph.Forecast.graph,
     ) {
-        onboardScreen(navigateToSearch = {
-            navController.toSearchScreen()
-        })
         homeNavGraph(navController,
             navigateToManageLocations = {
 //                navController.toManageLocations()
                 navController.navigate(manageLocationsRoute)
             },
             navigateToOnboard = {
-                navController.toOnboard()
+                navController.toSearchScreen()
             })
+        onboardScreen(navigateToSearch = {
+            navController.toSearchScreen()
+        })
         manageLocationsScreen(
             onNavigateToSearch = {
                 navController.toSearchScreen(navOptions = navOptions {

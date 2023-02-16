@@ -4,7 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.weather.core.repository.WeatherRepository
-import com.weather.model.Coordinates
+import com.weather.model.Coordinate
 import com.weather.model.Resource
 import com.weather.model.WeatherData
 import com.weather.model.geocode.GeoSearchItem
@@ -60,10 +60,10 @@ class SearchViewModel @Inject constructor(
     }
 
     fun saveSearchWeatherItem(searchItem: GeoSearchItem) {
-        val coordinates = Coordinates(searchItem.lat.toString(), searchItem.lon.toString())
+        val coordinates =
+            Coordinate(searchItem.name, searchItem.lat.toString(), searchItem.lon.toString())
         viewModelScope.launch {
             weatherRepository.syncWeather(
-                searchItem.name.toString(),
                 coordinates
             )
         }

@@ -53,7 +53,7 @@ fun NavGraphBuilder.manageLocationsScreen(
         ManageLocations(
             onNavigateToSearch = { onNavigateToSearch() },
             onBackPressed = { onBackPressed() },
-            onItemSelected = {onItemSelected(it) }
+            onItemSelected = { onItemSelected(it) }
         )
     }
 }

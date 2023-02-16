@@ -3,6 +3,7 @@ package com.experiment.weather.presentation.ui.navigation
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -12,8 +13,11 @@ import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.navigation
 import com.weather.feature.forecast.WeatherForecastScreen
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import timber.log.Timber
 
+@ExperimentalCoroutinesApi
+@OptIn(ExperimentalMaterialApi::class)
 @ExperimentalAnimationApi
 fun NavGraphBuilder.homeNavGraph(
     navController: NavController,

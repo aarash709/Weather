@@ -2,12 +2,11 @@ package com.weather.core.repository
 
 import com.weather.WeatherLocalDataSource
 import com.weather.core.network.WeatherRemoteDatasource
-import com.weather.model.Coordinates
+import com.weather.model.Coordinate
 import com.weather.model.ManageLocationsData
 import com.weather.model.Resource
 import com.weather.model.WeatherData
 import com.weather.model.geocode.GeoSearchItem
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -34,6 +33,8 @@ class WeatherRepositoryImpl @Inject constructor(
                 Timber.e("Saved Locations:${data.oneCall.cityName}")
                 ManageLocationsData(
                     data.oneCall.cityName,
+                    data.oneCall.lat.toString(),
+                    data.oneCall.lon.toString(),
                     data.current.temp.toString(),
                     data.current.humidity.toString(),
                     data.current.feels_like.toString()
@@ -46,10 +47,10 @@ class WeatherRepositoryImpl @Inject constructor(
         return localWeather.getLocalWeatherDataByCityName(cityName = cityName)
     }
 
-    override suspend fun syncWeather(cityName: String, coordinates: Coordinates) {
+    override suspend fun syncWeather(cityName: String, coordinate: Coordinate) {
         //work in progress
         val remoteWeatherInfo = remoteWeather.getRemoteData(
-            coordinates = coordinates,
+            coordinates = coordinate,
             exclude = "minutely"
         )
         Timber.e(remoteWeatherInfo.data?.timezone.toString())
@@ -64,6 +65,28 @@ class WeatherRepositoryImpl @Inject constructor(
                     .map { it.toEntity(cityName = cityName) },
                 hourly = remoteWeatherInfo.data!!.hourly.slice(0..12).map {
                     it.toEntity(cityName = cityName)
+                }
+            )
+        }
+    }
+
+    override suspend fun syncWeather(coordinate: Coordinate) {
+        val remoteWeatherInfo = remoteWeather.getRemoteData(
+            coordinates = coordinate,
+            exclude = "minutely"
+        )
+        Timber.e(remoteWeatherInfo.data?.timezone.toString())
+        remoteWeatherInfo.let {
+            localWeather.insertLocalData(
+                oneCall = remoteWeatherInfo.data!!.toEntity(cityName = coordinate.cityName.toString()),
+                current = remoteWeatherInfo.data!!.current.toEntity(cityName = coordinate.cityName.toString()),
+                currentWeather = remoteWeatherInfo.data!!.current.weather.map {
+                    it.toEntity(cityName = coordinate.cityName.toString())
+                },
+                daily = remoteWeatherInfo.data!!.daily.slice(0..3)
+                    .map { it.toEntity(cityName = coordinate.cityName.toString()) },
+                hourly = remoteWeatherInfo.data!!.hourly.slice(0..12).map {
+                    it.toEntity(cityName = coordinate.cityName.toString())
                 }
             )
         }

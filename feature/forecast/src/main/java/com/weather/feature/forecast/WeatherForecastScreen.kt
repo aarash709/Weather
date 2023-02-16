@@ -2,7 +2,9 @@ package com.weather.feature.forecast
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
@@ -14,6 +16,9 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Air
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.WaterDrop
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,9 +35,14 @@ import com.weather.feature.forecast.components.HourlyForecast
 import com.weather.model.Current
 import com.weather.model.OneCallCoordinates
 import com.weather.model.WeatherData
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import kotlin.math.roundToInt
 
+@ExperimentalCoroutinesApi
+@ExperimentalMaterialApi
 @Composable
 fun WeatherForecastScreen(
     viewModel: ForecastViewModel = hiltViewModel(),
@@ -43,6 +53,12 @@ fun WeatherForecastScreen(
     val databaseIsEmpty by viewModel.dataBaseOrCityIsEmpty.collectAsStateWithLifecycle()
     val weatherUIState by viewModel
         .weatherUIState.collectAsStateWithLifecycle()
+    val isSyncing by viewModel.isSyncing.collectAsStateWithLifecycle()
+    LaunchedEffect(key1 = isSyncing){
+        launch {
+            Timber.e("ui is syncing: $isSyncing")
+        }
+    }
     LaunchedEffect(
         key1 = databaseIsEmpty
     ) {
@@ -56,72 +72,92 @@ fun WeatherForecastScreen(
         Surface(modifier = Modifier.fillMaxSize()) {
             WeatherForecastScreen(
                 weatherUIState = weatherUIState,
-                onNavigateToManageLocations = { navigateToManageLocations() }
+                isSyncing = isSyncing,
+                onNavigateToManageLocations = { navigateToManageLocations() },
+                onRefresh = viewModel::sync
             )
         }
     }
 }
 
+@ExperimentalMaterialApi
 @Composable
 fun WeatherForecastScreen(
     weatherUIState: WeatherUIState,
+    isSyncing: Boolean,
     onNavigateToManageLocations: () -> Unit,
+    onRefresh: () -> Unit,
 ) {
+    val scope = rememberCoroutineScope()
+    var isRefreshing by remember {
+        mutableStateOf(false)
+    }
+
+    fun refresh() = scope.launch {
+        isRefreshing = true
+        delay(1000)
+        isRefreshing = false
+    }
+
+    val scrollState = rememberScrollState()
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isSyncing,
+        onRefresh = onRefresh,
+    )
     // stateless
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp)
-            .verticalScroll(
-                rememberScrollState(),
-                reverseScrolling = false
-            ),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+            .pullRefresh(pullRefreshState)
     ) {
         when (weatherUIState) {
             WeatherUIState.Loading -> ShowLoading()
             is WeatherUIState.Success -> {
-                TopAppBar(
-                    modifier = Modifier,
-                    elevation = 0.dp
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
-                    TopBar(
-                        cityName = weatherUIState.data.coordinates.name.toString(),
-                        onNavigateToManageLocations = { onNavigateToManageLocations() }
-                    )
+                    TopAppBar(
+                        modifier = Modifier,
+                        elevation = 0.dp
+                    ) {
+                        TopBar(
+                            cityName = weatherUIState.data.coordinates.name.toString(),
+                            onNavigateToManageLocations = { onNavigateToManageLocations() }
+                        )
+                    }
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(24.dp)
+                    ) {
+                        item {
+                            CurrentWeather(
+                                weatherData = weatherUIState.data.current
+                            )
+                        }
+                        item {
+                            Text(text = "Daily")
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Daily(dailyList = weatherUIState.data.daily.map { it.toDailyPreview() })
+                        }
+                        item {
+                            Text(text = "Today")
+                            Spacer(modifier = Modifier.height(16.dp))
+                            HourlyForecast(
+                                modifier = Modifier.padding(bottom = 16.dp),
+                                data = weatherUIState.data.hourly
+                            )
+                        }
+                    }
                 }
-                CurrentWeather(
-                    weatherData = weatherUIState.data.current
-                )
-                Text(text = "Daily")
-                Daily(dailyList = weatherUIState.data.daily.map { it.toDailyPreview() })
-                Text(text = "Today")
-                HourlyForecast(
-                    modifier = Modifier.padding(bottom = 16.dp),
-                    data = weatherUIState.data.hourly
+                PullRefreshIndicator(
+                    refreshing = isRefreshing,
+                    state = pullRefreshState,
+                    modifier = Modifier.align(Alignment.TopCenter)
                 )
             }
         }
-//        Box(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .size(size = 60.dp)
-//                .background(Brush.horizontalGradient(listOf(Color.Red, Color.Yellow))),
-//            contentAlignment = Alignment.Center
-//        ) {
-//            Text(text = "Sunset/Sunrise")
-//        }
-//        HourlyForecast()
-//        Column(
-//            modifier = Modifier,
-//            verticalArrangement = Arrangement.spacedBy(16.dp)
-//        ) {
-//            DailyForecastItem()
-//            DailyForecastItem()
-//            DailyForecastItem()
-//            DailyForecastItem()
-//            DailyForecastItem()
-//        }
     }
 }
 
@@ -308,6 +344,7 @@ private fun CurrentTempAndCondition(
     }
 }
 
+@ExperimentalMaterialApi
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun MainPagePreview() {
@@ -343,7 +380,8 @@ fun MainPagePreview() {
             )
         )
         WeatherForecastScreen(weatherUIState = data,
-            onNavigateToManageLocations = {})
+            false,
+            onNavigateToManageLocations = {}, onRefresh = {})
     }
 }
 

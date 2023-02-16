@@ -79,6 +79,9 @@ dependencies {
 //    implementation "io.arrow-kt:arrow-fx-coroutines"
 //    kapt "io.arrow-kt:arrow-meta:1.6.0" //bom file version is not set correctly
 
+    //serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+
     //Coroutines
     //implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutine_google_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutine"
@@ -98,6 +101,7 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:")
     implementation("androidx.compose.foundation:foundation:")
     implementation("androidx.compose.animation:animation:")
+
     //window
     implementation("androidx.window:window:1.0.0")
 

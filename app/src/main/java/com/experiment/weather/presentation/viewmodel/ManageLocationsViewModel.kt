@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.weather.core.repository.WeatherRepository
 import com.weather.feature.forecast.DataStoreKeys
 import com.weather.feature.forecast.dataStore
+import com.weather.model.Coordinate
 import com.weather.model.ManageLocationsData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -14,6 +15,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.serialization.SerializationStrategy
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -39,6 +43,14 @@ class ManageLocationsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             context.dataStore.edit { preference ->
                 preference[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_String_Key] = cityName
+            }
+        }
+    }
+    fun saveFavoriteCityCoordinate(coordinate: Coordinate){
+        viewModelScope.launch(Dispatchers.IO) {
+            val coordinateString = Json.encodeToString(coordinate)
+            context.dataStore.edit { preference ->
+                preference[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_Coordinate_String_Key] = coordinateString
             }
         }
     }

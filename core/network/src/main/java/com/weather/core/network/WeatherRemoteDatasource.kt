@@ -2,7 +2,7 @@ package com.weather.core.network
 
 import com.weather.core.network.model.weather.NetworkOneCall
 import com.weather.core.network.retrofit.RetrofitApiService
-import com.weather.model.Coordinates
+import com.weather.model.Coordinate
 import com.weather.model.Resource
 import com.weather.model.geocode.GeoSearchItem
 import kotlinx.coroutines.delay
@@ -12,7 +12,7 @@ import java.io.IOException
 class WeatherRemoteDatasource(
     private val remoteApi: RetrofitApiService,
 ) {
-    suspend fun getRemoteData(coordinates: Coordinates, exclude: String): Resource<NetworkOneCall> {
+    suspend fun getRemoteData(coordinates: Coordinate, exclude: String): Resource<NetworkOneCall> {
         return try {
             val data = remoteApi.getOneCall(
                 lat = coordinates.latitude,

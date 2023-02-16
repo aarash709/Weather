@@ -22,6 +22,7 @@ import com.experiment.weather.presentation.ui.components.common.ShowLoading
 import com.experiment.weather.presentation.viewmodel.LocationsUIState
 import com.experiment.weather.presentation.viewmodel.ManageLocationsViewModel
 import com.weather.core.design.theme.WeatherTheme
+import com.weather.model.Coordinate
 import com.weather.model.ManageLocationsData
 import kotlin.math.roundToInt
 
@@ -39,9 +40,10 @@ fun ManageLocations(
             dataState = dataState,
             onNavigateToSearch = { onNavigateToSearch() },
             onBackPressed = onBackPressed,
-            onItemSelected = { cityName ->
-                viewModel.saveFavoriteCity(cityName = cityName)
-                onItemSelected(cityName)
+            onItemSelected = { coordinate ->
+//                viewModel.saveFavoriteCity(cityName = cityName)
+                viewModel.saveFavoriteCityCoordinate(coordinate)
+                onItemSelected(coordinate.cityName.toString())
             }
         )
     }
@@ -52,7 +54,7 @@ fun ManageLocations(
     dataState: LocationsUIState,
     onNavigateToSearch: () -> Unit,
     onBackPressed: () -> Unit,
-    onItemSelected: (String) -> Unit,
+    onItemSelected: (Coordinate) -> Unit,
 ) {
     //stateless
     when (dataState) {
@@ -76,8 +78,8 @@ fun ManageLocations(
                 Spacer(modifier = Modifier.height(16.dp))
                 FavoriteLocations(
                     dataList = dataState.data,
-                    onItemSelected = { cityName ->
-                        onItemSelected(cityName)
+                    onItemSelected = { coordinate ->
+                        onItemSelected(coordinate)
                     })
             }
         }
@@ -117,7 +119,7 @@ fun SearchBarCard(onClick: () -> Unit) {
 @Composable
 fun FavoriteLocations(
     dataList: List<ManageLocationsData>,
-    onItemSelected: (String) -> Unit,
+    onItemSelected: (Coordinate) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier,
@@ -126,8 +128,8 @@ fun FavoriteLocations(
         items(dataList) { locationData ->
             SavedLocationItem(
                 data = locationData,
-                onItemSelected = { cityName ->
-                    onItemSelected(cityName)
+                onItemSelected = { coordinate ->
+                    onItemSelected(coordinate)
                 }
             )
         }
@@ -138,14 +140,14 @@ fun FavoriteLocations(
 @Composable
 fun SavedLocationItem(
     data: ManageLocationsData,
-    onItemSelected: (String) -> Unit,
+    onItemSelected: (Coordinate) -> Unit,
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         backgroundColor = Color.LightGray,
-        onClick = { onItemSelected(data.locationName) }
+        onClick = { onItemSelected(Coordinate(data.locationName,data.latitude,data.longitude)) }
     ) {
         Row(
             modifier = Modifier.padding(vertical = 24.dp, horizontal = 16.dp),
@@ -258,6 +260,8 @@ fun CityItemPreview() {
         SavedLocationItem(
             data = ManageLocationsData(
                 locationName = "Tehran",
+                latitude = 10.toString(),
+                longitude = 10.toString(),
                 currentTemp = "2",
                 humidity = "46",
                 feelsLike = "1"
@@ -274,12 +278,16 @@ fun ManageLocationsPreview() {
         listOf(
             ManageLocationsData(
                 locationName = "Tehran",
+                latitude = 10.toString(),
+                longitude = 10.toString(),
                 currentTemp = "2",
                 humidity = "46",
                 feelsLike = "1"
             ),
             ManageLocationsData(
                 locationName = "Tabriz",
+                latitude = 10.toString(),
+                longitude = 10.toString(),
                 currentTemp = "0",
                 humidity = "55",
                 feelsLike = "0"
