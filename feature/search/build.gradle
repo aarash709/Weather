@@ -66,7 +66,7 @@ dependencies {
 
     //LifeCycle Components
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-runtime-compose:2.6.0-alpha04" //experimental
+    implementation "androidx.lifecycle:lifecycle-runtime-compose:2.6.0-beta01" //experimental
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
 
     //experimental

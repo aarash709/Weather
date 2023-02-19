@@ -1,6 +1,10 @@
 package com.experiment.weather.presentation.viewmodel
 
 import android.app.Application
+import android.content.Context
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -23,9 +27,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ManageLocationsViewModel @Inject constructor(
-    weatherRepository: WeatherRepository,
+    private val weatherRepository: WeatherRepository,
     private val context: Application,
 ) : ViewModel() {
+
+    private val hapticFeedback = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
     val locationsState = weatherRepository.getAllWeatherLocations().map {
         LocationsUIState.Success(it)
@@ -46,16 +52,23 @@ class ManageLocationsViewModel @Inject constructor(
             }
         }
     }
-    fun saveFavoriteCityCoordinate(coordinate: Coordinate){
+
+    fun saveFavoriteCityCoordinate(coordinate: Coordinate) {
         viewModelScope.launch(Dispatchers.IO) {
             val coordinateString = Json.encodeToString(coordinate)
             context.dataStore.edit { preference ->
-                preference[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_Coordinate_String_Key] = coordinateString
+                preference[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_Coordinate_String_Key] =
+                    coordinateString
             }
         }
     }
 
-    fun deleteLocalWeatherByName(cityName: String) {
+    fun deleteWeatherByCityName(cityName: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            weatherRepository.deleteWeatherByCityName(cityName = cityName)
+        }
+        hapticFeedback.cancel()
+        hapticFeedback.vibrate(10)
 
     }
 

@@ -1,5 +1,8 @@
 package com.experiment.weather.presentation.ui
 
+import android.view.HapticFeedbackConstants
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -7,12 +10,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.WaterDrop
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,6 +33,8 @@ import com.weather.model.Coordinate
 import com.weather.model.ManageLocationsData
 import kotlin.math.roundToInt
 
+@ExperimentalFoundationApi
+@ExperimentalMaterialApi
 @Composable
 fun ManageLocations(
     viewModel: ManageLocationsViewModel = hiltViewModel(),
@@ -41,20 +50,26 @@ fun ManageLocations(
             onNavigateToSearch = { onNavigateToSearch() },
             onBackPressed = onBackPressed,
             onItemSelected = { coordinate ->
-//                viewModel.saveFavoriteCity(cityName = cityName)
                 viewModel.saveFavoriteCityCoordinate(coordinate)
                 onItemSelected(coordinate.cityName.toString())
+            },
+            onDeleteItem = { locationData ->
+                val cityName = locationData.locationName
+                viewModel.deleteWeatherByCityName(cityName = cityName)
             }
         )
     }
 }
 
+@ExperimentalFoundationApi
+@ExperimentalMaterialApi
 @Composable
 fun ManageLocations(
     dataState: LocationsUIState,
     onNavigateToSearch: () -> Unit,
     onBackPressed: () -> Unit,
     onItemSelected: (Coordinate) -> Unit,
+    onDeleteItem: (ManageLocationsData) -> Unit,
 ) {
     //stateless
     when (dataState) {
@@ -80,6 +95,9 @@ fun ManageLocations(
                     dataList = dataState.data,
                     onItemSelected = { coordinate ->
                         onItemSelected(coordinate)
+                    },
+                    onDeleteItem = { locationData ->
+                        onDeleteItem(locationData)
                     })
             }
         }
@@ -116,22 +134,65 @@ fun SearchBarCard(onClick: () -> Unit) {
     }
 }
 
+@ExperimentalFoundationApi
+@ExperimentalMaterialApi
 @Composable
 fun FavoriteLocations(
     dataList: List<ManageLocationsData>,
     onItemSelected: (Coordinate) -> Unit,
+    onDeleteItem: (ManageLocationsData) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items(dataList) { locationData ->
-            SavedLocationItem(
-                data = locationData,
-                onItemSelected = { coordinate ->
-                    onItemSelected(coordinate)
+        items(dataList, key = {
+            it.locationName
+        }) { locationData ->
+            val hapticFeedback = LocalHapticFeedback.current
+            val localView = LocalView.current
+            val currentItem by rememberUpdatedState(newValue = locationData)
+            val dismissState = rememberDismissState(
+                confirmStateChange = {dismissValue->
+                    when (dismissValue) {
+                        DismissValue.Default -> TODO()
+                        DismissValue.DismissedToStart -> onDeleteItem(currentItem)
+                        DismissValue.DismissedToEnd -> TODO()
+                    }
+                    true
                 }
             )
+            SwipeToDismiss(
+                state = dismissState,
+                modifier = Modifier.animateItemPlacement(),
+                directions = setOf(DismissDirection.EndToStart),
+                dismissThresholds = { dismissDirection ->
+                    FractionalThreshold(
+                        if (dismissDirection == DismissDirection.EndToStart) .5f else .0f
+
+                    )
+                },
+                background = {
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxSize(), shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Box(modifier = Modifier.background(Color.Red)){
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "delete Icon"
+                            )
+                        }
+                    }
+                }
+            ) {
+                SavedLocationItem(
+                    data = locationData,
+                    onItemSelected = { coordinate ->
+                        onItemSelected(coordinate)
+                    }
+                )
+            }
         }
     }
 }
@@ -147,7 +208,7 @@ fun SavedLocationItem(
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         backgroundColor = Color.LightGray,
-        onClick = { onItemSelected(Coordinate(data.locationName,data.latitude,data.longitude)) }
+        onClick = { onItemSelected(Coordinate(data.locationName, data.latitude, data.longitude)) }
     ) {
         Row(
             modifier = Modifier.padding(vertical = 24.dp, horizontal = 16.dp),
@@ -173,7 +234,8 @@ fun SavedLocationItem(
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
                         text = "Real Feel: ${
-                            data.feelsLike.toFloat().minus(273.15f).roundToInt()}°",
+                            data.feelsLike.toFloat().minus(273.15f).roundToInt()
+                        }°",
                         fontSize = 12.sp
                     )
 //                    Text(text = "30°/20°")
@@ -271,6 +333,8 @@ fun CityItemPreview() {
     }
 }
 
+@ExperimentalFoundationApi
+@ExperimentalMaterialApi
 @Preview(showBackground = true)
 @Composable
 fun ManageLocationsPreview() {
@@ -298,7 +362,8 @@ fun ManageLocationsPreview() {
         ManageLocations(
             dataState = data,
             onNavigateToSearch = {},
-            onBackPressed = {}
-        ) {}
+            onBackPressed = {},
+            onItemSelected = {},
+            onDeleteItem = {})
     }
 }

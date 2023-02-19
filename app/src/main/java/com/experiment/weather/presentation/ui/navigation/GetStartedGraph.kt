@@ -1,10 +1,12 @@
 package com.experiment.weather.presentation.ui.navigation
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Button
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.ui.Alignment
@@ -15,8 +17,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.experiment.weather.presentation.ui.ManageLocations
 import com.weather.feature.search.SearchScreen
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
+@ExperimentalCoroutinesApi
+@ExperimentalFoundationApi
+@ExperimentalMaterialApi
 @FlowPreview
 @ExperimentalAnimationApi
 fun NavGraphBuilder.getStartedNavGraph(navController: NavController) {

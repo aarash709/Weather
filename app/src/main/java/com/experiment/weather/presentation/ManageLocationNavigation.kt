@@ -5,6 +5,8 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -22,6 +24,8 @@ fun NavController.toManageLocations(navOptions: NavOptions? = null) {
     navigate(manageLocationsRoute, navOptions)
 }
 
+@ExperimentalFoundationApi
+@ExperimentalMaterialApi
 @ExperimentalAnimationApi
 @FlowPreview
 fun NavGraphBuilder.manageLocationsScreen(

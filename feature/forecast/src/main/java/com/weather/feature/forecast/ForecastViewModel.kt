@@ -41,7 +41,7 @@ class ForecastViewModel @Inject constructor(
     val dataBaseOrCityIsEmpty = _dataBaseOrCityIsEmpty.asStateFlow()
 
     private val _isSyncing = MutableStateFlow(false)
-    val isSyncing = _dataBaseOrCityIsEmpty.asStateFlow()
+    val isSyncing = _isSyncing.asStateFlow()
 
     init {
         Timber.e("init")
@@ -62,7 +62,8 @@ class ForecastViewModel @Inject constructor(
         return weatherRepository.getAllForecastWeatherData()
             .combine(getFavoriteCityCoordinate()) { allWeather, coordinate ->
                 Timber.e("cityName: ${coordinate.cityName}")
-                if (coordinate.cityName.isNullOrBlank())
+                if (coordinate.cityName.isNullOrBlank() ||
+                    allWeather.first().coordinates.name != coordinate.cityName)
                     allWeather.first()
                 else
                     allWeather.first { it.coordinates.name == coordinate.cityName }

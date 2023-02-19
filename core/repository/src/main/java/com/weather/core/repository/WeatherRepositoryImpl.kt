@@ -15,6 +15,9 @@ class WeatherRepositoryImpl @Inject constructor(
     private val remoteWeather: WeatherRemoteDatasource,
     private val localWeather: WeatherLocalDataSource,
 ) : WeatherRepository {
+    override suspend fun deleteWeatherByCityName(cityName: String) {
+        localWeather.deleteWeatherByCityName(cityName = cityName)
+    }
 
     override fun isDatabaseEmpty(): Int = localWeather.databaseIsEmpty()
 
@@ -71,24 +74,28 @@ class WeatherRepositoryImpl @Inject constructor(
     }
 
     override suspend fun syncWeather(coordinate: Coordinate) {
-        val remoteWeatherInfo = remoteWeather.getRemoteData(
-            coordinates = coordinate,
-            exclude = "minutely"
-        )
-        Timber.e(remoteWeatherInfo.data?.timezone.toString())
-        remoteWeatherInfo.let {
-            localWeather.insertLocalData(
-                oneCall = remoteWeatherInfo.data!!.toEntity(cityName = coordinate.cityName.toString()),
-                current = remoteWeatherInfo.data!!.current.toEntity(cityName = coordinate.cityName.toString()),
-                currentWeather = remoteWeatherInfo.data!!.current.weather.map {
-                    it.toEntity(cityName = coordinate.cityName.toString())
-                },
-                daily = remoteWeatherInfo.data!!.daily.slice(0..3)
-                    .map { it.toEntity(cityName = coordinate.cityName.toString()) },
-                hourly = remoteWeatherInfo.data!!.hourly.slice(0..12).map {
-                    it.toEntity(cityName = coordinate.cityName.toString())
-                }
+        try {
+            val remoteWeatherInfo = remoteWeather.getRemoteData(
+                coordinates = coordinate,
+                exclude = "minutely"
             )
+            Timber.e(remoteWeatherInfo.data?.timezone.toString())
+            remoteWeatherInfo.let {
+                localWeather.insertLocalData(
+                    oneCall = remoteWeatherInfo.data!!.toEntity(cityName = coordinate.cityName.toString()),
+                    current = remoteWeatherInfo.data!!.current.toEntity(cityName = coordinate.cityName.toString()),
+                    currentWeather = remoteWeatherInfo.data!!.current.weather.map {
+                        it.toEntity(cityName = coordinate.cityName.toString())
+                    },
+                    daily = remoteWeatherInfo.data!!.daily.slice(0..3)
+                        .map { it.toEntity(cityName = coordinate.cityName.toString()) },
+                    hourly = remoteWeatherInfo.data!!.hourly.slice(0..12).map {
+                        it.toEntity(cityName = coordinate.cityName.toString())
+                    }
+                )
+            }
+        } catch (e: Exception) {
+            Timber.e(e.message)
         }
     }
 

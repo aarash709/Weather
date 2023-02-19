@@ -2,9 +2,12 @@ package com.weather.feature.forecast
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.gestures.scrollBy
+import androidx.compose.foundation.gestures.stopScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
@@ -14,6 +17,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Air
+import androidx.compose.material.icons.outlined.Directions
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.WaterDrop
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -22,6 +26,8 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,6 +44,7 @@ import com.weather.model.WeatherData
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import okhttp3.internal.wait
 import timber.log.Timber
 import kotlin.math.roundToInt
 
@@ -54,16 +61,7 @@ fun WeatherForecastScreen(
     val weatherUIState by viewModel
         .weatherUIState.collectAsStateWithLifecycle()
     val isSyncing by viewModel.isSyncing.collectAsStateWithLifecycle()
-    LaunchedEffect(key1 = isSyncing){
-        launch {
-            Timber.e("ui is syncing: $isSyncing")
-        }
-    }
-    LaunchedEffect(
-        key1 = databaseIsEmpty
-    ) {
-        Timber.e("ui: $databaseIsEmpty")
-    }
+
     if (databaseIsEmpty) {
         LaunchedEffect(key1 = Unit) {
             navigateToOnboard()
@@ -88,18 +86,7 @@ fun WeatherForecastScreen(
     onNavigateToManageLocations: () -> Unit,
     onRefresh: () -> Unit,
 ) {
-    val scope = rememberCoroutineScope()
-    var isRefreshing by remember {
-        mutableStateOf(false)
-    }
-
-    fun refresh() = scope.launch {
-        isRefreshing = true
-        delay(1000)
-        isRefreshing = false
-    }
-
-    val scrollState = rememberScrollState()
+    val lazyListState = rememberLazyListState()
     val pullRefreshState = rememberPullRefreshState(
         refreshing = isSyncing,
         onRefresh = onRefresh,
@@ -129,35 +116,49 @@ fun WeatherForecastScreen(
                     }
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(24.dp)
+                        state = lazyListState,
+                        verticalArrangement = Arrangement.spacedBy(0.dp)
                     ) {
                         item {
-                            CurrentWeather(
-                                weatherData = weatherUIState.data.current
-                            )
-                        }
-                        item {
-                            Text(text = "Daily")
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Daily(dailyList = weatherUIState.data.daily.map { it.toDailyPreview() })
-                        }
-                        item {
-                            Text(text = "Today")
-                            Spacer(modifier = Modifier.height(16.dp))
-                            HourlyForecast(
-                                modifier = Modifier.padding(bottom = 16.dp),
-                                data = weatherUIState.data.hourly
-                            )
+                            ConditionAndDetails(weatherUIState.data)
                         }
                     }
                 }
                 PullRefreshIndicator(
-                    refreshing = isRefreshing,
+                    refreshing = isSyncing,
                     state = pullRefreshState,
                     modifier = Modifier.align(Alignment.TopCenter)
                 )
             }
         }
+    }
+}
+
+@Composable
+fun ConditionAndDetails(weatherData: WeatherData) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        CurrentWeather(
+            weatherData = weatherData.current
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+        CurrentWeatherDetails(
+            weatherData = weatherData.current
+        )
+//        Spacer(modifier = Modifier.height(16.dp))
+        Text(text = "Daily")
+//        Spacer(modifier = Modifier.height(16.dp))
+        Daily(dailyList = weatherData.daily.map { it.toDailyPreview() })
+        Text(text = "Today")
+//        Spacer(modifier = Modifier.height(16.dp))
+        HourlyForecast(
+            modifier = Modifier.padding(bottom = 16.dp).drawBehind {
+                drawRoundRect(color=  Color.LightGray, cornerRadius = CornerRadius(x = 30f))
+            },
+            data = weatherData.hourly
+        )
     }
 }
 
@@ -233,10 +234,6 @@ private fun CurrentWeather(
                 condition = weatherData.weather.first().main
             )
         }
-        Spacer(modifier = Modifier.height(24.dp))
-        CurrentWeatherDetails(
-            weatherData = weatherData
-        )
     }
 }
 
@@ -262,8 +259,13 @@ fun CurrentWeatherDetails(
         )
         WeatherDetailItem(
             image = Icons.Outlined.Visibility,
-            value = "${weatherData.visibility}km",
+            value = "${weatherData.visibility}m",
             itemName = "Visibility"
+        )
+        WeatherDetailItem(
+            image = Icons.Outlined.Directions,
+            value = "${weatherData.wind_deg}",
+            itemName = "Wind Direction"
         )
     }
 }

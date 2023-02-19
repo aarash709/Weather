@@ -22,6 +22,8 @@ class WeatherLocalDataSource(
 //    }
 
     fun databaseIsEmpty(): Int = dao.databaseIsEmpty()
+    suspend fun deleteWeatherByCityName(cityName: String) = dao.deleteWeatherByCityName(cityName = cityName)
+
 
     fun getAllForecastData(): Flow<List<WeatherData>> =
         dao.getAllOneCallWithCurrentAndDailyAndHourly().map { weatherList ->
@@ -61,7 +63,7 @@ class WeatherLocalDataSource(
         current: CurrentEntity,
         currentWeather: List<CurrentWeatherEntity>,
         daily: List<DailyEntity>,
-        hourly: List<OneCallHourlyEntity>
+        hourly: List<OneCallHourlyEntity>,
     ) {
         withContext(Dispatchers.IO) {
             dao.insertData(

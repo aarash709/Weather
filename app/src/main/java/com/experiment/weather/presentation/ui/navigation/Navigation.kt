@@ -1,6 +1,8 @@
 package com.experiment.weather.presentation.ui.navigation
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.navOptions
@@ -13,6 +15,8 @@ import com.weather.feature.search.toSearchScreen
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
+@ExperimentalFoundationApi
+@ExperimentalMaterialApi
 @ExperimentalCoroutinesApi
 @FlowPreview
 @ExperimentalAnimationApi

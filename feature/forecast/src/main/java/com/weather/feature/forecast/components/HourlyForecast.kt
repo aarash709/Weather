@@ -1,9 +1,6 @@
 package com.weather.feature.forecast.components
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Text
@@ -27,10 +24,11 @@ fun HourlyForecast(
     LazyRow(
         modifier = modifier
             .fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+        horizontalArrangement = Arrangement.spacedBy(32.dp),
+        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
     ) {
         items(data) { hourly ->
-            HourlyItem(modifier = Modifier.padding(end = 24.dp), hourly)
+            HourlyItem(modifier = Modifier, hourly)
         }
     }
 }

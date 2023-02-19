@@ -29,12 +29,6 @@ interface WeatherDao {
     @Upsert()
     suspend fun insertHourly(hourly: List<OneCallHourlyEntity>)
 
-//    @Insert(onConflict = REPLACE)
-//    suspend fun insertOneCallMinutely(minutely: List<OneCallMinutelyEntity>)
-
-//    @Insert(onConflict = REPLACE)
-//    suspend fun insertOneCallHourly(oneCallHourly: List<OneCallHourlyEntity>)
-
     //new
     @Transaction
     @Query("SELECT * FROM one_call WHERE cityName = :cityName")
@@ -44,31 +38,13 @@ interface WeatherDao {
     @Query("SELECT * FROM one_call_current WHERE cityName = :cityName")
     fun getCurrentWithWeatherByCityName(cityName: String): Flow<CurrentWithWeather>
 
-//    @Transaction
-//    @Query("SELECT * FROM one_call WHERE cityName = :cityName")
-//    fun getOneCallAndMinutelyByCityName(cityName: String): Flow<OneCallWithMinutely>
-
     @Transaction
     @Query("SELECT * FROM one_call")
     fun getAllOneCallAndCurrent(): Flow<List<OneCallAndCurrent>>
 
-//    @Transaction
-//    @Query("SELECT * FROM one_call_current")
-//    fun getAllCurrentWithWeather(): Flow<List<CurrentWithWeather>>
-
     //delete
-//    @Query("DELETE FROM one_call WHERE cityName = :cityName")
-//    suspend fun deleteOneCallByCityName(cityName: String)
-//
-//    @Query("DELETE FROM one_call_current WHERE cityName = :cityName")
-//    suspend fun deleteOneCallCurrentByCityName(cityName: String)
-//
-//    @Query("DELETE FROM current_weather WHERE cityName = :cityName")
-//    suspend fun deleteCurrentWeatherByCityName(cityName: String)
-//
-//    @Query("DELETE FROM one_call_minutely WHERE cityName = :cityName")
-//    suspend fun deleteMinutelyByCityName(cityName: String)
-    //
+    @Query("DELETE FROM one_call WHERE cityName = :cityName")
+    suspend fun deleteWeatherByCityName(cityName: String)
 
 //    @Query("select * from one_call where cityName= :cityName")
 //    fun getOneCallByCityName(cityName: String): Flow<OneCallEntity>
