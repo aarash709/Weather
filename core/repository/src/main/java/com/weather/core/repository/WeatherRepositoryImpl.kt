@@ -1,6 +1,6 @@
 package com.weather.core.repository
 
-import com.weather.WeatherLocalDataSource
+import com.weather.core.database.WeatherLocalDataSource
 import com.weather.core.network.WeatherRemoteDatasource
 import com.weather.model.Coordinate
 import com.weather.model.ManageLocationsData

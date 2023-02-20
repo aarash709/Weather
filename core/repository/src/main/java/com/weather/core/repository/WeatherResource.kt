@@ -1,7 +1,7 @@
 package com.weather.core.repository
 
+import com.weather.core.database.entities.onecall.*
 import com.weather.core.network.model.weather.*
-import com.weather.entities.onecall.*
 import com.weather.model.FeelsLike
 
 fun NetworkOneCall.toEntity(cityName: String): OneCallEntity {

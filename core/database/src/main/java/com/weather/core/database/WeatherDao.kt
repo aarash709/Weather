@@ -2,11 +2,11 @@ package com.weather.core.database
 
 import androidx.room.*
 import androidx.room.OnConflictStrategy.Companion.REPLACE
-import com.weather.entities.geoSearch.GeoSearchItemEntity
-import com.weather.entities.onecall.*
-import com.weather.entities.relation.CurrentWithWeather
-import com.weather.entities.relation.OneCallAndCurrent
-import com.weather.entities.relation.OneCallWithCurrentAndDailyAndHourly
+import com.weather.core.database.entities.geoSearch.GeoSearchItemEntity
+import com.weather.core.database.entities.onecall.*
+import com.weather.core.database.entities.relation.CurrentWithWeather
+import com.weather.core.database.entities.relation.OneCallAndCurrent
+import com.weather.core.database.entities.relation.OneCallWithCurrentAndDailyAndHourly
 import kotlinx.coroutines.flow.Flow
 
 @Dao

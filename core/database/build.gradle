@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace 'com.example.database'
+    namespace 'com.weather.core.database'
     compileSdk 33
 
     defaultConfig {

@@ -10,8 +10,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.weather.entities.onecall.CurrentEntity
-import com.weather.entities.onecall.OneCallEntity
+import com.weather.core.database.entities.onecall.CurrentEntity
+import com.weather.core.database.entities.onecall.OneCallEntity
 import kotlin.math.roundToInt
 
 @Composable
