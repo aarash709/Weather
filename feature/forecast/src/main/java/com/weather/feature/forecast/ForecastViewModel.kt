@@ -63,7 +63,7 @@ class ForecastViewModel @Inject constructor(
             .combine(getFavoriteCityCoordinate()) { allWeather, coordinate ->
                 Timber.e("cityName: ${coordinate.cityName}")
                 if (coordinate.cityName.isNullOrBlank() ||
-                    allWeather.first().coordinates.name != coordinate.cityName)
+                    allWeather.all { it.coordinates.name != coordinate.cityName })
                     allWeather.first()
                 else
                     allWeather.first { it.coordinates.name == coordinate.cityName }
