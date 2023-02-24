@@ -3,8 +3,8 @@ plugins {
     id 'kotlin-android'
     id 'dagger.hilt.android.plugin'
     id 'org.jetbrains.kotlin.plugin.serialization'
-    id 'kotlin-kapt'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
 //  id 'com.google.devtools.ksp'
 }
 
@@ -58,6 +58,9 @@ android {
     }
 
 }
+hilt {
+    enableAggregatingTask = true
+}
 
 dependencies {
 
@@ -68,10 +71,11 @@ dependencies {
     implementation(project(":core:repository"))
     implementation(project(":feature:forecast"))
     implementation(project(":feature:search"))
+    implementation(project(":sync:work"))
 
     //Kotlin-Core
     implementation 'androidx.core:core-ktx:1.9.0'
-    implementation 'androidx.appcompat:appcompat:1.6.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
 
     //Arrow
 //    implementation platform("io.arrow-kt:arrow-stack:$arrow_version")
@@ -105,6 +109,8 @@ dependencies {
     //window
     implementation("androidx.window:window:1.0.0")
 
+    //work
+    implementation ("androidx.work:work-runtime-ktx:$work_version")
 
     //navigation
     implementation("androidx.navigation:navigation-compose:$compose_nav_version")
@@ -115,7 +121,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-runtime-compose:2.6.0-beta01" //experimental
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
 
-    //experimental
+    //Lifecycle
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
     implementation 'androidx.activity:activity-compose:1.6.1'
@@ -127,9 +133,13 @@ dependencies {
     implementation 'com.jakewharton.timber:timber:5.0.1'
 
     //Hilt
-    implementation 'com.google.dagger:hilt-android:2.44.2'
-    implementation "androidx.hilt:hilt-navigation-compose:1.0.0"
-    kapt 'com.google.dagger:hilt-compiler:2.44.2'
+    implementation ("androidx.hilt:hilt-navigation-compose:1.0.0")
+    implementation ("com.google.dagger:hilt-android:2.44.2")
+    kapt ("com.google.dagger:hilt-compiler:2.44.2")
+
+    //Hilt work
+    implementation("androidx.hilt:hilt-work:1.0.0")
+    kapt ("androidx.hilt:hilt-compiler:1.0.0")
 
     //Testing
     testImplementation 'junit:junit:4.13.2'

@@ -1,6 +1,6 @@
 plugins {
     id 'com.android.library'
-//    id 'dagger.hilt.android.plugin'
+    id 'dagger.hilt.android.plugin'
     id 'org.jetbrains.kotlin.plugin.serialization'
     id 'kotlin-kapt'
     id 'org.jetbrains.kotlin.android'
@@ -44,6 +44,7 @@ dependencies {
     implementation(project(':core:repository'))
     implementation(project(':core:design'))
     implementation(project(':core:model'))
+    implementation(project(':sync:work'))
 
     //Compose
     implementation platform("androidx.compose:compose-bom:2023.01.00")
@@ -69,7 +70,14 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-runtime-compose:2.6.0-beta01" //experimental
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
 
-    //experimental
+    //serializer
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+
+
+    //work
+    implementation ("androidx.work:work-runtime-ktx:$work_version")
+
+    //Lifecycle components
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
     implementation 'androidx.activity:activity-compose:1.6.1'
@@ -79,6 +87,7 @@ dependencies {
     implementation "androidx.hilt:hilt-navigation-compose:1.0.0"
     kapt 'com.google.dagger:hilt-compiler:2.44.2'
 
+
     //datastore
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
@@ -86,7 +95,7 @@ dependencies {
     implementation 'com.jakewharton.timber:timber:5.0.1'
 
     implementation 'androidx.core:core-ktx:1.9.0'
-    implementation 'androidx.appcompat:appcompat:1.6.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.8.0'
 
     testImplementation 'junit:junit:4.13.2'
