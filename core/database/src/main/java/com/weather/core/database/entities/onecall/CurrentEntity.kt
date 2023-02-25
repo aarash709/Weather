@@ -12,7 +12,7 @@ import com.weather.model.Weather
         parentColumns = arrayOf("cityName"),
         childColumns = arrayOf("cityName"),
         onDelete = ForeignKey.CASCADE,
-        onUpdate = ForeignKey.CASCADE,
+        onUpdate = ForeignKey.NO_ACTION,
         deferred = true
     )]
 )

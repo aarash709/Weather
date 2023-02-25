@@ -1,6 +1,7 @@
 package com.weather.core.database
 
 import androidx.room.*
+import androidx.room.OnConflictStrategy.Companion.ABORT
 import androidx.room.OnConflictStrategy.Companion.REPLACE
 import com.weather.core.database.entities.geoSearch.GeoSearchItemEntity
 import com.weather.core.database.entities.onecall.*
@@ -15,13 +16,13 @@ interface WeatherDao {
     fun databaseIsEmpty(): Int
 
     //ONE CALL
-    @Insert(onConflict = REPLACE)
+    @Upsert()
     suspend fun insertOneCall(oneCall: OneCallEntity)
 
-    @Insert(onConflict = REPLACE)
+    @Upsert()
     suspend fun insertOneCallCurrent(current: CurrentEntity)
 
-    @Insert(onConflict = REPLACE)
+    @Upsert()
     suspend fun insertOneCallCurrentWeather(weather: List<CurrentWeatherEntity>)
 
     @Upsert()

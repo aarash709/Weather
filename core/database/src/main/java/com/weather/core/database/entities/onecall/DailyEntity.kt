@@ -4,16 +4,21 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.Companion.CASCADE
+import androidx.room.ForeignKey.Companion.NO_ACTION
 import androidx.room.PrimaryKey
 import com.weather.model.Daily
 
-@Entity(tableName = "one_call_daily", foreignKeys = [ForeignKey(
-    entity = OneCallEntity::class,
-    parentColumns = arrayOf("cityName"),
-    childColumns = arrayOf("cityName"),
-    onDelete = CASCADE,
-    onUpdate = CASCADE
-)]
+@Entity(
+    tableName = "one_call_daily",
+    primaryKeys = ["cityName", "dt"],
+    foreignKeys = [ForeignKey(
+        entity = OneCallEntity::class,
+        parentColumns = arrayOf("cityName"),
+        childColumns = arrayOf("cityName"),
+        onDelete = CASCADE,
+        onUpdate = NO_ACTION,
+        deferred = true
+    )]
 )
 data class DailyEntity(
     val cityName: String,
@@ -46,8 +51,8 @@ data class DailyEntity(
     val wind_deg: Int,
     val wind_gust: Double,
     val wind_speed: Double,
-    @PrimaryKey(true)
-    val dailyId: Int = 0,
+//    @PrimaryKey(true)
+//    val dailyId: Int = 0,
 ) {
     fun asDomainModel(): Daily {
         return Daily(

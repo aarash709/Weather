@@ -5,13 +5,7 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.weather.model.OneCallCoordinates
 
-@Entity(tableName = "one_call", foreignKeys = [ForeignKey(
-    entity = OneCallEntity::class,
-    parentColumns = arrayOf("cityName"),
-    childColumns = arrayOf("cityName"),
-    onDelete = ForeignKey.CASCADE,
-    deferred = true
-)])
+@Entity(tableName = "one_call")
 data class OneCallEntity(
     @PrimaryKey(autoGenerate = false)
     val cityName: String,

@@ -3,6 +3,7 @@ package com.weather.core.database.entities.onecall
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.Companion.CASCADE
+import androidx.room.ForeignKey.Companion.NO_ACTION
 import androidx.room.PrimaryKey
 import com.weather.model.Weather
 
@@ -11,7 +12,7 @@ import com.weather.model.Weather
     parentColumns = ["cityName"],
     childColumns = ["cityName"],
     onDelete = CASCADE,
-    onUpdate = CASCADE
+    onUpdate = NO_ACTION
 )])
 data class CurrentWeatherEntity(
     @PrimaryKey(autoGenerate = false)

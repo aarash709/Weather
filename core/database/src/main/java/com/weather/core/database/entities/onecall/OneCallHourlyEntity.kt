@@ -7,12 +7,15 @@ import androidx.room.PrimaryKey
 import com.weather.model.Hourly
 
 @Entity(
-    tableName = "one_call_hourly", foreignKeys = [ForeignKey(
+    tableName = "one_call_hourly",
+    primaryKeys = ["cityName", "dt"],
+    foreignKeys = [ForeignKey(
         entity = OneCallEntity::class,
         parentColumns = arrayOf("cityName"),
         childColumns = arrayOf("cityName"),
         onDelete = ForeignKey.CASCADE,
-        onUpdate = ForeignKey.CASCADE
+        onUpdate = ForeignKey.NO_ACTION,
+        deferred = true
     )]
 )
 data class OneCallHourlyEntity(
@@ -40,8 +43,6 @@ data class OneCallHourlyEntity(
     val wind_deg: Int,
     val wind_gust: Double,
     val wind_speed: Double,
-    @PrimaryKey(autoGenerate = true)
-    val hourlyId: Int = 0,
 ) {
     fun asDomainModel(): Hourly {
         return Hourly(
