@@ -86,9 +86,11 @@ fun ManageLocations(
                     backgroundColor = MaterialTheme.colors.background,
                     elevation = 0.dp
                 ) {
-                    TopBar(
-                        onBackPressed = onBackPressed
-                    )
+                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
+                        TopBar(
+                            onBackPressed = onBackPressed
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 SearchBarCard(onNavigateToSearch)

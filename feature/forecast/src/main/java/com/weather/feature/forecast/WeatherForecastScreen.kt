@@ -107,10 +107,12 @@ fun WeatherForecastScreen(
                         backgroundColor = MaterialTheme.colors.background,
                         elevation = 0.dp
                     ) {
-                        TopBar(
-                            cityName = weatherUIState.data.coordinates.name.toString(),
-                            onNavigateToManageLocations = { onNavigateToManageLocations() }
-                        )
+                        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
+                            TopBar(
+                                cityName = weatherUIState.data.coordinates.name.toString(),
+                                onNavigateToManageLocations = { onNavigateToManageLocations() }
+                            )
+                        }
                     }
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
