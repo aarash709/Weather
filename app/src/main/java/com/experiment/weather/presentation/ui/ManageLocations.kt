@@ -1,6 +1,6 @@
 package com.experiment.weather.presentation.ui
 
-import android.view.HapticFeedbackConstants
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -17,7 +17,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,6 +30,7 @@ import com.experiment.weather.presentation.viewmodel.ManageLocationsViewModel
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.model.Coordinate
 import com.weather.model.ManageLocationsData
+import kotlinx.coroutines.flow.collect
 import kotlin.math.roundToInt
 
 @ExperimentalFoundationApi
@@ -146,45 +146,15 @@ fun FavoriteLocations(
         modifier = Modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+
         items(dataList, key = {
             it.locationName
         }) { locationData ->
-            val hapticFeedback = LocalHapticFeedback.current
-            val localView = LocalView.current
             val currentItem by rememberUpdatedState(newValue = locationData)
-            val dismissState = rememberDismissState(
-                confirmStateChange = {dismissValue->
-                    when (dismissValue) {
-                        DismissValue.Default -> TODO()
-                        DismissValue.DismissedToStart -> onDeleteItem(currentItem)
-                        DismissValue.DismissedToEnd -> TODO()
-                    }
-                    true
-                }
-            )
-            SwipeToDismiss(
-                state = dismissState,
+            CustomSwipeDismiss(
                 modifier = Modifier.animateItemPlacement(),
-                directions = setOf(DismissDirection.EndToStart),
-                dismissThresholds = { dismissDirection ->
-                    FractionalThreshold(
-                        if (dismissDirection == DismissDirection.EndToStart) .5f else .0f
-
-                    )
-                },
-                background = {
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxSize(), shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Box(modifier = Modifier.background(Color.Red)){
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = "delete Icon"
-                            )
-                        }
-                    }
-                }
+                dismissThreshold = 0.5f,
+                onDeleteItem = { onDeleteItem(currentItem) }
             ) {
                 SavedLocationItem(
                     data = locationData,
@@ -196,6 +166,7 @@ fun FavoriteLocations(
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
