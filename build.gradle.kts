@@ -1,5 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
+    val version by extra("")
     extra.apply {
         set("agp_version" , "7.0.3")
         set("kgp_version" , "1.5.21")
