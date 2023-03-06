@@ -64,7 +64,8 @@ fun SearchScreen(
                     inputText = ""
                 },
                 selectedSearchItem = { searchItem ->
-                    searchViewModel.saveSearchWeatherItem(searchItem)
+//                    searchViewModel.saveSearchWeatherItem(searchItem)
+                    searchViewModel.syncWeather(searchItem)
                     onSelectSearchItem()
                 }
             )
