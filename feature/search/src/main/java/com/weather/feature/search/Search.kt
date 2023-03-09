@@ -1,5 +1,8 @@
 package com.weather.feature.search
 
+import android.content.res.Configuration.UI_MODE_NIGHT_NO
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -41,7 +44,7 @@ fun SearchScreen(
     var inputText by remember {
         mutableStateOf("")
     }
-    Surface {
+    Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -100,7 +103,7 @@ fun SearchScreen(
             Text(
                 text = "Popular Cities",
                 modifier = Modifier.padding(top = 24.dp),
-                color = Color.DarkGray,
+                color = MaterialTheme.colors.onBackground.copy(alpha = 0.5f),
                 fontSize = 14.sp
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -138,7 +141,6 @@ private fun TopSearchBar(
         focusedIndicatorColor = Color.Transparent,
         unfocusedIndicatorColor = Color.Transparent,
         errorIndicatorColor = Color.Transparent,
-        backgroundColor = Color.LightGray
     )
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -207,7 +209,6 @@ private fun SearchItem(
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),
-        backgroundColor = Color.LightGray
     ) {
         Row(
             modifier = Modifier
@@ -224,7 +225,6 @@ private fun SearchItem(
                 Text(
                     text = "${item.name}, ${item.country}",
                     fontSize = 10.sp,
-                    color = Color.DarkGray
                 )
             }
             Icon(imageVector = Icons.Default.Add, contentDescription = "Add Icon")
@@ -260,7 +260,7 @@ private fun PopularCityItem(
         Surface(
             modifier = Modifier,
             shape = RoundedCornerShape(size = 16.dp),
-            color = Color.LightGray
+//            color = Color.LightGray
         ) {
             Text(
                 text = cityName,
@@ -275,20 +275,22 @@ private fun PopularCityItem(
 }
 
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun SearchPreview() {
     WeatherTheme {
         var inputText by remember {
             mutableStateOf("input text")
         }
-        SearchScreen(
-            searchUIState = SearchUIState.Loading,
-            searchInputText = "",
-            popularCities = cityList,
-            onClearSearch = {},
-            onSearchTextChange = { inputText = it },
-        ) {}
+        Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
+            SearchScreen(
+                searchUIState = SearchUIState.Loading,
+                searchInputText = "",
+                popularCities = cityList,
+                onClearSearch = {},
+                onSearchTextChange = { inputText = it },
+            ) {}
+        }
     }
 }
 
