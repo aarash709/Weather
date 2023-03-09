@@ -3,6 +3,9 @@ package com.weather.feature.forecast.components
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,14 +24,27 @@ fun HourlyForecast(
     modifier: Modifier = Modifier,
     data: List<Hourly>,
 ) {
-    LazyRow(
-        modifier = modifier
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(32.dp),
-        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+    Card(
+        modifier = Modifier,
+        shape = RoundedCornerShape(16.dp),
+        backgroundColor = MaterialTheme.colors.surface
     ) {
-        items(data) { hourly ->
-            HourlyItem(modifier = Modifier, hourly)
+        Column {
+            Text(
+                text = "Today",
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
+            )
+            LazyRow(
+                modifier = modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(32.dp),
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+            ) {
+                items(data) { hourly ->
+                    HourlyItem(modifier = Modifier, hourly)
+                }
+            }
         }
     }
 }
@@ -83,7 +99,7 @@ val HourlyStaticData = listOf(
         temp = 8.0,
         uvi = 0.0,
         visibility = 100,
-       description = "description",
+        description = "description",
         icon = "icon",
         id = 100,
         main = "main",

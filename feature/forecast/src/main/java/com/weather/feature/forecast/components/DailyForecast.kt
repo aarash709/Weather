@@ -2,7 +2,8 @@ package com.weather.feature.forecast.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Surface
+import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,16 +23,21 @@ fun Daily(
     modifier: Modifier = Modifier,
     dailyList: List<DailyPreview>,
 ) {
-    Box(
-        modifier = Modifier.drawBehind {
-            drawRoundRect(color=  Color.LightGray, cornerRadius = CornerRadius(x = 30f))
-        },
+    Card(
+        modifier = Modifier,
+        shape = RoundedCornerShape(16.dp),
+        backgroundColor = MaterialTheme.colors.surface
     ) {
         Column(
             modifier = modifier
                 .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            Text(
+                text = "Daily",
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
+            )
             dailyList.forEach { daily ->
                 DailyItem(modifier = Modifier, daily)
             }
@@ -58,10 +64,7 @@ fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview) {
                 contentDescription = "WeatherIcon",
                 modifier = Modifier
             )
-//            Icon(imageVector = Icons.Default.WbSunny, contentDescription = "Weather Icon")
-            Row(
-
-            ) {
+            Row {
                 Text(text = daily.time)
                 Text(text = " - ")
                 Text(
@@ -84,7 +87,8 @@ fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview) {
             Text(
                 text = " / ",
                 fontSize = 14.sp,
-            color = Color.White.copy(alpha = .7f))
+                color = Color.White.copy(alpha = .7f)
+            )
             Text(
                 text = "${daily.tempNight.toFloat().minus(273.15).roundToInt()}°",
                 fontSize = 14.sp,

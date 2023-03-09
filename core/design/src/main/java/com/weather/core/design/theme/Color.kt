@@ -9,7 +9,8 @@ val Teal200 = Color(0xFF03DAC5)
 
 //Weather Colors
 val White = Color(0XFFFCFCFC)
-val LightGray = Color(0XFF191919)
+val LightGray900 = Color(0XFF191919)
+val LightGray100 = Color(0XFFe6e6e6)
 val Blue = Color(0XFF152DFF)
 val Black = Color(0XFF121110)
 val Yellow = Color(0XFFFDDD5E)

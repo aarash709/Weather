@@ -19,16 +19,16 @@ import androidx.compose.ui.unit.dp
 //Use in WeatherTheme
 private val DarkColorPalette = darkColors(
     primary = Blue,
+    surface = LightGray900,
     background = Black,
-    surface = LightGray,
-    onPrimary = Cyan,
-    onSurface = White,
-    onBackground = White
+    onPrimary = White,
+    onBackground = White,
+    onSurface = White
 )
 
 private val LightColorPalette = lightColors(
-    primary = White,
-    surface = Color(0xFFe6e6e6),
+    primary = Blue,
+    surface = LightGray100,
     background = White,
     onPrimary = Black,
     onBackground = Black,

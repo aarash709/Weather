@@ -1,15 +1,12 @@
 package com.weather.feature.forecast
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.MutatePriority
+import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.gestures.stopScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -67,7 +64,7 @@ fun WeatherForecastScreen(
             navigateToOnboard()
         }
     } else {
-        Surface(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
             WeatherForecastScreen(
                 weatherUIState = weatherUIState,
                 isSyncing = isSyncing,
@@ -107,6 +104,7 @@ fun WeatherForecastScreen(
                 ) {
                     TopAppBar(
                         modifier = Modifier,
+                        backgroundColor = MaterialTheme.colors.background,
                         elevation = 0.dp
                     ) {
                         TopBar(
@@ -147,16 +145,10 @@ fun ConditionAndDetails(weatherData: WeatherData) {
         CurrentWeatherDetails(
             weatherData = weatherData.current
         )
-//        Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Daily")
-//        Spacer(modifier = Modifier.height(16.dp))
         Daily(dailyList = weatherData.daily.map { it.toDailyPreview() })
-        Text(text = "Today")
-//        Spacer(modifier = Modifier.height(16.dp))
         HourlyForecast(
-            modifier = Modifier.padding(bottom = 16.dp).drawBehind {
-                drawRoundRect(color=  Color.LightGray, cornerRadius = CornerRadius(x = 30f))
-            },
+            modifier = Modifier
+                .padding(bottom = 16.dp),
             data = weatherData.hourly
         )
     }
@@ -216,24 +208,22 @@ private fun TopBar(
 private fun CurrentWeather(
     weatherData: Current,
 ) {
-    Column {
-        Row(
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        CurrentTempAndCondition(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            CurrentTempAndCondition(
-                modifier = Modifier
-                    .padding(vertical = 48.dp)
-                    .fillMaxWidth(),
-                icon = weatherData.weather[0].icon,
-                temp = weatherData.temp.minus(273.15).roundToInt().toString(),
-                feelsLikeTemp = weatherData.feels_like.minus(273.15).roundToInt().toString(),
-                condition = weatherData.weather.first().main
-            )
-        }
+                .padding(vertical = 48.dp)
+                .fillMaxWidth(),
+            icon = weatherData.weather[0].icon,
+            temp = weatherData.temp.minus(273.15).roundToInt().toString(),
+            feelsLikeTemp = weatherData.feels_like.minus(273.15).roundToInt().toString(),
+            condition = weatherData.weather.first().main
+        )
     }
 }
 
@@ -284,19 +274,22 @@ private fun WeatherDetailItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Image(
+            Icon(
                 imageVector = image,
                 contentDescription = itemName,
-                modifier = Modifier.size(16.dp)
+                modifier = Modifier.size(16.dp),
+                tint = MaterialTheme.colors.onBackground
             )
             Text(
                 text = value,
-                fontSize = 10.sp
+                fontSize = 10.sp,
+                color = MaterialTheme.colors.onBackground
             )
         }
         Text(
             text = itemName,
-            fontSize = 10.sp
+            fontSize = 10.sp,
+            color = MaterialTheme.colors.onBackground
         )
     }
 }
@@ -331,16 +324,18 @@ private fun CurrentTempAndCondition(
         ) {
             Text(
                 text = condition,
-                fontSize = 24.sp
+                fontSize = 24.sp,
+                color = MaterialTheme.colors.onBackground
             )
             Text(
                 text = "$temp°",
-                fontSize = 60.sp
+                fontSize = 60.sp,
+                color = MaterialTheme.colors.onBackground
             )
             Text(
                 text = "Feels like $feelsLikeTemp°",
                 fontSize = 14.sp,
-                color = Color.Gray
+                color = MaterialTheme.colors.onBackground
             )
         }
     }
@@ -381,9 +376,11 @@ fun MainPagePreview() {
                 hourly = emptyList()
             )
         )
-        WeatherForecastScreen(weatherUIState = data,
-            false,
-            onNavigateToManageLocations = {}, onRefresh = {})
+        Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
+            WeatherForecastScreen(weatherUIState = data,
+                false,
+                onNavigateToManageLocations = {}, onRefresh = {})
+        }
     }
 }
 
