@@ -1,5 +1,6 @@
 package com.experiment.weather.presentation.ui
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -44,7 +45,7 @@ fun ManageLocations(
 ) {
     //stateful
     val dataState by viewModel.locationsState.collectAsStateWithLifecycle()
-    Surface {
+    Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
         ManageLocations(
             dataState = dataState,
             onNavigateToSearch = { onNavigateToSearch() },
@@ -82,6 +83,7 @@ fun ManageLocations(
             ) {
                 TopAppBar(
                     modifier = Modifier.fillMaxWidth(),
+                    backgroundColor = MaterialTheme.colors.background,
                     elevation = 0.dp
                 ) {
                     TopBar(
@@ -110,7 +112,6 @@ fun SearchBarCard(onClick: () -> Unit) {
     Card(
         onClick = onClick,
         shape = RoundedCornerShape(32.dp),
-        backgroundColor = Color.LightGray,
         elevation = 0.dp,
     ) {
         Row(
@@ -122,13 +123,13 @@ fun SearchBarCard(onClick: () -> Unit) {
         ) {
             Icon(
                 imageVector = Icons.Default.Search,
-                tint = Color.DarkGray,
+                tint = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
                 contentDescription = "Search Icon"
             )
             Spacer(modifier = Modifier.width(16.dp))
             Text(
                 text = "Search",
-                color = Color.DarkGray
+                color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
             )
         }
     }
@@ -153,7 +154,7 @@ fun FavoriteLocations(
             val localView = LocalView.current
             val currentItem by rememberUpdatedState(newValue = locationData)
             val dismissState = rememberDismissState(
-                confirmStateChange = {dismissValue->
+                confirmStateChange = { dismissValue ->
                     when (dismissValue) {
                         DismissValue.Default -> TODO()
                         DismissValue.DismissedToStart -> onDeleteItem(currentItem)
@@ -173,17 +174,17 @@ fun FavoriteLocations(
                     )
                 },
                 background = {
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxSize(), shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Box(modifier = Modifier.background(Color.Red)){
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = "delete Icon"
-                            )
-                        }
-                    }
+//                    Surface(
+//                        modifier = Modifier
+//                            .fillMaxSize(), shape = RoundedCornerShape(16.dp)
+//                    ) {
+//                        Box(modifier = Modifier) {
+//                            Icon(
+//                                imageVector = Icons.Default.Delete,
+//                                contentDescription = "delete Icon"
+//                            )
+//                        }
+//                    }
                 }
             ) {
                 SavedLocationItem(
@@ -207,7 +208,6 @@ fun SavedLocationItem(
         modifier = Modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        backgroundColor = Color.LightGray,
         onClick = { onItemSelected(Coordinate(data.locationName, data.latitude, data.longitude)) }
     ) {
         Row(
@@ -335,7 +335,7 @@ fun CityItemPreview() {
 
 @ExperimentalFoundationApi
 @ExperimentalMaterialApi
-@Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun ManageLocationsPreview() {
     val data = LocationsUIState.Success(
@@ -359,11 +359,13 @@ fun ManageLocationsPreview() {
         )
     )
     WeatherTheme {
-        ManageLocations(
-            dataState = data,
-            onNavigateToSearch = {},
-            onBackPressed = {},
-            onItemSelected = {},
-            onDeleteItem = {})
+        Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
+            ManageLocations(
+                dataState = data,
+                onNavigateToSearch = {},
+                onBackPressed = {},
+                onItemSelected = {},
+                onDeleteItem = {})
+        }
     }
 }

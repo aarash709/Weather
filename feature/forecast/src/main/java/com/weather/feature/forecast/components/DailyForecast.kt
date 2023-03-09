@@ -14,7 +14,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.weather.core.design.theme.Gray
 import com.weather.model.DailyPreview
 import kotlin.math.roundToInt
 

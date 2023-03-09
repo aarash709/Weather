@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 private val DarkColorPalette = darkColors(
     primary = Blue,
     background = Black,
-    surface = White.copy(alpha = 0.1f),
+    surface = LightGray,
     onPrimary = Cyan,
     onSurface = White,
     onBackground = White
