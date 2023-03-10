@@ -16,7 +16,10 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
@@ -88,7 +91,7 @@ fun WeatherForecastScreen(
             is WeatherUIState.Success -> {
                 Column(
                     modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(24.dp)
+//                    verticalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
                     TopAppBar(
                         modifier = Modifier,
@@ -105,7 +108,6 @@ fun WeatherForecastScreen(
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         state = lazyListState,
-                        verticalArrangement = Arrangement.spacedBy(0.dp)
                     ) {
                         item {
                             ConditionAndDetails(weatherUIState.data)
@@ -126,37 +128,60 @@ fun WeatherForecastScreen(
 fun ConditionAndDetails(weatherData: WeatherData) {
     Column(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         CurrentWeather(
+            modifier = Modifier.padding(vertical = 64.dp),
             weatherData = weatherData.current
         )
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(64.dp))
 //        CurrentWeatherDetails(
 //            weatherData = weatherData.current
 //        )
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(24.dp)
+            modifier = Modifier
+                .height(IntrinsicSize.Max)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             WindDetails(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f),
                 weatherData.current.wind_deg.toFloat(),
                 weatherData.current.wind_speed.toFloat()
             )
             CurrentDetails(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f),
                 weatherData.current.visibility.toString(),
                 weatherData.current.humidity.toString(),
                 weatherData.current.pressure.toString(),
             )
         }
+//        SunMoonPosition()
         Daily(dailyList = weatherData.daily.map { it.toDailyPreview() })
         HourlyForecast(
             modifier = Modifier
                 .padding(bottom = 16.dp),
             data = weatherData.hourly
         )
+    }
+}
+
+@Composable
+fun SunMoonPosition() {
+    Card(
+        modifier = Modifier,
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Canvas(modifier = Modifier){
+            drawRect(color =  Color.Red,)
+            drawArc(
+                brush = Brush.linearGradient(listOf(Color.Red, Color.Blue)),
+                    startAngle = 40f, sweepAngle = 50f,useCenter = false, topLeft = Offset(80f,20f))
+        }
     }
 }
 
@@ -169,7 +194,6 @@ fun WindDetails(
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(8.dp),
-        backgroundColor = MaterialTheme.colors.surface
     ) {
         Column {
             Text(
@@ -204,8 +228,10 @@ fun CurrentDetails(
         backgroundColor = MaterialTheme.colors.surface,
     ) {
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-            Column(modifier = Modifier.padding(8.dp),
-            verticalArrangement = Arrangement.SpaceEvenly) {
+            Column(
+                modifier = Modifier.padding(12.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -215,12 +241,12 @@ fun CurrentDetails(
                         fontSize = textSize,
                     )
                     Text(
-                        text = visibility,
+                        text = "$visibility km/h",
                         fontSize = textSize
                     )
                 }
                 Divider(
-                    modifier = Modifier.padding(horizontal = 24.dp),
+                    modifier = Modifier.padding(horizontal = 8.dp),
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -231,12 +257,12 @@ fun CurrentDetails(
                         fontSize = textSize
                     )
                     Text(
-                        text = humidity,
+                        text = "$humidity%",
                         fontSize = textSize
                     )
                 }
                 Divider(
-                    modifier = Modifier.padding(horizontal = 24.dp),
+                    modifier = Modifier.padding(horizontal = 8.dp),
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -247,7 +273,7 @@ fun CurrentDetails(
                         fontSize = textSize
                     )
                     Text(
-                        text = airPressure,
+                        text = "$airPressure mb",
                         fontSize = textSize
                     )
                 }
@@ -308,18 +334,17 @@ private fun TopBar(
 
 @Composable
 private fun CurrentWeather(
+    modifier: Modifier = Modifier,
     weatherData: Current,
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
+        modifier = modifier
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         CurrentTempAndCondition(
             modifier = Modifier
-                .padding(vertical = 48.dp)
                 .fillMaxWidth(),
             icon = weatherData.weather[0].icon,
             temp = weatherData.temp.minus(273.15).roundToInt().toString(),
@@ -436,8 +461,8 @@ private fun CurrentTempAndCondition(
             )
             Text(
                 text = "Feels like $feelsLikeTemp°",
-                fontSize = 14.sp,
-                color = MaterialTheme.colors.onBackground
+                fontSize = 12.sp,
+                color = MaterialTheme.colors.onBackground.copy(alpha = 0.7f)
             )
         }
     }
@@ -521,6 +546,13 @@ private fun CurrentDetails() {
             Modifier,
             "300", "60", "1005"
         )
+    }
+}
+@Preview(showBackground = false, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun SunPositionPreview() {
+    WeatherTheme {
+        SunMoonPosition()
     }
 }
 
