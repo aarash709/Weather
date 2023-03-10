@@ -8,13 +8,12 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.weather.model.Daily
 import com.weather.model.DailyPreview
 import kotlin.math.roundToInt
 
@@ -100,16 +99,110 @@ fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview) {
 @Preview(showBackground = true)
 @Composable
 private fun DailyItemPreview() {
-    DailyItem(daily = DailyStaticData[0])
+    DailyItem(daily = DailyPreviewStaticData[0])
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun DailyListPreview() {
-    Daily(dailyList = DailyStaticData)
+    Daily(dailyList = DailyPreviewStaticData)
 }
 
 val DailyStaticData = listOf(
+    Daily(
+        0,
+        0.0,
+        "time",
+        0,
+        0.0,
+        0,
+        0,
+        0.0,
+        0,
+        0,
+        0,
+        0.0,
+        0.0,
+        0.0,
+        0,
+        "Cloudy",
+        "",
+        "",
+        0,
+        0.0,
+        0.0
+    ),
+    Daily(
+        0,
+        0.0,
+        "time",
+        0,
+        0.0,
+        0,
+        0,
+        0.0,
+        0,
+        0,
+        0,
+        0.0,
+        0.0,
+        0.0,
+        0,
+        "Rain",
+        "",
+        "",
+        0,
+        0.0,
+        0.0
+    ),
+    Daily(
+        0,
+        0.0,
+        "time",
+        0,
+        0.0,
+        0,
+        0,
+        0.0,
+        0,
+        0,
+        0,
+        0.0,
+        0.0,
+        0.0,
+        0,
+        "Cloudy",
+        "",
+        "",
+        0,
+        0.0,
+        0.0
+    ),
+    Daily(
+        0,
+        0.0,
+        "",
+        0,
+        0.0,
+        0,
+        0,
+        0.0,
+        0,
+        0,
+        0,
+        0.0,
+        0.0,
+        0.0,
+        0,
+        "Sunny",
+        "",
+        "",
+        0,
+        0.0,
+        0.0
+    )
+)
+val DailyPreviewStaticData = listOf(
     DailyPreview(
         tempDay = "283",
         tempNight = "275",

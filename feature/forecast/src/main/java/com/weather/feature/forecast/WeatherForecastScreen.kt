@@ -2,30 +2,22 @@ package com.weather.feature.forecast
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.scrollBy
-import androidx.compose.foundation.gestures.stopScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.MyLocation
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.Air
-import androidx.compose.material.icons.outlined.Directions
-import androidx.compose.material.icons.outlined.Visibility
-import androidx.compose.material.icons.outlined.WaterDrop
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,16 +25,12 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.weather.core.design.theme.WeatherTheme
-import com.weather.feature.forecast.components.Daily
-import com.weather.feature.forecast.components.HourlyForecast
+import com.weather.feature.forecast.components.*
 import com.weather.model.Current
 import com.weather.model.OneCallCoordinates
+import com.weather.model.Weather
 import com.weather.model.WeatherData
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import okhttp3.internal.wait
-import timber.log.Timber
 import kotlin.math.roundToInt
 
 @ExperimentalCoroutinesApi
@@ -144,9 +132,25 @@ fun ConditionAndDetails(weatherData: WeatherData) {
             weatherData = weatherData.current
         )
         Spacer(modifier = Modifier.height(24.dp))
-        CurrentWeatherDetails(
-            weatherData = weatherData.current
-        )
+//        CurrentWeatherDetails(
+//            weatherData = weatherData.current
+//        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            WindDetails(
+                modifier = Modifier.weight(1f),
+                weatherData.current.wind_deg.toFloat(),
+                weatherData.current.wind_speed.toFloat()
+            )
+            CurrentDetails(
+                modifier = Modifier.weight(1f),
+                weatherData.current.visibility.toString(),
+                weatherData.current.humidity.toString(),
+                weatherData.current.pressure.toString(),
+            )
+        }
         Daily(dailyList = weatherData.daily.map { it.toDailyPreview() })
         HourlyForecast(
             modifier = Modifier
@@ -156,6 +160,102 @@ fun ConditionAndDetails(weatherData: WeatherData) {
     }
 }
 
+@Composable
+fun WindDetails(
+    modifier: Modifier = Modifier,
+    windDirection: Float,
+    windSpeed: Float,
+) {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(8.dp),
+        backgroundColor = MaterialTheme.colors.surface
+    ) {
+        Column {
+            Text(
+                text = "Wind",
+                color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
+            )
+            Row(
+                modifier = Modifier,
+            ) {
+                Icon(
+                    modifier = Modifier.graphicsLayer {
+                        rotationZ = windDirection
+                    },
+                    imageVector = Icons.Default.North,
+                    contentDescription = "Direction Arrow"
+                )
+                Text(text = "${windSpeed}km/h")
+            }
+        }
+    }
+}
+
+@Composable
+fun CurrentDetails(
+    modifier: Modifier = Modifier,
+    visibility: String, humidity: String, airPressure: String,
+) {
+    val textSize = 14.sp
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(8.dp),
+        backgroundColor = MaterialTheme.colors.surface,
+    ) {
+        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+            Column(modifier = Modifier.padding(8.dp),
+            verticalArrangement = Arrangement.SpaceEvenly) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Visibility",
+                        fontSize = textSize,
+                    )
+                    Text(
+                        text = visibility,
+                        fontSize = textSize
+                    )
+                }
+                Divider(
+                    modifier = Modifier.padding(horizontal = 24.dp),
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Humidity",
+                        fontSize = textSize
+                    )
+                    Text(
+                        text = humidity,
+                        fontSize = textSize
+                    )
+                }
+                Divider(
+                    modifier = Modifier.padding(horizontal = 24.dp),
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Air Pressure",
+                        fontSize = textSize
+                    )
+                    Text(
+                        text = airPressure,
+                        fontSize = textSize
+                    )
+                }
+            }
+
+        }
+    }
+}
 
 @Composable
 private fun TopBar(
@@ -372,10 +472,12 @@ fun MainPagePreview() {
                     wind_deg = 246,
                     wind_gust = 1.71,
                     wind_speed = 2.64,
-                    weather = emptyList()
+                    weather = listOf(
+                        Weather("", "", 0, "")
+                    )
                 ),
-                daily = emptyList(),
-                hourly = emptyList()
+                daily = DailyStaticData,
+                hourly = HourlyStaticData
             )
         )
         Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
@@ -403,6 +505,24 @@ fun FourDayPreview() {
     }
 }
 
+@Preview(showBackground = false, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun WindPreview() {
+    WeatherTheme {
+        WindDetails(Modifier, 113f, 3.52f)
+    }
+}
+
+@Preview(showBackground = false, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun CurrentDetails() {
+    WeatherTheme {
+        CurrentDetails(
+            Modifier,
+            "300", "60", "1005"
+        )
+    }
+}
 
 
 
