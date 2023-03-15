@@ -8,6 +8,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -19,6 +20,7 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.center
 import androidx.compose.ui.graphics.*
@@ -220,31 +222,49 @@ fun WindDetails(
         modifier = modifier,
         shape = RoundedCornerShape(8.dp),
     ) {
-        Row(modifier = Modifier.height(IntrinsicSize.Max)) {
-//            Text(
-//                text = "Wind",
-//                color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
-//            )
-            WindDirectionIndicator(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxSize()
-                    .weight(2f),
-                animatedDegree.value
+        Row(modifier = Modifier.padding(8.dp).height(IntrinsicSize.Max),
+        verticalAlignment = Alignment.CenterVertically) {
+            BoxedWindIndicator(
+                modifier = Modifier.weight(2f),
+                windDirection = animatedDegree.value
             )
             Column(
                 modifier = Modifier.weight(2f),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Icon(
-                    modifier = Modifier.graphicsLayer {
-                        rotationZ = animatedDegree.value
-                    },
-                    imageVector = Icons.Default.North,
-                    contentDescription = "Direction Arrow"
-                )
                 Text(text = "${windSpeed}km/h")
             }
         }
+    }
+}
+
+@Composable
+fun BoxedWindIndicator(modifier: Modifier = Modifier, windDirection: Float) {
+    Box(
+        modifier = modifier
+            .aspectRatio(1f)
+            .border(width = 2.dp, color = White, shape = CircleShape),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = Icons.Default.North,
+            modifier = Modifier
+                .align(Alignment.Center)
+                .graphicsLayer {
+                    rotationZ = windDirection.times(-1)
+                },
+            contentDescription = "Wind direction arrow"
+        )
+        Box(modifier = Modifier
+            .padding(4.dp)
+            .fillMaxSize()) {
+            Text(text = "N", modifier = Modifier.align(Alignment.TopCenter))
+            Text(text = "E", modifier = Modifier.align(Alignment.CenterEnd))
+            Text(text = "S", modifier = Modifier.align(Alignment.BottomCenter))
+            Text(text = "W", modifier = Modifier.align(Alignment.CenterStart))
+        }
+
     }
 }
 
@@ -304,7 +324,7 @@ fun WindDirectionIndicator(
                     y = centerY - 25
                 ),
 
-            )
+                )
             //debug line
 //            drawLine(
 //                color = White,
@@ -713,6 +733,14 @@ private fun SunPositionPreview() {
 private fun WindIndicatorPreview() {
     WeatherTheme {
         WindDirectionIndicator(animatedDegree = 0f)
+    }
+}
+
+@Preview
+@Composable
+private fun BoxedWindIndicatorPreview() {
+    WeatherTheme {
+        BoxedWindIndicator(windDirection = 0f)
     }
 }
 
