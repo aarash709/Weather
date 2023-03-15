@@ -1,6 +1,9 @@
 package com.weather.feature.forecast
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.EaseOutCubic
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,17 +20,24 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TransformOrigin
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.geometry.center
+import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.drawscope.DrawStyle
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.weather.core.design.theme.WeatherTheme
+import com.weather.core.design.theme.White
 import com.weather.feature.forecast.components.*
 import com.weather.model.Current
 import com.weather.model.OneCallCoordinates
@@ -146,7 +156,7 @@ fun ConditionAndDetails(weatherData: WeatherData) {
         ) {
             WindDetails(
                 modifier = Modifier
-                    .fillMaxHeight()
+                    .fillMaxSize()
                     .weight(1f),
                 weatherData.current.wind_deg.toFloat(),
                 weatherData.current.wind_speed.toFloat()
@@ -176,11 +186,12 @@ fun SunMoonPosition() {
         modifier = Modifier,
         shape = RoundedCornerShape(8.dp)
     ) {
-        Canvas(modifier = Modifier){
-            drawRect(color =  Color.Red,)
+        Canvas(modifier = Modifier) {
+            drawRect(color = Color.Red)
             drawArc(
                 brush = Brush.linearGradient(listOf(Color.Red, Color.Blue)),
-                    startAngle = 40f, sweepAngle = 50f,useCenter = false, topLeft = Offset(80f,20f))
+                startAngle = 40f, sweepAngle = 50f, useCenter = false, topLeft = Offset(80f, 20f)
+            )
         }
     }
 }
@@ -191,27 +202,149 @@ fun WindDetails(
     windDirection: Float,
     windSpeed: Float,
 ) {
+    val animatedDegree = remember {
+        Animatable(0f)
+    }
+    LaunchedEffect(key1 = Unit) {
+        animatedDegree.animateTo(
+            windDirection,
+            tween(
+                1000,
+                100,
+                easing = EaseOutCubic
+            )
+        )
+    }
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(8.dp),
     ) {
-        Column {
-            Text(
-                text = "Wind",
-                color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
+        Row(modifier = Modifier.height(IntrinsicSize.Max)) {
+//            Text(
+//                text = "Wind",
+//                color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
+//            )
+            WindDirectionIndicator(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxSize()
+                    .weight(3f),
+                animatedDegree.value
             )
-            Row(
-                modifier = Modifier,
+            Column(
+                modifier = Modifier.weight(2f),
             ) {
                 Icon(
                     modifier = Modifier.graphicsLayer {
-                        rotationZ = windDirection
+                        rotationZ = animatedDegree.value
                     },
                     imageVector = Icons.Default.North,
                     contentDescription = "Direction Arrow"
                 )
                 Text(text = "${windSpeed}km/h")
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalTextApi::class)
+@Composable
+fun WindDirectionIndicator(
+    modifier: Modifier = Modifier,
+    animatedDegree: Float,
+) {
+    val textMeasurer = rememberTextMeasurer()
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
+    ) {
+        Canvas(
+            modifier = Modifier
+//                        .padding(8.dp)
+                .aspectRatio(1f)
+                .fillMaxSize()
+        ) {
+            val centerX = size.width / 2
+            val centerY = size.height / 2
+            val lineWidth = 1.dp.toPx()
+            drawText(
+                textMeasurer = textMeasurer, text = "N", topLeft = Offset(
+                    x = centerX - 15,
+                    y = 10f
+                )
+            )
+            drawText(
+                textMeasurer = textMeasurer, text = "E", topLeft = Offset(
+                    x = size.width - 40,
+                    y = centerY - 25
+                )
+            )
+            drawText(
+                textMeasurer = textMeasurer, text = "S", topLeft = Offset(
+                    x = centerX -15,
+                    y = size.height - 60
+                )
+            )
+            drawText(
+                textMeasurer = textMeasurer, text = "W", topLeft = Offset(
+                    x = 10f,
+                    y = centerY - 25
+                )
+            )
+            drawLine(color = White,start = Offset(0f, centerY),end = Offset(size.width, centerY))
+            withTransform({
+                rotate(degrees = animatedDegree)
+            }) {
+                drawLine(
+                    Color.White,
+                    start = Offset(centerX, 0f),
+                    end = Offset(centerX, size.height),
+                    strokeWidth = lineWidth,
+                    cap = StrokeCap.Round,
+                )
+                rotate(40f, pivot = Offset(centerX, 0f)) {
+                    drawLine(
+                        Color.Red,
+                        start = Offset(centerX, 0f),
+                        end = Offset(centerX, centerY / 2),
+                        strokeWidth = lineWidth,
+                        cap = StrokeCap.Round
+                    )
+                }
+                rotate(-40f, pivot = Offset(centerX, 0f)) {
+                    drawLine(
+                        Color.Red,
+                        start = Offset(centerX, 0f),
+                        end = Offset(centerX, centerY / 2),
+                        strokeWidth = lineWidth,
+                        cap = StrokeCap.Round
+                    )
+                }
+            }
+            drawCircle(
+                color = Color.White.copy(alpha = 0.5f),
+                center = Offset(centerX, y = centerY),
+                radius = centerX,
+                style = Stroke(width = lineWidth)
+            )
+//                drawRect(Color.White.copy(alpha = 0.5f), style = Stroke(lineWidth))
+//                val vertcalSize = size.width / (3 + 1)
+//                repeat(3) {
+//                    val startx = vertcalSize * (it + 1)
+//                    drawLine(
+//                        Color.White,
+//                        start = Offset(startx, 0f),
+//                        end = Offset(startx, size.height)
+//                    )
+//                }
+//                repeat(4) {
+//                    val startx = (size.height / (4 + 1)) * (it + 1)
+//                    drawLine(
+//                        Color.White,
+//                        start = Offset(0f, startx),
+//                        end = Offset(size.width, startx)
+//                    )
+//                }
         }
     }
 }
@@ -521,20 +654,17 @@ fun CurrentWeatherPreview() {
     }
 }
 
-@Composable
-@Preview(showBackground = true)
-fun FourDayPreview() {
-    WeatherTheme {
-        Text(text = "hello")
-//        DailyForecastItem()
-    }
-}
-
 @Preview(showBackground = false, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun WindPreview() {
     WeatherTheme {
-        WindDetails(Modifier, 113f, 3.52f)
+        val animateDegree = remember {
+            Animatable(25f)
+        }
+        LaunchedEffect(key1 = Unit) {
+            animateDegree.animateTo(113f, tween(1000, 100, easing = EaseOutCubic))
+        }
+        WindDetails(Modifier, animateDegree.value, 3.52f)
     }
 }
 
@@ -548,11 +678,20 @@ private fun CurrentDetails() {
         )
     }
 }
+
 @Preview(showBackground = false, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun SunPositionPreview() {
     WeatherTheme {
         SunMoonPosition()
+    }
+}
+
+@Preview
+@Composable
+private fun WindIndicatorPreview() {
+    WeatherTheme {
+        WindDirectionIndicator(animatedDegree = 000f)
     }
 }
 
