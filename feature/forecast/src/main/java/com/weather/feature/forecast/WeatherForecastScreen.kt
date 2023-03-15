@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
@@ -228,7 +229,7 @@ fun WindDetails(
                 modifier = Modifier
                     .padding(8.dp)
                     .fillMaxSize()
-                    .weight(3f),
+                    .weight(2f),
                 animatedDegree.value
             )
             Column(
@@ -268,54 +269,74 @@ fun WindDirectionIndicator(
             val centerY = size.height / 2
             val lineWidth = 1.dp.toPx()
             drawText(
-                textMeasurer = textMeasurer, text = "N", topLeft = Offset(
+                textMeasurer = textMeasurer,
+                text = "N",
+                style = TextStyle(color = Color.White),
+                topLeft = Offset(
                     x = centerX - 15,
                     y = 10f
                 )
             )
             drawText(
-                textMeasurer = textMeasurer, text = "E", topLeft = Offset(
+                textMeasurer = textMeasurer,
+                text = "E",
+                style = TextStyle(color = Color.White),
+                topLeft = Offset(
                     x = size.width - 40,
                     y = centerY - 25
                 )
             )
             drawText(
-                textMeasurer = textMeasurer, text = "S", topLeft = Offset(
-                    x = centerX -15,
+                textMeasurer = textMeasurer,
+                text = "S",
+                style = TextStyle(color = Color.White),
+                topLeft = Offset(
+                    x = centerX - 15,
                     y = size.height - 60
                 )
             )
             drawText(
-                textMeasurer = textMeasurer, text = "W", topLeft = Offset(
+                textMeasurer = textMeasurer,
+                text = "W",
+                style = TextStyle(color = Color.White),
+                topLeft = Offset(
                     x = 10f,
                     y = centerY - 25
-                )
+                ),
+
             )
-            drawLine(color = White,start = Offset(0f, centerY),end = Offset(size.width, centerY))
+            //debug line
+//            drawLine(
+//                color = White,
+//                start = Offset(0f, centerY),
+//                end = Offset(size.width, centerY),
+//                strokeWidth = lineWidth
+//            )
+            //**
             withTransform({
                 rotate(degrees = animatedDegree)
             }) {
                 drawLine(
                     Color.White,
-                    start = Offset(centerX, 0f),
-                    end = Offset(centerX, size.height),
+                    start = Offset(centerX, centerY.minus(centerY.div(2))),
+                    end = Offset(centerX, centerY.plus(centerY.div(2))),
                     strokeWidth = lineWidth,
                     cap = StrokeCap.Round,
                 )
-                rotate(40f, pivot = Offset(centerX, 0f)) {
+                rotate(40f, pivot = Offset(centerX, centerY.minus(centerY.div(2)))) {
                     drawLine(
                         Color.Red,
-                        start = Offset(centerX, 0f),
-                        end = Offset(centerX, centerY / 2),
+                        start = Offset(centerX, centerY.minus(centerY.div(2))),
+                        end = Offset(centerX, centerY),
                         strokeWidth = lineWidth,
                         cap = StrokeCap.Round
                     )
                 }
-                rotate(-40f, pivot = Offset(centerX, 0f)) {
+                rotate(-40f, pivot = Offset(centerX, centerY.minus(centerY.div(2)))) {
                     drawLine(
                         Color.Red,
-                        start = Offset(centerX, 0f),
-                        end = Offset(centerX, centerY / 2),
+                        start = Offset(centerX, centerY.minus(centerY.div(2))),
+                        end = Offset(centerX, centerY),
                         strokeWidth = lineWidth,
                         cap = StrokeCap.Round
                     )
@@ -691,7 +712,7 @@ private fun SunPositionPreview() {
 @Composable
 private fun WindIndicatorPreview() {
     WeatherTheme {
-        WindDirectionIndicator(animatedDegree = 000f)
+        WindDirectionIndicator(animatedDegree = 0f)
     }
 }
 
