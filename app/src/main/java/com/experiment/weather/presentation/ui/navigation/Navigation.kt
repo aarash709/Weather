@@ -45,7 +45,7 @@ fun WeatherNavHost(navController: NavHostController) {
             },
             onBackPressed = {
                 navController.navigate(Graph.Forecast.graph, navOptions = navOptions {
-                    popUpTo(manageLocationsRoute) { inclusive = true }
+                    popUpTo(Graph.Forecast.graph) { inclusive = true }
                 })
             },
             onItemSelected = { cityName ->
