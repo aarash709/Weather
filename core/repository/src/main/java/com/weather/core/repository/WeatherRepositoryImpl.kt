@@ -50,8 +50,8 @@ class WeatherRepositoryImpl @Inject constructor(
         return localWeather.getLocalWeatherDataByCityName(cityName = cityName)
     }
 
+    @Deprecated("Use syncWeather with Coordinate parameter")
     override suspend fun syncWeather(cityName: String, coordinate: Coordinate) {
-        //work in progress
         val remoteWeatherInfo = remoteWeather.getRemoteData(
             coordinates = coordinate,
             exclude = "minutely"
@@ -74,12 +74,14 @@ class WeatherRepositoryImpl @Inject constructor(
     }
 
     override suspend fun syncWeather(coordinate: Coordinate) {
+        //work in progress
         try {
             val remoteWeatherInfo = remoteWeather.getRemoteData(
                 coordinates = coordinate,
                 exclude = "minutely"
             )
-            Timber.e(remoteWeatherInfo.data?.timezone.toString())
+            Timber.e("dt: ${remoteWeatherInfo.data?.daily?.first()?.dt.toString()}")
+            Timber.e("timezone: ${remoteWeatherInfo.data?.timezone.toString()}")
             remoteWeatherInfo.let {
                 localWeather.insertLocalData(
                     oneCall = remoteWeatherInfo.data!!.toEntity(cityName = coordinate.cityName.toString()),
@@ -92,6 +94,17 @@ class WeatherRepositoryImpl @Inject constructor(
                     hourly = remoteWeatherInfo.data!!.hourly.slice(0..12).map {
                         it.toEntity(cityName = coordinate.cityName.toString())
                     }
+                )
+                val firstDailyTimeStamp = it.data!!.daily.first().dt
+                val firstHourlyTimeStamp = it.data!!.hourly.first().dt
+                Timber.e(firstHourlyTimeStamp.toString())
+                localWeather.deleteDaily(
+                    cityName = coordinate.cityName!!,
+                    timeStamp = firstDailyTimeStamp
+                )
+                localWeather.deleteHourly(
+                    cityName = coordinate.cityName!!,
+                    timeStamp = firstHourlyTimeStamp
                 )
             }
         } catch (e: Exception) {
