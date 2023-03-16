@@ -7,6 +7,7 @@ data class ManageLocationsData(
     val currentTemp: String,
     val humidity: String,
     val feelsLike: String,
+    val isFavorite: Boolean = false,
 //    val tempHigh: Int,
 //    val tempLow:Int
 )

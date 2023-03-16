@@ -31,6 +31,7 @@ fun CustomSwipeDismiss(
     modifier: Modifier = Modifier,
     dismissThreshold: Float,
     onDeleteItem: () -> Unit,
+    onSetFavoriteItem: () -> Unit,
     content: @Composable () -> Unit,
 ) = BoxWithConstraints(modifier = modifier) {
     val height = maxHeight.value
@@ -50,6 +51,7 @@ fun CustomSwipeDismiss(
                 }
                 dismissValue == DismissValue.DismissedToEnd &&
                         allowedToDismissDirection == DismissDirection.StartToEnd -> {
+                    onSetFavoriteItem()
                     false
                 }
                 else -> false

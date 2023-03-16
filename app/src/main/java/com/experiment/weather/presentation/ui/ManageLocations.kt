@@ -3,6 +3,7 @@ package com.experiment.weather.presentation.ui
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.view.HapticFeedbackConstants
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -57,6 +58,14 @@ fun ManageLocations(
             onDeleteItem = { locationData ->
                 val cityName = locationData.locationName
                 viewModel.deleteWeatherByCityName(cityName = cityName)
+            },
+            onSetFavoriteItem = { locationData ->
+                val coordinate = Coordinate(
+                    cityName = locationData.locationName,
+                    latitude = locationData.latitude,
+                    longitude = locationData.longitude
+                )
+                viewModel.saveFavoriteCityCoordinate(coordinate)
             }
         )
     }
@@ -71,6 +80,7 @@ fun ManageLocations(
     onBackPressed: () -> Unit,
     onItemSelected: (Coordinate) -> Unit,
     onDeleteItem: (ManageLocationsData) -> Unit,
+    onSetFavoriteItem: (ManageLocationsData) -> Unit,
 ) {
     //stateless
     when (dataState) {
@@ -102,6 +112,9 @@ fun ManageLocations(
                     },
                     onDeleteItem = { locationData ->
                         onDeleteItem(locationData)
+                    },
+                    onSetFavoriteItem = { locationsData ->
+                        onSetFavoriteItem(locationsData)
                     })
             }
         }
@@ -144,6 +157,7 @@ fun FavoriteLocations(
     dataList: List<ManageLocationsData>,
     onItemSelected: (Coordinate) -> Unit,
     onDeleteItem: (ManageLocationsData) -> Unit,
+    onSetFavoriteItem: (ManageLocationsData) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier,
@@ -156,7 +170,8 @@ fun FavoriteLocations(
             CustomSwipeDismiss(
                 modifier = Modifier.animateItemPlacement(),
                 dismissThreshold = 0.5f,
-                onDeleteItem = { onDeleteItem(currentItem) }
+                onDeleteItem = { onDeleteItem(currentItem) },
+                onSetFavoriteItem = { onSetFavoriteItem(currentItem) }
             ) {
                 SavedLocationItem(
                     data = locationData,
@@ -179,6 +194,7 @@ fun SavedLocationItem(
         modifier = Modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
+        border = if (data.isFavorite) BorderStroke(width = 1.dp, color = MaterialTheme.colors.primary) else null,
         onClick = { onItemSelected(Coordinate(data.locationName, data.latitude, data.longitude)) }
     ) {
         Row(
@@ -336,7 +352,8 @@ fun ManageLocationsPreview() {
                 onNavigateToSearch = {},
                 onBackPressed = {},
                 onItemSelected = {},
-                onDeleteItem = {})
+                onDeleteItem = {},
+                onSetFavoriteItem = {})
         }
     }
 }

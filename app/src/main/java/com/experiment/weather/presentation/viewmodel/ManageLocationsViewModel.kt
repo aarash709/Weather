@@ -15,11 +15,11 @@ import com.weather.model.Coordinate
 import com.weather.model.ManageLocationsData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.serialization.SerializationStrategy
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import timber.log.Timber
@@ -33,14 +33,23 @@ class ManageLocationsViewModel @Inject constructor(
 
     private val hapticFeedback = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
-    val locationsState = weatherRepository.getAllWeatherLocations().map {
-        LocationsUIState.Success(it)
-    }.stateIn(
-        viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = LocationsUIState.Loading
-    )
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val locationsState = weatherRepository.getAllWeatherLocations()
+        .combine(getFavoriteCityCoordinate()) { weatherList, favoriteCoordinate ->
+            val locationData = weatherList.map {
+                val isFavorite = it.locationName == favoriteCoordinate.cityName
+                it.copy(isFavorite = isFavorite)
+            }
+            LocationsUIState.Success(locationData)
+        }
+        .flowOn(Dispatchers.IO)
+        .stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = LocationsUIState.Loading
+        )
 
+    @Deprecated("use new method")
     fun saveFavoriteCity(cityName: String) {
         if (cityName.isEmpty()) {
             Timber.e("city name is empty")
@@ -60,6 +69,19 @@ class ManageLocationsViewModel @Inject constructor(
                 preference[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_Coordinate_String_Key] =
                     coordinateString
             }
+        }
+    }
+
+    @ExperimentalCoroutinesApi
+    private fun getFavoriteCityCoordinate(): Flow<Coordinate> {
+        return context.dataStore.data.map { preferences ->
+            val string =
+                preferences[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_Coordinate_String_Key]
+                    ?: ""
+            Timber.e(string)
+            string
+        }.map { coordinate ->
+            Json.decodeFromString<Coordinate>(coordinate)
         }
     }
 
