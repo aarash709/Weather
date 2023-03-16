@@ -70,6 +70,10 @@ class WeatherRepositoryImpl @Inject constructor(
                     it.toEntity(cityName = cityName)
                 }
             )
+            val firstDailyTimeStamp = remoteWeatherInfo.data!!.daily.first().dt
+            val firstHourlyTimeStamp = remoteWeatherInfo.data!!.hourly.first().dt
+            localWeather.deleteDaily(cityName, firstDailyTimeStamp)
+            localWeather.deleteHourly(cityName, firstHourlyTimeStamp)
         }
     }
 
