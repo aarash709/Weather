@@ -81,7 +81,8 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
     implementation("com.google.dagger:hilt-android:2.44.2")
     kapt("com.google.dagger:hilt-compiler:2.44.2")
-
+    //work
+    implementation("androidx.work:work-runtime-ktx:${rootProject.extra.get("work_version")}")
     //datastore
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 

@@ -4,21 +4,25 @@ import android.app.Application
 import android.content.Context
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
+import androidx.work.Data
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import com.weather.core.repository.WeatherRepository
 import com.weather.model.Coordinate
 import com.weather.model.WeatherData
+import com.weather.sync.work.FetchRemoteWeatherWorker
+import com.weather.sync.work.WEATHER_COORDINATE
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.encodeToJsonElement
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
@@ -43,6 +47,20 @@ class ForecastViewModel @Inject constructor(
     private val _isSyncing = MutableStateFlow(false)
     val isSyncing = _isSyncing.asStateFlow()
 
+    private val workManager = WorkManager.getInstance(context)
+    internal var workInfoList =
+        workManager
+            .getWorkInfosForUniqueWorkLiveData(
+                "weatherSyncWorkName"
+            )
+            .asFlow()
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(1000),
+                initialValue = emptyList()
+            )
+
+
     init {
         Timber.e("init")
         Timber.e("navigated city:$cityName")
@@ -63,7 +81,8 @@ class ForecastViewModel @Inject constructor(
             .combine(getFavoriteCityCoordinate()) { allWeather, coordinate ->
                 Timber.e("cityName: ${coordinate.cityName}")
                 if (coordinate.cityName.isNullOrBlank() ||
-                    allWeather.all { it.coordinates.name != coordinate.cityName })
+                    allWeather.all { it.coordinates.name != coordinate.cityName }
+                )
                     allWeather.first()
                 else
                     allWeather.first { it.coordinates.name == coordinate.cityName }
@@ -97,7 +116,7 @@ class ForecastViewModel @Inject constructor(
 
     private fun getFavoriteCity(): Flow<String> {
         return context.dataStore.data.map { preferences ->
-            val city = preferences[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_String_Key] ?: ""
+            val city = preferences[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_STRING_KEY] ?: ""
             city
         }
     }
@@ -106,8 +125,9 @@ class ForecastViewModel @Inject constructor(
     @ExperimentalCoroutinesApi
     private fun getFavoriteCityCoordinate(): Flow<Coordinate> {
         return context.dataStore.data.map { preferences ->
-            val string =preferences[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_Coordinate_String_Key]
-                ?: ""
+            val string =
+                preferences[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_COORDINATE_STRING_KEY]
+                    ?: ""
             Timber.e(string)
             string
         }.map { coordinate ->
@@ -126,6 +146,25 @@ class ForecastViewModel @Inject constructor(
         }
     }
 
+    fun sync(savedCityCoordinate: Coordinate) {
+        val coordinate = Coordinate(
+            cityName = savedCityCoordinate.cityName,
+            latitude = savedCityCoordinate.latitude,
+            longitude = savedCityCoordinate.longitude
+        )
+        val stringCoordinate = Json.encodeToString(coordinate)
+        val workInputData = Data.Builder()
+            .putString(WEATHER_COORDINATE, stringCoordinate).build()
+        val fetchDataWorkRequest =
+            OneTimeWorkRequestBuilder<FetchRemoteWeatherWorker>().setInputData(workInputData)
+                .build()
+        workManager.beginUniqueWork(
+            "weatherSyncWorkName",
+            ExistingWorkPolicy.KEEP,
+            fetchDataWorkRequest
+        ).enqueue()
+    }
+
     private fun unixMillisToHumanDate(unixTimeStamp: Long, pattern: String): String {
         val formatter = SimpleDateFormat(pattern, Locale.getDefault())
         val date = Date(unixTimeStamp * 1000) //to millisecond
@@ -136,8 +175,8 @@ class ForecastViewModel @Inject constructor(
 
 object DataStoreKeys {
     object WeatherDataStore {
-        val FAVORITE_CITY_String_Key = stringPreferencesKey("favoriteCity")
-        val FAVORITE_CITY_Coordinate_String_Key = stringPreferencesKey("favoriteCityCoordinate")
+        val FAVORITE_CITY_STRING_KEY = stringPreferencesKey("favoriteCity")
+        val FAVORITE_CITY_COORDINATE_STRING_KEY = stringPreferencesKey("favoriteCityCoordinate")
     }
 }
 
