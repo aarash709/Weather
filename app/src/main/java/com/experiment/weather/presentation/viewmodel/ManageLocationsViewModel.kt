@@ -2,9 +2,7 @@ package com.experiment.weather.presentation.viewmodel
 
 import android.app.Application
 import android.content.Context
-import android.os.VibrationEffect
 import android.os.Vibrator
-import android.os.VibratorManager
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,7 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -57,7 +54,7 @@ class ManageLocationsViewModel @Inject constructor(
         }
         viewModelScope.launch(Dispatchers.IO) {
             context.dataStore.edit { preference ->
-                preference[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_String_Key] = cityName
+                preference[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_STRING_KEY] = cityName
             }
         }
     }
@@ -66,7 +63,7 @@ class ManageLocationsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val coordinateString = Json.encodeToString(coordinate)
             context.dataStore.edit { preference ->
-                preference[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_Coordinate_String_Key] =
+                preference[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_COORDINATE_STRING_KEY] =
                     coordinateString
             }
         }
@@ -76,7 +73,7 @@ class ManageLocationsViewModel @Inject constructor(
     private fun getFavoriteCityCoordinate(): Flow<Coordinate> {
         return context.dataStore.data.map { preferences ->
             val string =
-                preferences[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_Coordinate_String_Key]
+                preferences[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_COORDINATE_STRING_KEY]
                     ?: ""
             Timber.e(string)
             string

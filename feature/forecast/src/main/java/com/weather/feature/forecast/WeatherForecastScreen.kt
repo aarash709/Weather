@@ -21,6 +21,7 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -32,9 +33,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.work.WorkInfo
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.feature.forecast.components.Daily
 import com.weather.feature.forecast.components.HourlyForecast
+import com.weather.model.Coordinate
 import com.weather.model.Current
 import com.weather.model.OneCallCoordinates
 import com.weather.model.WeatherData
@@ -58,7 +61,7 @@ fun WeatherForecastScreen(
     val weatherUIState by viewModel
         .weatherUIState.collectAsStateWithLifecycle()
     val isSyncing by viewModel.isSyncing.collectAsStateWithLifecycle()
-
+    val syncing by viewModel.workInfoList.collectAsStateWithLifecycle()
     if (databaseIsEmpty) {
         LaunchedEffect(key1 = Unit) {
             navigateToOnboard()
@@ -67,7 +70,7 @@ fun WeatherForecastScreen(
         Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
             WeatherForecastScreen(
                 weatherUIState = weatherUIState,
-                isSyncing = isSyncing,
+                isSyncing = syncing,
                 onNavigateToManageLocations = { navigateToManageLocations() },
                 onRefresh = viewModel::sync
             )
@@ -81,25 +84,31 @@ fun WeatherForecastScreen(
     weatherUIState: WeatherUIState,
     isSyncing: Boolean,
     onNavigateToManageLocations: () -> Unit,
-    onRefresh: () -> Unit,
+    onRefresh: (Coordinate) -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
-    val pullRefreshState = rememberPullRefreshState(
-        refreshing = isSyncing,
-        onRefresh = onRefresh,
-    )
+
     // stateless
     Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp)
-            .pullRefresh(pullRefreshState)
     ) {
         when (weatherUIState) {
             WeatherUIState.Loading -> ShowLoading()
             is WeatherUIState.Success -> {
+                val pullRefreshState = rememberPullRefreshState(
+                    refreshing = isSyncing,
+                    onRefresh = {
+                        onRefresh(weatherUIState.data.coordinates.let {
+                            Coordinate(it.name, it.lat.toString(), it.lon.toString())
+                        })
+                    },
+                )
                 Column(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .pullRefresh(pullRefreshState),
                     verticalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
                     TopAppBar(
