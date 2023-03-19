@@ -132,7 +132,7 @@ class ForecastViewModel @Inject constructor(
         }
     }
 
-
+    @Deprecated("Use new sync which is using workManager APIs")
     @ExperimentalCoroutinesApi
     fun sync() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -158,12 +158,12 @@ class ForecastViewModel @Inject constructor(
                 OneTimeWorkRequestBuilder<FetchRemoteWeatherWorker>().setInputData(workInputData)
                     .build()
             workManager.beginUniqueWork(
-                "weatherSyncWorkName",
+                WEATHER_FETCH_WORK_NAME,
                 ExistingWorkPolicy.KEEP,
                 fetchDataWorkRequest
             ).enqueue()
-            _isSyncing.value = false
         }
+            _isSyncing.value = false
     }
 
     private fun unixMillisToHumanDate(unixTimeStamp: Long, pattern: String): String {
@@ -185,3 +185,4 @@ sealed class WeatherUIState {
     object Loading : WeatherUIState()
     data class Success(val data: WeatherData) : WeatherUIState()
 }
+internal const val WEATHER_FETCH_WORK_NAME = "weatherSyncWorkName"

@@ -61,8 +61,8 @@ fun WeatherForecastScreen(
     val weatherUIState by viewModel
         .weatherUIState.collectAsStateWithLifecycle()
     val isSyncing by viewModel.isSyncing.collectAsStateWithLifecycle()
-//    val info = viewModel.workInfoList.observeAsState().value?.state?.isFinished
-
+    LaunchedEffect(key1 = Unit) {
+    }
     if (databaseIsEmpty) {
         LaunchedEffect(key1 = Unit) {
             navigateToOnboard()
@@ -109,7 +109,6 @@ fun WeatherForecastScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp)
                         .pullRefresh(pullRefreshState),
                     verticalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
