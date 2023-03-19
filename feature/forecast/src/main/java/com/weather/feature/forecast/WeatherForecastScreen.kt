@@ -21,6 +21,7 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -32,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.work.WorkInfo
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.feature.forecast.components.Daily
 import com.weather.feature.forecast.components.HourlyForecast
@@ -59,13 +61,7 @@ fun WeatherForecastScreen(
     val weatherUIState by viewModel
         .weatherUIState.collectAsStateWithLifecycle()
     val isSyncing by viewModel.isSyncing.collectAsStateWithLifecycle()
-    var syncing by remember {
-        mutableStateOf(false)
-    }
-    val workInfoList by viewModel.workInfoList.collectAsStateWithLifecycle()
-    LaunchedEffect(key1 = workInfoList){
-        syncing = workInfoList.first().state.isFinished
-    }
+//    val info = viewModel.workInfoList.observeAsState().value?.state?.isFinished
 
     if (databaseIsEmpty) {
         LaunchedEffect(key1 = Unit) {
@@ -75,7 +71,7 @@ fun WeatherForecastScreen(
         Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
             WeatherForecastScreen(
                 weatherUIState = weatherUIState,
-                isSyncing = syncing,
+                isSyncing = isSyncing,
                 onNavigateToManageLocations = { navigateToManageLocations() },
                 onRefresh = viewModel::sync
             )

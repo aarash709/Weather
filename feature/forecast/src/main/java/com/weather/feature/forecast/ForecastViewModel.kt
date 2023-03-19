@@ -48,17 +48,14 @@ class ForecastViewModel @Inject constructor(
     val isSyncing = _isSyncing.asStateFlow()
 
     private val workManager = WorkManager.getInstance(context)
-    internal var workInfoList =
-        workManager
-            .getWorkInfosForUniqueWorkLiveData(
-                "weatherSyncWorkName"
-            )
-            .asFlow()
-            .stateIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(1000),
-                initialValue = emptyList()
-            )
+//    internal var workInfoList =
+//        workManager
+//            .getWorkInfosForUniqueWorkLiveData(
+//                "weatherSyncWorkName"
+//            )
+//            .map {
+//                it.first()
+//            }
 
 
     init {
@@ -147,22 +144,26 @@ class ForecastViewModel @Inject constructor(
     }
 
     fun sync(savedCityCoordinate: Coordinate) {
-        val coordinate = Coordinate(
-            cityName = savedCityCoordinate.cityName,
-            latitude = savedCityCoordinate.latitude,
-            longitude = savedCityCoordinate.longitude
-        )
-        val stringCoordinate = Json.encodeToString(coordinate)
-        val workInputData = Data.Builder()
-            .putString(WEATHER_COORDINATE, stringCoordinate).build()
-        val fetchDataWorkRequest =
-            OneTimeWorkRequestBuilder<FetchRemoteWeatherWorker>().setInputData(workInputData)
-                .build()
-        workManager.beginUniqueWork(
-            "weatherSyncWorkName",
-            ExistingWorkPolicy.KEEP,
-            fetchDataWorkRequest
-        ).enqueue()
+        viewModelScope.launch {
+            _isSyncing.value = true
+            val coordinate = Coordinate(
+                cityName = savedCityCoordinate.cityName,
+                latitude = savedCityCoordinate.latitude,
+                longitude = savedCityCoordinate.longitude
+            )
+            val stringCoordinate = Json.encodeToString(coordinate)
+            val workInputData = Data.Builder()
+                .putString(WEATHER_COORDINATE, stringCoordinate).build()
+            val fetchDataWorkRequest =
+                OneTimeWorkRequestBuilder<FetchRemoteWeatherWorker>().setInputData(workInputData)
+                    .build()
+            workManager.beginUniqueWork(
+                "weatherSyncWorkName",
+                ExistingWorkPolicy.KEEP,
+                fetchDataWorkRequest
+            ).enqueue()
+            _isSyncing.value = false
+        }
     }
 
     private fun unixMillisToHumanDate(unixTimeStamp: Long, pattern: String): String {
