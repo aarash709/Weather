@@ -61,8 +61,7 @@ fun WeatherForecastScreen(
     val weatherUIState by viewModel
         .weatherUIState.collectAsStateWithLifecycle()
     val isSyncing by viewModel.isSyncing.collectAsStateWithLifecycle()
-    LaunchedEffect(key1 = Unit) {
-    }
+    val syncing by viewModel.workInfoList.collectAsStateWithLifecycle()
     if (databaseIsEmpty) {
         LaunchedEffect(key1 = Unit) {
             navigateToOnboard()
@@ -71,7 +70,7 @@ fun WeatherForecastScreen(
         Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
             WeatherForecastScreen(
                 weatherUIState = weatherUIState,
-                isSyncing = isSyncing,
+                isSyncing = syncing,
                 onNavigateToManageLocations = { navigateToManageLocations() },
                 onRefresh = viewModel::sync
             )

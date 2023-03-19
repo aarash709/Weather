@@ -48,15 +48,15 @@ class ForecastViewModel @Inject constructor(
     val isSyncing = _isSyncing.asStateFlow()
 
     private val workManager = WorkManager.getInstance(context)
-//    internal var workInfoList =
-//        workManager
-//            .getWorkInfosForUniqueWorkLiveData(
-//                "weatherSyncWorkName"
-//            )
-//            .map {
-//                it.first()
-//            }
-
+    internal var workInfoList =
+        workManager
+            .getWorkInfosForUniqueWorkLiveData(
+                WEATHER_FETCH_WORK_NAME
+            ).asFlow()
+            .map {
+                it.first().state == WorkInfo.State.RUNNING
+            }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), false)
 
     init {
         Timber.e("init")
@@ -145,7 +145,6 @@ class ForecastViewModel @Inject constructor(
 
     fun sync(savedCityCoordinate: Coordinate) {
         viewModelScope.launch {
-            _isSyncing.value = true
             val coordinate = Coordinate(
                 cityName = savedCityCoordinate.cityName,
                 latitude = savedCityCoordinate.latitude,
@@ -163,7 +162,6 @@ class ForecastViewModel @Inject constructor(
                 fetchDataWorkRequest
             ).enqueue()
         }
-            _isSyncing.value = false
     }
 
     private fun unixMillisToHumanDate(unixTimeStamp: Long, pattern: String): String {
@@ -185,4 +183,5 @@ sealed class WeatherUIState {
     object Loading : WeatherUIState()
     data class Success(val data: WeatherData) : WeatherUIState()
 }
+
 internal const val WEATHER_FETCH_WORK_NAME = "weatherSyncWorkName"
