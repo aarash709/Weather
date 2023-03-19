@@ -36,6 +36,12 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    buildFeatures{
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = rootProject.extra.get("compose_compiler_version") as String
+    }
 }
 
 dependencies {
@@ -43,6 +49,7 @@ dependencies {
     implementation(project(":core:repository"))
     implementation(project(":core:design"))
     implementation(project(":feature:forecast"))
+    implementation(project(":feature:search"))
     implementation(project(":core:model"))
 //Compose
     implementation(platform("androidx.compose:compose-bom:${rootProject.extra.get("compose_bom_version")}"))

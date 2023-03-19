@@ -6,10 +6,13 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.navOptions
-import com.experiment.weather.presentation.manageLocationsRoute
-import com.experiment.weather.presentation.manageLocationsScreen
-import com.experiment.weather.presentation.toManageLocations
+//import com.experiment.weather.presentation.manageLocationsRoute
+//import com.experiment.weather.presentation.manageLocationsScreen
+//import com.experiment.weather.presentation.toManageLocations
 import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.weather.feature.managelocations.manageLocationsRoute
+import com.weather.feature.managelocations.manageLocationsScreen
+import com.weather.feature.managelocations.toManageLocations
 import com.weather.feature.search.searchScreen
 import com.weather.feature.search.toSearchScreen
 import kotlinx.coroutines.ExperimentalCoroutinesApi

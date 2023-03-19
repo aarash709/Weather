@@ -71,6 +71,7 @@ dependencies {
     implementation(project(":core:repository"))
     implementation(project(":feature:forecast"))
     implementation(project(":feature:search"))
+    implementation(project(":feature:managelocations"))
     implementation(project(":sync:work"))
 
     //Kotlin-Core
