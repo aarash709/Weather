@@ -40,6 +40,7 @@ android {
 
 dependencies {
 
+    implementation(project(":feature:forecast"))
     implementation(project(":core:repository"))
     implementation(project(":core:design"))
     implementation(project(":core:model"))

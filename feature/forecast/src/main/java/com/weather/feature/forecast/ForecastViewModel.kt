@@ -76,13 +76,13 @@ class ForecastViewModel @Inject constructor(
     private fun getWeatherData(): Flow<WeatherUIState> {
         return weatherRepository.getAllForecastWeatherData()
             .combine(getFavoriteCityCoordinate()) { allWeather, coordinate ->
-                Timber.e("cityName: ${coordinate.cityName}")
-                if (coordinate.cityName.isNullOrBlank() ||
-                    allWeather.all { it.coordinates.name != coordinate.cityName }
+                Timber.e("cityName: ${coordinate?.cityName}")
+                if (coordinate?.cityName.isNullOrBlank() ||
+                    allWeather.all { it.coordinates.name != coordinate?.cityName }
                 )
                     allWeather.first()
                 else
-                    allWeather.first { it.coordinates.name == coordinate.cityName }
+                    allWeather.first { it.coordinates.name == coordinate?.cityName }
             }
             .flowOn(Dispatchers.IO)
             .map { weather ->
@@ -120,15 +120,17 @@ class ForecastViewModel @Inject constructor(
 
 
     @ExperimentalCoroutinesApi
-    private fun getFavoriteCityCoordinate(): Flow<Coordinate> {
+    private fun getFavoriteCityCoordinate(): Flow<Coordinate?> {
         return context.dataStore.data.map { preferences ->
             val string =
                 preferences[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_COORDINATE_STRING_KEY]
                     ?: ""
             Timber.e(string)
-            string
-        }.map { coordinate ->
-            Json.decodeFromString<Coordinate>(coordinate)
+            if (string.isEmpty()) {
+                null
+            } else {
+                Json.decodeFromString<Coordinate>(string)
+            }
         }
     }
 
@@ -138,7 +140,7 @@ class ForecastViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             _isSyncing.value = true
             val coordinate = getFavoriteCityCoordinate().first()
-            weatherRepository.syncWeather(coordinate)
+            weatherRepository.syncWeather(coordinate!!)
             _isSyncing.value = false
         }
     }

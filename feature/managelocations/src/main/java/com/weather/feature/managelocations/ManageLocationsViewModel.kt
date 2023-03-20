@@ -2,9 +2,7 @@ package com.weather.feature.managelocations
 
 import android.app.Application
 import android.content.Context
-import android.os.VibrationEffect
 import android.os.Vibrator
-import android.os.VibratorManager
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.ViewModel
@@ -18,7 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -37,10 +34,12 @@ class ManageLocationsViewModel @Inject constructor(
     val locationsState = weatherRepository.getAllWeatherLocations()
         .combine(getFavoriteCityCoordinate()) { weatherList, favoriteCoordinate ->
             val locationData = weatherList.map {
-                val isFavorite = it.locationName == favoriteCoordinate.cityName
+                val isFavorite = it.locationName == favoriteCoordinate?.cityName
                 it.copy(isFavorite = isFavorite)
             }
             LocationsUIState.Success(locationData)
+        }.catch {
+            Timber.e(it.message)
         }
         .flowOn(Dispatchers.IO)
         .stateIn(
@@ -73,15 +72,17 @@ class ManageLocationsViewModel @Inject constructor(
     }
 
     @ExperimentalCoroutinesApi
-    private fun getFavoriteCityCoordinate(): Flow<Coordinate> {
+    private fun getFavoriteCityCoordinate(): Flow<Coordinate?> {
         return context.dataStore.data.map { preferences ->
-            val string =
+            val coordinateString =
                 preferences[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_Coordinate_String_Key]
                     ?: ""
-            Timber.e(string)
-            string
-        }.map { coordinate ->
-            Json.decodeFromString<Coordinate>(coordinate)
+            Timber.e(coordinateString)
+            if (coordinateString.isEmpty()) {
+                null
+            } else {
+                Json.decodeFromString<Coordinate>(coordinateString)
+            }
         }
     }
 
@@ -100,6 +101,7 @@ sealed interface LocationsUIState {
     object Loading : LocationsUIState
     data class Success(val data: List<ManageLocationsData>) : LocationsUIState
 }
+
 object DataStoreKeys {
     object WeatherDataStore {
         val FAVORITE_CITY_String_Key = stringPreferencesKey("favoriteCity")
