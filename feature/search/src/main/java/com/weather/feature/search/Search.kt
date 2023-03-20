@@ -138,6 +138,7 @@ private fun TopSearchBar(
     onClearSearch: () -> Unit,
 ) {
     val textFieldColors = TextFieldDefaults.textFieldColors(
+        textColor = MaterialTheme.colors.onSurface,
         focusedIndicatorColor = Color.Transparent,
         unfocusedIndicatorColor = Color.Transparent,
         errorIndicatorColor = Color.Transparent,
