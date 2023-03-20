@@ -5,7 +5,6 @@ plugins {
     id ("org.jetbrains.kotlin.plugin.serialization")
     id ("org.jetbrains.kotlin.android")
     id ("kotlin-kapt")
-//  id "(com.google.devtools.ksp") // use new guide for KSP
 }
 
 kapt {
