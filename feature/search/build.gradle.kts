@@ -69,26 +69,20 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:${rootProject.extra.get("lifecycle_version")}")
     //serializer
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+    //datastore
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
     //work
     implementation("androidx.work:work-runtime-ktx:${rootProject.extra.get("work_version")}")
 
     //Lifecycle components
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${rootProject.extra.get("lifecycle_version")}")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:${rootProject.extra.get("lifecycle_version")}")
-    implementation("androidx.activity:activity-compose:1.6.1")
 
     //Hilt
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
     implementation("com.google.dagger:hilt-android:2.44.2")
     kapt("com.google.dagger:hilt-compiler:2.44.2")
-    //datastore
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
     //Timber Logging
     implementation("com.jakewharton.timber:timber:5.0.1")
-
-    implementation("androidx.core:core-ktx:1.9.0")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.8.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

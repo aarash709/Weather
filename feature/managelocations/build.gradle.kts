@@ -13,7 +13,7 @@ android {
     compileSdk = 33
 
     defaultConfig {
-        minSdk = 24
+        minSdk = 26
         targetSdk = 33
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -30,13 +30,13 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
-    buildFeatures{
+    buildFeatures {
         compose = true
     }
     composeOptions {
@@ -48,23 +48,29 @@ dependencies {
 
     implementation(project(":core:repository"))
     implementation(project(":core:design"))
-    implementation(project(":feature:forecast"))
-    implementation(project(":feature:search"))
+    implementation(project(":feature:forecast")) //needs removal
+    implementation(project(":feature:search")) //needs removal
     implementation(project(":core:model"))
-//Compose
+    //Compose
     implementation(platform("androidx.compose:compose-bom:${rootProject.extra.get("compose_bom_version")}"))
     implementation("androidx.compose.ui:ui:")
     implementation("androidx.compose.material:material:")
     implementation("androidx.compose.material:material-icons-extended:")
     implementation("androidx.compose.ui:ui-tooling-preview:")
-    debugImplementation ("androidx.compose.ui:ui-tooling:")
+    debugImplementation("androidx.compose.ui:ui-tooling:")
     implementation("androidx.compose.runtime:runtime:")
     implementation("androidx.compose.runtime:runtime-livedata:")
     implementation("androidx.compose.foundation:foundation:")
     implementation("androidx.compose.animation:animation:")
     //navigation
     implementation("androidx.navigation:navigation-compose:${rootProject.extra.get("compose_nav_version")}")
-    implementation("com.google.accompanist:accompanist-navigation-animation:${rootProject.extra.get("accompanist_version")}")
+    implementation(
+        "com.google.accompanist:accompanist-navigation-animation:${
+            rootProject.extra.get(
+                "accompanist_version"
+            )
+        }"
+    )
     //LifeCycle Components
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:${rootProject.extra.get("lifecycle_version")}")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0-beta01") //experimental
@@ -80,9 +86,6 @@ dependencies {
     //Timber Logging
     implementation("com.jakewharton.timber:timber:5.0.1")
     //
-    implementation("androidx.core:core-ktx:1.7.0")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.8.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
