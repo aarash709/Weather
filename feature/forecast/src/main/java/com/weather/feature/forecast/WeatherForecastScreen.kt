@@ -157,7 +157,7 @@ fun ConditionAndDetails(weatherData: WeatherData) {
     ) {
         Spacer(modifier = Modifier.height(100.dp))
         CurrentWeather(
-            modifier = Modifier.padding(vertical = 64.dp),
+            modifier = Modifier.padding(vertical = 60.dp),
             weatherData = weatherData.current
         )
         Spacer(modifier = Modifier.height(100.dp))
