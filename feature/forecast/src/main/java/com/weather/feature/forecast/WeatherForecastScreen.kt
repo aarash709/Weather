@@ -151,30 +151,34 @@ fun ConditionAndDetails(weatherData: WeatherData) {
 //        CurrentWeatherDetails(
 //            weatherData = weatherData.current
 //        )
-        Row(
-            modifier = Modifier
-                .height(IntrinsicSize.Max)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            WindDetails(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f),
-                weatherData.current.wind_deg.toFloat(),
-                weatherData.current.wind_speed.toFloat()
-            )
-            CurrentDetails(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(1f),
-                weatherData.current.visibility.toString(),
-                weatherData.current.humidity.toString(),
-                weatherData.current.pressure.toString(),
-            )
-        }
+//        Row(
+//            modifier = Modifier
+//                .height(IntrinsicSize.Max)
+//                .fillMaxWidth(),
+//            horizontalArrangement = Arrangement.spacedBy(8.dp)
+//        ) {
+//            WindDetails(
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .weight(1f),
+//                weatherData.current.wind_deg.toFloat(),
+//                weatherData.current.wind_speed.toFloat()
+//            )
+//            CurrentDetails(
+//                modifier = Modifier
+//                    .fillMaxHeight()
+//                    .weight(1f),
+//                weatherData.current.visibility.toString(),
+//                weatherData.current.humidity.toString(),
+//                weatherData.current.pressure.toString(),
+//            )
+//        }
+        CurrentWeatherDetails(
+            modifier = Modifier.padding(horizontal = 1.dp).fillMaxWidth(),
+            weatherData = weatherData.current)
 //        SunMoonPosition()
-        Daily(dailyList = weatherData.daily.map { it.toDailyPreview() })
+        Daily(
+            dailyList = weatherData.daily.map { it.toDailyPreview() })
         HourlyForecast(
             modifier = Modifier
                 .padding(bottom = 16.dp),
@@ -222,7 +226,9 @@ fun WindDetails(
         modifier = modifier,
         shape = RoundedCornerShape(8.dp),
     ) {
-        Row(modifier = Modifier.padding(8.dp).height(IntrinsicSize.Max),
+        Row(modifier = Modifier
+            .padding(8.dp)
+            .height(IntrinsicSize.Max),
         verticalAlignment = Alignment.CenterVertically) {
             BoxedWindIndicator(
                 modifier = Modifier.weight(2f),
@@ -530,12 +536,11 @@ private fun CurrentWeather(
 
 @Composable
 fun CurrentWeatherDetails(
+    modifier: Modifier = Modifier,
     weatherData: Current,
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp),
+        modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         WeatherDetailItem(
