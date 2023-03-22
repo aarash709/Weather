@@ -149,35 +149,9 @@ fun ConditionAndDetails(weatherData: WeatherData) {
             weatherData = weatherData.current
         )
         Spacer(modifier = Modifier.height(100.dp))
-//        CurrentWeatherDetails(
-//            weatherData = weatherData.current
-//        )
-//        Row(
-//            modifier = Modifier
-//                .height(IntrinsicSize.Max)
-//                .fillMaxWidth(),
-//            horizontalArrangement = Arrangement.spacedBy(8.dp)
-//        ) {
-//            WindDetails(
-//                modifier = Modifier
-//                    .fillMaxSize()
-//                    .weight(1f),
-//                weatherData.current.wind_deg.toFloat(),
-//                weatherData.current.wind_speed.toFloat()
-//            )
-//            CurrentDetails(
-//                modifier = Modifier
-//                    .fillMaxHeight()
-//                    .weight(1f),
-//                weatherData.current.visibility.toString(),
-//                weatherData.current.humidity.toString(),
-//                weatherData.current.pressure.toString(),
-//            )
-//        }
         CurrentWeatherDetails(
             modifier = Modifier.padding(horizontal = 1.dp).fillMaxWidth(),
             weatherData = weatherData.current)
-//        SunMoonPosition()
         Daily(
             modifier = Modifier.fillMaxWidth(),
             dailyList = weatherData.daily.map { it.toDailyPreview() })
@@ -333,14 +307,6 @@ fun WindDirectionIndicator(
                 ),
 
                 )
-            //debug line
-//            drawLine(
-//                color = White,
-//                start = Offset(0f, centerY),
-//                end = Offset(size.width, centerY),
-//                strokeWidth = lineWidth
-//            )
-            //**
             withTransform({
                 rotate(degrees = animatedDegree)
             }) {
@@ -376,24 +342,6 @@ fun WindDirectionIndicator(
                 radius = centerX,
                 style = Stroke(width = lineWidth)
             )
-//                drawRect(Color.White.copy(alpha = 0.5f), style = Stroke(lineWidth))
-//                val vertcalSize = size.width / (3 + 1)
-//                repeat(3) {
-//                    val startx = vertcalSize * (it + 1)
-//                    drawLine(
-//                        Color.White,
-//                        start = Offset(startx, 0f),
-//                        end = Offset(startx, size.height)
-//                    )
-//                }
-//                repeat(4) {
-//                    val startx = (size.height / (4 + 1)) * (it + 1)
-//                    drawLine(
-//                        Color.White,
-//                        start = Offset(0f, startx),
-//                        end = Offset(size.width, startx)
-//                    )
-//                }
         }
     }
 }
@@ -506,7 +454,6 @@ private fun TopBar(
                 contentDescription = "Location Picker Icon"
             )
         }
-//        Switch(checked = false, onCheckedChange = {/*todo change theme*/ })
         Icon(
             imageVector = Icons.Default.Menu,
             contentDescription = "Location Pick Icon"
@@ -615,16 +562,6 @@ private fun CurrentTempAndCondition(
         modifier = modifier,
         horizontalArrangement = Arrangement.Center
     ) {
-//        AsyncImage(
-//            model = "https://openweathermap.org/img/wn/$icon@2x.png",
-//            contentDescription = "WeatherIcon",
-//            modifier = Modifier.size(120.dp)
-//        )
-//        Image(
-//            imageVector = Icons.Outlined.WbCloudy,
-//            contentDescription = "Current Weather",
-//            modifier = Modifier.size(128.dp)
-//        )
         Column(
             modifier = Modifier,
             horizontalAlignment = Alignment.CenterHorizontally,
