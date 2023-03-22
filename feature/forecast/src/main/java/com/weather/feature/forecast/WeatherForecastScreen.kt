@@ -574,12 +574,12 @@ private fun CurrentTempAndCondition(
             )
             Text(
                 text = "$temp°",
-                fontSize = 60.sp,
+                fontSize = 70.sp,
                 color = MaterialTheme.colors.onBackground
             )
             Text(
                 text = "Feels like $feelsLikeTemp°",
-                fontSize = 12.sp,
+                fontSize = 14.sp,
                 color = MaterialTheme.colors.onBackground.copy(alpha = 0.7f)
             )
         }
@@ -616,7 +616,7 @@ fun MainPagePreview() {
                     wind_gust = 1.71,
                     wind_speed = 2.64,
                     weather = listOf(
-                        Weather("", "", 0, "")
+                        Weather("", "", 0, "Snow")
                     )
                 ),
                 daily = DailyStaticData,
