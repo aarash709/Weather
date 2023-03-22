@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.forecast"
+    namespace = "com.weather.feature.forecast"
     compileSdk = 33
     defaultConfig {
         minSdk = 26
@@ -71,9 +71,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:${rootProject.extra.get("lifecycle_version")}")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0-beta01") //experimental
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:${rootProject.extra.get("lifecycle_version")}")
-    implementation("androidx.activity:activity-compose:1.6.1")
-
-    //lifecycle
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${rootProject.extra.get("lifecycle_version")}")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:${rootProject.extra.get("lifecycle_version")}")
 
@@ -88,10 +85,6 @@ dependencies {
 
     //Timber Logging
     implementation("com.jakewharton.timber:timber:5.0.1")
-
-    implementation("androidx.core:core-ktx:1.9.0")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.8.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
