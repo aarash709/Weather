@@ -37,7 +37,9 @@ fun Daily(
                 color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
             )
             dailyList.forEach { daily ->
-                DailyItem(modifier = Modifier, daily)
+                DailyItem(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp), daily)
             }
         }
     }
@@ -46,9 +48,7 @@ fun Daily(
 @Composable
 fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp),
+        modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
