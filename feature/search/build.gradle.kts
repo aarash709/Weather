@@ -69,6 +69,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:${rootProject.extra.get("lifecycle_version")}")
     //serializer
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+    //datastore
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
     //work
     implementation("androidx.work:work-runtime-ktx:${rootProject.extra.get("work_version")}")
 
