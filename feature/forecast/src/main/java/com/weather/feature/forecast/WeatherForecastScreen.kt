@@ -143,11 +143,12 @@ fun ConditionAndDetails(weatherData: WeatherData) {
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        Spacer(modifier = Modifier.height(100.dp))
         CurrentWeather(
             modifier = Modifier.padding(vertical = 64.dp),
             weatherData = weatherData.current
         )
-        Spacer(modifier = Modifier.height(64.dp))
+        Spacer(modifier = Modifier.height(100.dp))
 //        CurrentWeatherDetails(
 //            weatherData = weatherData.current
 //        )
@@ -178,6 +179,7 @@ fun ConditionAndDetails(weatherData: WeatherData) {
             weatherData = weatherData.current)
 //        SunMoonPosition()
         Daily(
+            modifier = Modifier.fillMaxWidth(),
             dailyList = weatherData.daily.map { it.toDailyPreview() })
         HourlyForecast(
             modifier = Modifier

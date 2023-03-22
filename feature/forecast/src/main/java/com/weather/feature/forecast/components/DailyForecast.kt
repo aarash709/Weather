@@ -28,8 +28,7 @@ fun Daily(
         backgroundColor = MaterialTheme.colors.surface
     ) {
         Column(
-            modifier = modifier
-                .fillMaxWidth(),
+            modifier = modifier,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
