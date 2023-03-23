@@ -8,7 +8,7 @@ buildscript {
         set("compose_bom_version" , "2023.03.00")
         set("accompanist_version" , "0.28.0")
         set("compose_nav_version" , "2.5.3")
-        set("compose_compiler_version" , "1.4.0")
+        set("compose_compiler_version" , "1.4.4")
         set("room_version" , "2.5.0")
         set("lifecycle_version" , "2.5.1")
         set("kotlin_coroutine" , "1.6.4")
