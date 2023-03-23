@@ -4,8 +4,8 @@ buildscript {
     extra.apply {
         set("agp_version" , "7.0.3")
         set("kgp_version" , "1.5.21")
-        set("compose_version" , "1.3.1")
-        set("compose_bom_version" , "2023.01.00")
+        set("compose_version" , "1.4.0") //using bom
+        set("compose_bom_version" , "2023.03.00")
         set("accompanist_version" , "0.28.0")
         set("compose_nav_version" , "2.5.3")
         set("compose_compiler_version" , "1.4.0")
