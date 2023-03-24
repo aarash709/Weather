@@ -13,7 +13,7 @@ fun NavController.toSettings(navOptions: NavOptions? = null) {
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-fun NavGraphBuilder.settingsScreen() {
+fun NavGraphBuilder.settingsScreen(onBackPress: () -> Unit) {
     composable(
         SETTINGS_ROUTE,
         enterTransition = {
@@ -27,8 +27,8 @@ fun NavGraphBuilder.settingsScreen() {
             )
         }
     ) {
-        Settings(){
-
+        Settings {
+            onBackPress()
         }
     }
 }
