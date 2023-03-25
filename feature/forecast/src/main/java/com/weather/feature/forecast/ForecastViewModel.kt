@@ -47,6 +47,9 @@ class ForecastViewModel @Inject constructor(
             .map {
                 it.first().state == WorkInfo.State.RUNNING
             }
+            .catch {
+                Timber.e("workinfos: ${it.message}")
+            }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), false)
 
     init {
