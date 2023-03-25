@@ -17,6 +17,8 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
@@ -138,10 +140,17 @@ private fun TopSearchBar(
     onClearSearch: () -> Unit,
 ) {
     val textFieldColors = TextFieldDefaults.textFieldColors(
+        textColor = MaterialTheme.colors.onSurface,
         focusedIndicatorColor = Color.Transparent,
         unfocusedIndicatorColor = Color.Transparent,
         errorIndicatorColor = Color.Transparent,
     )
+    val focusRequester = remember {
+        FocusRequester()
+    }
+    LaunchedEffect(key1 = Unit){
+        focusRequester.requestFocus()
+    }
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -151,6 +160,7 @@ private fun TopSearchBar(
             value = searchText,
             onValueChange = { onTextChange(it) },
             modifier = Modifier
+                .focusRequester(focusRequester)
                 .weight(weight = 1f, fill = true),
             placeholder = { Text(text = "Search") },
             leadingIcon = {
