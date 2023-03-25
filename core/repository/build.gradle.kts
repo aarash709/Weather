@@ -35,10 +35,14 @@ dependencies {
 
     implementation(project(":core:network"))
     implementation(project(":core:database"))
+    implementation(project(":core:datastore"))
     implementation(project(":core:model"))
 
     //Timber Logging
     implementation("com.jakewharton.timber:timber:5.0.1")
+
+    //serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
 
     //Hilt
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
