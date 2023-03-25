@@ -11,4 +11,5 @@ import javax.inject.Inject
 
 interface UserRepository {
     fun getFavoriteCityCoordinate(): Flow<Coordinate?>
+    suspend fun setFavoriteCityCoordinate(value: String)
 }

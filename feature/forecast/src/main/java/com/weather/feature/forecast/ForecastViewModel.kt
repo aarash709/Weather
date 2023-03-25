@@ -31,7 +31,7 @@ import javax.inject.Inject
 
 const val WEATHER_DATA_STORE = "weatherDataStore"
 
-val Context.dataStore by preferencesDataStore(WEATHER_DATA_STORE)
+//val Context.dataStore by preferencesDataStore(WEATHER_DATA_STORE)
 
 @HiltViewModel
 class ForecastViewModel @Inject constructor(
@@ -113,12 +113,12 @@ class ForecastViewModel @Inject constructor(
         }
     }
 
-    private fun getFavoriteCity(): Flow<String> {
-        return context.dataStore.data.map { preferences ->
-            val city = preferences[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_STRING_KEY] ?: ""
-            city
-        }
-    }
+//    private fun getFavoriteCity(): Flow<String> {
+//        return context.dataStore.data.map { preferences ->
+//            val city = preferences[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_STRING_KEY] ?: ""
+//            city
+//        }
+//    }
 
 
     @ExperimentalCoroutinesApi

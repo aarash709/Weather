@@ -7,9 +7,9 @@ import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.*
+import com.weather.core.repository.UserRepository
 import com.weather.core.repository.WeatherRepository
 import com.weather.feature.forecast.DataStoreKeys
-import com.weather.feature.forecast.dataStore
 import com.weather.model.Coordinate
 import com.weather.model.Resource
 import com.weather.model.WeatherData
@@ -29,6 +29,7 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     private val context: Application,
     private val weatherRepository: WeatherRepository,
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val workManager = WorkManager.getInstance(context)
@@ -82,16 +83,17 @@ class SearchViewModel @Inject constructor(
                 longitude = searchItem.lon.toString()
             )
             val stringCoordinate = Json.encodeToString(coordinate)
-            withContext(Dispatchers.IO){
+//            withContext(Dispatchers.IO){
                 val isDatabaseEmpty = weatherRepository.isDatabaseEmpty() == 0
                 if (isDatabaseEmpty) {
-                    context.dataStore.edit {
-                        it[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_COORDINATE_STRING_KEY] =
-                            stringCoordinate
-                    }
+                    userRepository.setFavoriteCityCoordinate(stringCoordinate)
+//                    context.dataStore.edit {
+//                        it[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_COORDINATE_STRING_KEY] =
+//                            stringCoordinate
+//                    }
                     Timber.e(stringCoordinate)
                 }
-            }
+//            }
             val inputData = Data.Builder()
                 .putString(WEATHER_COORDINATE, stringCoordinate)
                 .build()

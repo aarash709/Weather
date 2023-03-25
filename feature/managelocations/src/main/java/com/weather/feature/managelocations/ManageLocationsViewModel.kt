@@ -3,12 +3,11 @@ package com.weather.feature.managelocations
 import android.app.Application
 import android.content.Context
 import android.os.Vibrator
-import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.weather.core.repository.UserRepository
 import com.weather.core.repository.WeatherRepository
-import com.weather.feature.forecast.dataStore
 import com.weather.model.Coordinate
 import com.weather.model.ManageLocationsData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,6 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ManageLocationsViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository,
+    private val userRepository: UserRepository,
     private val context: Application,
 ) : ViewModel() {
 
@@ -55,35 +55,37 @@ class ManageLocationsViewModel @Inject constructor(
             return
         }
         viewModelScope.launch(Dispatchers.IO) {
-            context.dataStore.edit { preference ->
-                preference[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_String_Key] = cityName
-            }
+//            context.dataStore.edit { preference ->
+//                preference[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_String_Key] = cityName
+//            }
         }
     }
 
     fun saveFavoriteCityCoordinate(coordinate: Coordinate) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             val coordinateString = Json.encodeToString(coordinate)
-            context.dataStore.edit { preference ->
-                preference[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_Coordinate_String_Key] =
-                    coordinateString
-            }
+            userRepository.setFavoriteCityCoordinate(coordinateString)
+//            context.dataStore.edit { preference ->
+//                preference[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_Coordinate_String_Key] =
+//                    coordinateString
+//            }
         }
     }
 
     @ExperimentalCoroutinesApi
     private fun getFavoriteCityCoordinate(): Flow<Coordinate?> {
-        return context.dataStore.data.map { preferences ->
-            val coordinateString =
-                preferences[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_Coordinate_String_Key]
-                    ?: ""
-            Timber.e(coordinateString)
-            if (coordinateString.isEmpty()) {
-                null
-            } else {
-                Json.decodeFromString<Coordinate>(coordinateString)
-            }
-        }
+        return userRepository.getFavoriteCityCoordinate()
+//        return context.dataStore.data.map { preferences ->
+//            val coordinateString =
+//                preferences[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_Coordinate_String_Key]
+//                    ?: ""
+//            Timber.e(coordinateString)
+//            if (coordinateString.isEmpty()) {
+//                null
+//            } else {
+//                Json.decodeFromString<Coordinate>(coordinateString)
+//            }
+//        }
     }
 
     fun deleteWeatherByCityName(cityName: String) {
