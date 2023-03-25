@@ -10,6 +10,7 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import com.weather.core.repository.UserRepository
 import com.weather.core.repository.WeatherRepository
 import com.weather.model.Coordinate
 import com.weather.model.WeatherData
@@ -35,6 +36,7 @@ val Context.dataStore by preferencesDataStore(WEATHER_DATA_STORE)
 @HiltViewModel
 class ForecastViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository,
+    private val userRepository: UserRepository,
     private val context: Application,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -121,17 +123,18 @@ class ForecastViewModel @Inject constructor(
 
     @ExperimentalCoroutinesApi
     private fun getFavoriteCityCoordinate(): Flow<Coordinate?> {
-        return context.dataStore.data.map { preferences ->
-            val string =
-                preferences[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_COORDINATE_STRING_KEY]
-                    ?: ""
-            Timber.e(string)
-            if (string.isEmpty()) {
-                null
-            } else {
-                Json.decodeFromString<Coordinate>(string)
-            }
-        }
+        return userRepository.getFavoriteCityCoordinate()
+//        return context.dataStore.data.map { preferences ->
+//            val string =
+//                preferences[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_COORDINATE_STRING_KEY]
+//                    ?: ""
+//            Timber.e(string)
+//            if (string.isEmpty()) {
+//                null
+//            } else {
+//                Json.decodeFromString<Coordinate>(string)
+//            }
+//        }
     }
 
     @Deprecated("Use new sync which is using workManager APIs")
