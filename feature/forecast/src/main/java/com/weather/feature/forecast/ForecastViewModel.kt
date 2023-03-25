@@ -1,15 +1,8 @@
 package com.weather.feature.forecast
 
 import android.app.Application
-import android.content.Context
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.*
-import androidx.work.Data
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
+import androidx.work.*
 import com.weather.core.repository.UserRepository
 import com.weather.core.repository.WeatherRepository
 import com.weather.model.Coordinate
@@ -21,17 +14,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-
-const val WEATHER_DATA_STORE = "weatherDataStore"
-
-//val Context.dataStore by preferencesDataStore(WEATHER_DATA_STORE)
 
 @HiltViewModel
 class ForecastViewModel @Inject constructor(
@@ -54,7 +42,8 @@ class ForecastViewModel @Inject constructor(
         workManager
             .getWorkInfosForUniqueWorkLiveData(
                 WEATHER_FETCH_WORK_NAME
-            ).asFlow()
+            )
+            .asFlow()
             .map {
                 it.first().state == WorkInfo.State.RUNNING
             }
@@ -63,7 +52,6 @@ class ForecastViewModel @Inject constructor(
     init {
         Timber.e("init")
         Timber.e("navigated city:$cityName")
-//        getFavoriteCity()
         checkDatabase()
     }
 
@@ -113,28 +101,9 @@ class ForecastViewModel @Inject constructor(
         }
     }
 
-//    private fun getFavoriteCity(): Flow<String> {
-//        return context.dataStore.data.map { preferences ->
-//            val city = preferences[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_STRING_KEY] ?: ""
-//            city
-//        }
-//    }
-
-
     @ExperimentalCoroutinesApi
     private fun getFavoriteCityCoordinate(): Flow<Coordinate?> {
         return userRepository.getFavoriteCityCoordinate()
-//        return context.dataStore.data.map { preferences ->
-//            val string =
-//                preferences[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_COORDINATE_STRING_KEY]
-//                    ?: ""
-//            Timber.e(string)
-//            if (string.isEmpty()) {
-//                null
-//            } else {
-//                Json.decodeFromString<Coordinate>(string)
-//            }
-//        }
     }
 
     @Deprecated("Use new sync which is using workManager APIs")
@@ -177,12 +146,6 @@ class ForecastViewModel @Inject constructor(
 
 }
 
-object DataStoreKeys {
-    object WeatherDataStore {
-        val FAVORITE_CITY_STRING_KEY = stringPreferencesKey("favoriteCity")
-        val FAVORITE_CITY_COORDINATE_STRING_KEY = stringPreferencesKey("favoriteCityCoordinate")
-    }
-}
 
 sealed class WeatherUIState {
     object Loading : WeatherUIState()

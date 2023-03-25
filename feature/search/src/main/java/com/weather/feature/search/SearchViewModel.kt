@@ -1,15 +1,14 @@
 package com.weather.feature.search
 
 import android.app.Application
-import android.content.Context
-import androidx.compose.runtime.mutableStateOf
-import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.work.*
+import androidx.work.Data
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.weather.core.repository.UserRepository
 import com.weather.core.repository.WeatherRepository
-import com.weather.feature.forecast.DataStoreKeys
 import com.weather.model.Coordinate
 import com.weather.model.Resource
 import com.weather.model.WeatherData
@@ -17,9 +16,11 @@ import com.weather.model.geocode.GeoSearchItem
 import com.weather.sync.work.FetchRemoteWeatherWorker
 import com.weather.sync.work.WEATHER_COORDINATE
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import timber.log.Timber
@@ -29,7 +30,7 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     private val context: Application,
     private val weatherRepository: WeatherRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
 ) : ViewModel() {
 
     private val workManager = WorkManager.getInstance(context)
@@ -76,38 +77,33 @@ class SearchViewModel @Inject constructor(
 
     fun syncWeather(searchItem: GeoSearchItem) {
         viewModelScope.launch {
-            //work
             val coordinate = Coordinate(
                 cityName = searchItem.name,
                 latitude = searchItem.lat.toString(),
                 longitude = searchItem.lon.toString()
             )
+
             val stringCoordinate = Json.encodeToString(coordinate)
-//            withContext(Dispatchers.IO){
-                val isDatabaseEmpty = weatherRepository.isDatabaseEmpty() == 0
-                if (isDatabaseEmpty) {
-                    userRepository.setFavoriteCityCoordinate(stringCoordinate)
-//                    context.dataStore.edit {
-//                        it[DataStoreKeys.WeatherDataStore.FAVORITE_CITY_COORDINATE_STRING_KEY] =
-//                            stringCoordinate
-//                    }
-                    Timber.e(stringCoordinate)
-                }
-//            }
+            val isDatabaseEmpty = weatherRepository.isDatabaseEmpty() == 0
+
+            if (isDatabaseEmpty) {
+                userRepository.setFavoriteCityCoordinate(stringCoordinate)
+                Timber.e(stringCoordinate)
+            }
+            //work
             val inputData = Data.Builder()
                 .putString(WEATHER_COORDINATE, stringCoordinate)
                 .build()
             val fetchWork = OneTimeWorkRequestBuilder<FetchRemoteWeatherWorker>()
                 .setInputData(inputData)
                 .build()
+
             workManager.beginUniqueWork(
                 "weatherSyncWorkName",
                 ExistingWorkPolicy.KEEP,
                 fetchWork
             )
                 .enqueue()
-
-
         }
 
         fun saveSearchWeatherItem(searchItem: GeoSearchItem) {

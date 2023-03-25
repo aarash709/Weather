@@ -3,11 +3,9 @@ package com.experiment.weather.presentation.viewmodel
 import android.app.Application
 import android.content.Context
 import android.os.Vibrator
-import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.weather.core.repository.WeatherRepository
-import com.weather.feature.forecast.DataStoreKeys
 import com.weather.model.Coordinate
 import com.weather.model.ManageLocationsData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +13,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import timber.log.Timber
