@@ -12,4 +12,9 @@ interface DataModule {
     fun bindsWeatherRepository(
         weatherRepository: WeatherRepositoryImpl
     ): WeatherRepository
+
+    @Binds
+    fun bindsUserRepository(
+        userRepositoryImpl: UserRepositoryImpl
+    ):UserRepository
 }

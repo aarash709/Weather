@@ -10,14 +10,13 @@ import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
-    private val userPreferences : LocalUserPreferences
-) :UserRepository {
+    private val userPreferences: LocalUserPreferences,
+) : UserRepository {
     override fun getFavoriteCityCoordinate(): Flow<Coordinate?> {
-        return userPreferences.getFavoriteCity().map { stringCoordinate->
-            if (stringCoordinate.isNotEmpty()){
+        return userPreferences.getFavoriteCity().map { stringCoordinate ->
+            if (stringCoordinate != null) {
                 Json.decodeFromString<Coordinate>(stringCoordinate)
-            }
-            else{
+            } else {
                 null
             }
         }

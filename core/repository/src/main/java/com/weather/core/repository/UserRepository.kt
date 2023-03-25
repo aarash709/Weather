@@ -9,6 +9,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
-internal interface UserRepository {
+interface UserRepository {
     fun getFavoriteCityCoordinate(): Flow<Coordinate?>
 }
