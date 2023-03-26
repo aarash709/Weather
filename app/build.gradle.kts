@@ -72,6 +72,7 @@ dependencies {
     implementation(project(":feature:search"))
     implementation(project(":feature:managelocations"))
     implementation(project(":sync:work"))
+    implementation(project(":feature:settings"))
 
     //Kotlin-Core
     implementation("androidx.core:core-ktx:1.9.0")
