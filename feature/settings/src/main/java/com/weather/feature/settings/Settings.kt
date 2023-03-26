@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -21,19 +22,28 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.weather.core.design.theme.WeatherTheme
+import com.weather.model.TemperatureUnits
+import com.weather.model.WindSpeedUnits
 
 @Composable
 fun Settings(
     viewModel: SettingsViewModel = hiltViewModel(),
     onBackPressed: () -> Unit,
 ) {
-    Settings {
-        onBackPressed()
-    }
+    Settings(
+        onBackPressed = { onBackPressed() },
+        setTemperature =  viewModel::setTemperatureUnit,
+        setWindSpeed = viewModel::setWindSpeedUnit
+
+    )
 }
 
 @Composable
-fun Settings(onBackPressed: () -> Unit) {
+fun Settings(
+    onBackPressed: () -> Unit,
+    setTemperature: (TemperatureUnits) -> Unit,
+    setWindSpeed: (WindSpeedUnits) -> Unit,
+) {
     Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
         Column(modifier = Modifier.fillMaxSize()) {
             TopAppBar(
@@ -80,11 +90,17 @@ fun Settings(onBackPressed: () -> Unit) {
                             modifier = Modifier.wrapContentSize(),
                             offset = DpOffset(x = 25.dp, y = 4.dp),
                         ) {
-                            DropdownMenuItem(onClick = { }, enabled = true) {
+                            DropdownMenuItem(
+                                onClick = { setTemperature(TemperatureUnits.C) },
+                                enabled = true
+                            ) {
                                 Text(text = "°C")
                             }
                             Divider(color = MaterialTheme.colors.onSurface)
-                            DropdownMenuItem(onClick = { }, enabled = true) {
+                            DropdownMenuItem(
+                                onClick = { setTemperature(TemperatureUnits.F) },
+                                enabled = true
+                            ) {
                                 Text(text = "°F")
                             }
                         }
@@ -122,14 +138,14 @@ fun Settings(onBackPressed: () -> Unit) {
                             modifier = Modifier.wrapContentSize(),
                             offset = DpOffset(x = 25.dp, y = 4.dp),
                         ) {
-                            DropdownMenuItem(onClick = { }, enabled = true) {
+                            DropdownMenuItem(onClick = { setWindSpeed(WindSpeedUnits.KM) }, enabled = true) {
                                 Text(text = "km/h")
                             }
-                            DropdownMenuItem(onClick = { }, enabled = true) {
+                            DropdownMenuItem(onClick = {  setWindSpeed(WindSpeedUnits.MS) }, enabled = true) {
                                 Text(text = "m/s")
                             }
                             Divider(color = MaterialTheme.colors.onSurface)
-                            DropdownMenuItem(onClick = { }, enabled = true) {
+                            DropdownMenuItem(onClick = {  setWindSpeed(WindSpeedUnits.MPH) }, enabled = true) {
                                 Text(text = "mph")
                             }
                         }
@@ -186,7 +202,8 @@ fun SettingsTopBar(onBackPressed: () -> Unit) {
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 private fun SettingsPreview() {
     WeatherTheme() {
-        Settings { }
+        Settings(
+            onBackPressed = {}, setTemperature = {}, setWindSpeed = {})
     }
 }
 
