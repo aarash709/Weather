@@ -22,6 +22,7 @@ import timber.log.Timber
 fun NavGraphBuilder.homeNavGraph(
     navController: NavController,
     navigateToManageLocations: () -> Unit,
+    navigateToSettings: () -> Unit,
     navigateToOnboard: () -> Unit,
 ) {
     navigation(
@@ -47,6 +48,9 @@ fun NavGraphBuilder.homeNavGraph(
 //                    navController.navigate(Graph.Search.graph){
 ////                        popUpTo(Graph.Search.ManageLocationScreen)
 //                    }
+                },
+                onNavigateToSettings = {
+                    navigateToSettings()
                 },
                 navigateToOnboard = {
                     navigateToOnboard()
