@@ -21,7 +21,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.weather.core.design.theme.WeatherTheme
+import com.weather.model.SettingsData
 import com.weather.model.TemperatureUnits
 import com.weather.model.WindSpeedUnits
 
@@ -30,7 +32,9 @@ fun Settings(
     viewModel: SettingsViewModel = hiltViewModel(),
     onBackPressed: () -> Unit,
 ) {
+    val settingsUIState by viewModel.settingsUIState.collectAsStateWithLifecycle()
     Settings(
+        settingsState = settingsUIState,
         onBackPressed = { onBackPressed() },
         setTemperature =  viewModel::setTemperatureUnit,
         setWindSpeed = viewModel::setWindSpeedUnit
@@ -39,140 +43,147 @@ fun Settings(
 }
 
 @Composable
-fun Settings(
+internal fun Settings(
+    settingsState : SettingsUIState,
     onBackPressed: () -> Unit,
     setTemperature: (TemperatureUnits) -> Unit,
     setWindSpeed: (WindSpeedUnits) -> Unit,
 ) {
-    Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            TopAppBar(
-                backgroundColor = MaterialTheme.colors.background,
-                elevation = 0.dp
-            ) {
-                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
-                    SettingsTopBar(onBackPressed)
-                }
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Units", color = MaterialTheme.colors.onBackground.copy(alpha = .5f),
-                fontSize = 12.sp
-            )
-            Surface(
-                modifier = Modifier
-                    .padding(vertical = 4.dp)
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp),
-                color = MaterialTheme.colors.background,
-                elevation = 0.dp
-            ) {
-                var expanded by remember {
-                    mutableStateOf(false)
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { expanded = true }
-                        .padding(8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Temp Unit", color = MaterialTheme.colors.onBackground)
-                    Column {
-                        Text(
-                            text = "°C",
-                            color = MaterialTheme.colors.onBackground.copy(alpha = 0.5f),
-                            modifier = Modifier.clickable { expanded = true })
-                        DropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false },
-                            modifier = Modifier.wrapContentSize(),
-                            offset = DpOffset(x = 25.dp, y = 4.dp),
-                        ) {
-                            DropdownMenuItem(
-                                onClick = { setTemperature(TemperatureUnits.C) },
-                                enabled = true
-                            ) {
-                                Text(text = "°C")
-                            }
-                            Divider(color = MaterialTheme.colors.onSurface)
-                            DropdownMenuItem(
-                                onClick = { setTemperature(TemperatureUnits.F) },
-                                enabled = true
-                            ) {
-                                Text(text = "°F")
-                            }
+    when(settingsState){
+        is SettingsUIState.Loading -> Text(text = "loading")
+        is SettingsUIState.Success -> {
+            Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    TopAppBar(
+                        backgroundColor = MaterialTheme.colors.background,
+                        elevation = 0.dp
+                    ) {
+                        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
+                            SettingsTopBar(onBackPressed)
                         }
                     }
-                }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Units", color = MaterialTheme.colors.onBackground.copy(alpha = .5f),
+                        fontSize = 12.sp
+                    )
+                    Surface(
+                        modifier = Modifier
+                            .padding(vertical = 4.dp)
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colors.background,
+                        elevation = 0.dp
+                    ) {
+                        var expanded by remember {
+                            mutableStateOf(false)
+                        }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { expanded = true }
+                                .padding(8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("Temp Unit", color = MaterialTheme.colors.onBackground)
+                            Column {
+                                Text(
+                                    text = "°C",
+                                    color = MaterialTheme.colors.onBackground.copy(alpha = 0.5f),
+                                    modifier = Modifier.clickable { expanded = true })
+                                DropdownMenu(
+                                    expanded = expanded,
+                                    onDismissRequest = { expanded = false },
+                                    modifier = Modifier.wrapContentSize(),
+                                    offset = DpOffset(x = 25.dp, y = 4.dp),
+                                ) {
+                                    DropdownMenuItem(
+                                        onClick = { setTemperature(TemperatureUnits.C) },
+                                        enabled = true
+                                    ) {
+                                        Text(text = "°C")
+                                    }
+                                    Divider(color = MaterialTheme.colors.onSurface)
+                                    DropdownMenuItem(
+                                        onClick = { setTemperature(TemperatureUnits.F) },
+                                        enabled = true
+                                    ) {
+                                        Text(text = "°F")
+                                    }
+                                }
+                            }
+                        }
 
-            }
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp),
-                color = MaterialTheme.colors.background,
-                elevation = 0.dp
-            ) {
-                var expanded by remember {
-                    mutableStateOf(false)
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { expanded = true }
-                        .padding(8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Wind Speed Unit", color = MaterialTheme.colors.onBackground)
-                    Column {
-                        Text(
-                            text = "km/h",
-                            color = MaterialTheme.colors.onBackground.copy(alpha = 0.5f),
-                            modifier = Modifier.clickable { expanded = true })
-                        DropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false },
-                            modifier = Modifier.wrapContentSize(),
-                            offset = DpOffset(x = 25.dp, y = 4.dp),
+                    }
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colors.background,
+                        elevation = 0.dp
+                    ) {
+                        var expanded by remember {
+                            mutableStateOf(false)
+                        }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { expanded = true }
+                                .padding(8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            DropdownMenuItem(onClick = { setWindSpeed(WindSpeedUnits.KM) }, enabled = true) {
-                                Text(text = "km/h")
-                            }
-                            DropdownMenuItem(onClick = {  setWindSpeed(WindSpeedUnits.MS) }, enabled = true) {
-                                Text(text = "m/s")
-                            }
-                            Divider(color = MaterialTheme.colors.onSurface)
-                            DropdownMenuItem(onClick = {  setWindSpeed(WindSpeedUnits.MPH) }, enabled = true) {
-                                Text(text = "mph")
+                            Text("Wind Speed Unit", color = MaterialTheme.colors.onBackground)
+                            Column {
+                                Text(
+                                    text = "km/h",
+                                    color = MaterialTheme.colors.onBackground.copy(alpha = 0.5f),
+                                    modifier = Modifier.clickable { expanded = true })
+                                DropdownMenu(
+                                    expanded = expanded,
+                                    onDismissRequest = { expanded = false },
+                                    modifier = Modifier.wrapContentSize(),
+                                    offset = DpOffset(x = 25.dp, y = 4.dp),
+                                ) {
+                                    DropdownMenuItem(onClick = { setWindSpeed(WindSpeedUnits.KM) }, enabled = true) {
+                                        Text(text = "km/h")
+                                    }
+                                    DropdownMenuItem(onClick = {  setWindSpeed(WindSpeedUnits.MS) }, enabled = true) {
+                                        Text(text = "m/s")
+                                    }
+                                    Divider(color = MaterialTheme.colors.onSurface)
+                                    DropdownMenuItem(onClick = {  setWindSpeed(WindSpeedUnits.MPH) }, enabled = true) {
+                                        Text(text = "mph")
+                                    }
+                                }
                             }
                         }
                     }
+                    Text(
+                        text = "About",
+                        modifier = Modifier.padding(top = 16.dp),
+                        color = MaterialTheme.colors.onBackground.copy(alpha = .5f),
+                        fontSize = 12.sp
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "A Weather Demo App Developed By Arash Ebrahimzade.\n" +
+                                "This app is is a work in progress 🚧.",
+                        color = MaterialTheme.colors.onBackground.copy(alpha = .5f),
+                        fontSize = 12.sp,
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Weather Data from Openweathermap.org",
+                        color = MaterialTheme.colors.onBackground.copy(alpha = .5f),
+                        fontSize = 12.sp,
+                    )
                 }
             }
-            Text(
-                text = "About",
-                modifier = Modifier.padding(top = 16.dp),
-                color = MaterialTheme.colors.onBackground.copy(alpha = .5f),
-                fontSize = 12.sp
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "A Weather Demo App Developed By Arash Ebrahimzade.\n" +
-                        "This app is is a work in progress 🚧.",
-                color = MaterialTheme.colors.onBackground.copy(alpha = .5f),
-                fontSize = 12.sp,
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Weather Data from Openweathermap.org",
-                color = MaterialTheme.colors.onBackground.copy(alpha = .5f),
-                fontSize = 12.sp,
-            )
         }
     }
+
 }
 
 @Composable
@@ -202,7 +213,10 @@ fun SettingsTopBar(onBackPressed: () -> Unit) {
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 private fun SettingsPreview() {
     WeatherTheme() {
+        val temp = TemperatureUnits.F
+        val wind = WindSpeedUnits.KM
         Settings(
+            SettingsUIState.Success(settingsData = SettingsData(wind,temp)),
             onBackPressed = {}, setTemperature = {}, setWindSpeed = {})
     }
 }

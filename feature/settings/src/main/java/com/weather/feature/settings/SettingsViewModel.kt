@@ -15,13 +15,14 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(private val repository: UserRepository) : ViewModel() {
 
-    internal val getTemperatureUnit = repository.getTemperatureUnitSetting()
+    internal val settingsUIState = repository.getTemperatureUnitSetting()
         .combine(repository.getWindSpeedUnitSetting()) { tempUnit, windSpeedUnit ->
 //            if (tempUnit != null && windSpeedUnit != null) {
 //
 //            }
             val settignData =
-                SettingsData(temperatureUnits = tempUnit!!, windSpeedUnits = windSpeedUnit!!)
+                SettingsData(temperatureUnits = tempUnit, windSpeedUnits = windSpeedUnit)
+            Timber.e(settignData.toString())
             SettingsUIState.Success(settingsData = settignData)
         }.catch {
             Timber.e(it.message)
@@ -33,12 +34,14 @@ class SettingsViewModel @Inject constructor(private val repository: UserReposito
 
     internal fun setTemperatureUnit(tempUnit: TemperatureUnits) {
         viewModelScope.launch {
+            Timber.e(tempUnit.toString())
             repository.setTemperatureUnitSetting(tempUnit)
         }
     }
 
     internal fun setWindSpeedUnit(windSpeedUnits: WindSpeedUnits) {
         viewModelScope.launch {
+            Timber.e(windSpeedUnits.toString())
             repository.setWindSpeedUnitSetting(windSpeedUnits)
         }
     }
