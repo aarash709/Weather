@@ -2,17 +2,21 @@ package com.weather.feature.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.weather.core.repository.UserRepository
 import com.weather.core.repository.WeatherRepository
+import com.weather.model.SettingsData
+import com.weather.model.TemperatureUnits
+import com.weather.model.WindSpeedUnits
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SettingsViewModel @Inject constructor(private val repository: WeatherRepository) : ViewModel() {
+class SettingsViewModel @Inject constructor(private val repository: UserRepository) : ViewModel() {
 
-    internal fun setTemperatureUnit(tempUnits: TemperatureUnits) {
+    internal fun setTemperatureUnit(tempUnit: TemperatureUnits) {
         viewModelScope.launch {
-//            repository.setTemperatureUnit
+            repository.setTemperatureUnitSetting(tempUnit)
         }
     }
 
@@ -26,20 +30,4 @@ class SettingsViewModel @Inject constructor(private val repository: WeatherRepos
 internal sealed class SettingsUIState() {
     data class Success(val settingsData: SettingsData) : SettingsUIState()
     object Loading : SettingsUIState()
-}
-
-internal data class SettingsData(
-    val windSpeedUnits: WindSpeedUnits,
-    val temperatureUnits: TemperatureUnits,
-)
-
-enum class WindSpeedUnits {
-    KM,
-    MS,
-    MPH,
-}
-
-enum class TemperatureUnits {
-    C,
-    F,
 }

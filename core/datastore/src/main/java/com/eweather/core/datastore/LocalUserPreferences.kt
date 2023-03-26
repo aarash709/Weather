@@ -21,7 +21,7 @@ class LocalUserPreferences @Inject constructor(
         }
     }
 
-    fun getTimeUnitSetting(): Flow<String?> {
+    fun getTempratureUnitSetting(): Flow<String?> {
         return datastore.data.map { preferences ->
             preferences[TEMP_UNIT_SETTING_KEY]
         }
