@@ -58,9 +58,11 @@ internal fun Settings(
     when (settingsState) {
         is SettingsUIState.Loading -> Text(text = "loading")
         is SettingsUIState.Success -> {
-            Column(modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp)
+            ) {
                 val tempUnit = when (settingsState.settingsData.temperatureUnits) {
                     TemperatureUnits.C -> "°C"
                     TemperatureUnits.F -> "°F"
@@ -110,7 +112,7 @@ internal fun Settings(
                             Text(
                                 text = tempUnit ?: "null",
                                 color = MaterialTheme.colors.onBackground.copy(alpha = 0.5f),
-                                modifier = Modifier.clickable { expanded = true })
+                            )
                             DropdownMenu(
                                 expanded = expanded,
                                 onDismissRequest = { expanded = false },
@@ -157,8 +159,8 @@ internal fun Settings(
                         Column {
                             Text(
                                 text = windUnit ?: "null",
-                                color = MaterialTheme.colors.onBackground.copy(alpha = 0.5f),
-                                modifier = Modifier.clickable { expanded = true })
+                                color = MaterialTheme.colors.onBackground.copy(alpha = 0.5f)
+                            )
                             DropdownMenu(
                                 expanded = expanded,
                                 onDismissRequest = { expanded = false },
@@ -196,8 +198,7 @@ internal fun Settings(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "A Weather Demo App Developed By Arash Ebrahimzade.\n" +
-                            "This app is is a work in progress 🚧.",
+                    text = "This DEMO app is is a work in progress 🚧.",
                     color = MaterialTheme.colors.onBackground.copy(alpha = .5f),
                     fontSize = 12.sp,
                 )
@@ -248,7 +249,7 @@ private fun SettingsPreview() {
 }
 
 @Composable
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 private fun MenuPreview() {
     WeatherTheme() {
         var expanded by remember {
