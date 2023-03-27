@@ -15,6 +15,9 @@ import com.weather.feature.managelocations.manageLocationsScreen
 import com.weather.feature.managelocations.toManageLocations
 import com.weather.feature.search.searchScreen
 import com.weather.feature.search.toSearchScreen
+import com.weather.feature.settings.SETTINGS_ROUTE
+import com.weather.feature.settings.settingsScreen
+import com.weather.feature.settings.toSettings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
@@ -34,9 +37,14 @@ fun WeatherNavHost(navController: NavHostController) {
 //                navController.toManageLocations()
                 navController.navigate(manageLocationsRoute)
             },
+            navigateToSettings = {
+//                navController.toManageLocations()
+                navController.toSettings()
+            },
             navigateToOnboard = {
                 navController.toSearchScreen()
-            })
+            },
+        )
         onboardScreen(navigateToSearch = {
             navController.toSearchScreen()
         })
@@ -66,6 +74,15 @@ fun WeatherNavHost(navController: NavHostController) {
             })
         })
 //        searchNavGraph(navController)
+        settingsScreen {
+            navController.navigate(
+                Graph.Forecast.graph,
+                navOptions = navOptions {
+                    popUpTo(Graph.Forecast.graph) {
+
+                    }
+                })
+        }
 
     }
 }

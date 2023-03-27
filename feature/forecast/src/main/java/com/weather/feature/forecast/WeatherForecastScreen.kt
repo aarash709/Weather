@@ -60,6 +60,7 @@ import kotlin.math.roundToInt
 fun WeatherForecastScreen(
     viewModel: ForecastViewModel = hiltViewModel(),
     navigateToManageLocations: () -> Unit,
+    onNavigateToSettings: () -> Unit,
     navigateToOnboard: () -> Unit,
 ) {
     //stateful
@@ -78,6 +79,7 @@ fun WeatherForecastScreen(
                 weatherUIState = weatherUIState,
                 isSyncing = syncing,
                 onNavigateToManageLocations = { navigateToManageLocations() },
+                onNavigateToSettings = { onNavigateToSettings() },
                 onRefresh = viewModel::sync
             )
         }
@@ -90,6 +92,7 @@ fun WeatherForecastScreen(
     weatherUIState: WeatherUIState,
     isSyncing: Boolean,
     onNavigateToManageLocations: () -> Unit,
+    onNavigateToSettings: () -> Unit,
     onRefresh: (Coordinate) -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
@@ -125,7 +128,8 @@ fun WeatherForecastScreen(
                         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
                             TopBar(
                                 cityName = weatherUIState.data.coordinates.name.toString(),
-                                onNavigateToManageLocations = { onNavigateToManageLocations() }
+                                onNavigateToManageLocations = { onNavigateToManageLocations() },
+                                onNavigateToSettings = { onNavigateToSettings() }
                             )
                         }
                     }
@@ -162,8 +166,11 @@ fun ConditionAndDetails(weatherData: WeatherData) {
         )
         Spacer(modifier = Modifier.height(100.dp))
         CurrentWeatherDetails(
-            modifier = Modifier.padding(horizontal = 1.dp).fillMaxWidth(),
-            weatherData = weatherData.current)
+            modifier = Modifier
+                .padding(horizontal = 1.dp)
+                .fillMaxWidth(),
+            weatherData = weatherData.current
+        )
         Daily(
             modifier = Modifier.fillMaxWidth(),
             dailyList = weatherData.daily.map { it.toDailyPreview() })
@@ -214,10 +221,12 @@ fun WindDetails(
         modifier = modifier,
         shape = RoundedCornerShape(8.dp),
     ) {
-        Row(modifier = Modifier
-            .padding(8.dp)
-            .height(IntrinsicSize.Max),
-        verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier
+                .padding(8.dp)
+                .height(IntrinsicSize.Max),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             BoxedWindIndicator(
                 modifier = Modifier.weight(2f),
                 windDirection = animatedDegree.value
@@ -250,9 +259,11 @@ fun BoxedWindIndicator(modifier: Modifier = Modifier, windDirection: Float) {
                 },
             contentDescription = "Wind direction arrow"
         )
-        Box(modifier = Modifier
-            .padding(4.dp)
-            .fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .padding(4.dp)
+                .fillMaxSize()
+        ) {
             Text(text = "N", modifier = Modifier.align(Alignment.TopCenter))
             Text(text = "E", modifier = Modifier.align(Alignment.CenterEnd))
             Text(text = "S", modifier = Modifier.align(Alignment.BottomCenter))
@@ -429,6 +440,7 @@ fun CurrentDetails(
 private fun TopBar(
     cityName: String,
     onNavigateToManageLocations: () -> Unit,
+    onNavigateToSettings: () -> Unit,
 ) {
     // TODO:  //handled in the gps handler later on
     val locationBased by remember {
@@ -466,10 +478,14 @@ private fun TopBar(
                 contentDescription = "Location Picker Icon"
             )
         }
-        Icon(
-            imageVector = Icons.Default.Menu,
-            contentDescription = "Location Pick Icon"
-        )
+        IconButton(
+            onClick = { onNavigateToSettings() },
+        ) {
+            Icon(
+                imageVector = Icons.Default.Settings,
+                contentDescription = "Location Pick Icon"
+            )
+        }
     }
 }
 
@@ -638,7 +654,7 @@ fun MainPagePreview() {
         Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
             WeatherForecastScreen(weatherUIState = data,
                 false,
-                onNavigateToManageLocations = {}, onRefresh = {})
+                onNavigateToManageLocations = {}, onNavigateToSettings = {} ,onRefresh = {})
         }
     }
 }
