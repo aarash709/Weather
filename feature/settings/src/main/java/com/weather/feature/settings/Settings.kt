@@ -213,7 +213,7 @@ internal fun Settings(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "This app is not a production application and is a work in progress 🚧.",
+                    text = "This DEMO app is not a production application and is a work in progress 🚧.",
                     color = MaterialTheme.colors.onBackground.copy(alpha = .5f),
                     fontSize = 12.sp,
                 )
@@ -264,7 +264,7 @@ private fun SettingsPreview() {
 }
 
 @Composable
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO)
 private fun MenuPreview() {
     WeatherTheme() {
         var expanded by remember {
@@ -282,7 +282,7 @@ private fun MenuPreview() {
                     .border(width = 1.dp, color = Color.Black)
             ) {
                 DropdownMenuItem(onClick = {}, enabled = true) {
-                    Text(text = "Item111111111")
+                    Text(text = "Item1")
                 }
                 Divider(color = Color.Blue)
                 DropdownMenuItem(onClick = { }, enabled = false) {
