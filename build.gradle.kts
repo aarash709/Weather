@@ -4,11 +4,11 @@ buildscript {
     extra.apply {
         set("agp_version" , "7.0.3")
         set("kgp_version" , "1.5.21")
-        set("compose_version" , "1.3.1")
-        set("compose_bom_version" , "2023.01.00")
+        set("compose_version" , "1.4.0") //using bom
+        set("compose_bom_version" , "2023.03.00")
         set("accompanist_version" , "0.28.0")
         set("compose_nav_version" , "2.5.3")
-        set("compose_compiler_version" , "1.4.0")
+        set("compose_compiler_version" , "1.4.4")
         set("room_version" , "2.5.0")
         set("lifecycle_version" , "2.5.1")
         set("kotlin_coroutine" , "1.6.4")
@@ -16,7 +16,7 @@ buildscript {
         set("retrofit_version" , "2.9.0")
         set("ktor_version" ,"2.0.2")
         set("arrow_version" , "1.1.2")
-        set("kotlin_plugin_version" , "1.8.0")
+        set("kotlin_plugin_version" , "1.8.10")
         set("work_version" ,"2.8.0")
     }
     repositories {
