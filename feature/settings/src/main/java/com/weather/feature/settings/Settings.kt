@@ -58,9 +58,11 @@ internal fun Settings(
     when (settingsState) {
         is SettingsUIState.Loading -> Text(text = "loading")
         is SettingsUIState.Success -> {
-            Column(modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp)
+            ) {
                 val tempUnit = when (settingsState.settingsData.temperatureUnits) {
                     TemperatureUnits.C -> "°C"
                     TemperatureUnits.F -> "°F"
@@ -110,7 +112,7 @@ internal fun Settings(
                             Text(
                                 text = tempUnit ?: "null",
                                 color = MaterialTheme.colors.onBackground.copy(alpha = 0.5f),
-                                modifier = Modifier.clickable { expanded = true })
+                            )
                             DropdownMenu(
                                 expanded = expanded,
                                 onDismissRequest = { expanded = false },
@@ -118,14 +120,20 @@ internal fun Settings(
                                 offset = DpOffset(x = 25.dp, y = 4.dp),
                             ) {
                                 DropdownMenuItem(
-                                    onClick = { setTemperature(TemperatureUnits.C) },
+                                    onClick = {
+                                        setTemperature(TemperatureUnits.C)
+                                        expanded = false
+                                    },
                                     enabled = true
                                 ) {
                                     Text(text = "°C")
                                 }
-                                Divider(color = MaterialTheme.colors.onSurface)
+                                Divider(color = MaterialTheme.colors.onSurface, thickness = .5.dp)
                                 DropdownMenuItem(
-                                    onClick = { setTemperature(TemperatureUnits.F) },
+                                    onClick = {
+                                        setTemperature(TemperatureUnits.F)
+                                        expanded = false
+                                    },
                                     enabled = true
                                 ) {
                                     Text(text = "°F")
@@ -157,8 +165,8 @@ internal fun Settings(
                         Column {
                             Text(
                                 text = windUnit ?: "null",
-                                color = MaterialTheme.colors.onBackground.copy(alpha = 0.5f),
-                                modifier = Modifier.clickable { expanded = true })
+                                color = MaterialTheme.colors.onBackground.copy(alpha = 0.5f)
+                            )
                             DropdownMenu(
                                 expanded = expanded,
                                 onDismissRequest = { expanded = false },
@@ -166,20 +174,29 @@ internal fun Settings(
                                 offset = DpOffset(x = 25.dp, y = 4.dp),
                             ) {
                                 DropdownMenuItem(
-                                    onClick = { setWindSpeed(WindSpeedUnits.KM) },
+                                    onClick = {
+                                        setWindSpeed(WindSpeedUnits.KM)
+                                        expanded = false
+                                    },
                                     enabled = true
                                 ) {
                                     Text(text = "km/h")
                                 }
                                 DropdownMenuItem(
-                                    onClick = { setWindSpeed(WindSpeedUnits.MS) },
+                                    onClick = {
+                                        setWindSpeed(WindSpeedUnits.MS)
+                                        expanded = false
+                                    },
                                     enabled = true
                                 ) {
                                     Text(text = "m/s")
                                 }
                                 Divider(color = MaterialTheme.colors.onSurface)
                                 DropdownMenuItem(
-                                    onClick = { setWindSpeed(WindSpeedUnits.MPH) },
+                                    onClick = {
+                                        setWindSpeed(WindSpeedUnits.MPH)
+                                        expanded = false
+                                    },
                                     enabled = true
                                 ) {
                                     Text(text = "mph")
@@ -196,8 +213,7 @@ internal fun Settings(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "A Weather Demo App Developed By Arash Ebrahimzade.\n" +
-                            "This app is is a work in progress 🚧.",
+                    text = "This app is not a production application and is a work in progress 🚧.",
                     color = MaterialTheme.colors.onBackground.copy(alpha = .5f),
                     fontSize = 12.sp,
                 )
@@ -248,7 +264,7 @@ private fun SettingsPreview() {
 }
 
 @Composable
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 private fun MenuPreview() {
     WeatherTheme() {
         var expanded by remember {
