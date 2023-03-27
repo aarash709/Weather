@@ -11,6 +11,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import timber.log.Timber
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
@@ -63,7 +64,7 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun setWindSpeedUnitSetting(windSpeedUnit: WindSpeedUnits) {
         withContext(Dispatchers.IO) {
             val stringWindSpeedUnit = Json.encodeToString(windSpeedUnit)
-            userPreferences.setTemperatureUnit(stringWindSpeedUnit)
+            userPreferences.setWindSpeedUnit(stringWindSpeedUnit)
         }
     }
 

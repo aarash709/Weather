@@ -33,7 +33,7 @@ fun Settings(
     onBackPressed: () -> Unit,
 ) {
     val settingsUIState by viewModel.settingsUIState.collectAsStateWithLifecycle()
-    Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
+    Box(modifier = Modifier.fillMaxSize().background(color = MaterialTheme.colors.background)) {
         Settings(
             settingsState = settingsUIState,
             onBackPressed = { onBackPressed() },
@@ -55,6 +55,17 @@ internal fun Settings(
         is SettingsUIState.Loading -> Text(text = "loading")
         is SettingsUIState.Success -> {
             Column(modifier = Modifier.fillMaxSize()) {
+                val tempUnit = when(settingsState.settingsData.temperatureUnits){
+                    TemperatureUnits.C -> "°C"
+                    TemperatureUnits.F -> "°F"
+                    null -> null
+                }
+                val windUnit = when(settingsState.settingsData.windSpeedUnits){
+                    null -> null
+                    WindSpeedUnits.KM -> "Kilometer per hour"
+                    WindSpeedUnits.MS -> "Meters per second"
+                    WindSpeedUnits.MPH -> "Miles per hour"
+                }
                 TopAppBar(
                     backgroundColor = MaterialTheme.colors.background,
                     elevation = 0.dp
@@ -87,10 +98,11 @@ internal fun Settings(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Temp Unit", color = MaterialTheme.colors.onBackground)
+
+                        Text("Temperature Unit", color = MaterialTheme.colors.onBackground)
                         Column {
                             Text(
-                                text = "°C",
+                                text = tempUnit ?: "null",
                                 color = MaterialTheme.colors.onBackground.copy(alpha = 0.5f),
                                 modifier = Modifier.clickable { expanded = true })
                             DropdownMenu(
@@ -138,7 +150,7 @@ internal fun Settings(
                         Text("Wind Speed Unit", color = MaterialTheme.colors.onBackground)
                         Column {
                             Text(
-                                text = "km/h",
+                                text = windUnit?: "null",
                                 color = MaterialTheme.colors.onBackground.copy(alpha = 0.5f),
                                 modifier = Modifier.clickable { expanded = true })
                             DropdownMenu(
