@@ -16,7 +16,7 @@ buildscript {
         set("retrofit_version" , "2.9.0")
         set("ktor_version" ,"2.0.2")
         set("arrow_version" , "1.1.2")
-        set("kotlin_plugin_version" , "1.8.0")
+        set("kotlin_plugin_version" , "1.8.10")
         set("work_version" ,"2.8.0")
     }
     repositories {
