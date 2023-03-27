@@ -33,7 +33,11 @@ fun Settings(
     onBackPressed: () -> Unit,
 ) {
     val settingsUIState by viewModel.settingsUIState.collectAsStateWithLifecycle()
-    Box(modifier = Modifier.fillMaxSize().background(color = MaterialTheme.colors.background)) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colors.background),
+    ) {
         Settings(
             settingsState = settingsUIState,
             onBackPressed = { onBackPressed() },
@@ -54,13 +58,15 @@ internal fun Settings(
     when (settingsState) {
         is SettingsUIState.Loading -> Text(text = "loading")
         is SettingsUIState.Success -> {
-            Column(modifier = Modifier.fillMaxSize()) {
-                val tempUnit = when(settingsState.settingsData.temperatureUnits){
+            Column(modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)) {
+                val tempUnit = when (settingsState.settingsData.temperatureUnits) {
                     TemperatureUnits.C -> "°C"
                     TemperatureUnits.F -> "°F"
                     null -> null
                 }
-                val windUnit = when(settingsState.settingsData.windSpeedUnits){
+                val windUnit = when (settingsState.settingsData.windSpeedUnits) {
                     null -> null
                     WindSpeedUnits.KM -> "Kilometer per hour"
                     WindSpeedUnits.MS -> "Meters per second"
@@ -94,7 +100,7 @@ internal fun Settings(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { expanded = true }
-                            .padding(8.dp),
+                            .padding(vertical = 8.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -143,14 +149,14 @@ internal fun Settings(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { expanded = true }
-                            .padding(8.dp),
+                            .padding(vertical = 8.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text("Wind Speed Unit", color = MaterialTheme.colors.onBackground)
                         Column {
                             Text(
-                                text = windUnit?: "null",
+                                text = windUnit ?: "null",
                                 color = MaterialTheme.colors.onBackground.copy(alpha = 0.5f),
                                 modifier = Modifier.clickable { expanded = true })
                             DropdownMenu(
