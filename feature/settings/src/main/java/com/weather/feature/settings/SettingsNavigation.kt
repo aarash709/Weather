@@ -17,13 +17,13 @@ fun NavGraphBuilder.settingsScreen(onBackPress: () -> Unit) {
     composable(
         SETTINGS_ROUTE,
         enterTransition = {
-            slideInHorizontally(
-                animationSpec = tween(150)
+            slideIntoContainer(towards = AnimatedContentScope.SlideDirection.Left,
+                animationSpec = tween(500)
             )
         },
         exitTransition = {
-            slideOutHorizontally(
-                animationSpec = tween(150)
+            slideOutOfContainer(towards = AnimatedContentScope.SlideDirection.Right,
+                animationSpec = tween(500)
             )
         }
     ) {
