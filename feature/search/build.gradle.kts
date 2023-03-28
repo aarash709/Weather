@@ -47,16 +47,15 @@ dependencies {
     implementation(project(":sync:work"))
 
     //Compose
-    implementation(platform("androidx.compose:compose-bom:${rootProject.extra.get("compose_bom_version")}"))
-    implementation("androidx.compose.ui:ui:")
-    implementation("androidx.compose.material:material:")
-    implementation("androidx.compose.material:material-icons-extended:")
-    implementation("androidx.compose.ui:ui-tooling-preview:")
-    debugImplementation ("androidx.compose.ui:ui-tooling:")
-    implementation("androidx.compose.runtime:runtime:")
-    implementation("androidx.compose.runtime:runtime-livedata:")
-    implementation("androidx.compose.foundation:foundation:")
-    implementation("androidx.compose.animation:animation:")
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.runtime)
+    implementation(libs.compose.runtime.livedata)
+    implementation(libs.compose.material)
+    implementation(libs.compose.material.iconsExtended)
+    implementation(libs.compose.ui.tooling)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.animation)
+    debugImplementation(libs.compose.ui.tooling)
 
     //navigation
     implementation("androidx.navigation:navigation-compose:${rootProject.extra.get("compose_nav_version")}")
