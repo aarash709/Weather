@@ -1,4 +1,4 @@
-package com.experiment.weather.presentation.ui.navigation
+package com.experiment.weather.navigation
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -13,6 +13,8 @@ import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.navigation
 import com.weather.feature.forecast.WeatherForecastScreen
+import com.weather.feature.managelocations.manageLocationsRoute
+import com.weather.feature.settings.SETTINGS_ROUTE
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import timber.log.Timber
 
@@ -29,10 +31,28 @@ fun NavGraphBuilder.homeNavGraph(
         startDestination = Graph.Forecast.ForecastScreen,
         route = Graph.Forecast.graph,
         enterTransition = {
-            slideIntoContainer(AnimatedContentScope.SlideDirection.Left, tween(500))
+            when (initialState.destination.route) {
+                SETTINGS_ROUTE -> {
+                    slideIntoContainer(AnimatedContentScope.SlideDirection.Right, tween(500))
+                }
+                manageLocationsRoute -> {
+                    slideIntoContainer(AnimatedContentScope.SlideDirection.Left, tween(500))
+                }
+
+                else -> { null}
+            }
         },
         exitTransition = {
-            slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, tween(500))
+            when (targetState.destination.route) {
+                SETTINGS_ROUTE -> {
+                    slideOutOfContainer(AnimatedContentScope.SlideDirection.Left, tween(500))
+                }
+                manageLocationsRoute -> {
+                    slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, tween(500))
+                }
+
+                else -> { null}
+            }
         }
     ) {
         composable(

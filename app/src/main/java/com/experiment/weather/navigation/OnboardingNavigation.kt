@@ -1,4 +1,4 @@
-package com.experiment.weather.presentation.ui.navigation
+package com.experiment.weather.navigation
 
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope

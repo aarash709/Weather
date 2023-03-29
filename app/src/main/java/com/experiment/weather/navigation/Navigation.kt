@@ -1,4 +1,4 @@
-package com.experiment.weather.presentation.ui.navigation
+package com.experiment.weather.navigation
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -45,9 +45,6 @@ fun WeatherNavHost(navController: NavHostController) {
                 navController.toSearchScreen()
             },
         )
-        onboardScreen(navigateToSearch = {
-            navController.toSearchScreen()
-        })
         manageLocationsScreen(
             onNavigateToSearch = {
                 navController.toSearchScreen(navOptions = navOptions {

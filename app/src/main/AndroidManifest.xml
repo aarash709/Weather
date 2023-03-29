@@ -17,7 +17,7 @@
         android:theme="@style/Theme.Weather">
 
         <activity
-            android:name=".presentation.MainActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Weather.NoActionBar">

@@ -1,4 +1,4 @@
-package com.experiment.weather.presentation
+package com.experiment.weather
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -6,8 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
-import com.experiment.weather.presentation.ui.WeatherApp
-import com.weather.core.design.theme.WeatherTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview

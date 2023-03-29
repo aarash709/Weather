@@ -33,16 +33,16 @@ dependencies {
 
     implementation(project(":core:model"))
 
-    //Hilt
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-    implementation("com.google.dagger:hilt-android:2.44.2")
-    kapt("com.google.dagger:hilt-compiler:2.44.2")
-
-    //Retrofit
+    implementation(libs.hilt.navigationCompose)
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.kaptCompiler)
     //implementation("com.squareup.retrofit2:retrofit:$retrofit_version")
-    implementation("com.squareup.retrofit2:converter-moshi:${rootProject.extra.get("retrofit_version")}")
+    implementation(libs.retrofitMoshi)
+    implementation(libs.moshi)
+    implementation(libs.moshiKotlin)
+    implementation(libs.kotlix.serialization)
+    implementation(libs.timberLogger)
 
-    //Ktor client
 //    implementation("io.ktor:ktor-client-core:$ktor_version")
 //    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
 //    implementation("io.ktor:ktor-serialization-gson:$ktor_version")
@@ -51,16 +51,6 @@ dependencies {
 //    implementation("io.ktor:ktor-client-logging:$ktor_version")
 //    implementation("io.ktor:ktor-client-cio:$ktor_version")
 //    implementation("io.ktor:ktor-client-okhttp:$ktor_version")
-
-    //Moshi For Json
-    implementation("com.squareup.moshi:moshi:${rootProject.extra.get("moshi_version")}")
-    implementation("com.squareup.moshi:moshi-kotlin:${rootProject.extra.get("moshi_version")}")
-
-    //serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
-
-    //Timber Logging
-    implementation("com.jakewharton.timber:timber:5.0.1")
 
     //test
     testImplementation("junit:junit:4.13.2")

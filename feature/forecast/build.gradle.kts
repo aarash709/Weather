@@ -45,46 +45,36 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":sync:work"))
 
-    //Compose
-    implementation(platform("androidx.compose:compose-bom:${rootProject.extra.get("compose_bom_version")}"))
-    implementation("androidx.compose.ui:ui:")
-    implementation("androidx.compose.material:material:")
-    implementation("androidx.compose.material:material-icons-extended:")
-    implementation("androidx.compose.ui:ui-tooling-preview:")
-    debugImplementation ("androidx.compose.ui:ui-tooling:")
-    implementation("androidx.compose.runtime:runtime:")
-    implementation("androidx.compose.runtime:runtime-livedata:")
-    implementation("androidx.compose.foundation:foundation:")
-    implementation("androidx.compose.animation:animation:")
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.runtime)
+    implementation(libs.compose.runtime.livedata)
+    implementation(libs.compose.material)
+    implementation(libs.compose.material.iconsExtended)
+    implementation(libs.compose.ui.tooling)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.animation)
+    debugImplementation(libs.compose.ui.tooling)
 
-    //navigation
-    implementation("androidx.navigation:navigation-compose:${rootProject.extra.get("compose_nav_version")}")
-    implementation("com.google.accompanist:accompanist-navigation-animation:${rootProject.extra.get("accompanist_version")}")
+    implementation(libs.androidx.navigationCompose)
+    implementation(libs.accompanist.navigationAnimation)
 
-    //serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+    implementation(libs.kotlix.serialization)
 
-    //Image Loader
-    implementation("io.coil-kt:coil-compose:2.2.2")
+    implementation(libs.coilCompose)
 
-    //LifeCycle Components
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:${rootProject.extra.get("lifecycle_version")}")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0-beta01") //experimental
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:${rootProject.extra.get("lifecycle_version")}")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${rootProject.extra.get("lifecycle_version")}")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:${rootProject.extra.get("lifecycle_version")}")
+    implementation(libs.androidx.lifecycleRuntimeKtx)
+    implementation(libs.androidx.lifecycleComposeRuntime)
+    implementation(libs.androidx.lifecycleViewModelCompose)
+    implementation(libs.androidx.lifecycleViewModelKtx)
+    implementation(libs.androidx.lifecycleLiveDataKtx)
 
-    //Hilt
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-    implementation("com.google.dagger:hilt-android:2.44.2")
-    kapt("com.google.dagger:hilt-compiler:2.44.2")
-    //work
-    implementation("androidx.work:work-runtime-ktx:${rootProject.extra.get("work_version")}")
-    //datastore
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation(libs.hilt.navigationCompose)
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.kaptCompiler)
 
-    //Timber Logging
-    implementation("com.jakewharton.timber:timber:5.0.1")
+    implementation(libs.androidx.work)
+    implementation(libs.androidx.datastore)
+    implementation(libs.timberLogger)
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

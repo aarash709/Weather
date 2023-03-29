@@ -1,4 +1,4 @@
-package com.experiment.weather.presentation.viewmodel
+package com.experiment.weather
 
 import android.app.Application
 import android.content.Context
@@ -7,7 +7,6 @@ import android.net.ConnectivityManager.*
 import android.net.NetworkCapabilities.*
 import android.os.Build
 import androidx.lifecycle.AndroidViewModel
-import com.experiment.weather.WeatherApplication
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
