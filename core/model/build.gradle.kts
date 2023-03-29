@@ -9,6 +9,5 @@ java {
     targetCompatibility = JavaVersion.VERSION_11
 }
 dependencies {
-    //serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+    implementation(libs.kotlix.serialization)
 }

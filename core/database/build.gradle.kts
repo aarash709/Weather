@@ -33,17 +33,15 @@ android {
 dependencies {
     implementation(project(":core:model"))
 
-    //Hilt
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-    implementation("com.google.dagger:hilt-android:2.44.2")
-    kapt("com.google.dagger:hilt-compiler:2.44.2")
+    implementation(libs.hilt.navigationCompose)
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.kaptCompiler)
 
-    //room
-    implementation("androidx.room:room-common:${rootProject.extra.get("room_version")}")
-    implementation("androidx.room:room-ktx:${rootProject.extra.get("room_version")}")
-    annotationProcessor("androidx.room:room-compiler:${rootProject.extra.get("room_version")}")
-    kapt("androidx.room:room-compiler:${rootProject.extra.get("room_version")}")
-    implementation("androidx.room:room-runtime:${rootProject.extra.get("room_version")}")
+    implementation(libs.androidx.roomCommon)
+    implementation(libs.androidx.roomKtx)
+    annotationProcessor(libs.androidx.roomCompiler)
+    kapt(libs.androidx.roomCompiler)
+    implementation(libs.androidx.roomRuntime)
 
     //test
     testImplementation("junit:junit:4.13.2")
