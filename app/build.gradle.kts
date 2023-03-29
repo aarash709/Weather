@@ -84,19 +84,12 @@ dependencies {
 //    implementation "io.arrow-kt:arrow-fx-coroutines"
 //    kapt "io.arrow-kt:arrow-meta:1.6.0" //bom file version is not set correctly
 
-    //serialization
     implementation(libs.kotlix.serialization)
 
-    //Coroutines
     //implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutine_google_version"
     implementation(libs.kotlix.coroutinesCore)
     implementation(libs.kotlix.coroutinesAndroid)
 
-    //Material
-    implementation("com.google.android.material:material:1.8.0")
-
-    //Compose
-//    implementation(platform(libs.compose.bom))
     implementation(libs.compose.foundation)
     implementation(libs.compose.runtime)
     implementation(libs.compose.runtime.livedata)
@@ -106,38 +99,29 @@ dependencies {
     implementation(libs.compose.ui)
     debugImplementation(libs.compose.ui.tooling)
 
-    //window
     implementation(libs.androidx.window)
 
-    //work
     implementation(libs.androidx.work)
 
-    //navigation
     implementation(libs.androidx.navigationCompose)
     implementation(libs.accompanist.navigationAnimation)
 
-    //LifeCycle Components
     implementation(libs.androidx.lifecycleRuntimeKtx)
-    implementation(libs.androidx.lifecycleComposeRuntime) //experimental
+    implementation(libs.androidx.lifecycleComposeRuntime)
     implementation(libs.androidx.lifecycleViewModelCompose)
 
-    //Lifecycle
     implementation(libs.androidx.lifecycleViewModelKtx)
     implementation(libs.androidx.lifecycleLiveDataKtx)
     implementation(libs.androidx.activityCompose)
 
-    //datastore
     implementation(libs.androidx.datastore)
 
-    //Timber Logging
     implementation(libs.timberLogger)
 
-    //Hilt
     implementation(libs.hilt.navigationCompose)
     implementation(libs.hilt.android)
     kapt(libs.hilt.kaptCompiler)
 
-    //Hilt work
     implementation(libs.androidx.hiltWork)
     kapt(libs.androidx.hiltKaptCompiler)
 

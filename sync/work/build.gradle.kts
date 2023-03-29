@@ -41,22 +41,16 @@ dependencies {
     implementation(project(":core:repository"))
     implementation(project(":core:model"))
 
-    //serializer
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+    implementation(libs.kotlix.serialization)
+    implementation(libs.androidx.work)
 
-    //work
-    implementation("androidx.work:work-runtime-ktx:${rootProject.extra.get("work_version")}")
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.kaptCompiler)
 
-    //Hilt
-    implementation("com.google.dagger:hilt-android:2.44.2")
-    kapt("com.google.dagger:hilt-compiler:2.44.2")
+    implementation(libs.androidx.hiltWork)
+    kapt(libs.androidx.hiltKaptCompiler)
 
-    //Hilt work
-    implementation("androidx.hilt:hilt-work:1.0.0")
-    kapt("androidx.hilt:hilt-compiler:1.0.0")
-
-    //Timber Logging
-    implementation("com.jakewharton.timber:timber:5.0.1")
+    implementation(libs.timberLogger)
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

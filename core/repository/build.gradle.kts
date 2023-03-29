@@ -38,16 +38,11 @@ dependencies {
     implementation(project(":core:datastore"))
     implementation(project(":core:model"))
 
-    //Timber Logging
-    implementation("com.jakewharton.timber:timber:5.0.1")
-
-    //serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
-
-    //Hilt
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-    implementation("com.google.dagger:hilt-android:2.44.2")
-    kapt("com.google.dagger:hilt-compiler:2.44.2")
+    implementation(libs.timberLogger)
+    implementation(libs.kotlix.serialization)
+    implementation(libs.hilt.navigationCompose)
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.kaptCompiler)
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
