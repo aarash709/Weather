@@ -1,4 +1,4 @@
-package com.experiment.weather.presentation.ui.navigation
+package com.experiment.weather.navigation
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalAnimationApi

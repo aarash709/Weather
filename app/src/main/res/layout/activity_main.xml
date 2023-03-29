@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.experiment.weather.presentation.viewmodel.MainViewModel" />
+            type="com.experiment.weather.MainViewModel" />
     </data>
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
