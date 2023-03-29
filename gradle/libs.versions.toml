@@ -1,7 +1,7 @@
 [versions]
 composeBom = "2023.03.00"
-androidx_Compose = "1.4.0"
-androidx_ComposeCompiler = "1.4.4"
+androidxCompose = "1.4.0"
+androidxComposeCompiler = "1.4.4"
 androidxCore = "1.9.0"
 androidxAppcompat = "1.6.1"
 kotlinxSerialization = "1.4.1"
@@ -16,21 +16,21 @@ androidxHiltWork = "1.0.0"
 andoidxDatastorePreferences = "1.0.0"
 accompanistNavigationAnimation = "0.28.0"
 hiltNavigationCompose = "1.0.0"
-hiltAndroid = "2.44.0"
+hiltAndroid = "2.44.2"
 timberLogger = "5.0.1"
 
 [libraries]
 compose-bom = { group = "androidx.compose", name = "compose_Bom", version.ref = "composeBom" }
-compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "androidx_Compose" }
-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "androidx_Compose" }
-compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "androidx_Compose" }
-compose-ui-toolingPreview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "androidx_Compose" }
-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "androidx_Compose" }
-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "androidx_Compose" }
-compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "androidx_Compose" }
-compose-material = { group = "androidx.compose.material", name = "material", version.ref = "androidx_Compose" }
-compose-material-iconsExtended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "androidx_Compose" }
-androidx-Core = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
+compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "androidxCompose" }
+compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "androidxCompose" }
+compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "androidxCompose" }
+compose-ui-toolingPreview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "androidxCompose" }
+compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "androidxCompose" }
+compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "androidxCompose" }
+compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "androidxCompose" }
+compose-material = { group = "androidx.compose.material", name = "material", version.ref = "androidxCompose" }
+compose-material-iconsExtended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "androidxCompose" }
+androidx-CoreKtx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
 androidx-AppCompat = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
 androidx-Window = { group = "androidx.window", name = "window", version.ref = "andoidxWindow" }
 androidx-Work = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "andoidxWork" }
@@ -43,7 +43,7 @@ androidx-LifecycleViewModelCompose = { group = "androidx.lifecycle", name = "lif
 androidx-ActivityCompose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidxActivityCompose" }
 androidx-Datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "andoidxDatastorePreferences" }
 androidx-HiltWork = { group = "androidx.hilt", name = "hilt-work", version.ref = "androidxHiltWork" }
-androidx-KaptCompiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "androidxHiltWork" }
+androidx-HiltKaptCompiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "androidxHiltWork" }
 kotlix-Serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 kotlix-CoroutinesCore = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 kotlix-CoroutinesAndroid = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
