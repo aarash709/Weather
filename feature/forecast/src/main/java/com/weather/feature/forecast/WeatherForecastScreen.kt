@@ -18,14 +18,10 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.center
 import androidx.compose.ui.graphics.*
-import androidx.compose.ui.graphics.drawscope.DrawStyle
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.withTransform
@@ -35,12 +31,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.work.WorkInfo
+import com.weather.core.design.components.ShowLoadingText
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.core.design.theme.White
 import com.weather.feature.forecast.components.*
@@ -104,7 +99,7 @@ fun WeatherForecastScreen(
             .padding(horizontal = 16.dp)
     ) {
         when (weatherUIState) {
-            WeatherUIState.Loading -> ShowLoading()
+            WeatherUIState.Loading -> ShowLoadingText()
             is WeatherUIState.Success -> {
                 val pullRefreshState = rememberPullRefreshState(
                     refreshing = isSyncing,
@@ -120,19 +115,10 @@ fun WeatherForecastScreen(
                         .pullRefresh(pullRefreshState),
                     verticalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
-                    TopAppBar(
-                        modifier = Modifier,
-                        backgroundColor = MaterialTheme.colors.background,
-                        elevation = 0.dp
-                    ) {
-                        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
-                            TopBar(
-                                cityName = weatherUIState.data.coordinates.name.toString(),
-                                onNavigateToManageLocations = { onNavigateToManageLocations() },
-                                onNavigateToSettings = { onNavigateToSettings() }
-                            )
-                        }
-                    }
+                    ForecastTopBar(
+                        cityName = weatherUIState.data.coordinates.name.toString(),
+                        onNavigateToManageLocations = { onNavigateToManageLocations() },
+                        onNavigateToSettings = { onNavigateToSettings() })
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         state = lazyListState,
@@ -198,176 +184,6 @@ fun SunMoonPosition() {
     }
 }
 
-@Composable
-fun WindDetails(
-    modifier: Modifier = Modifier,
-    windDirection: Float,
-    windSpeed: Float,
-) {
-    val animatedDegree = remember {
-        Animatable(0f)
-    }
-    LaunchedEffect(key1 = Unit) {
-        animatedDegree.animateTo(
-            windDirection,
-            tween(
-                1000,
-                100,
-                easing = EaseOutCubic
-            )
-        )
-    }
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(8.dp),
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(8.dp)
-                .height(IntrinsicSize.Max),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            BoxedWindIndicator(
-                modifier = Modifier.weight(2f),
-                windDirection = animatedDegree.value
-            )
-            Column(
-                modifier = Modifier.weight(2f),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(text = "${windSpeed}km/h")
-            }
-        }
-    }
-}
-
-@Composable
-fun BoxedWindIndicator(modifier: Modifier = Modifier, windDirection: Float) {
-    Box(
-        modifier = modifier
-            .aspectRatio(1f)
-            .border(width = 2.dp, color = White, shape = CircleShape),
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            imageVector = Icons.Default.North,
-            modifier = Modifier
-                .align(Alignment.Center)
-                .graphicsLayer {
-                    rotationZ = windDirection.times(-1)
-                },
-            contentDescription = "Wind direction arrow"
-        )
-        Box(
-            modifier = Modifier
-                .padding(4.dp)
-                .fillMaxSize()
-        ) {
-            Text(text = "N", modifier = Modifier.align(Alignment.TopCenter))
-            Text(text = "E", modifier = Modifier.align(Alignment.CenterEnd))
-            Text(text = "S", modifier = Modifier.align(Alignment.BottomCenter))
-            Text(text = "W", modifier = Modifier.align(Alignment.CenterStart))
-        }
-
-    }
-}
-
-@OptIn(ExperimentalTextApi::class)
-@Composable
-fun WindDirectionIndicator(
-    modifier: Modifier = Modifier,
-    animatedDegree: Float,
-) {
-    val textMeasurer = rememberTextMeasurer()
-    Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center
-    ) {
-        Canvas(
-            modifier = Modifier
-//                        .padding(8.dp)
-                .aspectRatio(1f)
-                .fillMaxSize()
-        ) {
-            val centerX = size.width / 2
-            val centerY = size.height / 2
-            val lineWidth = 1.dp.toPx()
-            drawText(
-                textMeasurer = textMeasurer,
-                text = "N",
-                style = TextStyle(color = Color.White),
-                topLeft = Offset(
-                    x = centerX - 15,
-                    y = 10f
-                )
-            )
-            drawText(
-                textMeasurer = textMeasurer,
-                text = "E",
-                style = TextStyle(color = Color.White),
-                topLeft = Offset(
-                    x = size.width - 40,
-                    y = centerY - 25
-                )
-            )
-            drawText(
-                textMeasurer = textMeasurer,
-                text = "S",
-                style = TextStyle(color = Color.White),
-                topLeft = Offset(
-                    x = centerX - 15,
-                    y = size.height - 60
-                )
-            )
-            drawText(
-                textMeasurer = textMeasurer,
-                text = "W",
-                style = TextStyle(color = Color.White),
-                topLeft = Offset(
-                    x = 10f,
-                    y = centerY - 25
-                ),
-
-                )
-            withTransform({
-                rotate(degrees = animatedDegree)
-            }) {
-                drawLine(
-                    Color.White,
-                    start = Offset(centerX, centerY.minus(centerY.div(2))),
-                    end = Offset(centerX, centerY.plus(centerY.div(2))),
-                    strokeWidth = lineWidth,
-                    cap = StrokeCap.Round,
-                )
-                rotate(40f, pivot = Offset(centerX, centerY.minus(centerY.div(2)))) {
-                    drawLine(
-                        Color.Red,
-                        start = Offset(centerX, centerY.minus(centerY.div(2))),
-                        end = Offset(centerX, centerY),
-                        strokeWidth = lineWidth,
-                        cap = StrokeCap.Round
-                    )
-                }
-                rotate(-40f, pivot = Offset(centerX, centerY.minus(centerY.div(2)))) {
-                    drawLine(
-                        Color.Red,
-                        start = Offset(centerX, centerY.minus(centerY.div(2))),
-                        end = Offset(centerX, centerY),
-                        strokeWidth = lineWidth,
-                        cap = StrokeCap.Round
-                    )
-                }
-            }
-            drawCircle(
-                color = Color.White.copy(alpha = 0.5f),
-                center = Offset(centerX, y = centerY),
-                radius = centerX,
-                style = Stroke(width = lineWidth)
-            )
-        }
-    }
-}
 
 @Composable
 fun CurrentDetails(
@@ -436,58 +252,6 @@ fun CurrentDetails(
     }
 }
 
-@Composable
-private fun TopBar(
-    cityName: String,
-    onNavigateToManageLocations: () -> Unit,
-    onNavigateToSettings: () -> Unit,
-) {
-    // TODO:  //handled in the gps handler later on
-    val locationBased by remember {
-        mutableStateOf<Boolean>(value = false)
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        IconButton(onClick = { onNavigateToManageLocations() }) {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = "Search Icon"
-            )
-        }
-        Row(
-            modifier = Modifier.padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            if (locationBased) {
-                Icon(
-                    imageVector = Icons.Default.MyLocation,
-                    contentDescription = "Location Icon"
-                )
-            }
-            Text(
-                text = cityName,
-                fontSize = 20.sp
-            )
-            Icon(
-                imageVector = Icons.Default.ArrowDropDown,
-                contentDescription = "Location Picker Icon"
-            )
-        }
-        IconButton(
-            onClick = { onNavigateToSettings() },
-        ) {
-            Icon(
-                imageVector = Icons.Default.Settings,
-                contentDescription = "Location Pick Icon"
-            )
-        }
-    }
-}
 
 @Composable
 private fun CurrentWeather(
@@ -654,7 +418,7 @@ fun MainPagePreview() {
         Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
             WeatherForecastScreen(weatherUIState = data,
                 false,
-                onNavigateToManageLocations = {}, onNavigateToSettings = {} ,onRefresh = {})
+                onNavigateToManageLocations = {}, onNavigateToSettings = {}, onRefresh = {})
         }
     }
 }
@@ -699,22 +463,3 @@ private fun SunPositionPreview() {
         SunMoonPosition()
     }
 }
-
-@Preview
-@Composable
-private fun WindIndicatorPreview() {
-    WeatherTheme {
-        WindDirectionIndicator(animatedDegree = 0f)
-    }
-}
-
-@Preview
-@Composable
-private fun BoxedWindIndicatorPreview() {
-    WeatherTheme {
-        BoxedWindIndicator(windDirection = 0f)
-    }
-}
-
-
-

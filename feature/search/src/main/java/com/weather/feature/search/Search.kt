@@ -1,6 +1,5 @@
 package com.weather.feature.search
 
-import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,6 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.flowlayout.MainAxisAlignment
+import com.weather.core.design.components.LinearLoadingIndicator
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.model.geocode.GeoSearchItem
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -113,7 +112,7 @@ fun SearchScreen(
 
         } else {
             when (searchUIState) {
-                is SearchUIState.Loading -> ShowLoading(modifier = Modifier.padding(horizontal = 24.dp))
+                is SearchUIState.Loading -> LinearLoadingIndicator(modifier = Modifier.padding(horizontal = 24.dp))
                 is SearchUIState.Error -> Unit
                 is SearchUIState.Success -> {
                     Spacer(modifier = Modifier.height(16.dp))
