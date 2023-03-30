@@ -1,6 +1,8 @@
 package com.weather.feature.forecast
 
 import android.app.Application
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
 import androidx.work.*
 import com.weather.core.repository.UserRepository
@@ -18,6 +20,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import timber.log.Timber
 import java.text.SimpleDateFormat
+import java.time.*
 import java.util.*
 import javax.inject.Inject
 
@@ -29,7 +32,11 @@ class ForecastViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    val cityName = savedStateHandle.get<String>("cityName").orEmpty()
+    private val workManager by lazy {
+        WorkManager.getInstance(context)
+    }
+
+    private val cityName = savedStateHandle.get<String>("cityName").orEmpty()
 
     private val _dataBaseOrCityIsEmpty = MutableStateFlow(false)
     val dataBaseOrCityIsEmpty = _dataBaseOrCityIsEmpty.asStateFlow()
@@ -37,8 +44,7 @@ class ForecastViewModel @Inject constructor(
     private val _isSyncing = MutableStateFlow(false)
     val isSyncing = _isSyncing.asStateFlow()
 
-    private val workManager = WorkManager.getInstance(context)
-    internal var workInfoList =
+    internal var isWorkRunning =
         workManager
             .getWorkInfosForUniqueWorkLiveData(
                 WEATHER_FETCH_WORK_NAME
@@ -52,11 +58,6 @@ class ForecastViewModel @Inject constructor(
             }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), false)
 
-    init {
-        Timber.e("init")
-        Timber.e("navigated city:$cityName")
-        checkDatabase()
-    }
 
     @ExperimentalCoroutinesApi
     val weatherUIState = getWeatherData().stateIn(
@@ -64,6 +65,11 @@ class ForecastViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(1000),
         initialValue = WeatherUIState.Loading
     )
+    init {
+        Timber.e("init")
+        Timber.e("navigated city:$cityName")
+        checkDatabase()
+    }
 
     @ExperimentalCoroutinesApi
     private fun getWeatherData(): Flow<WeatherUIState> {
@@ -88,6 +94,17 @@ class ForecastViewModel @Inject constructor(
                 }
                 val newWeather = weather.copy(daily = daily, hourly = hourly)
                 WeatherUIState.Success(newWeather)
+            }
+            .onEach { weatherData ->
+                val timeStamp = weatherData.data.current.dt
+                val coordinate = Coordinate(
+                    weatherData.data.coordinates.name,
+                    weatherData.data.coordinates.lat.toString(),
+                    weatherData.data.coordinates.lon.toString()
+                )
+                if (isDataExpired(dataTimestamp = timeStamp, minutesThreshold = 30)) {
+                    sync(coordinate)
+                }
             }
             .retry(2)
             .catch {
@@ -147,6 +164,13 @@ class ForecastViewModel @Inject constructor(
         return formatter.format(date)
     }
 
+    private fun isDataExpired(dataTimestamp: Int, minutesThreshold: Int): Boolean {
+        val currentTime = Instant.now().epochSecond
+        val differanceInSeconds = currentTime.minus(dataTimestamp)
+        val differanceInMinutes = Duration.ofSeconds(differanceInSeconds).toMinutes()
+        Timber.e((differanceInMinutes > minutesThreshold).toString())
+        return differanceInMinutes > minutesThreshold
+    }
 }
 
 
