@@ -18,14 +18,10 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.center
 import androidx.compose.ui.graphics.*
-import androidx.compose.ui.graphics.drawscope.DrawStyle
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.withTransform
@@ -35,12 +31,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.work.WorkInfo
+import com.weather.core.design.components.ShowLoadingText
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.core.design.theme.White
 import com.weather.feature.forecast.components.*
@@ -104,7 +99,7 @@ fun WeatherForecastScreen(
             .padding(horizontal = 16.dp)
     ) {
         when (weatherUIState) {
-            WeatherUIState.Loading -> ShowLoading()
+            WeatherUIState.Loading -> ShowLoadingText()
             is WeatherUIState.Success -> {
                 val pullRefreshState = rememberPullRefreshState(
                     refreshing = isSyncing,

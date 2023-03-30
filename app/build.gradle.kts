@@ -19,9 +19,9 @@ android {
     defaultConfig {
         applicationId = "com.experiment.weather"
         minSdk = 26
-        targetSdk  = 32
+        targetSdk  = 33
         versionCode = 1
-        versionName = "0.1-pre-apha-demo"
+        versionName = "0.1-alpha"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
