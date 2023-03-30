@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.weather.core.design.components.CustomTopBar
+import com.weather.core.design.components.ShowLoadingText
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.model.SettingsData
 import com.weather.model.TemperatureUnits
@@ -56,7 +58,7 @@ internal fun Settings(
     setWindSpeed: (WindSpeedUnits) -> Unit,
 ) {
     when (settingsState) {
-        is SettingsUIState.Loading -> Text(text = "loading")
+        is SettingsUIState.Loading -> ShowLoadingText()
         is SettingsUIState.Success -> {
             Column(
                 modifier = Modifier
@@ -74,13 +76,8 @@ internal fun Settings(
                     WindSpeedUnits.MS -> "Meters per second"
                     WindSpeedUnits.MPH -> "Miles per hour"
                 }
-                TopAppBar(
-                    backgroundColor = MaterialTheme.colors.background,
-                    elevation = 0.dp
-                ) {
-                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
-                        SettingsTopBar(onBackPressed)
-                    }
+                CustomTopBar(modifier = Modifier.fillMaxWidth() ,text = "Settings",) {
+                    onBackPressed()
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
@@ -228,28 +225,6 @@ internal fun Settings(
     }
 }
 
-@Composable
-fun SettingsTopBar(onBackPressed: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start
-    ) {
-        IconButton(onClick = { onBackPressed() }) {
-            Icon(
-                modifier = Modifier,
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = "Back Icon"
-            )
-        }
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(
-            text = "Settings",
-            fontSize = 18.sp
-        )
-    }
-}
 
 @Composable
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
@@ -257,9 +232,11 @@ private fun SettingsPreview() {
     WeatherTheme() {
         val temp = TemperatureUnits.F
         val wind = WindSpeedUnits.KM
-        Settings(
-            SettingsUIState.Success(settingsData = SettingsData(wind, temp)),
-            onBackPressed = {}, setTemperature = {}, setWindSpeed = {})
+        Surface(color = MaterialTheme.colors.background) {
+            Settings(
+                SettingsUIState.Success(settingsData = SettingsData(wind, temp)),
+                onBackPressed = {}, setTemperature = {}, setWindSpeed = {})
+        }
     }
 }
 
