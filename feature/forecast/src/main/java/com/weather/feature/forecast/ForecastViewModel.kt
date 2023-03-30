@@ -1,26 +1,41 @@
 package com.weather.feature.forecast
 
 import android.app.Application
+import android.os.Build
+import android.util.TimeUtils
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
 import androidx.work.*
 import com.weather.core.repository.UserRepository
 import com.weather.core.repository.WeatherRepository
 import com.weather.model.Coordinate
+import com.weather.model.TemperatureUnits
 import com.weather.model.WeatherData
 import com.weather.sync.work.FetchRemoteWeatherWorker
 import com.weather.sync.work.WEATHER_COORDINATE
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import timber.log.Timber
+import java.sql.Timestamp
 import java.text.SimpleDateFormat
+import java.time.*
+import java.time.format.DateTimeFormatter
+import java.time.temporal.TemporalAccessor
+import java.time.temporal.TemporalUnit
 import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
+@RequiresApi(Build.VERSION_CODES.S)
 @HiltViewModel
 class ForecastViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository,
@@ -29,7 +44,11 @@ class ForecastViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    val cityName = savedStateHandle.get<String>("cityName").orEmpty()
+    private val workManager by lazy {
+        WorkManager.getInstance(context)
+    }
+
+    private val cityName = savedStateHandle.get<String>("cityName").orEmpty()
 
     private val _dataBaseOrCityIsEmpty = MutableStateFlow(false)
     val dataBaseOrCityIsEmpty = _dataBaseOrCityIsEmpty.asStateFlow()
@@ -37,8 +56,7 @@ class ForecastViewModel @Inject constructor(
     private val _isSyncing = MutableStateFlow(false)
     val isSyncing = _isSyncing.asStateFlow()
 
-    private val workManager = WorkManager.getInstance(context)
-    internal var workInfoList =
+    internal var isWorkRunning =
         workManager
             .getWorkInfosForUniqueWorkLiveData(
                 WEATHER_FETCH_WORK_NAME
@@ -88,6 +106,20 @@ class ForecastViewModel @Inject constructor(
                 }
                 val newWeather = weather.copy(daily = daily, hourly = hourly)
                 WeatherUIState.Success(newWeather)
+            }
+            .onEach { weatherData ->
+                val timeStamp = weatherData.data.current.dt
+                val coordinate = Coordinate(
+                    weatherData.data.coordinates.name,
+                    weatherData.data.coordinates.lat.toString(),
+                    weatherData.data.coordinates.lon.toString()
+                )
+                delay(5000)
+                val time = 1
+                if (isDataExpired(timeStamp,1)) {
+                    sync(coordinate)
+                }
+                //check if data should be updated
             }
             .retry(2)
             .catch {
@@ -147,6 +179,12 @@ class ForecastViewModel @Inject constructor(
         return formatter.format(date)
     }
 
+    private fun isDataExpired(timestamp: Int, minutesThreshold: Int): Boolean {
+        val currentTime = LocalTime.now().toSecondOfDay()
+        val differanceInSeconds = (currentTime - timestamp).toLong()
+        val differanceInMinutes = Duration.ofSeconds(differanceInSeconds).toMinutes()
+        return differanceInMinutes > minutesThreshold
+    }
 }
 
 
