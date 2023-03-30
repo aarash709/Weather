@@ -27,17 +27,16 @@ fun CustomTopBar(
         elevation = elevation
     ) {
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
-            TopBar(
+            TopBarSimple(
                 text = text,
                 onBackPressed = onBackPressed
             )
         }
     }
-
 }
 
 @Composable
-fun TopBar(
+fun TopBarSimple(
     text : String,
     onBackPressed: () -> Unit,
 ) {
