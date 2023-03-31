@@ -8,6 +8,8 @@ import androidx.work.*
 import com.weather.core.repository.UserRepository
 import com.weather.core.repository.WeatherRepository
 import com.weather.model.Coordinate
+import com.weather.model.SettingsData
+import com.weather.model.TemperatureUnits
 import com.weather.model.WeatherData
 import com.weather.sync.work.FetchRemoteWeatherWorker
 import com.weather.sync.work.WEATHER_COORDINATE
@@ -23,6 +25,7 @@ import java.text.SimpleDateFormat
 import java.time.*
 import java.util.*
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 @HiltViewModel
 class ForecastViewModel @Inject constructor(
@@ -59,12 +62,16 @@ class ForecastViewModel @Inject constructor(
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), false)
 
 
+    val settingsState =
+        getUserSettings().stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), null)
+
     @ExperimentalCoroutinesApi
     val weatherUIState = getWeatherData().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(1000),
         initialValue = WeatherUIState.Loading
     )
+
     init {
         Timber.e("init")
         Timber.e("navigated city:$cityName")
@@ -158,6 +165,13 @@ class ForecastViewModel @Inject constructor(
         }
     }
 
+    private fun getUserSettings(): Flow<SettingsData> {
+        return userRepository.getTemperatureUnitSetting()
+            .combine(userRepository.getWindSpeedUnitSetting()) { temp, wind ->
+                SettingsData(windSpeedUnits = wind, temperatureUnits = temp)
+            }
+    }
+
     private fun unixMillisToHumanDate(unixTimeStamp: Long, pattern: String): String {
         val formatter = SimpleDateFormat(pattern, Locale.getDefault())
         val date = Date(unixTimeStamp * 1000) //to millisecond
@@ -170,6 +184,13 @@ class ForecastViewModel @Inject constructor(
         val differanceInMinutes = Duration.ofSeconds(differanceInSeconds).toMinutes()
         Timber.e((differanceInMinutes > minutesThreshold).toString())
         return differanceInMinutes > minutesThreshold
+    }
+
+    internal fun convertTemperature(value: Double, tempUnit: TemperatureUnits): String {
+        return when (tempUnit) {
+            TemperatureUnits.C -> value.minus(273.15).roundToInt()
+            TemperatureUnits.F -> value.minus(273.15).times(1.8f).plus(32).roundToInt()
+        }.toString()
     }
 }
 
