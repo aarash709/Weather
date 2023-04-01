@@ -1,5 +1,6 @@
 package com.weather.feature.forecast
 
+import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOutCubic
@@ -371,6 +372,7 @@ private fun CurrentTempAndCondition(
 
 @ExperimentalMaterialApi
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO)
 @Composable
 fun MainPagePreview() {
     WeatherTheme {

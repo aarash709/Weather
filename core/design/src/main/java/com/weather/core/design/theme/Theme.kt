@@ -1,7 +1,9 @@
 package com.weather.core.design.theme
 
+import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -9,18 +11,14 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Black
-import androidx.compose.ui.graphics.Color.Companion.Cyan
-import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 //Use in WeatherTheme
 private val DarkColorPalette = darkColors(
     primary = Blue,
-    surface = LightGray900,
-    background = Black,
+    surface = Gray800,
+    background = Gray900,
     onPrimary = White,
     onBackground = White,
     onSurface = White
@@ -28,9 +26,9 @@ private val DarkColorPalette = darkColors(
 
 private val LightColorPalette = lightColors(
     primary = Blue,
-    surface = LightGray100,
-    background = White,
-    onPrimary = Black,
+    surface = Gray200,
+    background = Gray100,
+    onPrimary = White,
     onBackground = Black,
     onSurface = Black,
 )
@@ -51,11 +49,12 @@ fun WeatherTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composabl
 }
 
 @Preview(showBackground = true, showSystemUi = false, uiMode = UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, showSystemUi = false, uiMode = UI_MODE_NIGHT_NO)
 @Composable
 private fun ThemeTest() {
     WeatherTheme {
         Surface() {
-            Box(modifier = Modifier) {
+            Box(modifier = Modifier.background(MaterialTheme.colors.background)) {
                 Column(
                     Modifier.padding(32.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
