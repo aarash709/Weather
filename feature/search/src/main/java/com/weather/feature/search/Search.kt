@@ -1,5 +1,6 @@
 package com.weather.feature.search
 
+import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -112,7 +113,11 @@ fun SearchScreen(
 
         } else {
             when (searchUIState) {
-                is SearchUIState.Loading -> LinearLoadingIndicator(modifier = Modifier.padding(horizontal = 24.dp))
+                is SearchUIState.Loading -> LinearLoadingIndicator(
+                    modifier = Modifier.padding(
+                        horizontal = 24.dp
+                    )
+                )
                 is SearchUIState.Error -> Unit
                 is SearchUIState.Success -> {
                     Spacer(modifier = Modifier.height(16.dp))
@@ -140,6 +145,7 @@ private fun TopSearchBar(
 ) {
     val textFieldColors = TextFieldDefaults.textFieldColors(
         textColor = MaterialTheme.colors.onSurface,
+        backgroundColor = MaterialTheme.colors.surface,
         focusedIndicatorColor = Color.Transparent,
         unfocusedIndicatorColor = Color.Transparent,
         errorIndicatorColor = Color.Transparent,
@@ -147,7 +153,7 @@ private fun TopSearchBar(
     val focusRequester = remember {
         FocusRequester()
     }
-    LaunchedEffect(key1 = Unit){
+    LaunchedEffect(key1 = Unit) {
         focusRequester.requestFocus()
     }
     Row(
@@ -265,26 +271,24 @@ private fun PopularCities(
 private fun PopularCityItem(
     cityName: String,
 ) {
-    Box(modifier = Modifier) {
-        Surface(
-            modifier = Modifier,
-            shape = RoundedCornerShape(size = 16.dp),
-//            color = Color.LightGray
-        ) {
-            Text(
-                text = cityName,
-                modifier = Modifier.padding(
-                    horizontal = 16.dp,
-                    vertical = 8.dp
-                )
+    Card(
+        modifier = Modifier,
+        shape = RoundedCornerShape(size = 16.dp),
+    ) {
+        Text(
+            text = cityName,
+            modifier = Modifier.padding(
+                horizontal = 16.dp,
+                vertical = 8.dp
             )
-        }
-
+        )
     }
+
 }
 
 
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO)
 @Composable
 private fun SearchPreview() {
     WeatherTheme {
@@ -307,7 +311,7 @@ private fun SearchPreview() {
 @Composable
 private fun TopSearchBarPreview() {
     WeatherTheme {
-        TopSearchBar(Modifier,searchText = "", onTextChange = {}, onClearSearch = {})
+        TopSearchBar(Modifier, searchText = "", onTextChange = {}, onClearSearch = {})
     }
 }
 
