@@ -5,11 +5,9 @@ import androidx.lifecycle.*
 import androidx.work.*
 import com.weather.core.repository.UserRepository
 import com.weather.core.repository.WeatherRepository
-import com.weather.model.Coordinate
-import com.weather.model.SettingsData
-import com.weather.model.TemperatureUnits
+import com.weather.model.*
 import com.weather.model.TemperatureUnits.*
-import com.weather.model.WeatherData
+import com.weather.model.WindSpeedUnits.*
 import com.weather.sync.work.FetchRemoteWeatherWorker
 import com.weather.sync.work.WEATHER_COORDINATE
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +22,6 @@ import java.text.SimpleDateFormat
 import java.time.*
 import java.util.*
 import javax.inject.Inject
-import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
 @HiltViewModel
@@ -95,46 +92,43 @@ class ForecastViewModel @Inject constructor(
                 Timber.e("invoked data stream")
                 val current = weather.current.run {
                     copy(
-                        dew_point = convertKelvinToUserTemperature(
-                            dew_point,
+                        dew_point = dew_point.convertToUserTemperature(
                             userSettings.temperatureUnits ?: C
                         ),
-                        feels_like = convertKelvinToUserTemperature(
-                            feels_like,
+                        feels_like = feels_like.convertToUserTemperature(
                             userSettings.temperatureUnits ?: C
                         ),
-                        temp = convertKelvinToUserTemperature(
-                            temp,
+                        temp = temp.convertToUserTemperature(
                             userSettings.temperatureUnits ?: C
-                        )
+                        ),
+                        visibility = visibility.compactVisibilityMeasurement(),
+                        wind_speed = wind_speed.convertToUserSpeed(
+                            userSettings.windSpeedUnits ?: KM
+                        ),
                     )
                 }
                 val daily = weather.daily.map {
                     it.copy(
-                        dew_point = convertKelvinToUserTemperature(
-                            it.dew_point,
+                        dew_point = it.dew_point.convertToUserTemperature(
                             userSettings.temperatureUnits ?: C
                         ),
                         dt = unixMillisToHumanDate(it.dt.toLong(), "EEE"),
-                        dayTemp = convertKelvinToUserTemperature(
-                            it.dayTemp,
+                        dayTemp = it.dayTemp.convertToUserTemperature(
+
                             userSettings.temperatureUnits ?: C
                         ),
-                        nightTemp = convertKelvinToUserTemperature(
-                            it.nightTemp,
+                        nightTemp = it.nightTemp.convertToUserTemperature(
                             userSettings.temperatureUnits ?: C
                         )
                     )
                 }
                 val hourly = weather.hourly.map {
                     it.copy(
-                        dew_point = convertKelvinToUserTemperature(
-                            it.dew_point,
+                        dew_point = it.dew_point.convertToUserTemperature(
                             userSettings.temperatureUnits ?: C
                         ),
                         dt = unixMillisToHumanDate(it.dt.toLong(), "HH:mm"),
-                        temp = convertKelvinToUserTemperature(
-                            it.temp,
+                        temp = it.temp.convertToUserTemperature(
                             userSettings.temperatureUnits ?: C
                         )
                     )
@@ -226,13 +220,34 @@ class ForecastViewModel @Inject constructor(
         return differanceInMinutes > minutesThreshold
     }
 
-    internal fun convertKelvinToUserTemperature(
-        value: Double,
+    internal fun Double.convertToUserTemperature(
         userTempUnit: TemperatureUnits,
     ): Double {
         return when (userTempUnit) {
-            C -> value.minus(273.15)
-            F -> value.minus(273.15).times(1.8f).plus(32)
+            C -> this.minus(273.15)
+            F -> this.minus(273.15).times(1.8f).plus(32)
+        }
+    }
+
+    internal fun Double.convertToUserSpeed(
+        userTempUnit: WindSpeedUnits,
+    ): Double {
+        return when (userTempUnit) {
+            KM -> this.times(3.6f).times(100).roundToInt().toDouble().div(100)
+            MS -> this
+            MPH -> this.times(2.2369f).times(100).roundToInt().toDouble().div(100)
+        }
+    }
+
+    internal fun Int.compactVisibilityMeasurement(): Int {
+        return when {
+            this < 1000 -> {
+                return this
+            }
+            this > 1000 -> {
+                return this.div(1000)
+            }
+            else -> {this}
         }
     }
 }
