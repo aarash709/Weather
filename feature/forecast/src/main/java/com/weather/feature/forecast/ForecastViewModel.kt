@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat
 import java.time.*
 import java.util.*
 import javax.inject.Inject
+import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
 @HiltViewModel
@@ -109,10 +110,34 @@ class ForecastViewModel @Inject constructor(
                     )
                 }
                 val daily = weather.daily.map {
-                    it.copy(dt = unixMillisToHumanDate(it.dt.toLong(), "EEE"))
+                    it.copy(
+                        dew_point = convertKelvinToUserTemperature(
+                            it.dew_point,
+                            userSettings.temperatureUnits ?: C
+                        ),
+                        dt = unixMillisToHumanDate(it.dt.toLong(), "EEE"),
+                        dayTemp = convertKelvinToUserTemperature(
+                            it.dayTemp,
+                            userSettings.temperatureUnits ?: C
+                        ),
+                        nightTemp = convertKelvinToUserTemperature(
+                            it.nightTemp,
+                            userSettings.temperatureUnits ?: C
+                        )
+                    )
                 }
                 val hourly = weather.hourly.map {
-                    it.copy(dt = unixMillisToHumanDate(it.dt.toLong(), "HH:mm"))
+                    it.copy(
+                        dew_point = convertKelvinToUserTemperature(
+                            it.dew_point,
+                            userSettings.temperatureUnits ?: C
+                        ),
+                        dt = unixMillisToHumanDate(it.dt.toLong(), "HH:mm"),
+                        temp = convertKelvinToUserTemperature(
+                            it.temp,
+                            userSettings.temperatureUnits ?: C
+                        )
+                    )
                 }
                 val newWeather = weather.copy(current = current, daily = daily, hourly = hourly)
                 WeatherUIState.Success(newWeather)
