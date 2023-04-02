@@ -259,8 +259,8 @@ private fun CurrentWeather(
             modifier = Modifier
                 .fillMaxWidth(),
             icon = weatherData.weather[0].icon,
-            temp = weatherData.temp.minus(273.15).roundToInt().toString(),
-            feelsLikeTemp = weatherData.feels_like.minus(273.15).roundToInt().toString(),
+            temp = weatherData.temp.roundToInt().toString(),
+            feelsLikeTemp = weatherData.feels_like.roundToInt().toString(),
             condition = weatherData.weather.first().main
         )
     }

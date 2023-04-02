@@ -1,8 +1,6 @@
 package com.weather.feature.forecast
 
 import android.app.Application
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
 import androidx.work.*
 import com.weather.core.repository.UserRepository
@@ -10,6 +8,7 @@ import com.weather.core.repository.WeatherRepository
 import com.weather.model.Coordinate
 import com.weather.model.SettingsData
 import com.weather.model.TemperatureUnits
+import com.weather.model.TemperatureUnits.*
 import com.weather.model.WeatherData
 import com.weather.sync.work.FetchRemoteWeatherWorker
 import com.weather.sync.work.WEATHER_COORDINATE
@@ -91,15 +90,31 @@ class ForecastViewModel @Inject constructor(
                     allWeather.first { it.coordinates.name == coordinate?.cityName }
             }
             .flowOn(Dispatchers.IO)
-            .map { weather ->
+            .combine(getUserSettings()) { weather, userSettings ->
                 Timber.e("invoked data stream")
+                val current = weather.current.run {
+                    copy(
+                        dew_point = convertKelvinToUserTemperature(
+                            dew_point,
+                            userSettings.temperatureUnits ?: C
+                        ),
+                        feels_like = convertKelvinToUserTemperature(
+                            feels_like,
+                            userSettings.temperatureUnits ?: C
+                        ),
+                        temp = convertKelvinToUserTemperature(
+                            temp,
+                            userSettings.temperatureUnits ?: C
+                        )
+                    )
+                }
                 val daily = weather.daily.map {
                     it.copy(dt = unixMillisToHumanDate(it.dt.toLong(), "EEE"))
                 }
                 val hourly = weather.hourly.map {
                     it.copy(dt = unixMillisToHumanDate(it.dt.toLong(), "HH:mm"))
                 }
-                val newWeather = weather.copy(daily = daily, hourly = hourly)
+                val newWeather = weather.copy(current = current, daily = daily, hourly = hourly)
                 WeatherUIState.Success(newWeather)
             }
             .onEach { weatherData ->
@@ -186,11 +201,14 @@ class ForecastViewModel @Inject constructor(
         return differanceInMinutes > minutesThreshold
     }
 
-    internal fun convertTemperature(value: Double, tempUnit: TemperatureUnits): String {
-        return when (tempUnit) {
-            TemperatureUnits.C -> value.minus(273.15).roundToInt()
-            TemperatureUnits.F -> value.minus(273.15).times(1.8f).plus(32).roundToInt()
-        }.toString()
+    internal fun convertKelvinToUserTemperature(
+        value: Double,
+        userTempUnit: TemperatureUnits,
+    ): Double {
+        return when (userTempUnit) {
+            C -> value.minus(273.15)
+            F -> value.minus(273.15).times(1.8f).plus(32)
+        }
     }
 }
 
