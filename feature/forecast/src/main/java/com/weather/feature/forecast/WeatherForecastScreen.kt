@@ -60,9 +60,6 @@ fun WeatherForecastScreen(
             WeatherForecastScreen(
                 weatherUIState = weatherUIState,
                 isSyncing = syncing,
-//                speedUnit = "",
-//                temperatureUnit = "",
-//                distanceUnit = "",
                 onNavigateToManageLocations = { navigateToManageLocations() },
                 onNavigateToSettings = { onNavigateToSettings() },
                 onRefresh = viewModel::sync
@@ -76,9 +73,6 @@ fun WeatherForecastScreen(
 fun WeatherForecastScreen(
     weatherUIState: WeatherUIState,
     isSyncing: Boolean,
-//    speedUnit: String,
-//    temperatureUnit: String,
-//    distanceUnit: String,
     onNavigateToManageLocations: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onRefresh: (Coordinate) -> Unit,
@@ -122,7 +116,6 @@ fun WeatherForecastScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .pullRefresh(pullRefreshState),
-                    verticalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
                     ForecastTopBar(
                         cityName = weatherUIState.data.weather.coordinates.name.toString(),
@@ -146,7 +139,8 @@ fun WeatherForecastScreen(
                 PullRefreshIndicator(
                     refreshing = isSyncing,
                     state = pullRefreshState,
-                    modifier = Modifier.align(Alignment.TopCenter)
+                    modifier = Modifier.align(Alignment.TopCenter),
+                    scale = true
                 )
             }
         }
@@ -167,7 +161,8 @@ fun ConditionAndDetails(
         Spacer(modifier = Modifier.height(100.dp))
         CurrentWeather(
             modifier = Modifier.padding(vertical = 60.dp),
-            weatherData = weatherData.current
+            weatherData = weatherData.current,
+            temperatureUnit = temperatureUnit
         )
         Spacer(modifier = Modifier.height(100.dp))
         CurrentWeatherDetails(
@@ -278,6 +273,7 @@ fun CurrentDetails(
 private fun CurrentWeather(
     modifier: Modifier = Modifier,
     weatherData: Current,
+    temperatureUnit: String,
 ) {
     Row(
         modifier = modifier
@@ -290,6 +286,7 @@ private fun CurrentWeather(
                 .fillMaxWidth(),
             icon = weatherData.weather[0].icon,
             temp = weatherData.temp.roundToInt().toString(),
+            temperatureUnit = temperatureUnit,
             feelsLikeTemp = weatherData.feels_like.roundToInt().toString(),
             condition = weatherData.weather.first().main
         )
@@ -303,6 +300,15 @@ fun CurrentWeatherDetails(
     speedUnit: String,
     distanceUnit: String,
 ) {
+    val visibility = when {
+        weatherData.visibility < 1000 -> {
+            "${weatherData.visibility}m"
+        }
+        weatherData.visibility > 1000 -> {
+            "${weatherData.visibility.div(1000)}km"
+        }
+        else -> {"${weatherData.visibility}"}
+    }
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -319,7 +325,7 @@ fun CurrentWeatherDetails(
         )
         WeatherDetailItem(
             image = Icons.Outlined.Visibility,
-            value = "${weatherData.visibility}$distanceUnit",
+            value = visibility,
             itemName = "Visibility"
         )
         WeatherDetailItem(
@@ -370,6 +376,7 @@ private fun CurrentTempAndCondition(
     modifier: Modifier = Modifier,
     icon: String,
     temp: String,
+    temperatureUnit: String,
     feelsLikeTemp: String,
     condition: String,
 ) {
@@ -388,12 +395,12 @@ private fun CurrentTempAndCondition(
                 color = MaterialTheme.colors.onBackground
             )
             Text(
-                text = "$temp°",
+                text = "$temp°$temperatureUnit",
                 fontSize = 70.sp,
                 color = MaterialTheme.colors.onBackground
             )
             Text(
-                text = "Feels like $feelsLikeTemp°",
+                text = "Feels like $feelsLikeTemp°$temperatureUnit",
                 fontSize = 14.sp,
                 color = MaterialTheme.colors.onBackground.copy(alpha = 0.7f)
             )
@@ -458,7 +465,7 @@ fun MainPagePreview() {
 @Preview(showBackground = true)
 fun CurrentWeatherPreview() {
     WeatherTheme {
-        CurrentTempAndCondition(temp = "5", feelsLikeTemp = "3", icon = "02d", condition = "Snow")
+        CurrentTempAndCondition(temp = "5", temperatureUnit = "C", feelsLikeTemp = "3", icon = "02d", condition = "Snow")
     }
 }
 

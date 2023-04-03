@@ -101,7 +101,7 @@ class ForecastViewModel @Inject constructor(
                         temp = temp.convertToUserTemperature(
                             userSettings.temperatureUnits ?: C
                         ),
-                        visibility = visibility.compactVisibilityMeasurement(),
+                        visibility = visibility,
                         wind_speed = wind_speed.convertToUserSpeed(
                             userSettings.windSpeedUnits ?: KM
                         ),
