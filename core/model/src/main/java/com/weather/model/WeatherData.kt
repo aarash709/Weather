@@ -1,6 +1,9 @@
 package com.weather.model
 
-//main Class
+data class SavableForecastData(
+    val weather: WeatherData,
+    val userSettings : SettingsData
+)
 data class WeatherData(
     val coordinates: OneCallCoordinates,
     val current: Current,

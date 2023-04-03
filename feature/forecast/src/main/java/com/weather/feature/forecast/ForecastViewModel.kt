@@ -134,14 +134,15 @@ class ForecastViewModel @Inject constructor(
                     )
                 }
                 val newWeather = weather.copy(current = current, daily = daily, hourly = hourly)
-                WeatherUIState.Success(newWeather)
+                val forecastData = SavableForecastData(newWeather,userSettings)
+                WeatherUIState.Success(forecastData)
             }
-            .onEach { weatherData ->
-                val timeStamp = weatherData.data.current.dt
+            .onEach { forecastData ->
+                val timeStamp = forecastData.data.weather.current.dt
                 val coordinate = Coordinate(
-                    weatherData.data.coordinates.name,
-                    weatherData.data.coordinates.lat.toString(),
-                    weatherData.data.coordinates.lon.toString()
+                    forecastData.data.weather.coordinates.name,
+                    forecastData.data.weather.coordinates.lat.toString(),
+                    forecastData.data.weather.coordinates.lon.toString()
                 )
                 if (isDataExpired(dataTimestamp = timeStamp, minutesThreshold = 30)) {
                     sync(coordinate)
@@ -255,7 +256,7 @@ class ForecastViewModel @Inject constructor(
 
 sealed class WeatherUIState {
     object Loading : WeatherUIState()
-    data class Success(val data: WeatherData) : WeatherUIState()
+    data class Success(val data: SavableForecastData) : WeatherUIState()
 }
 
 internal const val WEATHER_FETCH_WORK_NAME = "weatherSyncWorkName"
