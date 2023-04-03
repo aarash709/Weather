@@ -46,6 +46,9 @@ fun SearchScreen(
     var inputText by remember {
         mutableStateOf("")
     }
+    LaunchedEffect(key1 = inputText){
+        searchViewModel.setSearchQuery(cityName = inputText)
+    }
     Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
         Column(
             modifier = Modifier
@@ -59,11 +62,12 @@ fun SearchScreen(
                 searchUIState = searchUIState,
                 searchInputText = inputText,
                 popularCities = cityList,
+                popularCityIndex = { inputText = cityList[it] },
                 onSearchTextChange = { cityName ->
                     inputText = cityName.ifBlank {
                         cityName.trim()
                     }
-                    searchViewModel.setSearchQuery(cityName = inputText)
+
                 },
                 onClearSearch = {
                     inputText = ""
@@ -83,6 +87,7 @@ fun SearchScreen(
     searchUIState: SearchUIState,
     searchInputText: String,
     popularCities: List<String>,
+    popularCityIndex: (Int) -> Unit,
     onSearchTextChange: (String) -> Unit,
     onClearSearch: () -> Unit,
     selectedSearchItem: (GeoSearchItem) -> Unit,
@@ -109,7 +114,9 @@ fun SearchScreen(
                 fontSize = 14.sp
             )
             Spacer(modifier = Modifier.height(16.dp))
-            PopularCities(popularCities = popularCities)
+            PopularCities(
+                popularCities = popularCities,
+                popularCityIndex = { popularCityIndex(it) })
 
         } else {
             when (searchUIState) {
@@ -251,6 +258,7 @@ private fun SearchItem(
 @Composable
 private fun PopularCities(
     popularCities: List<String>,
+    popularCityIndex: (Int) -> Unit,
 ) {
     FlowRow(
         modifier = Modifier.fillMaxWidth(fraction = 1f),
@@ -260,8 +268,11 @@ private fun PopularCities(
         crossAxisAlignment = FlowCrossAxisAlignment.Center,
         crossAxisSpacing = 16.dp,
     ) {
-        popularCities.forEach {
-            PopularCityItem(cityName = it)
+        popularCities.forEachIndexed { index, cityName ->
+            PopularCityItem(
+                modifier = Modifier.clickable { popularCityIndex(index) },
+                cityName = cityName
+            )
         }
     }
 
@@ -269,10 +280,11 @@ private fun PopularCities(
 
 @Composable
 private fun PopularCityItem(
+    modifier: Modifier = Modifier,
     cityName: String,
 ) {
     Card(
-        modifier = Modifier,
+        modifier = modifier,
         shape = RoundedCornerShape(size = 16.dp),
     ) {
         Text(
@@ -300,6 +312,7 @@ private fun SearchPreview() {
                 searchUIState = SearchUIState.Loading,
                 searchInputText = "",
                 popularCities = cityList,
+                popularCityIndex = {},
                 onClearSearch = {},
                 onSearchTextChange = { inputText = it },
             ) {}
@@ -321,6 +334,7 @@ private fun PopularCityPreview() {
     WeatherTheme {
         PopularCities(
             popularCities = cityList,
+            popularCityIndex = {}
         )
     }
 }
