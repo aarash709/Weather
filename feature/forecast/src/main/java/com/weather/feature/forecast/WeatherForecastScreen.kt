@@ -22,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -308,7 +307,9 @@ fun CurrentWeatherDetails(
         weatherData.visibility > 1000 -> {
             "${weatherData.visibility.div(1000)}km"
         }
-        else -> {"${weatherData.visibility}"}
+        else -> {
+            "${weatherData.visibility}"
+        }
     }
     Row(
         modifier = modifier,
@@ -329,12 +330,51 @@ fun CurrentWeatherDetails(
             value = visibility,
             itemName = "Visibility"
         )
-        WeatherDetailItem(
-            image = Icons.Outlined.Directions,
-            value = "${weatherData.wind_deg}",
+        WinDirectionDetail(
+            image = Icons.Outlined.North,
+            value = weatherData.wind_deg,
             itemName = "Wind Direction"
         )
     }
+}
+
+@Composable
+fun WinDirectionDetail(
+    image: ImageVector,
+    value: Int,
+    itemName: String,
+) {
+    Column(
+        modifier = Modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Icon(
+                imageVector = image,
+                contentDescription = itemName,
+                modifier = Modifier
+                    .size(16.dp)
+                    .graphicsLayer {
+                        rotationZ = value.minus(180f)
+                    },
+                tint = MaterialTheme.colors.onBackground
+            )
+//            Text(
+//                text = value.toString(),
+//                fontSize = 10.sp,
+//                color = MaterialTheme.colors.onBackground
+//            )
+        }
+        Text(
+            text = itemName,
+            fontSize = 10.sp,
+            color = MaterialTheme.colors.onBackground
+        )
+    }
+
 }
 
 @Composable
@@ -354,7 +394,8 @@ private fun WeatherDetailItem(
             Icon(
                 imageVector = image,
                 contentDescription = itemName,
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier
+                    .size(16.dp),
                 tint = MaterialTheme.colors.onBackground
             )
             Text(
@@ -467,7 +508,13 @@ fun MainPagePreview() {
 @Preview(showBackground = true)
 fun CurrentWeatherPreview() {
     WeatherTheme {
-        CurrentTempAndCondition(temp = "5", temperatureUnit = "C", feelsLikeTemp = "3", icon = "02d", condition = "Snow")
+        CurrentTempAndCondition(
+            temp = "5",
+            temperatureUnit = "C",
+            feelsLikeTemp = "3",
+            icon = "02d",
+            condition = "Snow"
+        )
     }
 }
 
