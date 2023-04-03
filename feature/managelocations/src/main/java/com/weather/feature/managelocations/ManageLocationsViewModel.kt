@@ -9,6 +9,8 @@ import com.weather.core.repository.UserRepository
 import com.weather.core.repository.WeatherRepository
 import com.weather.model.Coordinate
 import com.weather.model.ManageLocationsData
+import com.weather.model.TemperatureUnits
+import com.weather.model.TemperatureUnits.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,6 +20,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import timber.log.Timber
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 @HiltViewModel
 class ManageLocationsViewModel @Inject constructor(
@@ -29,14 +32,26 @@ class ManageLocationsViewModel @Inject constructor(
     private val hapticFeedback = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val locationsState = weatherRepository.getAllWeatherLocations()
-        .combine(getFavoriteCityCoordinate()) { weatherList, favoriteCoordinate ->
-            val locationData = weatherList.map {
-                val isFavorite = it.locationName == favoriteCoordinate?.cityName
-                it.copy(isFavorite = isFavorite)
-            }
-            LocationsUIState.Success(locationData)
-        }.catch {
+    val locationsState = combine(
+        weatherRepository.getAllWeatherLocations(),
+        getFavoriteCityCoordinate(),
+        userRepository.getTemperatureUnitSetting()
+    )
+    { weatherList, favoriteCoordinate, temperatureSetting ->
+        val tempUnit = temperatureSetting ?: C
+        val locationData = weatherList.map {
+            val isFavorite = it.locationName == favoriteCoordinate?.cityName
+            it.copy(
+                currentTemp = it.currentTemp.toDouble()
+                    .convertToUserTemperature(userTempUnit = tempUnit).roundToInt().toString(),
+                feelsLike = it.feelsLike.toDouble()
+                    .convertToUserTemperature(userTempUnit = tempUnit).roundToInt().toString(),
+                isFavorite = isFavorite
+            )
+        }
+        LocationsUIState.Success(locationData)
+    }
+        .catch {
             Timber.e(it.message)
         }
         .flowOn(Dispatchers.IO)
@@ -65,6 +80,15 @@ class ManageLocationsViewModel @Inject constructor(
         hapticFeedback.cancel()
         hapticFeedback.vibrate(10)
 
+    }
+
+    internal fun Double.convertToUserTemperature(
+        userTempUnit: TemperatureUnits,
+    ): Double {
+        return when (userTempUnit) {
+            C -> this.minus(273.15)
+            F -> this.minus(273.15).times(1.8f).plus(32)
+        }
     }
 
 }

@@ -212,15 +212,14 @@ fun SavedLocationItem(
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
                         text = "Real Feel: ${
-                            data.feelsLike.toFloat().minus(273.15f).roundToInt()
-                        }°",
+                            data.feelsLike}°",
                         fontSize = 12.sp
                     )
 //                    Text(text = "30°/20°")
                 }
             }
             Text(
-                text = "${data.currentTemp.toFloat().minus(273.15f).roundToInt()}°",
+                text = "${data.currentTemp}°",
                 fontSize = 28.sp
             )
         }

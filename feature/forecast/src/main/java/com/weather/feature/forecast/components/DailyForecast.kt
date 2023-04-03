@@ -79,7 +79,7 @@ fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "${daily.tempDay.toFloat().minus(273.15).roundToInt()}",
+                text = "${daily.tempDay.toFloat().roundToInt()}",
                 fontSize = 14.sp,
             )
             Text(
@@ -88,7 +88,7 @@ fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview) {
                 color = Color.White.copy(alpha = .7f)
             )
             Text(
-                text = "${daily.tempNight.toFloat().minus(273.15).roundToInt()}°",
+                text = "${daily.tempNight.toFloat().roundToInt()}°",
                 fontSize = 14.sp,
             )
         }
