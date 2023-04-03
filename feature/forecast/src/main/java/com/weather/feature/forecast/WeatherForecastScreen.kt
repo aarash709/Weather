@@ -64,6 +64,9 @@ fun WeatherForecastScreen(
             WeatherForecastScreen(
                 weatherUIState = weatherUIState,
                 isSyncing = syncing,
+                speedUnit = "",
+                temperatureUnit = "",
+                distanceUnit = "",
                 onNavigateToManageLocations = { navigateToManageLocations() },
                 onNavigateToSettings = { onNavigateToSettings() },
                 onRefresh = viewModel::sync
@@ -77,6 +80,9 @@ fun WeatherForecastScreen(
 fun WeatherForecastScreen(
     weatherUIState: WeatherUIState,
     isSyncing: Boolean,
+    speedUnit: String,
+    temperatureUnit: String,
+    distanceUnit: String,
     onNavigateToManageLocations: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onRefresh: (Coordinate) -> Unit,
@@ -116,7 +122,12 @@ fun WeatherForecastScreen(
                         verticalArrangement = Arrangement.spacedBy(0.dp)
                     ) {
                         item {
-                            ConditionAndDetails(weatherUIState.data)
+                            ConditionAndDetails(
+                                weatherUIState.data,
+                                speedUnit = "",
+                                temperatureUnit = "",
+                                distanceUnit = ""
+                            )
                         }
                     }
                 }
@@ -131,7 +142,12 @@ fun WeatherForecastScreen(
 }
 
 @Composable
-fun ConditionAndDetails(weatherData: WeatherData) {
+fun ConditionAndDetails(
+    weatherData: WeatherData,
+    speedUnit: String,
+    temperatureUnit: String,
+    distanceUnit: String,
+) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -146,7 +162,9 @@ fun ConditionAndDetails(weatherData: WeatherData) {
             modifier = Modifier
                 .padding(horizontal = 1.dp)
                 .fillMaxWidth(),
-            weatherData = weatherData.current
+            weatherData = weatherData.current,
+            speedUnit = "",
+            distanceUnit = ""
         )
         Daily(
             modifier = Modifier.fillMaxWidth(),
@@ -270,6 +288,8 @@ private fun CurrentWeather(
 fun CurrentWeatherDetails(
     modifier: Modifier = Modifier,
     weatherData: Current,
+    speedUnit: String,
+    distanceUnit: String,
 ) {
     Row(
         modifier = modifier,
@@ -277,7 +297,7 @@ fun CurrentWeatherDetails(
     ) {
         WeatherDetailItem(
             image = Icons.Outlined.Air,
-            value = "${weatherData.wind_speed}km/h",
+            value = "${weatherData.wind_speed}$speedUnit",
             itemName = "Wind Speed"
         )
         WeatherDetailItem(
@@ -287,7 +307,7 @@ fun CurrentWeatherDetails(
         )
         WeatherDetailItem(
             image = Icons.Outlined.Visibility,
-            value = "${weatherData.visibility}m",
+            value = "${weatherData.visibility}$distanceUnit",
             itemName = "Visibility"
         )
         WeatherDetailItem(
@@ -408,8 +428,13 @@ fun MainPagePreview() {
         )
         Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
             WeatherForecastScreen(weatherUIState = data,
-                false,
-                onNavigateToManageLocations = {}, onNavigateToSettings = {}, onRefresh = {})
+                isSyncing = false,
+                speedUnit = "",
+                temperatureUnit = "",
+                distanceUnit = "",
+                onNavigateToManageLocations = {},
+                onNavigateToSettings = {},
+                onRefresh = {})
         }
     }
 }
