@@ -72,7 +72,7 @@ fun HourlyItem(
         )
 //        Icon(imageVector = Icons.Default.WbSunny, contentDescription = "Weather Icon")
         Text(
-            text = "${hourly.temp.toFloat().minus(273.15).roundToInt()}°",
+            text = "${hourly.temp.toFloat().roundToInt()}°",
             color = Color.Gray
         )
     }

@@ -3,23 +3,17 @@ package com.weather.feature.settings
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.PopupProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.weather.core.design.components.CustomTopBar
@@ -68,15 +62,15 @@ internal fun Settings(
                 val tempUnit = when (settingsState.settingsData.temperatureUnits) {
                     TemperatureUnits.C -> "°C"
                     TemperatureUnits.F -> "°F"
-                    null -> null
+                    null -> "null"
                 }
                 val windUnit = when (settingsState.settingsData.windSpeedUnits) {
-                    null -> null
+                    null -> "null"
                     WindSpeedUnits.KM -> "Kilometer per hour"
                     WindSpeedUnits.MS -> "Meters per second"
                     WindSpeedUnits.MPH -> "Miles per hour"
                 }
-                CustomTopBar(modifier = Modifier.fillMaxWidth() ,text = "Settings",) {
+                CustomTopBar(modifier = Modifier.fillMaxWidth(), text = "Settings") {
                     onBackPressed()
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -95,50 +89,19 @@ internal fun Settings(
                     var expanded by remember {
                         mutableStateOf(false)
                     }
-                    Row(
+                    SettingItem(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { expanded = true }
                             .padding(vertical = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
                     ) {
-
                         Text("Temperature Unit", color = MaterialTheme.colors.onBackground)
-                        Column {
-                            Text(
-                                text = tempUnit ?: "null",
-                                color = MaterialTheme.colors.onBackground.copy(alpha = 0.5f),
-                            )
-                            DropdownMenu(
-                                expanded = expanded,
-                                onDismissRequest = { expanded = false },
-                                modifier = Modifier.wrapContentSize(),
-                                offset = DpOffset(x = 25.dp, y = 4.dp),
-                            ) {
-                                DropdownMenuItem(
-                                    onClick = {
-                                        setTemperature(TemperatureUnits.C)
-                                        expanded = false
-                                    },
-                                    enabled = true
-                                ) {
-                                    Text(text = "°C")
-                                }
-                                Divider(color = MaterialTheme.colors.onSurface, thickness = .5.dp)
-                                DropdownMenuItem(
-                                    onClick = {
-                                        setTemperature(TemperatureUnits.F)
-                                        expanded = false
-                                    },
-                                    enabled = true
-                                ) {
-                                    Text(text = "°F")
-                                }
-                            }
-                        }
+                        TemperatureMenu(
+                            tempUnit,
+                            expanded,
+                            setTemperature,
+                            setExpanded = { expanded = it })
                     }
-
                 }
                 Surface(
                     modifier = Modifier
@@ -150,76 +113,150 @@ internal fun Settings(
                     var expanded by remember {
                         mutableStateOf(false)
                     }
-                    Row(
+                    SettingItem(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { expanded = true }
-                            .padding(vertical = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                            .padding(vertical = 8.dp)
                     ) {
                         Text("Wind Speed Unit", color = MaterialTheme.colors.onBackground)
-                        Column {
-                            Text(
-                                text = windUnit ?: "null",
-                                color = MaterialTheme.colors.onBackground.copy(alpha = 0.5f)
-                            )
-                            DropdownMenu(
-                                expanded = expanded,
-                                onDismissRequest = { expanded = false },
-                                modifier = Modifier.wrapContentSize(),
-                                offset = DpOffset(x = 25.dp, y = 4.dp),
-                            ) {
-                                DropdownMenuItem(
-                                    onClick = {
-                                        setWindSpeed(WindSpeedUnits.KM)
-                                        expanded = false
-                                    },
-                                    enabled = true
-                                ) {
-                                    Text(text = "km/h")
-                                }
-                                DropdownMenuItem(
-                                    onClick = {
-                                        setWindSpeed(WindSpeedUnits.MS)
-                                        expanded = false
-                                    },
-                                    enabled = true
-                                ) {
-                                    Text(text = "m/s")
-                                }
-                                Divider(color = MaterialTheme.colors.onSurface)
-                                DropdownMenuItem(
-                                    onClick = {
-                                        setWindSpeed(WindSpeedUnits.MPH)
-                                        expanded = false
-                                    },
-                                    enabled = true
-                                ) {
-                                    Text(text = "mph")
-                                }
-                            }
-                        }
+                        WindSpeedMenu(
+                            windUnit = windUnit,
+                            expanded = expanded,
+                            setWindSpeed = setWindSpeed,
+                            setExpanded = { expanded = it })
                     }
                 }
-                Text(
-                    text = "About",
-                    modifier = Modifier.padding(top = 16.dp),
-                    color = MaterialTheme.colors.onBackground.copy(alpha = .5f),
-                    fontSize = 12.sp
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "This DEMO app is not a production application and is a work in progress 🚧.",
-                    color = MaterialTheme.colors.onBackground.copy(alpha = .5f),
-                    fontSize = 12.sp,
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Weather Data from Openweathermap.org",
-                    color = MaterialTheme.colors.onBackground.copy(alpha = .5f),
-                    fontSize = 12.sp,
-                )
+                About()
+            }
+        }
+    }
+}
+
+@Composable
+private fun About() {
+    Column {
+        Text(
+            text = "About",
+            modifier = Modifier.padding(top = 16.dp),
+            color = MaterialTheme.colors.onBackground.copy(alpha = .5f),
+            fontSize = 12.sp
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "This DEMO app is not a production application and is a work in progress 🚧.",
+            color = MaterialTheme.colors.onBackground.copy(alpha = .5f),
+            fontSize = 12.sp,
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "Weather Data from Openweathermap.org",
+            color = MaterialTheme.colors.onBackground.copy(alpha = .5f),
+            fontSize = 12.sp,
+        )
+    }
+}
+
+@Composable
+fun SettingItem(
+    modifier: Modifier = Modifier,
+    horizontalArrangement :Arrangement.Horizontal = Arrangement.SpaceBetween,
+    verticalAlignment : Alignment.Vertical = Alignment.CenterVertically,
+    content: @Composable RowScope.() -> Unit,
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = horizontalArrangement,
+        verticalAlignment = verticalAlignment
+    ) {
+        content()
+    }
+}
+
+@Composable
+private fun WindSpeedMenu(
+    windUnit: String,
+    expanded: Boolean,
+    setWindSpeed: (WindSpeedUnits) -> Unit,
+    setExpanded: (Boolean) -> Unit,
+) {
+    Column {
+        Text(
+            text = windUnit,
+            color = MaterialTheme.colors.onBackground.copy(alpha = 0.5f)
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { setExpanded(false) },
+            modifier = Modifier.wrapContentSize(),
+            offset = DpOffset(x = 25.dp, y = 4.dp),
+        ) {
+            DropdownMenuItem(
+                onClick = {
+                    setWindSpeed(WindSpeedUnits.KM)
+                    setExpanded(false)
+                },
+                enabled = true
+            ) {
+                Text(text = "km/h")
+            }
+            DropdownMenuItem(
+                onClick = {
+                    setWindSpeed(WindSpeedUnits.MS)
+                    setExpanded(false)
+                },
+                enabled = true
+            ) {
+                Text(text = "m/s")
+            }
+            DropdownMenuItem(
+                onClick = {
+                    setWindSpeed(WindSpeedUnits.MPH)
+                    setExpanded(false)
+                },
+                enabled = true
+            ) {
+                Text(text = "mph")
+            }
+        }
+    }
+}
+
+@Composable
+private fun TemperatureMenu(
+    tempUnit: String,
+    expanded: Boolean,
+    setTemperature: (TemperatureUnits) -> Unit,
+    setExpanded: (Boolean) -> Unit,
+) {
+    Column {
+        Text(
+            text = tempUnit,
+            color = MaterialTheme.colors.onBackground.copy(alpha = 0.5f),
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { setExpanded(false) },
+            modifier = Modifier.wrapContentSize(),
+            offset = DpOffset(x = 25.dp, y = 4.dp),
+        ) {
+            DropdownMenuItem(
+                onClick = {
+                    setTemperature(TemperatureUnits.C)
+                    setExpanded(false)
+                },
+                enabled = true
+            ) {
+                Text(text = "°C")
+            }
+            DropdownMenuItem(
+                onClick = {
+                    setTemperature(TemperatureUnits.F)
+                    setExpanded(false)
+                },
+                enabled = true
+            ) {
+                Text(text = "°F")
             }
         }
     }
@@ -247,26 +284,6 @@ private fun MenuPreview() {
         var expanded by remember {
             mutableStateOf(true)
         }
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colors.background),
-            contentAlignment = Alignment.Center
-        ) {
-            DropdownMenu(
-                expanded = expanded, onDismissRequest = { expanded = false }, modifier = Modifier
-                    .background(Color.Black)
-                    .border(width = 1.dp, color = Color.Black)
-            ) {
-                DropdownMenuItem(onClick = {}, enabled = true) {
-                    Text(text = "Item1")
-                }
-                Divider(color = Color.Blue)
-                DropdownMenuItem(onClick = { }, enabled = false) {
-                    Text(text = "Item2")
-                }
-            }
-
-        }
+        Text("empty preview")
     }
 }

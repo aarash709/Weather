@@ -1,14 +1,13 @@
 package com.weather.feature.forecast
 
 import android.app.Application
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
 import androidx.work.*
 import com.weather.core.repository.UserRepository
 import com.weather.core.repository.WeatherRepository
-import com.weather.model.Coordinate
-import com.weather.model.WeatherData
+import com.weather.model.*
+import com.weather.model.TemperatureUnits.*
+import com.weather.model.WindSpeedUnits.*
 import com.weather.sync.work.FetchRemoteWeatherWorker
 import com.weather.sync.work.WEATHER_COORDINATE
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,6 +22,7 @@ import java.text.SimpleDateFormat
 import java.time.*
 import java.util.*
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 @HiltViewModel
 class ForecastViewModel @Inject constructor(
@@ -59,12 +59,16 @@ class ForecastViewModel @Inject constructor(
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), false)
 
 
+    val settingsState =
+        getUserSettings().stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), null)
+
     @ExperimentalCoroutinesApi
     val weatherUIState = getWeatherData().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(1000),
         initialValue = WeatherUIState.Loading
     )
+
     init {
         Timber.e("init")
         Timber.e("navigated city:$cityName")
@@ -84,23 +88,61 @@ class ForecastViewModel @Inject constructor(
                     allWeather.first { it.coordinates.name == coordinate?.cityName }
             }
             .flowOn(Dispatchers.IO)
-            .map { weather ->
+            .combine(getUserSettings()) { weather, userSettings ->
                 Timber.e("invoked data stream")
+                val current = weather.current.run {
+                    copy(
+                        dew_point = dew_point.convertToUserTemperature(
+                            userSettings.temperatureUnits ?: C
+                        ),
+                        feels_like = feels_like.convertToUserTemperature(
+                            userSettings.temperatureUnits ?: C
+                        ),
+                        temp = temp.convertToUserTemperature(
+                            userSettings.temperatureUnits ?: C
+                        ),
+                        visibility = visibility,
+                        wind_speed = wind_speed.convertToUserSpeed(
+                            userSettings.windSpeedUnits ?: KM
+                        ),
+                    )
+                }
                 val daily = weather.daily.map {
-                    it.copy(dt = unixMillisToHumanDate(it.dt.toLong(), "EEE"))
+                    it.copy(
+                        dew_point = it.dew_point.convertToUserTemperature(
+                            userSettings.temperatureUnits ?: C
+                        ),
+                        dt = unixMillisToHumanDate(it.dt.toLong(), "EEE"),
+                        dayTemp = it.dayTemp.convertToUserTemperature(
+
+                            userSettings.temperatureUnits ?: C
+                        ),
+                        nightTemp = it.nightTemp.convertToUserTemperature(
+                            userSettings.temperatureUnits ?: C
+                        )
+                    )
                 }
                 val hourly = weather.hourly.map {
-                    it.copy(dt = unixMillisToHumanDate(it.dt.toLong(), "HH:mm"))
+                    it.copy(
+                        dew_point = it.dew_point.convertToUserTemperature(
+                            userSettings.temperatureUnits ?: C
+                        ),
+                        dt = unixMillisToHumanDate(it.dt.toLong(), "HH:mm"),
+                        temp = it.temp.convertToUserTemperature(
+                            userSettings.temperatureUnits ?: C
+                        )
+                    )
                 }
-                val newWeather = weather.copy(daily = daily, hourly = hourly)
-                WeatherUIState.Success(newWeather)
+                val newWeather = weather.copy(current = current, daily = daily, hourly = hourly)
+                val forecastData = SavableForecastData(newWeather,userSettings)
+                WeatherUIState.Success(forecastData)
             }
-            .onEach { weatherData ->
-                val timeStamp = weatherData.data.current.dt
+            .onEach { forecastData ->
+                val timeStamp = forecastData.data.weather.current.dt
                 val coordinate = Coordinate(
-                    weatherData.data.coordinates.name,
-                    weatherData.data.coordinates.lat.toString(),
-                    weatherData.data.coordinates.lon.toString()
+                    forecastData.data.weather.coordinates.name,
+                    forecastData.data.weather.coordinates.lat.toString(),
+                    forecastData.data.weather.coordinates.lon.toString()
                 )
                 if (isDataExpired(dataTimestamp = timeStamp, minutesThreshold = 30)) {
                     sync(coordinate)
@@ -158,6 +200,13 @@ class ForecastViewModel @Inject constructor(
         }
     }
 
+    private fun getUserSettings(): Flow<SettingsData> {
+        return userRepository.getTemperatureUnitSetting()
+            .combine(userRepository.getWindSpeedUnitSetting()) { temp, wind ->
+                SettingsData(windSpeedUnits = wind, temperatureUnits = temp)
+            }
+    }
+
     private fun unixMillisToHumanDate(unixTimeStamp: Long, pattern: String): String {
         val formatter = SimpleDateFormat(pattern, Locale.getDefault())
         val date = Date(unixTimeStamp * 1000) //to millisecond
@@ -171,12 +220,43 @@ class ForecastViewModel @Inject constructor(
         Timber.e((differanceInMinutes > minutesThreshold).toString())
         return differanceInMinutes > minutesThreshold
     }
+
+    internal fun Double.convertToUserTemperature(
+        userTempUnit: TemperatureUnits,
+    ): Double {
+        return when (userTempUnit) {
+            C -> this.minus(273.15)
+            F -> this.minus(273.15).times(1.8f).plus(32)
+        }
+    }
+
+    internal fun Double.convertToUserSpeed(
+        userTempUnit: WindSpeedUnits,
+    ): Double {
+        return when (userTempUnit) {
+            KM -> this.times(3.6f).times(100).roundToInt().toDouble().div(100)
+            MS -> this
+            MPH -> this.times(2.2369f).times(100).roundToInt().toDouble().div(100)
+        }
+    }
+
+    internal fun Int.compactVisibilityMeasurement(): Int {
+        return when {
+            this < 1000 -> {
+                return this
+            }
+            this > 1000 -> {
+                return this.div(1000)
+            }
+            else -> {this}
+        }
+    }
 }
 
 
 sealed class WeatherUIState {
     object Loading : WeatherUIState()
-    data class Success(val data: WeatherData) : WeatherUIState()
+    data class Success(val data: SavableForecastData) : WeatherUIState()
 }
 
 internal const val WEATHER_FETCH_WORK_NAME = "weatherSyncWorkName"
