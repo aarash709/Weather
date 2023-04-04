@@ -3,6 +3,8 @@ package com.experiment.weather.navigation
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavController
@@ -14,6 +16,7 @@ import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.navigation
 import com.weather.feature.forecast.WeatherForecastScreen
 import com.weather.feature.managelocations.manageLocationsRoute
+import com.weather.feature.managelocations.manageLocationsScreen
 import com.weather.feature.settings.SETTINGS_ROUTE
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import timber.log.Timber
@@ -33,10 +36,10 @@ fun NavGraphBuilder.homeNavGraph(
         enterTransition = {
             when (initialState.destination.route) {
                 SETTINGS_ROUTE -> {
-                    slideIntoContainer(AnimatedContentScope.SlideDirection.Right, tween(500))
+                    slideIntoContainer(AnimatedContentScope.SlideDirection.Right, tween(500),initialOffset = { it/3 })
                 }
                 manageLocationsRoute -> {
-                    slideIntoContainer(AnimatedContentScope.SlideDirection.Left, tween(500))
+                    slideIntoContainer(AnimatedContentScope.SlideDirection.Left, tween(500),initialOffset = { it/3 })
                 }
 
                 else -> { null}
@@ -45,12 +48,11 @@ fun NavGraphBuilder.homeNavGraph(
         exitTransition = {
             when (targetState.destination.route) {
                 SETTINGS_ROUTE -> {
-                    slideOutOfContainer(AnimatedContentScope.SlideDirection.Left, tween(500))
+                    slideOutOfContainer(AnimatedContentScope.SlideDirection.Left, tween(500),targetOffset = { it/3})
                 }
                 manageLocationsRoute -> {
-                    slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, tween(500))
+                    slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, tween(500),targetOffset = { it/3})
                 }
-
                 else -> { null}
             }
         }
@@ -65,16 +67,12 @@ fun NavGraphBuilder.homeNavGraph(
             WeatherForecastScreen(
                 navigateToManageLocations = {
                     navigateToManageLocations()
-//                    navController.navigate(Graph.Search.graph){
-////                        popUpTo(Graph.Search.ManageLocationScreen)
-//                    }
                 },
                 onNavigateToSettings = {
                     navigateToSettings()
                 },
                 navigateToOnboard = {
                     navigateToOnboard()
-//                    navController.navigate(Graph.Search.SearchScreen)
                 })
         }
     }

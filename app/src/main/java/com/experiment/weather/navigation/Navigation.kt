@@ -13,6 +13,7 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.weather.feature.managelocations.manageLocationsRoute
 import com.weather.feature.managelocations.manageLocationsScreen
 import com.weather.feature.managelocations.toManageLocations
+import com.weather.feature.search.searchRoute
 import com.weather.feature.search.searchScreen
 import com.weather.feature.search.toSearchScreen
 import com.weather.feature.settings.SETTINGS_ROUTE
@@ -32,13 +33,13 @@ fun WeatherNavHost(navController: NavHostController) {
         navController = navController,
         startDestination = Graph.Forecast.graph,
     ) {
-        homeNavGraph(navController,
+        homeNavGraph(
+            navController,
             navigateToManageLocations = {
-//                navController.toManageLocations()
-                navController.navigate(manageLocationsRoute)
+                navController.toManageLocations(navOptions {
+                })
             },
             navigateToSettings = {
-//                navController.toManageLocations()
                 navController.toSettings()
             },
             navigateToOnboard = {
@@ -48,38 +49,25 @@ fun WeatherNavHost(navController: NavHostController) {
         manageLocationsScreen(
             onNavigateToSearch = {
                 navController.toSearchScreen(navOptions = navOptions {
-
                 })
             },
             onBackPressed = {
-                navController.navigate(Graph.Forecast.graph, navOptions = navOptions {
-                    popUpTo(Graph.Forecast.graph) { inclusive = true }
-                })
+                navController.popBackStack()
             },
             onItemSelected = { cityName ->
-                navController.navigate(
-                    Graph.Forecast.passForecastArgument(cityName),
-                    navOptions = navOptions {
-                        popUpTo(Graph.Forecast.graph) { inclusive = true }
-                    })
+                navController.popBackStack()
             }
         )
-        searchScreen (onSearchItemSelected = {
+        searchScreen(onSearchItemSelected = {
             navController.toManageLocations(navOptions = navOptions {
-                launchSingleTop = true
-                popUpTo(manageLocationsRoute)
+                popUpTo(manageLocationsRoute){
+                    inclusive = true
+                }
             })
         })
-//        searchNavGraph(navController)
-        settingsScreen {
-            navController.navigate(
-                Graph.Forecast.graph,
-                navOptions = navOptions {
-                    popUpTo(Graph.Forecast.graph) {
-
-                    }
-                })
-        }
+        settingsScreen(onBackPress = {
+            navController.popBackStack()
+        })
 
     }
 }
