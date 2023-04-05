@@ -42,7 +42,7 @@ fun NavGraphBuilder.homeNavGraph(
                     slideIntoContainer(AnimatedContentScope.SlideDirection.Left, tween(500),initialOffset = { it/3 })
                 }
 
-                else -> { null}
+                else -> { slideIntoContainer(AnimatedContentScope.SlideDirection.Left, tween(500),initialOffset = { it/3 })}
             }
         },
         exitTransition = {

@@ -30,8 +30,8 @@ fun NavGraphBuilder.searchScreen(onSearchItemSelected: () -> Unit) {
             fadeIn(tween(500))
         },
         exitTransition = {
-//            slideOutOfContainer(AnimatedContentScope.SlideDirection.Left, tween(500), )
-            fadeOut(tween(500))
+            slideOutOfContainer(AnimatedContentScope.SlideDirection.Left, tween(500), )
+//            fadeOut(tween(500))
         }
     ) {
         SearchScreen(onSelectSearchItem = onSearchItemSelected)
