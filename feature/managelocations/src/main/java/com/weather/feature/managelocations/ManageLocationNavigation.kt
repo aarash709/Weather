@@ -35,19 +35,19 @@ fun NavGraphBuilder.manageLocationsScreen(
         route = manageLocationsRoute,
         enterTransition = {
             when (initialState.destination.route) {
-                searchRoute -> fadeIn(tween(500))
+                searchRoute -> fadeIn(tween(400))
                 else -> slideIntoContainer(
                     AnimatedContentScope.SlideDirection.Right,
-                    tween(500)
+                    tween(400)
                 )
             }
         },
         exitTransition = {
             when (targetState.destination.route) {
-                searchRoute -> fadeOut(tween(500))
+                searchRoute -> fadeOut(tween(400))
                 else -> slideOutOfContainer(
                     AnimatedContentScope.SlideDirection.Left,
-                    tween(500)
+                    tween(400)
                 )
             }
         }

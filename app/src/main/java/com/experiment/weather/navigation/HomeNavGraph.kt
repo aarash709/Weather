@@ -36,22 +36,22 @@ fun NavGraphBuilder.homeNavGraph(
         enterTransition = {
             when (initialState.destination.route) {
                 SETTINGS_ROUTE -> {
-                    slideIntoContainer(AnimatedContentScope.SlideDirection.Right, tween(500),initialOffset = { it/3 })
+                    slideIntoContainer(AnimatedContentScope.SlideDirection.Right, tween(400),initialOffset = { it/3 })
                 }
                 manageLocationsRoute -> {
-                    slideIntoContainer(AnimatedContentScope.SlideDirection.Left, tween(500),initialOffset = { it/3 })
+                    slideIntoContainer(AnimatedContentScope.SlideDirection.Left, tween(400),initialOffset = { it/3 })
                 }
 
-                else -> { slideIntoContainer(AnimatedContentScope.SlideDirection.Left, tween(500),initialOffset = { it/3 })}
+                else -> { slideIntoContainer(AnimatedContentScope.SlideDirection.Left, tween(400),initialOffset = { it/3 })}
             }
         },
         exitTransition = {
             when (targetState.destination.route) {
                 SETTINGS_ROUTE -> {
-                    slideOutOfContainer(AnimatedContentScope.SlideDirection.Left, tween(500),targetOffset = { it/3})
+                    slideOutOfContainer(AnimatedContentScope.SlideDirection.Left, tween(400),targetOffset = { it/3})
                 }
                 manageLocationsRoute -> {
-                    slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, tween(500),targetOffset = { it/3})
+                    slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, tween(400),targetOffset = { it/3})
                 }
                 else -> { null}
             }
