@@ -2,8 +2,10 @@ package com.experiment.weather.navigation
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.navOptions
 //import com.experiment.weather.presentation.manageLocationsRoute
@@ -32,6 +34,7 @@ fun WeatherNavHost(navController: NavHostController) {
     AnimatedNavHost(
         navController = navController,
         startDestination = Graph.Forecast.graph,
+        modifier = Modifier.safeDrawingPadding()
     ) {
         homeNavGraph(
             navController,
