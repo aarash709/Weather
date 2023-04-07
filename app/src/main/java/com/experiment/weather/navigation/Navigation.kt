@@ -34,7 +34,7 @@ fun WeatherNavHost(navController: NavHostController) {
     AnimatedNavHost(
         navController = navController,
         startDestination = Graph.Forecast.graph,
-        modifier = Modifier.safeDrawingPadding()
+        modifier = Modifier.statusBarsPadding()
     ) {
         homeNavGraph(
             navController,
