@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.core.view.WindowCompat
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -31,6 +32,7 @@ class MainActivity : ComponentActivity() {
 //
 //            }
 //        }
+        WindowCompat.setDecorFitsSystemWindows(window,false)
         setContent {
             WeatherApp()
         }
