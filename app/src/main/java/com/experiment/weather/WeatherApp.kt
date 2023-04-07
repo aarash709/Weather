@@ -34,10 +34,7 @@ fun WeatherApp() {
                     color = systemBarColor,
                     darkIcons = darkIcons
                 )
-                setNavigationBarColor(
-                    color = Color.Transparent,
-                    darkIcons = darkIcons
-                )
+                setNavigationBarColor(color = Color.Transparent)
 
             }
         }
