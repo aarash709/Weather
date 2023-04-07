@@ -124,6 +124,7 @@ fun WeatherForecastScreen(
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         state = lazyListState,
+                        contentPadding = WindowInsets.navigationBars.asPaddingValues(),
                         verticalArrangement = Arrangement.spacedBy(0.dp)
                     ) {
                         item {
