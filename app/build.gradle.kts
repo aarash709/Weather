@@ -100,6 +100,7 @@ dependencies {
     debugImplementation(libs.compose.ui.tooling)
 
     implementation(libs.androidx.window)
+    implementation(libs.accompanist.systemUIController)
 
     implementation(libs.androidx.work)
 
