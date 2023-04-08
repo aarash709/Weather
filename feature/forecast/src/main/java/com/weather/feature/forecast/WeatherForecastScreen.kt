@@ -49,7 +49,7 @@ fun WeatherForecastScreen(
     val databaseIsEmpty by viewModel.dataBaseOrCityIsEmpty.collectAsStateWithLifecycle()
     val weatherUIState by viewModel
         .weatherUIState.collectAsStateWithLifecycle()
-    val syncing by viewModel.isWorkRunning.collectAsStateWithLifecycle()
+    val syncing by viewModel.isSyncing.collectAsStateWithLifecycle()
 
     if (databaseIsEmpty) {
         LaunchedEffect(key1 = Unit) {

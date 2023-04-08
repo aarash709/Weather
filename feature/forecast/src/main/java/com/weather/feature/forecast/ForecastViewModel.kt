@@ -1,6 +1,6 @@
 package com.weather.feature.forecast
 
-import android.app.Application
+import android.content.Context
 import androidx.lifecycle.*
 import androidx.work.*
 import com.weather.core.repository.UserRepository
@@ -11,6 +11,7 @@ import com.weather.model.WindSpeedUnits.*
 import com.weather.sync.work.FetchRemoteWeatherWorker
 import com.weather.sync.work.WEATHER_COORDINATE
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -28,7 +29,7 @@ import kotlin.math.roundToInt
 class ForecastViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository,
     private val userRepository: UserRepository,
-    private val context: Application,
+    @ApplicationContext context: Context,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -41,26 +42,20 @@ class ForecastViewModel @Inject constructor(
     private val _dataBaseOrCityIsEmpty = MutableStateFlow(false)
     val dataBaseOrCityIsEmpty = _dataBaseOrCityIsEmpty.asStateFlow()
 
-    private val _isSyncing = MutableStateFlow(false)
-    val isSyncing = _isSyncing.asStateFlow()
-
-    internal var isWorkRunning =
+    internal var isSyncing =
         workManager
             .getWorkInfosForUniqueWorkLiveData(
                 WEATHER_FETCH_WORK_NAME
             )
             .asFlow()
-            .map {
-                it.first().state == WorkInfo.State.RUNNING
+            .map { workInfoList ->
+                workInfoList.any { it.state == WorkInfo.State.RUNNING }
             }
             .catch {
                 Timber.e("workinfos: ${it.message}")
             }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), false)
 
-
-    val settingsState =
-        getUserSettings().stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), null)
 
     @ExperimentalCoroutinesApi
     val weatherUIState = getWeatherData().stateIn(
@@ -134,7 +129,7 @@ class ForecastViewModel @Inject constructor(
                     )
                 }
                 val newWeather = weather.copy(current = current, daily = daily, hourly = hourly)
-                val forecastData = SavableForecastData(newWeather,userSettings)
+                val forecastData = SavableForecastData(newWeather, userSettings)
                 WeatherUIState.Success(forecastData)
             }
             .onEach { forecastData ->
@@ -166,17 +161,6 @@ class ForecastViewModel @Inject constructor(
     @ExperimentalCoroutinesApi
     private fun getFavoriteCityCoordinate(): Flow<Coordinate?> {
         return userRepository.getFavoriteCityCoordinate()
-    }
-
-    @Deprecated("Use new sync which is using workManager APIs")
-    @ExperimentalCoroutinesApi
-    fun sync() {
-        viewModelScope.launch(Dispatchers.IO) {
-            _isSyncing.value = true
-            val coordinate = getFavoriteCityCoordinate().first()
-            weatherRepository.syncWeather(coordinate!!)
-            _isSyncing.value = false
-        }
     }
 
     fun sync(savedCityCoordinate: Coordinate) {
@@ -248,7 +232,9 @@ class ForecastViewModel @Inject constructor(
             this > 1000 -> {
                 return this.div(1000)
             }
-            else -> {this}
+            else -> {
+                this
+            }
         }
     }
 }
