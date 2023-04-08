@@ -15,6 +15,7 @@ import com.weather.model.WeatherData
 import com.weather.model.geocode.GeoSearchItem
 import com.weather.sync.work.FetchRemoteWeatherWorker
 import com.weather.sync.work.WEATHER_COORDINATE
+import com.weather.sync.work.WorkSyncStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,12 +29,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val context: Application,
+    private val syncStatus: WorkSyncStatus,
     private val weatherRepository: WeatherRepository,
     private val userRepository: UserRepository,
 ) : ViewModel() {
-
-    private val workManager = WorkManager.getInstance(context)
 
     private val _weatherPreview = MutableSharedFlow<WeatherData>()
     val weatherPreview: SharedFlow<WeatherData> = _weatherPreview.asSharedFlow()
@@ -91,19 +90,7 @@ class SearchViewModel @Inject constructor(
                 Timber.e(stringCoordinate)
             }
             //work
-            val inputData = Data.Builder()
-                .putString(WEATHER_COORDINATE, stringCoordinate)
-                .build()
-            val fetchWork = OneTimeWorkRequestBuilder<FetchRemoteWeatherWorker>()
-                .setInputData(inputData)
-                .build()
-
-            workManager.beginUniqueWork(
-                "weatherSyncWorkName",
-                ExistingWorkPolicy.KEEP,
-                fetchWork
-            )
-                .enqueue()
+            syncStatus.syncWithCoordinate(coordinate)
         }
 
         fun saveSearchWeatherItem(searchItem: GeoSearchItem) {

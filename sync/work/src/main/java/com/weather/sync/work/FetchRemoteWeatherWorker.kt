@@ -38,3 +38,6 @@ class FetchRemoteWeatherWorker @AssistedInject  constructor(
         weatherRepository.syncWeather(coordinate = coordinate)
     }
 }
+
+
+const val WEATHER_FETCH_WORK_NAME = "weatherSyncWorkName"

@@ -26,10 +26,7 @@ import kotlin.math.roundToInt
 class ManageLocationsViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository,
     private val userRepository: UserRepository,
-    private val context: Application,
 ) : ViewModel() {
-
-    private val hapticFeedback = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val locationsState = combine(
@@ -73,12 +70,13 @@ class ManageLocationsViewModel @Inject constructor(
         return userRepository.getFavoriteCityCoordinate()
     }
 
-    fun deleteWeatherByCityName(cityName: String) {
+    fun deleteWeatherByCityName(cityName: String, context: Context) {
+        val hapticFeedback = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         viewModelScope.launch(Dispatchers.IO) {
             weatherRepository.deleteWeatherByCityName(cityName = cityName)
+            hapticFeedback.cancel()
+            hapticFeedback.vibrate(20)
         }
-        hapticFeedback.cancel()
-        hapticFeedback.vibrate(10)
 
     }
 

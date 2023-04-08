@@ -41,6 +41,7 @@ dependencies {
     implementation(project(":core:repository"))
     implementation(project(":core:model"))
 
+    implementation(libs.androidx.lifecycleLiveDataKtx)
     implementation(libs.kotlix.serialization)
     implementation(libs.androidx.work)
 

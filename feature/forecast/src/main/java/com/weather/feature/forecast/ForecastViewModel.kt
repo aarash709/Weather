@@ -10,6 +10,9 @@ import com.weather.model.TemperatureUnits.*
 import com.weather.model.WindSpeedUnits.*
 import com.weather.sync.work.FetchRemoteWeatherWorker
 import com.weather.sync.work.WEATHER_COORDINATE
+import com.weather.sync.work.WEATHER_FETCH_WORK_NAME
+import com.weather.sync.work.WorkSyncStatus
+import com.weather.sync.work.utils.SyncManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -27,34 +30,19 @@ import kotlin.math.roundToInt
 
 @HiltViewModel
 class ForecastViewModel @Inject constructor(
+    private val syncStatus: SyncManager,
     private val weatherRepository: WeatherRepository,
     private val userRepository: UserRepository,
-    @ApplicationContext context: Context,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-
-    private val workManager by lazy {
-        WorkManager.getInstance(context)
-    }
 
     private val cityName = savedStateHandle.get<String>("cityName").orEmpty()
 
     private val _dataBaseOrCityIsEmpty = MutableStateFlow(false)
     val dataBaseOrCityIsEmpty = _dataBaseOrCityIsEmpty.asStateFlow()
 
-    internal var isSyncing =
-        workManager
-            .getWorkInfosForUniqueWorkLiveData(
-                WEATHER_FETCH_WORK_NAME
-            )
-            .asFlow()
-            .map { workInfoList ->
-                workInfoList.any { it.state == WorkInfo.State.RUNNING }
-            }
-            .catch {
-                Timber.e("workinfos: ${it.message}")
-            }
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), false)
+    internal var isSyncing = syncStatus.isSyncing
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), false)
 
 
     @ExperimentalCoroutinesApi
@@ -170,17 +158,7 @@ class ForecastViewModel @Inject constructor(
                 latitude = savedCityCoordinate.latitude,
                 longitude = savedCityCoordinate.longitude
             )
-            val stringCoordinate = Json.encodeToString(coordinate)
-            val workInputData = Data.Builder()
-                .putString(WEATHER_COORDINATE, stringCoordinate).build()
-            val fetchDataWorkRequest =
-                OneTimeWorkRequestBuilder<FetchRemoteWeatherWorker>().setInputData(workInputData)
-                    .build()
-            workManager.beginUniqueWork(
-                WEATHER_FETCH_WORK_NAME,
-                ExistingWorkPolicy.KEEP,
-                fetchDataWorkRequest
-            ).enqueue()
+           syncStatus.syncWithCoordinate(coordinate)
         }
     }
 
@@ -244,5 +222,3 @@ sealed class WeatherUIState {
     object Loading : WeatherUIState()
     data class Success(val data: SavableForecastData) : WeatherUIState()
 }
-
-internal const val WEATHER_FETCH_WORK_NAME = "weatherSyncWorkName"
