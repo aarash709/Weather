@@ -22,9 +22,9 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ForecastViewModelTest {
 
-    @ExperimentalCoroutinesApi
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
@@ -50,28 +50,22 @@ class ForecastViewModelTest {
         assertEquals(forecastViewModel.isDataExpired(1681033210, 10), true)
     }
 
-//    @Test
-//    fun `Test Temperature Conversion`() {
-//        assertEquals(forecastViewModel.get,true)
-//    }
-
-//    @ExperimentalCoroutinesApi
-//    @Test
-//    fun `Test Get user settings data`() = runTest {
-//        val userSetting = combine(
-//            fakeUserRepository.getTemperatureUnitSetting(),
-//            fakeUserRepository.getWindSpeedUnitSetting()
-//        ) {
-//            temp,wind->
-//            SettingsData(
-//                wind,
-//                temp
-//            )
-//        }
-//        assertEquals(
-//            forecastViewModel.getUserSettings(),userSetting
-//        )
-//    }
+    @Test
+    fun `Test Get user settings data`() = runTest {
+        val userSetting = combine(
+            fakeUserRepository.getTemperatureUnitSetting(),
+            fakeUserRepository.getWindSpeedUnitSetting()
+        ) { temp, wind ->
+            SettingsData(
+                wind,
+                temp
+            )
+        }.collect()
+        val getWeatherUIState = forecastViewModel.getUserSettings().collect()
+        assertEquals(
+            getWeatherUIState, userSetting
+        )
+    }
 
     @After
     fun tearDown() {

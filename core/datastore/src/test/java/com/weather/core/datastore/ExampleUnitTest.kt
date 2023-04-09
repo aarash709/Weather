@@ -1,4 +1,4 @@
-package com.eweather.core.datastore
+package com.weather.core.datastore
 
 import org.junit.Test
 
