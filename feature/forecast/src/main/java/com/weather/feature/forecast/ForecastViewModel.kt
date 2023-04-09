@@ -59,7 +59,7 @@ class ForecastViewModel @Inject constructor(
     }
 
     @ExperimentalCoroutinesApi
-    private fun getWeatherData(): Flow<WeatherUIState> {
+    internal fun getWeatherData(): Flow<WeatherUIState> {
         return weatherRepository.getAllForecastWeatherData()
             .combine(getFavoriteCityCoordinate()) { allWeather, coordinate ->
                 Timber.e("cityName: ${coordinate?.cityName}")
@@ -162,7 +162,7 @@ class ForecastViewModel @Inject constructor(
         }
     }
 
-    private fun getUserSettings(): Flow<SettingsData> {
+    internal fun getUserSettings(): Flow<SettingsData> {
         return userRepository.getTemperatureUnitSetting()
             .combine(userRepository.getWindSpeedUnitSetting()) { temp, wind ->
                 SettingsData(windSpeedUnits = wind, temperatureUnits = temp)
@@ -175,7 +175,7 @@ class ForecastViewModel @Inject constructor(
         return formatter.format(date)
     }
 
-    private fun isDataExpired(dataTimestamp: Int, minutesThreshold: Int): Boolean {
+    internal fun isDataExpired(dataTimestamp: Int, minutesThreshold: Int): Boolean {
         val currentTime = Instant.now().epochSecond
         val differanceInSeconds = currentTime.minus(dataTimestamp)
         val differanceInMinutes = Duration.ofSeconds(differanceInSeconds).toMinutes()
