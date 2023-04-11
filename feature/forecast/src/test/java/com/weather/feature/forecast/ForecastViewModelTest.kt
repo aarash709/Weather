@@ -21,6 +21,8 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.time.Duration
+import java.time.LocalTime
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ForecastViewModelTest {
@@ -47,7 +49,10 @@ class ForecastViewModelTest {
 
     @Test
     fun `Test Data expiration Calculation`() {
-        assertEquals(forecastViewModel.isDataExpired(1681033210, 10), true)
+        val sampleTime = 1681033210
+        val thirtyMinutesBeforeNow = Duration.ofMillis(System.currentTimeMillis()).minus(Duration.ofMinutes(30)).toSeconds().toInt()
+        //assert if our timestamp(database in this case) is older than our threshold minutes.
+        assertTrue(forecastViewModel.isDataExpired(thirtyMinutesBeforeNow, 20))
     }
 
     @Test
