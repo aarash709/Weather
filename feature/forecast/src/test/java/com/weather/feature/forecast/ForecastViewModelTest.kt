@@ -2,12 +2,12 @@ package com.weather.feature.forecast
 
 import androidx.lifecycle.SavedStateHandle
 import com.weather.core.repository.UserRepository
-import com.weather.feature.forecast.fake.FakeSyncManager
-import com.weather.feature.forecast.fake.FakeUserRepository
-import com.weather.feature.forecast.fake.FakeWeatherRepository
+import com.weather.core.repository.fake.FakeUserRepository
+import com.weather.core.repository.fake.FakeWeatherRepository
 import com.weather.model.SettingsData
 import com.weather.model.TemperatureUnits
 import com.weather.model.WindSpeedUnits
+import com.weather.sync.work.fake.FakeSyncManager
 import com.weather.sync.work.utils.SyncManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect

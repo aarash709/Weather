@@ -1,6 +1,7 @@
-package com.weather.feature.forecast.fake
+package com.weather.core.repository.fake
 
 import com.weather.core.repository.UserRepository
+import com.weather.core.repository.fake.data.listOfWeatherDataTest
 import com.weather.model.Coordinate
 import com.weather.model.TemperatureUnits
 import com.weather.model.WindSpeedUnits
@@ -9,7 +10,7 @@ import kotlinx.coroutines.flow.flow
 
 class FakeUserRepository : UserRepository {
     override fun getFavoriteCityCoordinate(): Flow<Coordinate?> = flow {
-        val coordinate = listOfWeatherData.random().let {
+        val coordinate = listOfWeatherDataTest.random().let {
             Coordinate(
                 it.coordinates.name,
                 it.coordinates.lat.toString(),

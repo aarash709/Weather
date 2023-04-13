@@ -1,4 +1,4 @@
-package com.weather.feature.forecast.fake
+package com.weather.sync.work.fake
 
 import com.weather.model.Coordinate
 import com.weather.sync.work.utils.SyncManager
