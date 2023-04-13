@@ -16,6 +16,7 @@ import com.weather.model.geocode.GeoSearchItem
 import com.weather.sync.work.FetchRemoteWeatherWorker
 import com.weather.sync.work.WEATHER_COORDINATE
 import com.weather.sync.work.WorkSyncStatus
+import com.weather.sync.work.utils.SyncManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,7 +30,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val syncStatus: WorkSyncStatus,
+    private val syncStatus: SyncManager,
     private val weatherRepository: WeatherRepository,
     private val userRepository: UserRepository,
 ) : ViewModel() {
@@ -93,17 +94,17 @@ class SearchViewModel @Inject constructor(
             syncStatus.syncWithCoordinate(coordinate)
         }
 
-        fun saveSearchWeatherItem(searchItem: GeoSearchItem) {
-            val coordinates = Coordinate(
-                searchItem.name,
-                searchItem.lat.toString(),
-                searchItem.lon.toString()
+    }
+    fun saveSearchWeatherItem(searchItem: GeoSearchItem) {
+        val coordinates = Coordinate(
+            searchItem.name,
+            searchItem.lat.toString(),
+            searchItem.lon.toString()
+        )
+        viewModelScope.launch {
+            weatherRepository.syncWeather(
+                coordinates
             )
-            viewModelScope.launch {
-                weatherRepository.syncWeather(
-                    coordinates
-                )
-            }
         }
     }
 }

@@ -1,12 +1,12 @@
-package com.eweather.core.datastore
+package com.weather.core.datastore
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.eweather.core.datastore.DataStoreKeys.FAVORITE_CITY_COORDINATE_STRING_KEY
-import com.eweather.core.datastore.DataStoreKeys.TEMP_UNIT_SETTING_KEY
-import com.eweather.core.datastore.DataStoreKeys.WIND_SPEED_UNIT_SETTING_KEY
+import com.weather.core.datastore.DataStoreKeys.FAVORITE_CITY_COORDINATE_STRING_KEY
+import com.weather.core.datastore.DataStoreKeys.TEMP_UNIT_SETTING_KEY
+import com.weather.core.datastore.DataStoreKeys.WIND_SPEED_UNIT_SETTING_KEY
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

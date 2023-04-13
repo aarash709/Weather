@@ -1,6 +1,5 @@
 package com.weather.core.repository
 
-import com.eweather.core.datastore.LocalUserPreferences
 import com.weather.model.Coordinate
 import com.weather.model.TemperatureUnits
 import com.weather.model.WindSpeedUnits
