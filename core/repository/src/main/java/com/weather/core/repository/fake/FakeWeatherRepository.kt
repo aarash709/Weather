@@ -1,6 +1,7 @@
 package com.weather.core.repository.fake
 
 import com.weather.core.repository.WeatherRepository
+import com.weather.core.repository.fake.data.listOfLocationsDataTest
 import com.weather.core.repository.fake.data.listOfWeatherDataTest
 import com.weather.model.*
 import com.weather.model.geocode.GeoSearchItem
@@ -29,9 +30,11 @@ class FakeWeatherRepository : WeatherRepository {
         TODO("Not yet implemented")
     }
 
-    override fun getAllWeatherLocations(): Flow<List<ManageLocationsData>> {
-        TODO("Not yet implemented")
-    }
+    override fun getAllWeatherLocations(): Flow<List<ManageLocationsData>> =
+        flow {
+            emit(listOfLocationsDataTest)
+        }
+
 
     override fun getAllForecastWeatherData(): Flow<List<WeatherData>> =
         flow {

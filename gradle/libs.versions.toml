@@ -54,6 +54,7 @@ androidx-roomCompiler = { group = "androidx.room", name = "room-compiler", versi
 androidx-roomRuntime = { group = "androidx.room", name = "room-runtime", version.ref = "androidxRoom" }
 kotlix-Serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 kotlix-CoroutinesCore = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
+kotlix-CoroutinesTest = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 kotlix-CoroutinesAndroid = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 accompanist-NavigationAnimation = { group = "com.google.accompanist", name = "accompanist-navigation-animation", version.ref = "accompanistNavigationAnimation" }
 accompanist-FlowLayout = { group = "com.google.accompanist", name = "accompanist-flowlayout", version.ref = "accompanistNavigationAnimation" }
