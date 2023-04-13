@@ -26,16 +26,4 @@ class SettingsViewModelTest {
     fun `initial Settings UI State Is Loading`() = runTest{
         assertEquals(SettingsUIState.Loading,settingsViewModel.settingsUIState.value)
     }
-
-    @Test
-    fun `get Settings UI State`() {
-    }
-
-    @Test
-    fun `set Temperature Unit`() {
-    }
-
-    @Test
-    fun `set WindSpeed Unit`() {
-    }
 }

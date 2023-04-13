@@ -71,8 +71,4 @@ class ForecastViewModelTest {
             getWeatherUIState, userSetting
         )
     }
-
-    @After
-    fun tearDown() {
-    }
 }

@@ -30,19 +30,4 @@ lateinit var searchViewModel: SearchViewModel
     fun `initial Search UI State Is Loading`() = runTest{
         assertEquals(SearchUIState.Loading, searchViewModel.searchUIState.value)
     }
-    @Test
-    fun getWeatherPreview() {
-    }
-
-    @Test
-    fun getSearchUIState() {
-    }
-
-    @Test
-    fun setSearchQuery() {
-    }
-
-    @Test
-    fun syncWeather() {
-    }
 }

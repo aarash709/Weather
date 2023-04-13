@@ -31,19 +31,5 @@ class ManageLocationsViewModelTest {
     fun `location state is initially loading`() = runTest{
         assertEquals(LocationsUIState.Loading, manageLocationsViewModel.locationsState.value)
     }
-    @Test
-    fun `get Locations State`() {
-    }
 
-    @Test
-    fun `save Favorite City Coordinate`() {
-    }
-
-    @Test
-    fun `delete Weather By City Name`() {
-    }
-
-//    @Test
-//    fun `convert To User Temperature`() {
-//    }
 }
