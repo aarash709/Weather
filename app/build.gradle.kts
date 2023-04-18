@@ -77,6 +77,7 @@ dependencies {
     //Kotlin-Core
     implementation(libs.androidx.coreKtx)
     implementation(libs.androidx.appCompat)
+    implementation(libs.androidx.splashScreen)
 
     //Arrow
 //    implementation platform("io.arrow-kt:arrow-stack:$arrow_version")

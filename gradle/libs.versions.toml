@@ -14,6 +14,7 @@ andoidxLifecycle = "2.5.1"
 androidxActivityCompose = "1.6.1"
 androidxHiltWork = "1.0.0"
 androidxRoom = "2.5.0"
+androidxSplashScreen = "1.0.0"
 andoidxDatastorePreferences = "1.0.0"
 accompanistNavigationAnimation = "0.28.0"
 hiltNavigationCompose = "1.0.0"
@@ -35,6 +36,7 @@ compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime
 compose-material = { group = "androidx.compose.material", name = "material", version.ref = "androidxCompose" }
 compose-material-iconsExtended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "androidxCompose" }
 androidx-CoreKtx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
+androidx-splashScreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidxSplashScreen" }
 androidx-AppCompat = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
 androidx-Window = { group = "androidx.window", name = "window", version.ref = "andoidxWindow" }
 androidx-Work = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "andoidxWork" }
