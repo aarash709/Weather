@@ -16,8 +16,8 @@
     <style name="Theme.Weather.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="Weather.Theme.Splash" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
-        <item name="windowSplashScreenIconBackgroundColor">@drawable/ic_launcher_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+<!--        <item name="windowSplashScreenIconBackgroundColor">@drawable/ic_launcher_background</item>-->
         <item name="postSplashScreenTheme">@style/Theme.Weather.NoActionBar</item>
     </style>
 </resources>
