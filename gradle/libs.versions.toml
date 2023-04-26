@@ -60,6 +60,7 @@ kotlix-CoroutinesTest = { group = "org.jetbrains.kotlinx", name = "kotlinx-corou
 kotlix-CoroutinesAndroid = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 accompanist-NavigationAnimation = { group = "com.google.accompanist", name = "accompanist-navigation-animation", version.ref = "accompanistNavigationAnimation" }
 accompanist-FlowLayout = { group = "com.google.accompanist", name = "accompanist-flowlayout", version.ref = "accompanistNavigationAnimation" }
+accompanist-placeholder = { group = "com.google.accompanist", name = "accompanist-placeholder-material", version.ref = "accompanistNavigationAnimation" }
 accompanist-SystemUIController = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanistNavigationAnimation" }
 timberLogger = { group = "com.jakewharton.timber", name = "timber", version.ref = "timberLogger" }
 hilt_NavigationCompose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
