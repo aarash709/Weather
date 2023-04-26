@@ -1,7 +1,7 @@
 package com.weather.core.network.di
 
 import com.weather.core.network.WeatherRemoteDatasource
-import com.weather.core.network.retrofit.CommonValues.BASE_URL
+import com.weather.core.network.retrofit.BASE_URL
 import com.weather.core.network.retrofit.RetrofitApiService
 import com.weather.core.network.retrofit.moshi
 import dagger.Module

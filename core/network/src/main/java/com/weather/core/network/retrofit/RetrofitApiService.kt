@@ -2,15 +2,9 @@ package com.weather.core.network.retrofit
 
 import com.weather.core.network.model.geosearch.GeoSearchItemDto
 import com.weather.core.network.model.weather.NetworkOneCall
-import com.weather.core.network.retrofit.CommonValues.API_KEY
+import com.weather.core.network.util.APIKey.API_KEY
 import retrofit2.http.GET
 import retrofit2.http.Query
-
-object CommonValues{
-    const val BASE_URL = "https://api.openweathermap.org/"
-    const val API_KEY = "e74687637f8aee445ebab69c4015f978"
-}
-
 
 interface RetrofitApiService {
 

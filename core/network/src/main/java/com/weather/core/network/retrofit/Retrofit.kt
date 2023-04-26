@@ -2,9 +2,10 @@ package com.weather.core.network.retrofit
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import com.weather.core.network.retrofit.CommonValues.BASE_URL
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+
+const val BASE_URL = "https://api.openweathermap.org/"
 
 val moshi: Moshi? = Moshi
     .Builder()
