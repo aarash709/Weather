@@ -27,12 +27,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.accompanist.placeholder.material.placeholder
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.feature.forecast.components.*
 import com.weather.feature.forecast.components.Daily
 import com.weather.feature.forecast.components.HourlyForecast
 import com.weather.model.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlin.jvm.internal.Intrinsics
 import kotlin.math.roundToInt
 
 @ExperimentalCoroutinesApi
@@ -126,7 +128,9 @@ fun WeatherForecastScreen(
             ) {
                 item {
                     ConditionAndDetails(
-                        weatherUIState.weather,
+                        modifier = Modifier.fillMaxSize(),
+                        weatherData = weatherUIState.weather,
+                        showPlaceholder = weatherUIState.showPlaceHolder,
                         speedUnit = speedUnit,
                         temperatureUnit = temperatureUnit,
                         distanceUnit = "m"
@@ -146,36 +150,42 @@ fun WeatherForecastScreen(
 
 @Composable
 fun ConditionAndDetails(
+    modifier: Modifier = Modifier,
     weatherData: WeatherData,
+    showPlaceholder: Boolean,
     speedUnit: String,
     temperatureUnit: String,
     distanceUnit: String,
 ) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Spacer(modifier = Modifier.height(100.dp))
         CurrentWeather(
             modifier = Modifier.padding(vertical = 60.dp),
             weatherData = weatherData.current,
+            showPlaceholder = showPlaceholder,
             temperatureUnit = temperatureUnit
         )
         Spacer(modifier = Modifier.height(100.dp))
         CurrentWeatherDetails(
             modifier = Modifier
                 .padding(horizontal = 1.dp)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .placeholder(showPlaceholder),
             weatherData = weatherData.current,
             speedUnit = speedUnit,
             distanceUnit = distanceUnit
         )
         Daily(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .placeholder(showPlaceholder),
             dailyList = weatherData.daily.map { it.toDailyPreview() })
         HourlyForecast(
             modifier = Modifier
-                .padding(bottom = 16.dp),
+                .placeholder(showPlaceholder),
             data = weatherData.hourly
         )
     }
@@ -270,6 +280,7 @@ fun CurrentDetails(
 private fun CurrentWeather(
     modifier: Modifier = Modifier,
     weatherData: Current,
+    showPlaceholder: Boolean,
     temperatureUnit: String,
 ) {
     Row(
@@ -280,7 +291,7 @@ private fun CurrentWeather(
     ) {
         CurrentTempAndCondition(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth().placeholder(showPlaceholder),
             icon = weatherData.weather[0].icon,
             temp = weatherData.temp.roundToInt().toString(),
             temperatureUnit = temperatureUnit,
@@ -486,7 +497,7 @@ fun MainPagePreview() {
                 hourly = HourlyStaticData,
             ),
             userSettings = SettingsData(WindSpeedUnits.KM, TemperatureUnits.C),
-            showPlaceHolder = false
+            showPlaceHolder = true
         )
         Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
             WeatherForecastScreen(weatherUIState = data,
