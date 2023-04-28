@@ -1,26 +1,17 @@
 package com.weather.feature.forecast
 
-import android.content.Context
 import androidx.lifecycle.*
-import androidx.work.*
 import com.weather.core.repository.UserRepository
 import com.weather.core.repository.WeatherRepository
 import com.weather.model.*
 import com.weather.model.TemperatureUnits.*
 import com.weather.model.WindSpeedUnits.*
-import com.weather.sync.work.FetchRemoteWeatherWorker
-import com.weather.sync.work.WEATHER_COORDINATE
-import com.weather.sync.work.WEATHER_FETCH_WORK_NAME
-import com.weather.sync.work.WorkSyncStatus
 import com.weather.sync.work.utils.SyncManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.time.*

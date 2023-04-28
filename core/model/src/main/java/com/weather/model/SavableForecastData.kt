@@ -1,12 +1,4 @@
-package com.weather.feature.forecast
-
-import com.weather.model.Current
-import com.weather.model.Daily
-import com.weather.model.Hourly
-import com.weather.model.OneCallCoordinates
-import com.weather.model.SettingsData
-import com.weather.model.Weather
-import com.weather.model.WeatherData
+package com.weather.model
 
 data class SavableForecastData(
     val weather: WeatherData,
