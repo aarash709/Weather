@@ -16,7 +16,7 @@ data class NetworkCurrent(
     val uvi: Double,
     val visibility: Int,
     val wind_deg: Int,
-    val wind_gust: Double,
+//    val wind_gust: Double,
     val wind_speed: Double,
     val weather: List<NetworkWeather>,
 )

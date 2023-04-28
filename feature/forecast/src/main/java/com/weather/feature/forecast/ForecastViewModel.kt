@@ -73,6 +73,7 @@ class ForecastViewModel @Inject constructor(
             .flowOn(Dispatchers.IO)
             .combine(getUserSettings()) { weather, userSettings ->
                 Timber.e("invoked data stream")
+                Timber.e("user settings:  ${userSettings.temperatureUnits}")
                 val current = weather.current.run {
                     copy(
                         dew_point = dew_point.convertToUserTemperature(

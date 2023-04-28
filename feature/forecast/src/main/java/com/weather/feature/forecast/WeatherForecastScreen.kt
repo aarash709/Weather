@@ -477,7 +477,6 @@ fun MainPagePreview() {
                     uvi = 0.91,
                     visibility = 10000,
                     wind_deg = 246,
-                    wind_gust = 1.71,
                     wind_speed = 2.64,
                     weather = listOf(
                         Weather("", "", 0, "Snow")

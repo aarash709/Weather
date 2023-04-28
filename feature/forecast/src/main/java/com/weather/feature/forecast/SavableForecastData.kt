@@ -3,6 +3,7 @@ package com.weather.feature.forecast
 import com.weather.model.Current
 import com.weather.model.OneCallCoordinates
 import com.weather.model.SettingsData
+import com.weather.model.Weather
 import com.weather.model.WeatherData
 
 data class SavableForecastData(
@@ -29,9 +30,8 @@ data class SavableForecastData(
                     uvi = 0.0,
                     visibility = 0,
                     wind_deg = 0,
-                    wind_gust = 0.0,
                     wind_speed = 0.0,
-                    weather = listOf()
+                    weather = Weather.empty
                 )
                 , daily = listOf(), hourly = listOf()
             ),
