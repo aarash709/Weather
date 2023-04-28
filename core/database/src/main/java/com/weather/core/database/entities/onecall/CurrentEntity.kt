@@ -31,7 +31,7 @@ data class CurrentEntity(
     val uvi: Double,
     val visibility: Int,
     val wind_deg: Int,
-    val wind_gust: Double?,
+    val wind_gust: Double,
     val wind_speed: Double,
 //    /**
 //     * parent Id

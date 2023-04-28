@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.weather.core.design.components.ShowLoadingText
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.feature.forecast.components.*
 import com.weather.feature.forecast.components.Daily
@@ -71,7 +70,7 @@ fun WeatherForecastScreen(
 @ExperimentalMaterialApi
 @Composable
 fun WeatherForecastScreen(
-    weatherUIState: WeatherUIState,
+    weatherUIState: SavableForecastData,
     isSyncing: Boolean,
     onNavigateToManageLocations: () -> Unit,
     onNavigateToSettings: () -> Unit,
@@ -84,69 +83,66 @@ fun WeatherForecastScreen(
             .fillMaxSize()
             .padding(horizontal = 16.dp)
     ) {
-        when (weatherUIState) {
-            WeatherUIState.Loading -> ShowLoadingText()
-            is WeatherUIState.Success -> {
-                val pullRefreshState = rememberPullRefreshState(
-                    refreshing = isSyncing,
-                    onRefresh = {
-                        onRefresh(weatherUIState.data.weather.coordinates.let {
-                            Coordinate(it.name, it.lat.toString(), it.lon.toString())
-                        })
-                    },
-                )
-                val speedUnit by remember {
-                    val state = when (weatherUIState.data.userSettings.windSpeedUnits) {
-                        WindSpeedUnits.KM -> "km/h"
-                        WindSpeedUnits.MS -> "m/s"
-                        WindSpeedUnits.MPH -> "mph"
-                        null -> "null"
-                    }
-                    mutableStateOf(state)
+        val pullRefreshState = rememberPullRefreshState(
+            refreshing = isSyncing,
+            onRefresh = {
+                onRefresh(weatherUIState.weather.coordinates.let {
+                    Coordinate(it.name, it.lat.toString(), it.lon.toString())
+                })
+            },
+        )
+        val speedUnit by remember {
+            val state = when (weatherUIState.userSettings.windSpeedUnits) {
+                WindSpeedUnits.KM -> "km/h"
+                WindSpeedUnits.MS -> "m/s"
+                WindSpeedUnits.MPH -> "mph"
+                null -> "null"
+            }
+            mutableStateOf(state)
+        }
+        val temperatureUnit by remember {
+            val state = when (weatherUIState.userSettings.temperatureUnits) {
+                TemperatureUnits.C -> "C"
+                TemperatureUnits.F -> "F"
+                null -> "null"
+            }
+            mutableStateOf(state)
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .pullRefresh(pullRefreshState),
+        ) {
+            ForecastTopBar(
+                cityName = weatherUIState.weather.coordinates.name.toString(),
+                showPlaceholder = weatherUIState.showPlaceHolder,
+                onNavigateToManageLocations = { onNavigateToManageLocations() },
+                onNavigateToSettings = { onNavigateToSettings() })
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                state = lazyListState,
+                contentPadding = WindowInsets.navigationBars.asPaddingValues(),
+                verticalArrangement = Arrangement.spacedBy(0.dp)
+            ) {
+                item {
+                    ConditionAndDetails(
+                        weatherUIState.weather,
+                        speedUnit = speedUnit,
+                        temperatureUnit = temperatureUnit,
+                        distanceUnit = "m"
+                    )
                 }
-                val temperatureUnit by remember {
-                    val state = when (weatherUIState.data.userSettings.temperatureUnits) {
-                        TemperatureUnits.C -> "C"
-                        TemperatureUnits.F -> "F"
-                        null -> "null"
-                    }
-                    mutableStateOf(state)
-                }
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .pullRefresh(pullRefreshState),
-                ) {
-                    ForecastTopBar(
-                        cityName = weatherUIState.data.weather.coordinates.name.toString(),
-                        onNavigateToManageLocations = { onNavigateToManageLocations() },
-                        onNavigateToSettings = { onNavigateToSettings() })
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        state = lazyListState,
-                        contentPadding = WindowInsets.navigationBars.asPaddingValues(),
-                        verticalArrangement = Arrangement.spacedBy(0.dp)
-                    ) {
-                        item {
-                            ConditionAndDetails(
-                                weatherUIState.data.weather,
-                                speedUnit = speedUnit,
-                                temperatureUnit = temperatureUnit,
-                                distanceUnit = "m"
-                            )
-                        }
-                    }
-                }
-                PullRefreshIndicator(
-                    refreshing = isSyncing,
-                    state = pullRefreshState,
-                    modifier = Modifier.align(Alignment.TopCenter),
-                    scale = true
-                )
             }
         }
+        PullRefreshIndicator(
+            refreshing = isSyncing,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter),
+            scale = true
+        )
     }
 }
+
 
 @Composable
 fun ConditionAndDetails(
@@ -305,9 +301,11 @@ fun CurrentWeatherDetails(
         weatherData.visibility < 1000 -> {
             "${weatherData.visibility}m"
         }
+
         weatherData.visibility > 1000 -> {
             "${weatherData.visibility.div(1000)}km"
         }
+
         else -> {
             "${weatherData.visibility}"
         }
@@ -457,40 +455,39 @@ private fun CurrentTempAndCondition(
 @Composable
 fun MainPagePreview() {
     WeatherTheme {
-        val data = WeatherUIState.Success(
-            data = SavableForecastData(
-                weather = WeatherData(
-                    coordinates = OneCallCoordinates(
-                        name = "Tehran",
-                        lat = 0.0,
-                        lon = 0.0,
-                        timezone = "tehran",
-                        timezone_offset = 0
-                    ),
-                    current = Current(
-                        clouds = 27,
-                        dew_point = 273.46,
-                        dt = 1674649142,
-                        feels_like = 286.08,
-                        humidity = 38,
-                        pressure = 1017,
-                        sunrise = 1674617749,
-                        sunset = 1674655697,
-                        temp = 287.59,
-                        uvi = 0.91,
-                        visibility = 10000,
-                        wind_deg = 246,
-                        wind_gust = 1.71,
-                        wind_speed = 2.64,
-                        weather = listOf(
-                            Weather("", "", 0, "Snow")
-                        )
-                    ),
-                    daily = DailyStaticData,
-                    hourly = HourlyStaticData,
+        val data = SavableForecastData(
+            weather = WeatherData(
+                coordinates = OneCallCoordinates(
+                    name = "Tehran",
+                    lat = 0.0,
+                    lon = 0.0,
+                    timezone = "tehran",
+                    timezone_offset = 0
                 ),
-                userSettings = SettingsData(WindSpeedUnits.KM, TemperatureUnits.C)
-            )
+                current = Current(
+                    clouds = 27,
+                    dew_point = 273.46,
+                    dt = 1674649142,
+                    feels_like = 286.08,
+                    humidity = 38,
+                    pressure = 1017,
+                    sunrise = 1674617749,
+                    sunset = 1674655697,
+                    temp = 287.59,
+                    uvi = 0.91,
+                    visibility = 10000,
+                    wind_deg = 246,
+                    wind_gust = 1.71,
+                    wind_speed = 2.64,
+                    weather = listOf(
+                        Weather("", "", 0, "Snow")
+                    )
+                ),
+                daily = DailyStaticData,
+                hourly = HourlyStaticData,
+            ),
+            userSettings = SettingsData(WindSpeedUnits.KM, TemperatureUnits.C),
+            showPlaceHolder = false
         )
         Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
             WeatherForecastScreen(weatherUIState = data,

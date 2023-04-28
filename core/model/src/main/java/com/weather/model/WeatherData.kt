@@ -8,11 +8,11 @@ data class WeatherData(
 )
 
 data class OneCallCoordinates(
-    val name: String?,
-    val lat: Double?,
-    val lon: Double?,
-    val timezone: String?,
-    val timezone_offset: Int?,
+    val name: String,
+    val lat: Double,
+    val lon: Double,
+    val timezone: String,
+    val timezone_offset: Int,
 )
 
 data class Current(
@@ -28,7 +28,7 @@ data class Current(
     val uvi: Double,
     val visibility: Int,
     val wind_deg: Int,
-    val wind_gust: Double?,
+    val wind_gust: Double,
     val wind_speed: Double,
     val weather: List<Weather>,
 )

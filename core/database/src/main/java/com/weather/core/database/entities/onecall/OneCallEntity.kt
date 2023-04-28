@@ -9,10 +9,10 @@ import com.weather.model.OneCallCoordinates
 data class OneCallEntity(
     @PrimaryKey(autoGenerate = false)
     val cityName: String,
-    val lat: Double?,
-    val lon: Double? = null,
-    val timezone: String? = null,
-    val timezone_offset: Int? = null,
+    val lat: Double,
+    val lon: Double,
+    val timezone: String,
+    val timezone_offset: Int,
     ){
         fun asDomainModel(): OneCallCoordinates {
             return OneCallCoordinates(

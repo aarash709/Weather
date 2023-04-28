@@ -49,7 +49,7 @@ class ForecastViewModel @Inject constructor(
     val weatherUIState = getWeatherData().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(1000),
-        initialValue = WeatherUIState.Loading
+        initialValue = SavableForecastData.placeholderDefault
     )
 
     init {
@@ -59,7 +59,7 @@ class ForecastViewModel @Inject constructor(
     }
 
     @ExperimentalCoroutinesApi
-    internal fun getWeatherData(): Flow<WeatherUIState> {
+    internal fun getWeatherData(): Flow<SavableForecastData> {
         return weatherRepository.getAllForecastWeatherData()
             .combine(getFavoriteCityCoordinate()) { allWeather, coordinate ->
                 Timber.e("cityName: ${coordinate?.cityName}")
@@ -117,15 +117,18 @@ class ForecastViewModel @Inject constructor(
                     )
                 }
                 val newWeather = weather.copy(current = current, daily = daily, hourly = hourly)
-                val forecastData = SavableForecastData(newWeather, userSettings)
-                WeatherUIState.Success(forecastData)
+                SavableForecastData(
+                    weather = newWeather,
+                    userSettings = userSettings,
+                    showPlaceHolder = false
+                )
             }
             .onEach { forecastData ->
-                val timeStamp = forecastData.data.weather.current.dt
+                val timeStamp = forecastData.weather.current.dt
                 val coordinate = Coordinate(
-                    forecastData.data.weather.coordinates.name,
-                    forecastData.data.weather.coordinates.lat.toString(),
-                    forecastData.data.weather.coordinates.lon.toString()
+                    forecastData.weather.coordinates.name,
+                    forecastData.weather.coordinates.lat.toString(),
+                    forecastData.weather.coordinates.lon.toString()
                 )
                 if (isDataExpired(dataTimestamp = timeStamp, minutesThreshold = 30)) {
                     sync(coordinate)
@@ -135,7 +138,6 @@ class ForecastViewModel @Inject constructor(
             .catch {
                 Timber.e("data state:${it.message}")
                 Timber.e("catch2: ${dataBaseOrCityIsEmpty.value}")
-                WeatherUIState.Loading
             }
     }
 
@@ -158,7 +160,7 @@ class ForecastViewModel @Inject constructor(
                 latitude = savedCityCoordinate.latitude,
                 longitude = savedCityCoordinate.longitude
             )
-           syncStatus.syncWithCoordinate(coordinate)
+            syncStatus.syncWithCoordinate(coordinate)
         }
     }
 
@@ -207,9 +209,11 @@ class ForecastViewModel @Inject constructor(
             this < 1000 -> {
                 return this
             }
+
             this > 1000 -> {
                 return this.div(1000)
             }
+
             else -> {
                 this
             }

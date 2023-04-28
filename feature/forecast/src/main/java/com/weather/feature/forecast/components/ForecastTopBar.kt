@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
@@ -15,10 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.placeholder.material.placeholder
 
 @Composable
 fun ForecastTopBar(
     cityName: String,
+    showPlaceholder: Boolean,
     onNavigateToManageLocations: ()->Unit,
     onNavigateToSettings: ()->Unit,
 ) {
@@ -30,6 +31,7 @@ fun ForecastTopBar(
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
             CustomForecastTopBarRow(
                 cityName = cityName,
+                showPlaceholder = showPlaceholder,
                 onNavigateToManageLocations = { onNavigateToManageLocations() },
                 onNavigateToSettings = { onNavigateToSettings() }
             )
@@ -40,6 +42,7 @@ fun ForecastTopBar(
 @Composable
 private fun CustomForecastTopBarRow(
     cityName: String,
+    showPlaceholder: Boolean,
     onNavigateToManageLocations: () -> Unit,
     onNavigateToSettings: () -> Unit,
 ) {
@@ -60,7 +63,7 @@ private fun CustomForecastTopBarRow(
             )
         }
         Row(
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier.padding(8.dp).placeholder(showPlaceholder),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceAround
         ) {
@@ -72,6 +75,7 @@ private fun CustomForecastTopBarRow(
             }
             Text(
                 text = cityName,
+                modifier = Modifier,
                 fontSize = 20.sp
             )
 //            Icon(
