@@ -1,6 +1,8 @@
 package com.weather.feature.forecast
 
 import com.weather.model.Current
+import com.weather.model.Daily
+import com.weather.model.Hourly
 import com.weather.model.OneCallCoordinates
 import com.weather.model.SettingsData
 import com.weather.model.Weather
@@ -10,8 +12,8 @@ data class SavableForecastData(
     val weather: WeatherData,
     val userSettings: SettingsData,
     val showPlaceHolder: Boolean = true,
-){
-    companion object{
+) {
+    companion object {
         val placeholderDefault = SavableForecastData(
             weather = WeatherData(
                 coordinates = OneCallCoordinates(
@@ -32,8 +34,8 @@ data class SavableForecastData(
                     wind_deg = 0,
                     wind_speed = 0.0,
                     weather = Weather.empty
-                )
-                , daily = listOf(), hourly = listOf()
+                ), daily = Daily.empty,
+                hourly = Hourly.empty
             ),
             userSettings = SettingsData(windSpeedUnits = null, temperatureUnits = null)
         )
