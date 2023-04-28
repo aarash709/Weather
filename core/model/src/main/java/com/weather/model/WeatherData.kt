@@ -1,15 +1,10 @@
 package com.weather.model
 
-data class SavableForecastData(
-    val weather: WeatherData,
-    val userSettings : SettingsData
-)
 data class WeatherData(
     val coordinates: OneCallCoordinates,
     val current: Current,
     val daily: List<Daily>,
     val hourly: List<Hourly>,
-//    val minutely: List<MinutelyDto>,
 )
 
 data class OneCallCoordinates(
