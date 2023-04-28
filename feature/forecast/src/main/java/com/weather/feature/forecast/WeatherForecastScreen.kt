@@ -91,7 +91,7 @@ fun WeatherForecastScreen(
                 })
             },
         )
-        val speedUnit by remember {
+        val speedUnit by remember(weatherUIState) {
             val state = when (weatherUIState.userSettings.windSpeedUnits) {
                 WindSpeedUnits.KM -> "km/h"
                 WindSpeedUnits.MS -> "m/s"
@@ -100,7 +100,7 @@ fun WeatherForecastScreen(
             }
             mutableStateOf(state)
         }
-        val temperatureUnit by remember {
+        val temperatureUnit by remember(weatherUIState) {
             val state = when (weatherUIState.userSettings.temperatureUnits) {
                 TemperatureUnits.C -> "C"
                 TemperatureUnits.F -> "F"
