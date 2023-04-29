@@ -4,7 +4,9 @@ import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOutCubic
+import androidx.compose.animation.core.InfiniteRepeatableSpec
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,7 +29,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
+import com.google.accompanist.placeholder.material.shimmer
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.feature.forecast.components.*
 import com.weather.feature.forecast.components.Daily
@@ -173,7 +177,13 @@ fun ConditionAndDetails(
             modifier = Modifier
                 .padding(horizontal = 1.dp)
                 .fillMaxWidth()
-                .placeholder(showPlaceholder),
+                .placeholder(
+                    visible = showPlaceholder,
+                    highlight = PlaceholderHighlight.shimmer(
+                        animationSpec = InfiniteRepeatableSpec(
+                            tween(1000))),
+                    contentFadeTransitionSpec = { tween(250) },
+                ),
             weatherData = weatherData.current,
             speedUnit = speedUnit,
             distanceUnit = distanceUnit
@@ -181,11 +191,23 @@ fun ConditionAndDetails(
         Daily(
             modifier = Modifier
                 .fillMaxWidth()
-                .placeholder(showPlaceholder),
+                .placeholder(
+                    visible = showPlaceholder,
+                    highlight = PlaceholderHighlight.shimmer(
+                        animationSpec = InfiniteRepeatableSpec(
+                            tween(1000))),
+                    contentFadeTransitionSpec = { tween(250) },
+                ),
             dailyList = weatherData.daily.map { it.toDailyPreview() })
         HourlyForecast(
             modifier = Modifier
-                .placeholder(showPlaceholder),
+                .placeholder(
+                    visible = showPlaceholder,
+                    highlight = PlaceholderHighlight.shimmer(
+                        animationSpec = InfiniteRepeatableSpec(
+                            tween(1000))),
+                    contentFadeTransitionSpec = { tween(250) },
+                ),
             data = weatherData.hourly
         )
     }
@@ -291,7 +313,14 @@ private fun CurrentWeather(
     ) {
         CurrentTempAndCondition(
             modifier = Modifier
-                .fillMaxWidth().placeholder(showPlaceholder),
+                .fillMaxWidth()
+                .placeholder(
+                    visible = showPlaceholder,
+                    highlight = PlaceholderHighlight.shimmer(
+                        animationSpec = InfiniteRepeatableSpec(
+                        tween(1000))),
+                    contentFadeTransitionSpec = { tween(250) },
+                ),
             icon = weatherData.weather[0].icon,
             temp = weatherData.temp.roundToInt().toString(),
             temperatureUnit = temperatureUnit,

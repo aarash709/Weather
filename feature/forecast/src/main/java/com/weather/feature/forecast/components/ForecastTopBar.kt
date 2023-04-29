@@ -1,5 +1,7 @@
 package com.weather.feature.forecast.components
 
+import androidx.compose.animation.core.InfiniteRepeatableSpec
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,7 +16,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
+import com.google.accompanist.placeholder.material.shimmer
 
 @Composable
 fun ForecastTopBar(
@@ -63,7 +67,16 @@ private fun CustomForecastTopBarRow(
             )
         }
         Row(
-            modifier = Modifier.padding(8.dp).placeholder(showPlaceholder),
+            modifier = Modifier
+                .padding(8.dp)
+                .placeholder(
+                    visible = showPlaceholder,
+                    highlight = PlaceholderHighlight.shimmer(
+                        animationSpec = InfiniteRepeatableSpec(
+                            tween(1000))
+                    ),
+                    contentFadeTransitionSpec = { tween(250) },
+                ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceAround
         ) {
