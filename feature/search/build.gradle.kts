@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.accompanist.navigationAnimation)
 
     implementation(libs.accompanist.flowLayout)
+    implementation(libs.accompanist.placeholder)
 
     implementation(libs.androidx.lifecycleRuntimeKtx)
     implementation(libs.androidx.lifecycleComposeRuntime)

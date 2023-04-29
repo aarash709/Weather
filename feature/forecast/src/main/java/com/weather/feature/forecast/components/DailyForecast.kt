@@ -23,12 +23,12 @@ fun Daily(
     dailyList: List<DailyPreview>,
 ) {
     Card(
-        modifier = Modifier,
+        modifier = modifier,
         shape = RoundedCornerShape(16.dp),
         backgroundColor = MaterialTheme.colors.surface
     ) {
         Column(
-            modifier = modifier,
+            modifier = Modifier,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(

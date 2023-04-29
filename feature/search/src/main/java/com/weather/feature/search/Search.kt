@@ -28,9 +28,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.flowlayout.MainAxisAlignment
-import com.weather.core.design.components.LinearLoadingIndicator
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.placeholder
+import com.google.accompanist.placeholder.material.shimmer
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.model.geocode.GeoSearchItem
+import com.weather.model.geocode.SavableSearchState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
@@ -46,7 +49,7 @@ fun SearchScreen(
     var inputText by remember {
         mutableStateOf("")
     }
-    LaunchedEffect(key1 = inputText){
+    LaunchedEffect(key1 = inputText) {
         searchViewModel.setSearchQuery(cityName = inputText)
     }
     Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
@@ -84,7 +87,7 @@ fun SearchScreen(
 
 @Composable
 fun SearchScreen(
-    searchUIState: SearchUIState,
+    searchUIState: SavableSearchState,
     searchInputText: String,
     popularCities: List<String>,
     popularCityIndex: (Int) -> Unit,
@@ -119,26 +122,18 @@ fun SearchScreen(
                 popularCityIndex = { popularCityIndex(it) })
 
         } else {
-            when (searchUIState) {
-                is SearchUIState.Loading -> LinearLoadingIndicator(
-                    modifier = Modifier.padding(
-                        horizontal = 24.dp
-                    )
-                )
-                is SearchUIState.Error -> Unit
-                is SearchUIState.Success -> {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    SearchList(
-                        searchList = searchUIState.data,
-                        onSearchItemSelected = { SearchItem ->
-                            selectedSearchItem(SearchItem)
-                            //fetch and store weather based on selection
-                            //maybe navigate to main page after successful IO
-                        })
-                }
-            }
-
+            Spacer(modifier = Modifier.height(16.dp))
+            SearchList(
+                searchList = searchUIState.geoSearchItems,
+                showPlaceholder = searchUIState.showPlaceholder,
+                onSearchItemSelected = { SearchItem ->
+                    selectedSearchItem(SearchItem)
+                    //fetch and store weather based on selection
+                    //maybe navigate to main page after successful IO
+                })
         }
+
+
     }
 }
 
@@ -210,13 +205,19 @@ private fun TopSearchBar(
 @Composable
 private fun SearchList(
     searchList: List<GeoSearchItem>,
+    showPlaceholder: Boolean,
     onSearchItemSelected: (GeoSearchItem) -> Unit,
 ) {
     //max 5 item per search list
     LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         items(searchList) { searchItemItem ->
             SearchItem(
-                modifier = Modifier.clickable { onSearchItemSelected(searchItemItem) },
+                modifier = Modifier
+                    .placeholder(
+                        showPlaceholder,
+                        highlight = PlaceholderHighlight.shimmer()
+                    )
+                    .clickable { onSearchItemSelected(searchItemItem) },
                 item = searchItemItem
             )
         }
@@ -309,8 +310,8 @@ private fun SearchPreview() {
         }
         Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
             SearchScreen(
-                searchUIState = SearchUIState.Loading,
-                searchInputText = "",
+                searchUIState = SavableSearchState(GeoSearchItem.empty,true),
+                searchInputText = "jj",
                 popularCities = cityList,
                 popularCityIndex = {},
                 onClearSearch = {},
@@ -374,7 +375,6 @@ val cityList = listOf(
     "Singapore",
     "Shiraz",
     "Berlin",
-    "City"
 )
 
 val items = listOf(

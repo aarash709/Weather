@@ -112,14 +112,12 @@ class WeatherRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun searchLocation(cityName: String): Flow<Resource<List<GeoSearchItem>>> =
+    override fun searchLocation(cityName: String): Flow<List<GeoSearchItem>> =
         flow {
-            emit(Resource.Loading())
             val remoteData = remoteWeather.directGeocode(cityName = cityName)
             if (remoteData.isNotEmpty())
-                emit(Resource.Success(remoteData))
+                emit(remoteData)
         }.catch {
-            Timber.e(it.message)
-            emit(Resource.Error(message = "Network Error: ${it.message}"))
+            Timber.e("search error: ${it.message}")
         }
 }
