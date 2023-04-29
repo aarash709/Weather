@@ -7,24 +7,16 @@ import android.net.ConnectivityManager.*
 import android.net.NetworkCapabilities.*
 import android.os.Build
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import dagger.hilt.android.internal.Contexts.getApplication
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    app: Application,
-//    private val useCases: WeatherUseCases,
-) : AndroidViewModel(app) {
-
-//    private val _address = MutableLiveData<List<Address>?>()
-//    val address: LiveData<List<Address>?>
-//        get() = _address
-//    private val geocoder: Geocoder by lazy {
-//        Geocoder(getApplication(), Locale.getDefault())
-//    }
-
-    private fun hasNetworkConnection(): Boolean {
-        val connectivityManager = getApplication<WeatherApplication>()
+) : ViewModel() {
+    private fun hasNetworkConnection(context: Context): Boolean {
+        val connectivityManager = context.applicationContext
             .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val activeNetwork = connectivityManager.activeNetwork ?: return false
