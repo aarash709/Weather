@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.flow
 
 class FakeWeatherRepository : WeatherRepository {
 
-    override fun searchLocation(cityName: String): Flow<Resource<List<GeoSearchItem>>> {
+    override fun searchLocation(cityName: String): Flow<List<GeoSearchItem>> {
         TODO("Not yet implemented")
     }
 

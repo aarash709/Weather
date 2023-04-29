@@ -1,21 +1,13 @@
 package com.weather.feature.search
 
-import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.work.Data
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
 import com.weather.core.repository.UserRepository
 import com.weather.core.repository.WeatherRepository
 import com.weather.model.Coordinate
-import com.weather.model.Resource
 import com.weather.model.WeatherData
 import com.weather.model.geocode.GeoSearchItem
-import com.weather.sync.work.FetchRemoteWeatherWorker
-import com.weather.sync.work.WEATHER_COORDINATE
-import com.weather.sync.work.WorkSyncStatus
+import com.weather.model.geocode.SavableSearchState
 import com.weather.sync.work.utils.SyncManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -50,25 +42,18 @@ class SearchViewModel @Inject constructor(
         }
         .flatMapLatest { cityName ->
             weatherRepository.searchLocation(cityName = cityName)
-                .flowOn(Dispatchers.IO)
-                .map { search ->
-                    when (search) {
-                        is Resource.Success -> {
-                            SearchUIState.Success(search.data!!)
-                        }
-                        is Resource.Loading -> {
-                            SearchUIState.Loading
-                        }
-                        is Resource.Error -> {
-                            SearchUIState.Error
-                        }
-                    }
-                }
+        }
+        .flowOn(Dispatchers.IO)
+        .map { geoItemList->
+            SavableSearchState(
+                geoSearchItems = geoItemList,
+                showPlaceholder = false
+            )
         }
         .stateIn(
             viewModelScope,
             started = SharingStarted.WhileSubscribed(1000L),
-            initialValue = SearchUIState.Loading
+            initialValue = SavableSearchState.empty
         )
 
     fun setSearchQuery(cityName: String) {
@@ -93,7 +78,6 @@ class SearchViewModel @Inject constructor(
             //work
             syncStatus.syncWithCoordinate(coordinate)
         }
-
     }
     fun saveSearchWeatherItem(searchItem: GeoSearchItem) {
         val coordinates = Coordinate(

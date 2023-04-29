@@ -25,7 +25,7 @@ fun HourlyForecast(
     data: List<Hourly>,
 ) {
     Card(
-        modifier = Modifier,
+        modifier = modifier,
         shape = RoundedCornerShape(16.dp),
         backgroundColor = MaterialTheme.colors.surface
     ) {
@@ -37,7 +37,8 @@ fun HourlyForecast(
             )
             LazyRow(
                 modifier = modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(32.dp),
                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
             ) {
