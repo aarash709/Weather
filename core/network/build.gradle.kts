@@ -40,14 +40,8 @@ dependencies {
     implementation(libs.kotlix.serialization)
     implementation(libs.timberLogger)
 
-//    implementation("io.ktor:ktor-client-core:$ktor_version")
-//    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
-//    implementation("io.ktor:ktor-serialization-gson:$ktor_version")
-//    implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
-//    implementation("io.ktor:ktor-client-android:$ktor_version")
-//    implementation("io.ktor:ktor-client-logging:$ktor_version")
-//    implementation("io.ktor:ktor-client-cio:$ktor_version")
-//    implementation("io.ktor:ktor-client-okhttp:$ktor_version")
+    implementation(libs.bundles.ktor)
+
 
     //test
     testImplementation("junit:junit:4.13.2")

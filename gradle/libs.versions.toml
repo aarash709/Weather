@@ -23,6 +23,7 @@ timberLogger = "5.0.1"
 retrofit = "2.9.0"
 moshi = "1.14.0"
 coil = "2.2.2"
+ktor = "2.3.0"
 
 [libraries]
 compose-bom = { group = "androidx.compose", name = "compose_Bom", version.ref = "composeBom" }
@@ -70,6 +71,14 @@ retrofitMoshi = { group = "com.squareup.retrofit2", name = "converter-moshi", ve
 moshi = { group = "com.squareup.moshi", name = "moshi", version.ref = "moshi" }
 moshiKotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi" }
 coilCompose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+ktor-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
+ktor-kotlinxSerilization = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-gsonSerilization = { group = "io.ktor", name = "ktor-serialization-gson", version.ref = "ktor" }
+ktor-contentNegotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-androidClient = { group = "io.ktor", name = "ktor-client-android", version.ref = "ktor" }
+ktor-LoggingClient = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
+ktor-ciaoClient = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor" }
+ktor-okhttpClient = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 
 
 [bundles]
@@ -83,4 +92,13 @@ compose = [
     "compose-runtime-livedata",
     "compose-material",
     "compose-material-iconsExtended"]
+ktor = [
+    "ktor-core",
+    "ktor-kotlinxSerilization",
+    "ktor-gsonSerilization",
+    "ktor-androidClient",
+    "ktor-LoggingClient",
+    "ktor-ciaoClient",
+    "ktor-okhttpClient"
+]
 [plugins]
