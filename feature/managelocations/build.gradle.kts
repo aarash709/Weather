@@ -40,7 +40,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = rootProject.extra.get("compose_compiler_version") as String
+        kotlinCompilerExtensionVersion = libs.versions.androidxComposeCompiler.get()
     }
 }
 

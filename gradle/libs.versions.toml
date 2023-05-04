@@ -1,4 +1,5 @@
 [versions]
+kotlinPluginVersion = "1.8.10"
 composeBom = "2023.03.00"
 androidxCompose = "1.4.0"
 androidxComposeCompiler = "1.4.4"
