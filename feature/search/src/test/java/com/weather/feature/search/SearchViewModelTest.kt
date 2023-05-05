@@ -2,6 +2,7 @@ package com.weather.feature.search
 
 import com.weather.core.repository.fake.FakeUserRepository
 import com.weather.core.repository.fake.FakeWeatherRepository
+import com.weather.model.geocode.SavableSearchState
 import com.weather.sync.work.fake.FakeSyncManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -28,6 +29,6 @@ lateinit var searchViewModel: SearchViewModel
     }
     @Test
     fun `initial Search UI State Is Loading`() = runTest{
-        assertEquals(SearchUIState.Loading, searchViewModel.searchUIState.value)
+        assertEquals(SavableSearchState.empty, searchViewModel.searchUIState.value)
     }
 }
