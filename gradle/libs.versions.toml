@@ -26,7 +26,6 @@ moshi = "1.14.0"
 coil = "2.2.2"
 ktor = "2.3.0"
 gradleSecret = "2.0.1"
-ktor = "2.3.0"
 
 [libraries]
 compose-bom = { group = "androidx.compose", name = "compose_Bom", version.ref = "composeBom" }
