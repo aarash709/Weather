@@ -1,4 +1,5 @@
 [versions]
+kotlinPluginVersion = "1.8.10"
 composeBom = "2023.03.00"
 androidxCompose = "1.4.0"
 androidxComposeCompiler = "1.4.4"
@@ -23,6 +24,7 @@ timberLogger = "5.0.1"
 retrofit = "2.9.0"
 moshi = "1.14.0"
 coil = "2.2.2"
+ktor = "2.3.0"
 gradleSecret = "2.0.1"
 ktor = "2.3.0"
 
@@ -103,6 +105,5 @@ ktor = [
     "ktor-ciaoClient",
     "ktor-okhttpClient"
 ]
-
 [plugins]
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "gradleSecret" }
