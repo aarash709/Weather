@@ -108,7 +108,7 @@ class WeatherRepositoryImpl @Inject constructor(
                 )
             }
         } catch (e: Exception) {
-            Timber.e(e.message)
+            Timber.e("sync error: ${e.message}")
         }
     }
 

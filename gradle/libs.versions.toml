@@ -98,6 +98,7 @@ ktor = [
     "ktor-core",
     "ktor-kotlinxSerilization",
     "ktor-gsonSerilization",
+    "ktor-contentNegotiation",
     "ktor-androidClient",
     "ktor-LoggingClient",
     "ktor-ciaoClient",
