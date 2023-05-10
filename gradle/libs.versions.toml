@@ -25,6 +25,7 @@ retrofit = "2.9.0"
 moshi = "1.14.0"
 coil = "2.2.2"
 ktor = "2.3.0"
+gradleSecret = "2.0.1"
 
 [libraries]
 compose-bom = { group = "androidx.compose", name = "compose_Bom", version.ref = "composeBom" }
@@ -103,3 +104,4 @@ ktor = [
     "ktor-okhttpClient"
 ]
 [plugins]
+secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "gradleSecret" }
