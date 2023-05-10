@@ -19,23 +19,6 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import timber.log.Timber
 
-//
-//import com.weather.core.network.model.geosearch.GeoSearchItemDto
-//import com.weather.core.network.model.weather.NetworkOneCall
-//import com.weather.core.network.retrofit.CommonValues.API_KEY
-//import com.weather.core.network.retrofit.CommonValues.BASE_URL
-//import io.ktor.client.*
-//import io.ktor.client.call.*
-//import io.ktor.client.engine.android.*
-//import io.ktor.client.plugins.*
-//import io.ktor.client.plugins.contentnegotiation.*
-//import io.ktor.client.plugins.logging.*
-//import io.ktor.client.request.*
-//import io.ktor.http.*
-//import io.ktor.serialization.kotlinx.json.*
-//import kotlinx.serialization.json.Json
-//import timber.log.Timber
-//
 interface KtorApiService {
 
     suspend fun getGeoSearch(
@@ -97,8 +80,6 @@ class KtorServiceImpl(
         appId: String,
     ): NetworkOneCall {
             return client.get(BASE_URL) {
-//                Learn how to configure url builder
-                    // TODO: //this does not work as intended need to learn this builder
                 url {
                     path("data/2.5/onecall")
                     parameters.append("lat", lat)
@@ -116,7 +97,6 @@ class KtorServiceImpl(
     ): List<GeoSearchItemDto> {
         try {
             val geoItems: List<GeoSearchItemDto> = client.get(BASE_URL) {
-//                Learn how to configure url builder
                 url {
                     path("geo/1.0/direct")
                     parameters.append("q", location)
@@ -132,5 +112,4 @@ class KtorServiceImpl(
             return emptyList()
         }
     }
-    //other methods for fetching or posting data
 }
