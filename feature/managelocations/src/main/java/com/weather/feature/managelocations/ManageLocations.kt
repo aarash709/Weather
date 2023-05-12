@@ -228,30 +228,6 @@ fun SavedLocationItem(
     }
 }
 
-@Composable
-fun SearchBar(
-    textFieldColors: TextFieldColors,
-) {
-    var textValue: String by remember {
-        mutableStateOf("")
-    }
-
-    TextField(
-        value = textValue,
-        onValueChange = { textValue = it },
-        modifier = Modifier
-            .fillMaxWidth(),
-        placeholder = { Text(text = "Search") },
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = "Search Icon"
-            )
-        },
-        shape = RoundedCornerShape(32.dp),
-        colors = textFieldColors
-    )
-}
 
 @ExperimentalFoundationApi
 @ExperimentalMaterialApi
