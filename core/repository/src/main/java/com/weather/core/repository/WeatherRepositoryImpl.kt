@@ -21,10 +21,6 @@ class WeatherRepositoryImpl @Inject constructor(
 
     override fun isDatabaseEmpty(): Int = localWeather.databaseIsEmpty()
 
-//    fun getWeatherPreviewByCityName(cityName: String, coordinates: Coordinates): Resource<Flow<WeatherData>>{
-//        return remoteWeather.getRemoteData(cityName,coordinates)
-//    }
-
     override fun getAllForecastWeatherData(): Flow<List<WeatherData>> {
         return localWeather.getAllForecastData()
     }

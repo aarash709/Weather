@@ -17,9 +17,6 @@ class WeatherLocalDataSource(
         return dao.getAllOneCallAndCurrent()
     }
 
-    //    fun getAllLocalWeatherData(): Flow<List<WeatherData>> {
-//        return dao.getWeatherDataByCityName()
-//    }
     fun deleteDaily(cityName: String, timeStamp: Long) = dao.deleteDaily(
         cityName = cityName,
         timeStamp = timeStamp

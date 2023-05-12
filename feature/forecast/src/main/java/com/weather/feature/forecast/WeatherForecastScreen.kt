@@ -137,7 +137,6 @@ fun WeatherForecastScreen(
                         showPlaceholder = weatherUIState.showPlaceHolder,
                         speedUnit = speedUnit,
                         temperatureUnit = temperatureUnit,
-                        distanceUnit = "m"
                     )
                 }
             }
@@ -159,7 +158,6 @@ fun ConditionAndDetails(
     showPlaceholder: Boolean,
     speedUnit: String,
     temperatureUnit: String,
-    distanceUnit: String,
 ) {
     Column(
         modifier = modifier,
@@ -186,7 +184,6 @@ fun ConditionAndDetails(
                 ),
             weatherData = weatherData.current,
             speedUnit = speedUnit,
-            distanceUnit = distanceUnit
         )
         Daily(
             modifier = Modifier
@@ -321,7 +318,6 @@ private fun CurrentWeather(
                         tween(1000))),
                     contentFadeTransitionSpec = { tween(250) },
                 ),
-            icon = weatherData.weather[0].icon,
             temp = weatherData.temp.roundToInt().toString(),
             temperatureUnit = temperatureUnit,
             feelsLikeTemp = weatherData.feels_like.roundToInt().toString(),
@@ -335,7 +331,6 @@ fun CurrentWeatherDetails(
     modifier: Modifier = Modifier,
     weatherData: Current,
     speedUnit: String,
-    distanceUnit: String,
 ) {
     val visibility = when {
         weatherData.visibility < 1000 -> {
@@ -401,11 +396,6 @@ fun WinDirectionDetail(
                     },
                 tint = MaterialTheme.colors.onBackground
             )
-//            Text(
-//                text = value.toString(),
-//                fontSize = 10.sp,
-//                color = MaterialTheme.colors.onBackground
-//            )
         }
         Text(
             text = itemName,
@@ -455,7 +445,6 @@ private fun WeatherDetailItem(
 @Composable
 private fun CurrentTempAndCondition(
     modifier: Modifier = Modifier,
-    icon: String,
     temp: String,
     temperatureUnit: String,
     feelsLikeTemp: String,
@@ -531,9 +520,6 @@ fun MainPagePreview() {
         Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
             WeatherForecastScreen(weatherUIState = data,
                 isSyncing = false,
-//                speedUnit = "",
-//                temperatureUnit = "",
-//                distanceUnit = "",
                 onNavigateToManageLocations = {},
                 onNavigateToSettings = {},
                 onRefresh = {})
@@ -549,7 +535,6 @@ fun CurrentWeatherPreview() {
             temp = "5",
             temperatureUnit = "C",
             feelsLikeTemp = "3",
-            icon = "02d",
             condition = "Snow"
         )
     }

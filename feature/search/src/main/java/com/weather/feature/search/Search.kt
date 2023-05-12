@@ -57,10 +57,8 @@ fun SearchScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 24.dp),
-//                .padding(top = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            //        Text(text = "selected Item is: $selectedItem", color = Color.Red) //debug
             SearchScreen(
                 searchUIState = searchUIState,
                 searchInputText = inputText,
@@ -76,7 +74,6 @@ fun SearchScreen(
                     inputText = ""
                 },
                 selectedSearchItem = { searchItem ->
-//                    searchViewModel.saveSearchWeatherItem(searchItem)
                     searchViewModel.syncWeather(searchItem)
                     onSelectSearchItem()
                 }
@@ -311,7 +308,7 @@ private fun SearchPreview() {
         Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
             SearchScreen(
                 searchUIState = SavableSearchState(GeoSearchItem.empty,true),
-                searchInputText = "jj",
+                searchInputText = "text input",
                 popularCities = cityList,
                 popularCityIndex = {},
                 onClearSearch = {},

@@ -79,18 +79,6 @@ class SearchViewModel @Inject constructor(
             syncStatus.syncWithCoordinate(coordinate)
         }
     }
-    fun saveSearchWeatherItem(searchItem: GeoSearchItem) {
-        val coordinates = Coordinate(
-            searchItem.name,
-            searchItem.lat.toString(),
-            searchItem.lon.toString()
-        )
-        viewModelScope.launch {
-            weatherRepository.syncWeather(
-                coordinates
-            )
-        }
-    }
 }
 
 sealed interface SearchUIState {

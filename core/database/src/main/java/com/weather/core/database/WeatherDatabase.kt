@@ -23,25 +23,7 @@ abstract class WeatherDatabase : RoomDatabase() {
 
     abstract val dao: WeatherDao
 
-    //injected in dagger hilt
-    /* companion object {
-         @Volatile
-         private var INSTANCE: WeatherDatabase? = null
+     companion object {
 
-         fun getInstance(context: Context): WeatherDatabase {
-             synchronized(this) {
-                 var instance = INSTANCE
-                 if (instance == null) {
-                     instance = Room.databaseBuilder(
-                         context.applicationContext,
-                         WeatherDatabase::class.java,
-                         "weather_database"
-                     ).fallbackToDestructiveMigration()
-                         .build()
-                     INSTANCE = instance
-                 }
-                 return instance
-             }
-         }
-     }*/
+     }
 }

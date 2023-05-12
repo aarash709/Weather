@@ -21,7 +21,7 @@ class LocalUserPreferences @Inject constructor(
         }
     }
 
-    fun getTempratureUnitSetting(): Flow<String?> {
+    fun getTemperatureUnitSetting(): Flow<String?> {
         return datastore.data.map { preferences ->
             preferences[TEMP_UNIT_SETTING_KEY]
         }
@@ -54,7 +54,6 @@ class LocalUserPreferences @Inject constructor(
 }
 
 object DataStoreKeys {
-    const val EMPTY_STRING = ""
     val FAVORITE_CITY_COORDINATE_STRING_KEY = stringPreferencesKey("favoriteCityCoordinate")
     val TEMP_UNIT_SETTING_KEY = stringPreferencesKey("settingsTempUnit")
     val WIND_SPEED_UNIT_SETTING_KEY = stringPreferencesKey("settingsWindSpeed")

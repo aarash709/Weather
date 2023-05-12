@@ -89,17 +89,6 @@ sealed class Screen(val route: String) {
     object Welcome : Screen(route = "welcome")
 }
 
-
-//object Graph {
-//    const val Home = "homeGraph?cityName={cityName}"
-//    const val Search = "searchGraph"
-//    const val GetStarted = "getStartedGraph" // this is show when user has no data yet
-//    const val Root = "rootGraph"// this is show when user has no data yet
-//    fun passHomeArgument(cityName: String):String{
-//        return Home.replace("{cityName}",cityName)
-//    }
-//}
-
 sealed class Graph(val graph: String) {
     object Forecast : Graph("forecast") {
         val ForecastScreen = "forecast?cityName={cityName}"
