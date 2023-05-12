@@ -12,7 +12,7 @@ data class NetworkDaily(
     val moon_phase: Double,
     val moonrise: Int,
     val moonset: Int,
-    val pop: Double, //was Int
+    val pop: Double,
     val pressure: Int,
     val sunrise: Int,
     val sunset: Int,

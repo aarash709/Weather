@@ -28,7 +28,6 @@ data class Current(
     val uvi: Double,
     val visibility: Int,
     val wind_deg: Int,
-//    val wind_gust: Double,
     val wind_speed: Double,
     val weather: List<Weather>,
 )
@@ -37,20 +36,17 @@ data class Daily(
     val clouds: Int,
     val dew_point: Double,
     val dt: String,
-//    val feels_like: FeelsLike,
     val humidity: Int,
     val moon_phase: Double,
     val moonrise: Int,
     val moonset: Int,
-    val pop: Double, //was Int
+    val pop: Double,
     val pressure: Int,
     val sunrise: Int,
     val sunset: Int,
-//    val temp: Temp,
     val dayTemp: Double,
     val nightTemp: Double,
     val uvi: Double,
-//    val weather: List<Weather>,
     val id: Int,
     val main: String,
     val description: String,
@@ -104,12 +100,11 @@ data class Hourly(
     val dt: String,
     val feels_like: Double,
     val humidity: Int,
-    val pop: Double, //Was Int should be double
+    val pop: Double,
     val pressure: Int,
     val temp: Double,
     val uvi: Double,
     val visibility: Int,
-//    val weather: List<Weather>,
     val id: Int,
     val main: String,
     val description: String,
@@ -148,11 +143,6 @@ data class FeelsLike(
     val eve: Double,
     val morn: Double,
     val night: Double,
-)
-
-data class Minutely(
-    val dt: Int,
-    val precipitation: Int,
 )
 
 data class Temp(

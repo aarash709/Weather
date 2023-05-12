@@ -9,7 +9,7 @@ data class NetworkHourly(
     val dt: Int,
     val feels_like: Double,
     val humidity: Int,
-    val pop: Double, //Was Int should be double
+    val pop: Double,
     val pressure: Int,
     val temp: Double,
     val uvi: Double,

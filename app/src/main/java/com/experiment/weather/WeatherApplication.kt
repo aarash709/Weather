@@ -19,7 +19,6 @@ class WeatherApplication: Application(), Configuration.Provider {
     lateinit var customWorkerFactory: CustomWorkerFactory
     override fun onCreate() {
         super.onCreate()
-//        WindowCompat.setDecorFitsSystemWindows(window, false)
         Timber.plant(Timber.DebugTree())
         Timber.e("this is a timber test in application class")
     }

@@ -9,7 +9,6 @@ data class NetworkOneCall(
     val lon: Double,
     val timezone: String,
     val timezone_offset: Int,
-//    val minutely: List<MinutelyDto>,
     val daily: List<NetworkDaily>,
     val hourly: List<NetworkHourly>,
 )

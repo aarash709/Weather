@@ -16,25 +16,15 @@ import kotlinx.coroutines.FlowPreview
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-//        private val viewModel: MainPageViewModel by lazy {
-//        ViewModelProvider(this).get(MainPageViewModel::class.java)
-//    }
-//    private lateinit var binding: ActivityMainBinding
-//    val vm: TestViewModel by viewModels()
-
     @OptIn(ExperimentalMaterialApi::class, ExperimentalCoroutinesApi::class)
     @FlowPreview
     @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        binding = ActivityMainBinding.inflate(layoutInflater)
-//        lifecycleScope.launch {
-//            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-//
-//            }
-//        }
+
         installSplashScreen()
         WindowCompat.setDecorFitsSystemWindows(window,false)
+
         setContent {
             WeatherApp()
         }

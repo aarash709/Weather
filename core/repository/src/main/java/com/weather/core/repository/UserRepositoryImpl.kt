@@ -11,7 +11,6 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import timber.log.Timber
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
@@ -28,7 +27,7 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override fun getTemperatureUnitSetting(): Flow<TemperatureUnits?> {
-        return userPreferences.getTempratureUnitSetting().map { stringTemp ->
+        return userPreferences.getTemperatureUnitSetting().map { stringTemp ->
             if (stringTemp != null) {
                 Json.decodeFromString<TemperatureUnits>(stringTemp)
             } else {
@@ -49,7 +48,6 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun setFavoriteCityCoordinate(value: String) {
         withContext(Dispatchers.IO) {
-//        val stringCoordinate = Json.encodeToString(value)
             userPreferences.setFavoriteCity(value)
         }
     }

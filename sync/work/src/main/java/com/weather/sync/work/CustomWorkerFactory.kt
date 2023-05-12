@@ -12,6 +12,6 @@ class CustomWorkerFactory @Inject constructor(
 ) : DelegatingWorkerFactory() {
     init {
         addFactory(WeatherWorkerFactory(repository))
-        Timber.e("worker factory")
+        Timber.e("${CustomWorkerFactory::class.simpleName} worker factory")
     }
 }

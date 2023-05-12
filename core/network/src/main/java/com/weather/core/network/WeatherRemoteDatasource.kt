@@ -25,7 +25,6 @@ class WeatherRemoteDatasource(
                 exclude = exclude,
                 API_KEY
             )
-//            Timber.e(data.timezone)
             Resource.Success(data = data)
         } catch (e: IOException) {
             Timber.e("IO exeption ${e.message}")

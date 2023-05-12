@@ -36,7 +36,6 @@ fun NetworkCurrent.toCurrentEntity(cityName: String): CurrentEntity {
         uvi = uvi,
         visibility = visibility,
         wind_deg = wind_deg,
-//        wind_gust = wind_gust,
         wind_speed = wind_speed,
         cityName = cityName
     )
@@ -67,7 +66,6 @@ fun NetworkCurrent.toEntity(cityName: String): CurrentEntity {
         uvi,
         visibility,
         wind_deg,
-//        wind_gust,
         wind_speed
     )
 }
