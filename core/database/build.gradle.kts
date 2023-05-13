@@ -34,6 +34,8 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.kaptCompiler)
 
+    implementation(libs.androidx.lifecycleRuntimeKtx) //fixed duplicate class error while running android test.
+
     implementation(libs.androidx.roomCommon)
     implementation(libs.androidx.roomKtx)
     annotationProcessor(libs.androidx.roomCompiler)
