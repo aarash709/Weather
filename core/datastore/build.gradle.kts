@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.eweather.core.datastore"
+    namespace = "com.weather.core.datastore"
     compileSdk = 33
 
     defaultConfig {
@@ -31,12 +31,16 @@ android {
 dependencies {
 
     implementation(libs.androidx.datastore)
+    implementation(libs.androidx.lifecycleRuntimeKtx) //fixed duplicate class error while running android test.
 
-    implementation(libs.hilt.navigationCompose)
     implementation(libs.hilt.android)
     kapt(libs.hilt.kaptCompiler)
 
     testImplementation("junit:junit:4.13.2")
+    testImplementation(libs.kotlix.coroutinesTest)
+    androidTestImplementation(libs.kotlix.coroutinesTest)
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    testImplementation("androidx.test:runner:1.5.2")
+    androidTestImplementation("androidx.test:runner:1.5.2")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 }

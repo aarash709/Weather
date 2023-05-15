@@ -34,7 +34,8 @@ dependencies {
 
     implementation(project(":core:model"))
 
-    implementation(libs.hilt.navigationCompose)
+    implementation(libs.androidx.lifecycleRuntimeKtx) //fixed duplicate class error while running android test.
+
     implementation(libs.hilt.android)
     kapt(libs.hilt.kaptCompiler)
     //implementation("com.squareup.retrofit2:retrofit:$retrofit_version")
