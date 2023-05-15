@@ -86,11 +86,7 @@ dependencies {
     implementation(libs.androidx.appCompat)
     implementation(libs.androidx.splashScreen)
 
-    //Arrow
-//    implementation platform("io.arrow-kt:arrow-stack:$arrow_version")
-//    implementation "io.arrow-kt:arrow-core"
-//    implementation "io.arrow-kt:arrow-fx-coroutines"
-//    kapt "io.arrow-kt:arrow-meta:1.6.0" //bom file version is not set correctly
+
     implementation("com.google.android.material:material:1.8.0")
     implementation(libs.kotlix.serialization)
 
