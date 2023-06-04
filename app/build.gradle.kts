@@ -43,20 +43,13 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
         //useIR = true
     }
-//    buildFeatures {
-//        compose = true
-//        dataBinding = false
-//    }
-//    composeOptions {
-//        kotlinCompilerExtensionVersion = libs.versions.androidxComposeCompiler.get()
-//    }
     packagingOptions {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
