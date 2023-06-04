@@ -4,7 +4,14 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
     }
-
+}
+pluginManagement{
+    includeBuild("build-logic")
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
 }
 rootProject.name = "Weather"
 include(":app")

@@ -1,6 +1,7 @@
 [versions]
-kotlinPluginVersion = "1.8.10"
-composeBom = "2023.05.00"
+kotlinVersion = "1.8.10"
+androidGradlePlugin = "7.4.2"
+androidxComposeBom = "2023.05.00"
 androidxCompose = "1.4.3"
 androidxComposeCompiler = "1.4.4"
 androidxCore = "1.10.1"
@@ -27,7 +28,7 @@ ktor = "2.3.0"
 gradleSecret = "2.0.1"
 
 [libraries]
-compose-bom = { group = "androidx.compose", name = "compose_Bom", version.ref = "composeBom" }
+compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }
 compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "androidxCompose" }
 compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "androidxCompose" }
 compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "androidxCompose" }
@@ -81,6 +82,9 @@ ktor-LoggingClient = { group = "io.ktor", name = "ktor-client-logging", version.
 ktor-ciaoClient = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor" }
 ktor-okhttpClient = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 
+#build-logic dependecies
+android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
+kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlinVersion" }
 
 [bundles]
 compose = [
