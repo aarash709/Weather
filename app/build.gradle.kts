@@ -1,5 +1,5 @@
 plugins {
-    id ("com.android.application")
+    id ("compose.application")
     id ("kotlin-android")
     id ("dagger.hilt.android.plugin")
     id ("org.jetbrains.kotlin.plugin.serialization")
@@ -50,13 +50,13 @@ android {
         jvmTarget = "11"
         //useIR = true
     }
-    buildFeatures {
-        compose = true
-        dataBinding = false
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.androidxComposeCompiler.get()
-    }
+//    buildFeatures {
+//        compose = true
+//        dataBinding = false
+//    }
+//    composeOptions {
+//        kotlinCompilerExtensionVersion = libs.versions.androidxComposeCompiler.get()
+//    }
     packagingOptions {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"

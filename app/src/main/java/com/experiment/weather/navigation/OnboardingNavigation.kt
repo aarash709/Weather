@@ -10,15 +10,15 @@ import androidx.navigation.compose.composable
 import kotlinx.coroutines.launch
 
 const val onboardNavigationRoute = "onboardRoute"
-fun NavController.toOnboard(navOptions: NavOptions? = null) {
-    navigate(route = onboardNavigationRoute, navOptions = navOptions)
-}
-
-fun NavGraphBuilder.onboardScreen(navigateToSearch: () -> Unit) {
-    composable(onboardNavigationRoute) {
-        val scope = rememberCoroutineScope()
-        LaunchedEffect(Unit){
-            launch { navigateToSearch() }
-        }
-    }
-}
+//fun NavController.toOnboard(navOptions: NavOptions? = null) {
+//    navigate(route = onboardNavigationRoute, navOptions = navOptions)
+//}
+//
+//fun NavGraphBuilder.onboardScreen(navigateToSearch: () -> Unit) {
+//    composable(onboardNavigationRoute) {
+//        val scope = rememberCoroutineScope()
+//        LaunchedEffect(Unit){
+//            launch { navigateToSearch() }
+//        }
+//    }
+//}

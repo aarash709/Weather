@@ -1,18 +1,18 @@
-package com.experiment.buildlogic.conventionplugins
-
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
 
 class ComposeConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
-        target.extensions.getByType<ApplicationExtension>()
-
+        with(target){
+            pluginManager.apply("com.android.application")
+            val applicationExtension = extensions.getByType<ApplicationExtension>()
+            composeBuildConfiguration(applicationExtension)
+        }
     }
 }
 
@@ -27,9 +27,9 @@ internal fun Project.composeBuildConfiguration(
         composeOptions{
             kotlinCompilerExtensionVersion = libs.findVersion("androidxComposeCompiler").get().toString()
         }
-
+//
         dependencies {
-            val composeBom = libs.findLibrary("compose-bom")
+            val composeBom = libs.findLibrary("compose-bom").get()
             add("implementation",platform(composeBom))
             add("androidTestImplementation",platform(composeBom))
         }
