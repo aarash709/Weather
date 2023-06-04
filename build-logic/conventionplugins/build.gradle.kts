@@ -1,7 +1,5 @@
 plugins {
     `kotlin-dsl`
-//    id("java-library")
-//    id("org.jetbrains.kotlin.jvm")
 }
 
 java {
@@ -15,9 +13,13 @@ dependencies{
 }
 gradlePlugin{
     plugins {
-        register("applicationCompose"){
+        register("compose-application"){
             id = "compose.application"
-            implementationClass = "ComposeConventionPlugin"
+            implementationClass = "ComposeApplicationConventionPlugin"
+        }
+        register("compose-library"){
+            id = "compose.library"
+            implementationClass = "ComposeLibraryConventionPlugin"
         }
     }
 }
