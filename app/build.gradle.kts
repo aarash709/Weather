@@ -80,7 +80,7 @@ dependencies {
     implementation(libs.androidx.splashScreen)
 
 
-    implementation("com.google.android.material:material:1.8.0")
+    implementation(libs.material)
     implementation(libs.kotlix.serialization)
 
     //implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutine_google_version"
@@ -124,8 +124,8 @@ dependencies {
     kapt(libs.androidx.hiltKaptCompiler)
 
     //Testing
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.3.3")
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.test.junit)
+    androidTestImplementation(libs.androidx.test.espressoCore)
+    androidTestImplementation(libs.compose.ui.test)
 }
