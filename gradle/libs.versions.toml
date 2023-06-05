@@ -1,13 +1,13 @@
 [versions]
-kotlinVersion = "1.8.10"
+kotlin = "1.8.10"
+kotlinxSerialization = "1.5.0"
+kotlinxCoroutines = "1.6.4"
 androidGradlePlugin = "7.4.2"
 androidxComposeBom = "2023.05.00"
 androidxCompose = "1.4.3"
 androidxComposeCompiler = "1.4.4"
 androidxCore = "1.10.1"
 androidxAppcompat = "1.6.1"
-kotlinxSerialization = "1.5.0"
-kotlinxCoroutines = "1.6.4"
 andoidxWindow = "1.0.0"
 andoidxWork = "2.8.1"
 andoidxNavigation = "2.6.0-rc01"
@@ -17,6 +17,9 @@ androidxHiltWork = "1.0.0"
 androidxRoom = "2.5.1"
 androidxSplashScreen = "1.0.1"
 andoidxDatastorePreferences = "1.0.0"
+androidxTestJunit = "1.1.5"
+androidxEspresso = "3.5.1"
+material = "1.9.0"
 accompanist = "0.30.1"
 hiltNavigationCompose = "1.0.0"
 hiltAndroid = "2.44.2"
@@ -26,14 +29,17 @@ moshi = "1.14.0"
 coil = "2.2.2"
 ktor = "2.3.0"
 gradleSecret = "2.0.1"
+junit = "4.13.2"
 
 [libraries]
+material = {group = "com.google.android.material", name = "material", version.ref = "material"}
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }
 compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "androidxCompose" }
 compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "androidxCompose" }
 compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "androidxCompose" }
 compose-ui-toolingPreview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "androidxCompose" }
 compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "androidxCompose" }
+compose-ui-test = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "androidxCompose" }
 compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "androidxCompose" }
 compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "androidxCompose" }
 compose-material = { group = "androidx.compose.material", name = "material", version.ref = "androidxCompose" }
@@ -57,6 +63,8 @@ androidx-roomCommon = { group = "androidx.room", name = "room-common", version.r
 androidx-roomKtx = { group = "androidx.room", name = "room-ktx", version.ref = "androidxRoom" }
 androidx-roomCompiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidxRoom" }
 androidx-roomRuntime = { group = "androidx.room", name = "room-runtime", version.ref = "androidxRoom" }
+androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestJunit" }
+androidx-test-espressoCore = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidxEspresso" }
 kotlix-Serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 kotlix-CoroutinesCore = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 kotlix-CoroutinesTest = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
@@ -81,10 +89,11 @@ ktor-androidClient = { group = "io.ktor", name = "ktor-client-android", version.
 ktor-LoggingClient = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
 ktor-ciaoClient = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor" }
 ktor-okhttpClient = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
 
 #build-logic dependecies
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
-kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlinVersion" }
+kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 
 [bundles]
 compose = [
@@ -109,3 +118,7 @@ ktor = [
 ]
 [plugins]
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "gradleSecret" }
+andoirdGradle = {id = "com.android.application", version.ref = "androidGradlePlugin"}
+kotlinSerialization = {id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
+kotlinGradle = {id = "org.jetbrains.kotlin.android", version.ref = "kotlin"}
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }

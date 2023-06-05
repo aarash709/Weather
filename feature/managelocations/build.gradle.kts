@@ -39,15 +39,8 @@ dependencies {
     implementation(project(":feature:search")) //needs removal
     implementation(project(":core:model"))
 
-    implementation(libs.compose.foundation)
-    implementation(libs.compose.runtime)
     implementation(libs.compose.runtime.livedata)
-    implementation(libs.compose.material)
-    implementation(libs.compose.material.iconsExtended)
-    implementation(libs.compose.ui.tooling)
-    implementation(libs.compose.ui)
     implementation(libs.compose.animation)
-    debugImplementation(libs.compose.ui.tooling)
 
     implementation(libs.androidx.navigationCompose)
     implementation(libs.accompanist.navigationAnimation)
@@ -65,8 +58,8 @@ dependencies {
     implementation(libs.androidx.datastore)
     implementation(libs.timberLogger)
 
-    testImplementation("junit:junit:4.13.2")
+    testImplementation(libs.junit)
     testImplementation(libs.kotlix.coroutinesTest)
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation(libs.androidx.test.junit)
+    androidTestImplementation(libs.androidx.test.espressoCore)
 }

@@ -37,15 +37,14 @@ android {
 
 dependencies {
 
+    api(libs.compose.foundation)
+    api(libs.compose.runtime)
+    api(libs.compose.material)
+    api(libs.compose.material.iconsExtended)
+    api(libs.compose.ui.toolingPreview)
+    debugApi(libs.compose.ui.tooling)
 
-    implementation(libs.compose.foundation)
-    implementation(libs.compose.runtime)
-    implementation(libs.compose.material)
-    implementation(libs.compose.material.iconsExtended)
-    implementation(libs.compose.ui.tooling)
-    debugImplementation(libs.compose.ui.tooling)
-
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.test.junit)
+    androidTestImplementation(libs.androidx.test.espressoCore)
 }
