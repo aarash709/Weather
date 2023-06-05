@@ -87,14 +87,8 @@ dependencies {
     implementation(libs.kotlix.coroutinesCore)
     implementation(libs.kotlix.coroutinesAndroid)
 
-    implementation(libs.compose.foundation)
-    implementation(libs.compose.runtime)
     implementation(libs.compose.runtime.livedata)
     implementation(libs.compose.material)
-    implementation(libs.compose.material.iconsExtended)
-    implementation(libs.compose.ui.tooling)
-    implementation(libs.compose.ui)
-    debugImplementation(libs.compose.ui.tooling)
 
     implementation(libs.androidx.window)
     implementation(libs.accompanist.systemUIController)

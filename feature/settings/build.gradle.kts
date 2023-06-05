@@ -37,15 +37,8 @@ dependencies {
     implementation(project(":sync:work"))
 
     //Compose
-    implementation(libs.compose.foundation)
-    implementation(libs.compose.runtime)
     implementation(libs.compose.runtime.livedata)
-    implementation(libs.compose.material)
-    implementation(libs.compose.material.iconsExtended)
-    implementation(libs.compose.ui.tooling)
-    implementation(libs.compose.ui)
     implementation(libs.compose.animation)
-    debugImplementation(libs.compose.ui.tooling)
 
     implementation(libs.androidx.navigationCompose)
     implementation(libs.accompanist.navigationAnimation)
