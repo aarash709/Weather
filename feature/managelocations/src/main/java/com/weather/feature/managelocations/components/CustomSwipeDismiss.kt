@@ -74,7 +74,7 @@ fun CustomSwipeDismiss(
     }
     LaunchedEffect(key1 = allowedToDismissDirection) {
         allowedToDismissDirection?.let {
-            hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+            hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
 //      localView.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
         }
     }

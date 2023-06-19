@@ -75,7 +75,7 @@ class ManageLocationsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             weatherRepository.deleteWeatherByCityName(cityName = cityName)
             hapticFeedback.cancel()
-            hapticFeedback.vibrate(20)
+            hapticFeedback.vibrate(60)
         }
 
     }
