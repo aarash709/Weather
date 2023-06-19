@@ -1,6 +1,5 @@
 package com.weather.feature.managelocations
 
-import android.graphics.Color
 import androidx.compose.animation.*
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloat
@@ -22,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color.Companion
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -113,15 +111,10 @@ fun DismissBackground(
     state: DismissState,
     dismissDirection: DismissDirection?,
 ) = BoxWithConstraints(modifier = Modifier) {
-    val canDismiss by remember {
-        mutableStateOf(dismissDirection)
-    }
-    val direction by remember {
-        mutableStateOf(state.dismissDirection)
-    }
+
     val transition =
-        updateTransition(targetState = direction != null, label = "Dismiss Transition")
-    val iconScale by transition.animateFloat(
+        updateTransition(targetState = dismissDirection != null, label = "Dismiss Transition")
+    val iconTragetScale by transition.animateFloat(
         transitionSpec = {
             spring(
                 dampingRatio = Spring.DampingRatioHighBouncy,
@@ -131,9 +124,24 @@ fun DismissBackground(
         label = "icon scale"
     ) {
         if (it)
-            1.25f
-        else
-            1f
+        1.3f
+    else
+        1.0f
+
+    }
+    val iconDefaultScale by transition.animateFloat(
+        transitionSpec = {
+            spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessMedium
+            )
+        },
+        label = "icon scale"
+    ) {
+        if (it)
+        1.0f
+    else
+        0.8f
 
     }
     val iconColor by animateColorAsState(
@@ -168,7 +176,7 @@ fun DismissBackground(
                 .clip(RoundedCornerShape(16.dp))
                 .background(
 //                    backGroundColor
-                Transparent
+                    Transparent
                 )
         ) {
             Box(
@@ -185,9 +193,9 @@ fun DismissBackground(
                         Icon(
                             imageVector = Icons.Default.Delete,
                             modifier = Modifier.scale(
-                                scale = iconScale
+                                scale = if (allowedDismiss) iconTragetScale else iconDefaultScale
                             ),
-                            tint = iconColor,
+                            tint = if (allowedDismiss) iconColor else Red,
                             contentDescription = "delete Icon"
                         )
                     }
@@ -196,9 +204,9 @@ fun DismissBackground(
                         Icon(
                             imageVector = Icons.Default.Favorite,
                             modifier = Modifier.scale(
-                                scale = iconScale
+                                scale = if (allowedDismiss) iconTragetScale else iconDefaultScale
                             ),
-                            tint = iconColor,
+                            tint = if (allowedDismiss) iconColor else Yellow,
                             contentDescription = "favorite Icon"
                         )
                     }
