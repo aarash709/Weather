@@ -47,7 +47,6 @@ fun ManageLocations(
             onNavigateToSearch = { onNavigateToSearch() },
             onBackPressed = onBackPressed,
             onItemSelected = { coordinate ->
-                viewModel.saveFavoriteCityCoordinate(coordinate)
                 onItemSelected(coordinate.cityName.toString())
             },
             onDeleteItem = { locationData ->
@@ -60,7 +59,7 @@ fun ManageLocations(
                     latitude = locationData.latitude,
                     longitude = locationData.longitude
                 )
-                viewModel.saveFavoriteCityCoordinate(coordinate)
+                viewModel.saveFavoriteCityCoordinate(coordinate = coordinate, context = context)
             }
         )
     }

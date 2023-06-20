@@ -58,10 +58,13 @@ class ManageLocationsViewModel @Inject constructor(
             initialValue = LocationsUIState.Loading
         )
 
-    fun saveFavoriteCityCoordinate(coordinate: Coordinate) {
+    fun saveFavoriteCityCoordinate(coordinate: Coordinate, context: Context) {
+        val hapticFeedback = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         viewModelScope.launch {
             val coordinateString = Json.encodeToString(coordinate)
             userRepository.setFavoriteCityCoordinate(coordinateString)
+            hapticFeedback.cancel()
+            hapticFeedback.vibrate(60)
         }
     }
 

@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -112,9 +113,9 @@ fun DismissBackground(
     dismissDirection: DismissDirection?,
 ) = BoxWithConstraints(modifier = Modifier) {
 
-    val transition =
+    val dismissTransition =
         updateTransition(targetState = dismissDirection != null, label = "Dismiss Transition")
-    val iconTragetScale by transition.animateFloat(
+    val iconTargetScale by dismissTransition.animateFloat(
         transitionSpec = {
             spring(
                 dampingRatio = Spring.DampingRatioHighBouncy,
@@ -122,43 +123,29 @@ fun DismissBackground(
             )
         },
         label = "icon scale"
-    ) {
-        if (it)
-        1.3f
-    else
-        1.0f
-
-    }
-    val iconDefaultScale by transition.animateFloat(
-        transitionSpec = {
-            spring(
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-                stiffness = Spring.StiffnessMedium
-            )
-        },
-        label = "icon scale"
-    ) {
-        if (it)
-        1.0f
-    else
-        0.8f
+    ) { isDismissed ->
+        if (isDismissed)
+            1.3f
+        else
+            1.0f
 
     }
     val iconColor by animateColorAsState(
-        targetValue =
-        when (dismissDirection) {
-            DismissDirection.StartToEnd -> Yellow
-            DismissDirection.EndToStart -> Red
+        targetValue = when (dismissDirection) {
+            DismissDirection.StartToEnd,
+            DismissDirection.EndToStart,
+            -> Black
+
             null -> Transparent
         }
     )
     val backGroundColor by animateColorAsState(
-        targetValue =
-        when (dismissDirection) {
+        targetValue = when (dismissDirection) {
             DismissDirection.StartToEnd -> Yellow
             DismissDirection.EndToStart -> Red
-            null -> Transparent
-        }
+            null -> MaterialTheme.colors.surface
+        },
+        animationSpec = tween(200)
     )
     AnimatedContent(
         targetState = Pair(state.dismissDirection, dismissDirection != null),
@@ -175,8 +162,7 @@ fun DismissBackground(
                 .fillMaxSize()
                 .clip(RoundedCornerShape(16.dp))
                 .background(
-//                    backGroundColor
-                    Transparent
+                    backGroundColor
                 )
         ) {
             Box(
@@ -193,7 +179,7 @@ fun DismissBackground(
                         Icon(
                             imageVector = Icons.Default.Delete,
                             modifier = Modifier.scale(
-                                scale = if (allowedDismiss) iconTragetScale else iconDefaultScale
+                                scale = iconTargetScale
                             ),
                             tint = if (allowedDismiss) iconColor else Red,
                             contentDescription = "delete Icon"
@@ -204,7 +190,7 @@ fun DismissBackground(
                         Icon(
                             imageVector = Icons.Default.Favorite,
                             modifier = Modifier.scale(
-                                scale = if (allowedDismiss) iconTragetScale else iconDefaultScale
+                                scale = iconTargetScale
                             ),
                             tint = if (allowedDismiss) iconColor else Yellow,
                             contentDescription = "favorite Icon"
@@ -213,12 +199,7 @@ fun DismissBackground(
 
                     null -> Spacer(modifier = Modifier.width(0.dp))
                 }
-
             }
-
-
         }
     }
-
-
 }
