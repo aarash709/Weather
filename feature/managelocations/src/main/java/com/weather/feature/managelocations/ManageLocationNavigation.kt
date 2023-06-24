@@ -1,6 +1,6 @@
 package com.weather.feature.managelocations
 
-import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -11,8 +11,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.google.accompanist.navigation.animation.composable
-import com.weather.feature.search.SearchScreen
 import com.weather.feature.search.searchRoute
 import kotlinx.coroutines.FlowPreview
 
@@ -37,7 +35,7 @@ fun NavGraphBuilder.manageLocationsScreen(
             when (initialState.destination.route) {
                 searchRoute -> fadeIn(tween(400))
                 else -> slideIntoContainer(
-                    AnimatedContentScope.SlideDirection.Right,
+                    AnimatedContentTransitionScope.SlideDirection.Right,
                     tween(400)
                 )
             }
@@ -46,7 +44,7 @@ fun NavGraphBuilder.manageLocationsScreen(
             when (targetState.destination.route) {
                 searchRoute -> fadeOut(tween(400))
                 else -> slideOutOfContainer(
-                    AnimatedContentScope.SlideDirection.Left,
+                    AnimatedContentTransitionScope.SlideDirection.Left,
                     tween(400)
                 )
             }

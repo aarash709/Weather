@@ -6,12 +6,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavGraph
+import androidx.navigation.NavHost
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
 //import com.experiment.weather.presentation.manageLocationsRoute
 //import com.experiment.weather.presentation.manageLocationsScreen
 //import com.experiment.weather.presentation.toManageLocations
-import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.weather.feature.managelocations.manageLocationsRoute
 import com.weather.feature.managelocations.manageLocationsScreen
 import com.weather.feature.managelocations.toManageLocations
@@ -33,13 +35,12 @@ import kotlinx.coroutines.FlowPreview
 fun WeatherNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController) {
-    AnimatedNavHost(
+    NavHost(
         navController = navController,
         startDestination = Graph.Forecast.graph,
         modifier = modifier.statusBarsPadding()
     ) {
         homeNavGraph(
-            navController,
             navigateToManageLocations = {
                 navController.toManageLocations(navOptions {
                 })

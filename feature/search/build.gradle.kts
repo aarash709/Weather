@@ -40,7 +40,6 @@ dependencies {
     implementation(libs.compose.animation)
 
     implementation(libs.androidx.navigationCompose)
-    implementation(libs.accompanist.navigationAnimation)
 
     implementation(libs.accompanist.flowLayout)
     implementation(libs.accompanist.placeholder)

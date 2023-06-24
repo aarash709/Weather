@@ -10,7 +10,7 @@ androidxCore = "1.10.1"
 androidxAppcompat = "1.6.1"
 andoidxWindow = "1.0.0"
 andoidxWork = "2.8.1"
-andoidxNavigation = "2.6.0-rc01"
+andoidxNavigation = "2.7.0-beta01"
 andoidxLifecycle = "2.6.1"
 androidxActivityCompose = "1.7.1"
 androidxHiltWork = "1.0.0"
@@ -69,7 +69,6 @@ kotlix-Serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serial
 kotlix-CoroutinesCore = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 kotlix-CoroutinesTest = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 kotlix-CoroutinesAndroid = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
-accompanist-NavigationAnimation = { group = "com.google.accompanist", name = "accompanist-navigation-animation", version.ref = "accompanist" }
 accompanist-FlowLayout = { group = "com.google.accompanist", name = "accompanist-flowlayout", version.ref = "accompanist" }
 accompanist-placeholder = { group = "com.google.accompanist", name = "accompanist-placeholder-material", version.ref = "accompanist" }
 accompanist-SystemUIController = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist" }

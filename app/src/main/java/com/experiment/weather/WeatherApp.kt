@@ -20,8 +20,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 import com.experiment.weather.navigation.WeatherNavHost
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.weather.core.design.theme.WeatherTheme
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -35,7 +35,7 @@ import kotlinx.coroutines.FlowPreview
 @Composable
 fun WeatherApp() {
     WeatherTheme {
-        val navController = rememberAnimatedNavController()
+        val navController = rememberNavController()
         val systemUIColors = rememberSystemUiController()
         val systemBarColor = MaterialTheme.colors.background
         val darkIcons = !isSystemInDarkTheme()
