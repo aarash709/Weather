@@ -41,7 +41,6 @@ dependencies {
     implementation(libs.compose.animation)
 
     implementation(libs.androidx.navigationCompose)
-    implementation(libs.accompanist.navigationAnimation)
 
     implementation(libs.androidx.lifecycleRuntimeKtx)
     implementation(libs.androidx.lifecycleComposeRuntime)

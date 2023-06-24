@@ -39,7 +39,6 @@ dependencies {
     implementation(libs.compose.animation)
 
     implementation(libs.androidx.navigationCompose)
-    implementation(libs.accompanist.navigationAnimation)
     implementation(libs.accompanist.placeholder)
 
     implementation(libs.kotlix.serialization)
