@@ -61,13 +61,13 @@ fun WeatherApp() {
             snackbarHost = { snackbarState ->
                 SnackbarHost(hostState = snackbarState)
             },
-            backgroundColor = MaterialTheme.colors.background,
-            contentColor = Color.Transparent,
-            content = { contentPadding ->
-                AnimatedBackground(modifier = Modifier.padding(contentPadding),
-                    content = {
-                        WeatherNavHost(navController)
-                    })
+            content = { padding ->
+                Column(modifier = Modifier.padding(padding)) {
+                    WeatherNavHost(
+                        modifier = Modifier,
+                        navController = navController
+                    )
+                }
             }
         )
     }

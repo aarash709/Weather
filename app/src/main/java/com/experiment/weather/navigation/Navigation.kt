@@ -30,11 +30,13 @@ import kotlinx.coroutines.FlowPreview
 @FlowPreview
 @ExperimentalAnimationApi
 @Composable
-fun WeatherNavHost(navController: NavHostController) {
+fun WeatherNavHost(
+    modifier: Modifier = Modifier,
+    navController: NavHostController) {
     AnimatedNavHost(
         navController = navController,
         startDestination = Graph.Forecast.graph,
-        modifier = Modifier.statusBarsPadding()
+        modifier = modifier.statusBarsPadding()
     ) {
         homeNavGraph(
             navController,
