@@ -6,6 +6,7 @@ androidGradlePlugin = "7.4.2"
 androidxComposeBom = "2023.05.01"
 androidxCompose = "1.4.3"
 androidxComposeCompiler = "1.4.4"
+andoidxMaterial3 = "1.1.1"
 androidxCore = "1.10.1"
 androidxAppcompat = "1.6.1"
 andoidxWindow = "1.0.0"
@@ -43,6 +44,8 @@ compose-ui-test = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 compose-runtime = { group = "androidx.compose.runtime", name = "runtime" }
 compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata" }
 compose-material = { group = "androidx.compose.material", name = "material" }
+compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "andoidxMaterial3" }
+compose-material3-windowSizeClass = { group = "androidx.compose.material3", name = "material3-window-size-class", version.ref = "andoidxMaterial3" }
 compose-material-iconsExtended = { group = "androidx.compose.material", name = "material-icons-extended" }
 androidx-CoreKtx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
 androidx-splashScreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidxSplashScreen" }

@@ -38,6 +38,7 @@ dependencies {
     //Compose
     implementation(libs.compose.runtime.livedata)
     implementation(libs.compose.animation)
+    implementation(libs.compose.material3)
 
     implementation(libs.androidx.navigationCompose)
 
