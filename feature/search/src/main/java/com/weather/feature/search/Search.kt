@@ -216,7 +216,8 @@ private fun SearchList(
             SearchItem(
                 modifier = Modifier
                     .placeholder(
-                        showPlaceholder,
+                        visible = showPlaceholder,
+                        shape = RoundedCornerShape(16.dp),
                         highlight = PlaceholderHighlight.shimmer()
                     )
                     .clickable { onSearchItemSelected(searchItemItem) },
@@ -312,7 +313,7 @@ private fun PopularCityItem(
 private fun SearchPreview() {
     WeatherTheme {
         var inputText by remember {
-            mutableStateOf("")
+            mutableStateOf("1")
         }
         Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
             SearchScreen(
