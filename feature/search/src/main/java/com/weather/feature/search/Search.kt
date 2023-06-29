@@ -9,11 +9,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -142,9 +143,10 @@ private fun TopSearchBar(
     onTextChange: (String) -> Unit,
     onClearSearch: () -> Unit,
 ) {
-    val textFieldColors = TextFieldDefaults.textFieldColors(
-        textColor = MaterialTheme.colors.onSurface,
-        backgroundColor = MaterialTheme.colors.surface,
+    val textFieldColors = TextFieldDefaults.colors(
+        focusedTextColor = MaterialTheme.colors.onSurface,
+        focusedContainerColor = MaterialTheme.colors.surface,
+        unfocusedContainerColor = MaterialTheme.colors.surface,
         focusedIndicatorColor = Color.Transparent,
         unfocusedIndicatorColor = Color.Transparent,
         errorIndicatorColor = Color.Transparent,
@@ -166,7 +168,10 @@ private fun TopSearchBar(
             modifier = Modifier
                 .focusRequester(focusRequester)
                 .weight(weight = 1f, fill = true),
-            placeholder = { Text(text = "Search") },
+            placeholder = {
+                    Text(text = "Search",
+                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f))
+            },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,
@@ -180,8 +185,8 @@ private fun TopSearchBar(
                     TextButton(
                         onClick = { onClearSearch() },
                         colors = ButtonDefaults.buttonColors(
-                            contentColor = Color.DarkGray,
-                            backgroundColor = Color.Transparent
+                            containerColor = Color.Transparent,
+                            contentColor = Color.DarkGray
                         )
                     ) {
                         Icon(
@@ -211,7 +216,8 @@ private fun SearchList(
             SearchItem(
                 modifier = Modifier
                     .placeholder(
-                        showPlaceholder,
+                        visible = showPlaceholder,
+                        shape = RoundedCornerShape(16.dp),
                         highlight = PlaceholderHighlight.shimmer()
                     )
                     .clickable { onSearchItemSelected(searchItemItem) },
@@ -284,6 +290,10 @@ private fun PopularCityItem(
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(size = 16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colors.surface,
+            contentColor = MaterialTheme.colors.onSurface.copy(alpha = 0.75f)
+        )
     ) {
         Text(
             text = cityName,
@@ -303,12 +313,12 @@ private fun PopularCityItem(
 private fun SearchPreview() {
     WeatherTheme {
         var inputText by remember {
-            mutableStateOf("input text")
+            mutableStateOf("1")
         }
         Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
             SearchScreen(
-                searchUIState = SavableSearchState(GeoSearchItem.empty,true),
-                searchInputText = "text input",
+                searchUIState = SavableSearchState(GeoSearchItem.empty, true),
+                searchInputText = inputText,
                 popularCities = cityList,
                 popularCityIndex = {},
                 onClearSearch = {},
