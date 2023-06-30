@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
@@ -29,7 +28,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.flowlayout.MainAxisAlignment
+import com.google.accompanist.placeholder.PlaceholderDefaults
 import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.color
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
 import com.weather.core.design.theme.WeatherTheme
@@ -53,7 +54,7 @@ fun SearchScreen(
     LaunchedEffect(key1 = inputText) {
         searchViewModel.setSearchQuery(cityName = inputText)
     }
-    Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
+    Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -111,7 +112,7 @@ fun SearchScreen(
             Text(
                 text = "Popular Cities",
                 modifier = Modifier.padding(top = 24.dp),
-                color = MaterialTheme.colors.onBackground.copy(alpha = 0.5f),
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                 fontSize = 14.sp
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -144,9 +145,9 @@ private fun TopSearchBar(
     onClearSearch: () -> Unit,
 ) {
     val textFieldColors = TextFieldDefaults.colors(
-        focusedTextColor = MaterialTheme.colors.onSurface,
-        focusedContainerColor = MaterialTheme.colors.surface,
-        unfocusedContainerColor = MaterialTheme.colors.surface,
+        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+        focusedContainerColor = MaterialTheme.colorScheme.surface,
+        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
         focusedIndicatorColor = Color.Transparent,
         unfocusedIndicatorColor = Color.Transparent,
         errorIndicatorColor = Color.Transparent,
@@ -170,7 +171,7 @@ private fun TopSearchBar(
                 .weight(weight = 1f, fill = true),
             placeholder = {
                     Text(text = "Search",
-                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f))
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
             },
             leadingIcon = {
                 Icon(
@@ -217,8 +218,13 @@ private fun SearchList(
                 modifier = Modifier
                     .placeholder(
                         visible = showPlaceholder,
+                        color = PlaceholderDefaults.color(
+                            backgroundColor = MaterialTheme.colorScheme.surface,
+                        ),
                         shape = RoundedCornerShape(16.dp),
-                        highlight = PlaceholderHighlight.shimmer()
+                        highlight = PlaceholderHighlight.shimmer(
+
+                        )
                     )
                     .clickable { onSearchItemSelected(searchItemItem) },
                 item = searchItemItem
@@ -234,6 +240,9 @@ private fun SearchItem(
 ) {
     Card(
         modifier = modifier,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
         shape = RoundedCornerShape(16.dp),
     ) {
         Row(
@@ -291,8 +300,8 @@ private fun PopularCityItem(
         modifier = modifier,
         shape = RoundedCornerShape(size = 16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colors.surface,
-            contentColor = MaterialTheme.colors.onSurface.copy(alpha = 0.75f)
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f)
         )
     ) {
         Text(
@@ -313,9 +322,9 @@ private fun PopularCityItem(
 private fun SearchPreview() {
     WeatherTheme {
         var inputText by remember {
-            mutableStateOf("1")
+            mutableStateOf("Tehran")
         }
-        Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
+        Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
             SearchScreen(
                 searchUIState = SavableSearchState(GeoSearchItem.empty, true),
                 searchInputText = inputText,
