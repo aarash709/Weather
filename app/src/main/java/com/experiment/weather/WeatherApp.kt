@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
@@ -37,7 +37,7 @@ fun WeatherApp() {
     WeatherTheme {
         val navController = rememberNavController()
         val systemUIColors = rememberSystemUiController()
-        val systemBarColor = MaterialTheme.colors.background
+        val systemBarColor = MaterialTheme.colorScheme.background
         val darkIcons = !isSystemInDarkTheme()
 
         val snackbarHostState = remember { SnackbarHostState() }
