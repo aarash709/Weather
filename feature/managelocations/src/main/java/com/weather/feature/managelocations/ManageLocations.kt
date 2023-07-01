@@ -8,9 +8,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.WaterDrop
 import androidx.compose.runtime.*
@@ -30,7 +29,6 @@ import com.weather.model.ManageLocationsData
 import kotlin.math.roundToInt
 
 @ExperimentalFoundationApi
-@ExperimentalMaterialApi
 @Composable
 fun ManageLocations(
     viewModel: ManageLocationsViewModel = hiltViewModel(),
@@ -41,7 +39,7 @@ fun ManageLocations(
     //stateful
     val dataState by viewModel.locationsState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
+    Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
         ManageLocations(
             dataState = dataState,
             onNavigateToSearch = { onNavigateToSearch() },
@@ -51,7 +49,7 @@ fun ManageLocations(
             },
             onDeleteItem = { locationData ->
                 val cityName = locationData.locationName
-                viewModel.deleteWeatherByCityName(cityName = cityName,context = context)
+                viewModel.deleteWeatherByCityName(cityName = cityName, context = context)
             },
             onSetFavoriteItem = { locationData ->
                 val coordinate = Coordinate(
@@ -66,7 +64,6 @@ fun ManageLocations(
 }
 
 @ExperimentalFoundationApi
-@ExperimentalMaterialApi
 @Composable
 fun ManageLocations(
     dataState: LocationsUIState,
@@ -110,13 +107,12 @@ fun ManageLocations(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBarCard(onClick: () -> Unit) {
-    Card(
+    Surface(
         onClick = onClick,
         shape = RoundedCornerShape(32.dp),
-        elevation = 0.dp,
     ) {
         Row(
             modifier = Modifier
@@ -127,20 +123,19 @@ fun SearchBarCard(onClick: () -> Unit) {
         ) {
             Icon(
                 imageVector = Icons.Default.Search,
-                tint = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                 contentDescription = "Search Icon"
             )
             Spacer(modifier = Modifier.width(16.dp))
             Text(
                 text = "Search",
-                color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
             )
         }
     }
 }
 
 @ExperimentalFoundationApi
-@ExperimentalMaterialApi
 @Composable
 fun FavoriteLocations(
     dataList: List<ManageLocationsData>,
@@ -173,21 +168,24 @@ fun FavoriteLocations(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SavedLocationItem(
     data: ManageLocationsData,
     onItemSelected: (Coordinate) -> Unit,
 ) {
-    Card(
+    Surface(
+        onClick = { onItemSelected(Coordinate(data.locationName, data.latitude, data.longitude)) },
         modifier = Modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        border = if (data.isFavorite) BorderStroke(
-            width = 1.dp,
-            color = MaterialTheme.colors.primary
-        ) else null,
-        onClick = { onItemSelected(Coordinate(data.locationName, data.latitude, data.longitude)) }
+        border =
+        if (data.isFavorite)
+            BorderStroke(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.primary
+            )
+        else null,
     ) {
         Row(
             modifier = Modifier.padding(vertical = 24.dp, horizontal = 16.dp),
@@ -213,7 +211,8 @@ fun SavedLocationItem(
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
                         text = "Real Feel: ${
-                            data.feelsLike}°",
+                            data.feelsLike
+                        }°",
                         fontSize = 12.sp
                     )
 //                    Text(text = "30°/20°")
@@ -229,7 +228,6 @@ fun SavedLocationItem(
 
 
 @ExperimentalFoundationApi
-@ExperimentalMaterialApi
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun ManageLocationsPreview() {
@@ -254,7 +252,7 @@ fun ManageLocationsPreview() {
         )
     )
     WeatherTheme {
-        Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
+        Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
             ManageLocations(
                 dataState = data,
                 onNavigateToSearch = {},
@@ -270,7 +268,7 @@ fun ManageLocationsPreview() {
 @Composable
 fun TopBarPreview() {
     WeatherTheme {
-        CustomTopBar(text = "text",onBackPressed = {})
+        CustomTopBar(text = "text", onBackPressed = {})
     }
 }
 
