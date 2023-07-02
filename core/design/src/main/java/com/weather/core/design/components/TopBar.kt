@@ -34,7 +34,9 @@ fun CustomTopBar(
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = "Back Icon"
             )
-        })
+        },
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = MaterialTheme.colorScheme.background)
+    )
 }
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
