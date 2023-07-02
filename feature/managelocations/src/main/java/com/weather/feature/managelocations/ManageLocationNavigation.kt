@@ -21,7 +21,6 @@ fun NavController.toManageLocations(navOptions: NavOptions? = null) {
 }
 
 @ExperimentalFoundationApi
-@ExperimentalMaterialApi
 @ExperimentalAnimationApi
 @FlowPreview
 fun NavGraphBuilder.manageLocationsScreen(

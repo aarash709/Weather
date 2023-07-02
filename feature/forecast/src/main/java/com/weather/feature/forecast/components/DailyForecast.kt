@@ -1,10 +1,10 @@
 package com.weather.feature.forecast.components
 
+import android.content.res.Configuration.UI_MODE_NIGHT_NO
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.weather.core.design.theme.WeatherTheme
 import com.weather.model.Daily
 import com.weather.model.DailyPreview
 import kotlin.math.roundToInt
@@ -22,10 +23,9 @@ fun Daily(
     modifier: Modifier = Modifier,
     dailyList: List<DailyPreview>,
 ) {
-    Card(
+    Surface(
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),
-        backgroundColor = MaterialTheme.colors.surface
     ) {
         Column(
             modifier = Modifier,
@@ -34,12 +34,14 @@ fun Daily(
             Text(
                 text = "Daily",
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
+//                color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
             )
             dailyList.forEach { daily ->
-                DailyItem(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp), daily)
+                DailyItem(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp), daily
+                )
             }
         }
     }
@@ -95,17 +97,26 @@ fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview) {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO)
 @Composable
-private fun DailyItemPreview() {
-    DailyItem(daily = DailyPreviewStaticData[0])
+private fun DailyListPreview() {
+    WeatherTheme {
+        Daily(
+            dailyList = DailyPreviewStaticData,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun DailyListPreview() {
-    Daily(dailyList = DailyPreviewStaticData)
+private fun DailyItemPreview() {
+    WeatherTheme {
+        DailyItem(daily = DailyPreviewStaticData[0])
+    }
 }
+
 
 val DailyStaticData = listOf(
     Daily(

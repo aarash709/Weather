@@ -6,7 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,7 +32,7 @@ fun Settings(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = MaterialTheme.colors.background),
+            .background(color = MaterialTheme.colorScheme.background),
     ) {
         Settings(
             settingsState = settingsUIState,
@@ -75,7 +75,8 @@ internal fun Settings(
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "Units", color = MaterialTheme.colors.onBackground.copy(alpha = .5f),
+                    text = "Units",
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = .5f),
                     fontSize = 12.sp
                 )
                 Surface(
@@ -83,8 +84,8 @@ internal fun Settings(
                         .padding(vertical = 4.dp)
                         .fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
-                    color = MaterialTheme.colors.background,
-                    elevation = 0.dp
+                    color = MaterialTheme.colorScheme.background,
+                    shadowElevation = 0.dp
                 ) {
                     var expanded by remember {
                         mutableStateOf(false)
@@ -95,7 +96,7 @@ internal fun Settings(
                             .clickable { expanded = true }
                             .padding(vertical = 8.dp),
                     ) {
-                        Text("Temperature Unit", color = MaterialTheme.colors.onBackground)
+                        Text("Temperature Unit", color = MaterialTheme.colorScheme.onBackground)
                         TemperatureMenu(
                             tempUnit,
                             expanded,
@@ -107,8 +108,8 @@ internal fun Settings(
                     modifier = Modifier
                         .fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
-                    color = MaterialTheme.colors.background,
-                    elevation = 0.dp
+                    color = MaterialTheme.colorScheme.background,
+                    shadowElevation = 0.dp
                 ) {
                     var expanded by remember {
                         mutableStateOf(false)
@@ -119,7 +120,7 @@ internal fun Settings(
                             .clickable { expanded = true }
                             .padding(vertical = 8.dp)
                     ) {
-                        Text("Wind Speed Unit", color = MaterialTheme.colors.onBackground)
+                        Text("Wind Speed Unit", color = MaterialTheme.colorScheme.onBackground)
                         WindSpeedMenu(
                             windUnit = windUnit,
                             expanded = expanded,
@@ -139,19 +140,19 @@ private fun About() {
         Text(
             text = "About",
             modifier = Modifier.padding(top = 16.dp),
-            color = MaterialTheme.colors.onBackground.copy(alpha = .5f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = .5f),
             fontSize = 12.sp
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = "This DEMO app is not a production application and is a work in progress 🚧.",
-            color = MaterialTheme.colors.onBackground.copy(alpha = .5f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = .5f),
             fontSize = 12.sp,
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = "Weather Data from Openweathermap.org",
-            color = MaterialTheme.colors.onBackground.copy(alpha = .5f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = .5f),
             fontSize = 12.sp,
         )
     }
@@ -160,8 +161,8 @@ private fun About() {
 @Composable
 fun SettingItem(
     modifier: Modifier = Modifier,
-    horizontalArrangement :Arrangement.Horizontal = Arrangement.SpaceBetween,
-    verticalAlignment : Alignment.Vertical = Alignment.CenterVertically,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.SpaceBetween,
+    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
     content: @Composable RowScope.() -> Unit,
 ) {
     Row(
@@ -183,7 +184,7 @@ private fun WindSpeedMenu(
     Column {
         Text(
             text = windUnit,
-            color = MaterialTheme.colors.onBackground.copy(alpha = 0.5f)
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
         )
         DropdownMenu(
             expanded = expanded,
@@ -192,32 +193,29 @@ private fun WindSpeedMenu(
             offset = DpOffset(x = 25.dp, y = 4.dp),
         ) {
             DropdownMenuItem(
+                text = { Text(text = "km/h") },
                 onClick = {
                     setWindSpeed(WindSpeedUnits.KM)
                     setExpanded(false)
                 },
                 enabled = true
-            ) {
-                Text(text = "km/h")
-            }
+            )
             DropdownMenuItem(
+                text = { Text(text = "m/s") },
                 onClick = {
                     setWindSpeed(WindSpeedUnits.MS)
                     setExpanded(false)
                 },
                 enabled = true
-            ) {
-                Text(text = "m/s")
-            }
+            )
             DropdownMenuItem(
+                text = { Text(text = "mph") },
                 onClick = {
                     setWindSpeed(WindSpeedUnits.MPH)
                     setExpanded(false)
                 },
                 enabled = true
-            ) {
-                Text(text = "mph")
-            }
+            )
         }
     }
 }
@@ -232,7 +230,7 @@ private fun TemperatureMenu(
     Column {
         Text(
             text = tempUnit,
-            color = MaterialTheme.colors.onBackground.copy(alpha = 0.5f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
         )
         DropdownMenu(
             expanded = expanded,
@@ -241,23 +239,21 @@ private fun TemperatureMenu(
             offset = DpOffset(x = 25.dp, y = 4.dp),
         ) {
             DropdownMenuItem(
+                text = { Text(text = "°C") },
                 onClick = {
                     setTemperature(TemperatureUnits.C)
                     setExpanded(false)
                 },
                 enabled = true
-            ) {
-                Text(text = "°C")
-            }
+            )
             DropdownMenuItem(
+                text = { Text(text = "°F") },
                 onClick = {
                     setTemperature(TemperatureUnits.F)
                     setExpanded(false)
                 },
                 enabled = true
-            ) {
-                Text(text = "°F")
-            }
+            )
         }
     }
 }
@@ -269,7 +265,7 @@ private fun SettingsPreview() {
     WeatherTheme() {
         val temp = TemperatureUnits.F
         val wind = WindSpeedUnits.KM
-        Surface(color = MaterialTheme.colors.background) {
+        Surface(color = MaterialTheme.colorScheme.background) {
             Settings(
                 SettingsUIState.Success(settingsData = SettingsData(wind, temp)),
                 onBackPressed = {}, setTemperature = {}, setWindSpeed = {})

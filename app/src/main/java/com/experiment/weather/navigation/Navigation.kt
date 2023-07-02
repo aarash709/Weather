@@ -27,7 +27,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
 @ExperimentalFoundationApi
-@ExperimentalMaterialApi
 @ExperimentalCoroutinesApi
 @FlowPreview
 @ExperimentalAnimationApi

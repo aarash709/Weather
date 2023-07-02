@@ -6,13 +6,15 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOutCubic
 import androidx.compose.animation.core.InfiniteRepeatableSpec
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.LocalContentAlpha
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -38,11 +40,9 @@ import com.weather.feature.forecast.components.Daily
 import com.weather.feature.forecast.components.HourlyForecast
 import com.weather.model.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlin.jvm.internal.Intrinsics
 import kotlin.math.roundToInt
 
 @ExperimentalCoroutinesApi
-@ExperimentalMaterialApi
 @Composable
 fun WeatherForecastScreen(
     viewModel: ForecastViewModel = hiltViewModel(),
@@ -61,7 +61,7 @@ fun WeatherForecastScreen(
             navigateToOnboard()
         }
     } else {
-        Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
+        Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
             WeatherForecastScreen(
                 weatherUIState = weatherUIState,
                 isSyncing = syncing,
@@ -73,7 +73,7 @@ fun WeatherForecastScreen(
     }
 }
 
-@ExperimentalMaterialApi
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun WeatherForecastScreen(
     weatherUIState: SavableForecastData,
@@ -120,7 +120,7 @@ fun WeatherForecastScreen(
                 .pullRefresh(pullRefreshState),
         ) {
             ForecastTopBar(
-                cityName = weatherUIState.weather.coordinates.name.toString(),
+                cityName = weatherUIState.weather.coordinates.name,
                 showPlaceholder = weatherUIState.showPlaceHolder,
                 onNavigateToManageLocations = { onNavigateToManageLocations() },
                 onNavigateToSettings = { onNavigateToSettings() })
@@ -164,27 +164,31 @@ fun ConditionAndDetails(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Spacer(modifier = Modifier.height(100.dp))
-        CurrentWeather(
-            modifier = Modifier.padding(vertical = 60.dp),
-            weatherData = weatherData.current,
-            showPlaceholder = showPlaceholder,
-            temperatureUnit = temperatureUnit
-        )
-        Spacer(modifier = Modifier.height(100.dp))
-        CurrentWeatherDetails(
-            modifier = Modifier
-                .padding(horizontal = 1.dp)
-                .fillMaxWidth()
-                .placeholder(
-                    visible = showPlaceholder,
-                    highlight = PlaceholderHighlight.shimmer(
-                        animationSpec = InfiniteRepeatableSpec(
-                            tween(1000))),
-                    contentFadeTransitionSpec = { tween(250) },
-                ),
-            weatherData = weatherData.current,
-            speedUnit = speedUnit,
-        )
+        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onBackground) {
+            CurrentWeather(
+                modifier = Modifier.padding(vertical = 60.dp),
+                weatherData = weatherData.current,
+                showPlaceholder = showPlaceholder,
+                temperatureUnit = temperatureUnit
+            )
+            Spacer(modifier = Modifier.height(100.dp))
+            CurrentWeatherDetails(
+                modifier = Modifier
+                    .padding(horizontal = 1.dp)
+                    .fillMaxWidth()
+                    .placeholder(
+                        visible = showPlaceholder,
+                        highlight = PlaceholderHighlight.shimmer(
+                            animationSpec = InfiniteRepeatableSpec(
+                                tween(1000)
+                            )
+                        ),
+                        contentFadeTransitionSpec = { tween(250) },
+                    ),
+                weatherData = weatherData.current,
+                speedUnit = speedUnit,
+            )
+        }
         Daily(
             modifier = Modifier
                 .fillMaxWidth()
@@ -192,7 +196,9 @@ fun ConditionAndDetails(
                     visible = showPlaceholder,
                     highlight = PlaceholderHighlight.shimmer(
                         animationSpec = InfiniteRepeatableSpec(
-                            tween(1000))),
+                            tween(1000)
+                        )
+                    ),
                     contentFadeTransitionSpec = { tween(250) },
                 ),
             dailyList = weatherData.daily.map { it.toDailyPreview() })
@@ -202,7 +208,9 @@ fun ConditionAndDetails(
                     visible = showPlaceholder,
                     highlight = PlaceholderHighlight.shimmer(
                         animationSpec = InfiniteRepeatableSpec(
-                            tween(1000))),
+                            tween(1000)
+                        )
+                    ),
                     contentFadeTransitionSpec = { tween(250) },
                 ),
             data = weatherData.hourly
@@ -233,12 +241,11 @@ fun CurrentDetails(
     visibility: String, humidity: String, airPressure: String,
 ) {
     val textSize = 14.sp
-    Card(
+    Surface(
         modifier = modifier,
         shape = RoundedCornerShape(8.dp),
-        backgroundColor = MaterialTheme.colors.surface,
     ) {
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onBackground) {
             Column(
                 modifier = Modifier.padding(12.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -315,7 +322,9 @@ private fun CurrentWeather(
                     visible = showPlaceholder,
                     highlight = PlaceholderHighlight.shimmer(
                         animationSpec = InfiniteRepeatableSpec(
-                        tween(1000))),
+                            tween(1000)
+                        )
+                    ),
                     contentFadeTransitionSpec = { tween(250) },
                 ),
             temp = weatherData.temp.roundToInt().toString(),
@@ -394,13 +403,11 @@ fun WinDirectionDetail(
                     .graphicsLayer {
                         rotationZ = value.minus(180f)
                     },
-                tint = MaterialTheme.colors.onBackground
             )
         }
         Text(
             text = itemName,
             fontSize = 10.sp,
-            color = MaterialTheme.colors.onBackground
         )
     }
 
@@ -425,18 +432,15 @@ private fun WeatherDetailItem(
                 contentDescription = itemName,
                 modifier = Modifier
                     .size(16.dp),
-                tint = MaterialTheme.colors.onBackground
             )
             Text(
                 text = value,
                 fontSize = 10.sp,
-                color = MaterialTheme.colors.onBackground
             )
         }
         Text(
             text = itemName,
             fontSize = 10.sp,
-            color = MaterialTheme.colors.onBackground
         )
     }
 }
@@ -462,17 +466,15 @@ private fun CurrentTempAndCondition(
             Text(
                 text = condition,
                 fontSize = 24.sp,
-                color = MaterialTheme.colors.onBackground
             )
             Text(
                 text = "$temp°$temperatureUnit",
                 fontSize = 70.sp,
-                color = MaterialTheme.colors.onBackground
             )
             Text(
                 text = "Feels like $feelsLikeTemp°$temperatureUnit",
                 fontSize = 14.sp,
-                color = MaterialTheme.colors.onBackground.copy(alpha = 0.7f)
+                color = LocalContentColor.current.copy(alpha = 0.5f)
             )
         }
     }
@@ -515,9 +517,9 @@ fun MainPagePreview() {
                 hourly = HourlyStaticData,
             ),
             userSettings = SettingsData(WindSpeedUnits.KM, TemperatureUnits.C),
-            showPlaceHolder = true
+            showPlaceHolder = false
         )
-        Box(modifier = Modifier.background(color = MaterialTheme.colors.background)) {
+        Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
             WeatherForecastScreen(weatherUIState = data,
                 isSyncing = false,
                 onNavigateToManageLocations = {},

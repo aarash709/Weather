@@ -1,16 +1,15 @@
 package com.weather.feature.forecast.components
 
+import android.content.res.Configuration.UI_MODE_NIGHT_NO
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -24,16 +23,15 @@ fun HourlyForecast(
     modifier: Modifier = Modifier,
     data: List<Hourly>,
 ) {
-    Card(
+    Surface(
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),
-        backgroundColor = MaterialTheme.colors.surface
     ) {
         Column {
             Text(
                 text = "Today",
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
+                color = LocalContentColor.current.copy(alpha = 0.5f)
             )
             LazyRow(
                 modifier = modifier
@@ -53,7 +51,7 @@ fun HourlyForecast(
 @Composable
 fun HourlyItem(
     modifier: Modifier = Modifier,
-    hourly: Hourly,
+    item: Hourly,
 ) {
     Column(
         modifier = modifier,
@@ -64,27 +62,38 @@ fun HourlyItem(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = hourly.dt.toString())
+            Text(text = item.dt)
         }
         AsyncImage(
-            model = "https://openweathermap.org/img/wn/${hourly.icon}@2x.png",
+            model = "https://openweathermap.org/img/wn/${item.icon}@2x.png",
             contentDescription = "Weather Icon",
             modifier = Modifier
         )
-//        Icon(imageVector = Icons.Default.WbSunny, contentDescription = "Weather Icon")
         Text(
-            text = "${hourly.temp.toFloat().roundToInt()}°",
-            color = Color.Gray
+            text = "${item.temp.toFloat().roundToInt()}°",
+            color = LocalContentColor.current.copy(alpha = 0.5f)
         )
     }
 }
 
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO)
 @Composable
 fun HourlyPreview() {
     WeatherTheme {
         HourlyForecast(data = HourlyStaticData)
+    }
+}
+
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO)
+@Composable
+fun HourlyItemPreview() {
+    WeatherTheme {
+        Surface {
+            HourlyItem(item = HourlyStaticData[0])
+        }
     }
 }
 
