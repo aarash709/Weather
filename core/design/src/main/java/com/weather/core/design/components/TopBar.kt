@@ -24,7 +24,7 @@ fun CustomTopBar(
             Text(
                 text = text,
                 modifier = Modifier,
-                fontSize = 18.sp
+                fontSize = 20.sp
             )
         },
         modifier = modifier,
