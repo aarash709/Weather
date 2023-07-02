@@ -26,7 +26,6 @@ import com.weather.core.design.components.ShowLoadingText
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.model.Coordinate
 import com.weather.model.ManageLocationsData
-import kotlin.math.roundToInt
 
 @ExperimentalFoundationApi
 @Composable
@@ -268,7 +267,7 @@ fun ManageLocationsPreview() {
 @Composable
 fun TopBarPreview() {
     WeatherTheme {
-        CustomTopBar(text = "text", onBackPressed = {})
+        CustomTopBar(text = "text") {}
     }
 }
 
