@@ -4,8 +4,15 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -21,6 +28,7 @@ import com.weather.core.design.theme.WeatherTheme
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
+@OptIn(ExperimentalLayoutApi::class)
 @ExperimentalFoundationApi
 @ExperimentalCoroutinesApi
 @FlowPreview
@@ -46,12 +54,17 @@ fun WeatherApp() {
         }
 
         Scaffold(
-            modifier = Modifier.statusBarsPadding(),
+            modifier = Modifier
+                .statusBarsPadding(),
             topBar = {},
             bottomBar = {},
-            snackbarHost = { SnackbarHost(hostState = snackbarHostState)},
+            snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+            contentWindowInsets = WindowInsets(left = 0, top = 0, right = 0, bottom = 0),
             content = { padding ->
-                Column(modifier = Modifier.padding(horizontal = 16.dp )) {
+                Column(
+                    modifier = Modifier
+                        .padding(padding)
+                ) {
                     WeatherNavHost(
                         modifier = Modifier,
                         navController = navController
