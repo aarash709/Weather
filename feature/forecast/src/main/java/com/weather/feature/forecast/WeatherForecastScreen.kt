@@ -61,7 +61,9 @@ fun WeatherForecastScreen(
             navigateToOnboard()
         }
     } else {
-        Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
+        Box(modifier = Modifier
+            .background(color = MaterialTheme.colorScheme.background)
+            .padding(horizontal = 16.dp)) {
             WeatherForecastScreen(
                 weatherUIState = weatherUIState,
                 isSyncing = syncing,
@@ -87,7 +89,6 @@ fun WeatherForecastScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp)
     ) {
         val pullRefreshState = rememberPullRefreshState(
             refreshing = isSyncing,
