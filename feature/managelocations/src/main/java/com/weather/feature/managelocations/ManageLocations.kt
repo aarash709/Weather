@@ -79,6 +79,7 @@ fun ManageLocations(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .padding(horizontal = 16.dp)
             ) {
                 CustomTopBar(
                     modifier = Modifier.fillMaxWidth(),

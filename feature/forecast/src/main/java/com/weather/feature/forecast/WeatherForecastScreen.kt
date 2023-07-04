@@ -61,7 +61,9 @@ fun WeatherForecastScreen(
             navigateToOnboard()
         }
     } else {
-        Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
+        Box(modifier = Modifier
+            .background(color = MaterialTheme.colorScheme.background)
+            .padding(horizontal = 16.dp)) {
             WeatherForecastScreen(
                 weatherUIState = weatherUIState,
                 isSyncing = syncing,
