@@ -57,8 +57,7 @@ fun SearchScreen(
     Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 24.dp),
+                .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             SearchScreen(

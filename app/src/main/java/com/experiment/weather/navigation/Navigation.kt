@@ -37,7 +37,7 @@ fun WeatherNavHost(
     NavHost(
         navController = navController,
         startDestination = Graph.Forecast.graph,
-        modifier = modifier.statusBarsPadding()
+        modifier = modifier
     ) {
         homeNavGraph(
             navigateToManageLocations = {

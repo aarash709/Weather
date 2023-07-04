@@ -87,7 +87,6 @@ fun WeatherForecastScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp)
     ) {
         val pullRefreshState = rememberPullRefreshState(
             refreshing = isSyncing,

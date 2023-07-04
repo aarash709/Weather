@@ -5,6 +5,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -12,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import com.experiment.weather.navigation.WeatherNavHost
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -44,12 +46,12 @@ fun WeatherApp() {
         }
 
         Scaffold(
-            modifier = Modifier,
+            modifier = Modifier.statusBarsPadding(),
             topBar = {},
             bottomBar = {},
             snackbarHost = { SnackbarHost(hostState = snackbarHostState)},
             content = { padding ->
-                Column(modifier = Modifier.padding(padding)) {
+                Column(modifier = Modifier.padding(horizontal = 16.dp )) {
                     WeatherNavHost(
                         modifier = Modifier,
                         navController = navController
