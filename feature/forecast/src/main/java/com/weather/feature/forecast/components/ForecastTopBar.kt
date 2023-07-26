@@ -4,6 +4,7 @@ import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.core.InfiniteRepeatableSpec
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -39,24 +40,19 @@ fun ForecastTopBar(
             )
         },
         navigationIcon = {
-            IconButton(onClick = { onNavigateToManageLocations() }) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search Icon"
-                )
-            }
+            Icon(
+                modifier = Modifier.clickable { onNavigateToManageLocations() },
+                imageVector = Icons.Default.Search,
+                contentDescription = "Search Icon"
+            )
         },
         actions = {
-            IconButton(
-                onClick = { onNavigateToSettings() },
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Settings,
-                    contentDescription = "Location Pick Icon"
-                )
-            }
+            Icon(
+                modifier = Modifier.clickable { onNavigateToSettings() },
+                imageVector = Icons.Default.Settings,
+                contentDescription = "Location Pick Icon"
+            )
         },
-        modifier = Modifier,
         colors = TopAppBarDefaults
             .centerAlignedTopAppBarColors(
                 containerColor = MaterialTheme.colorScheme.background
@@ -75,7 +71,6 @@ private fun ForecastTitle(
     }
     Row(
         modifier = Modifier
-            .padding(8.dp)
             .placeholder(
                 visible = showPlaceholder,
                 highlight = PlaceholderHighlight.shimmer(

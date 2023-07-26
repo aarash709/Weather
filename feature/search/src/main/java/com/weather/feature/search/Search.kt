@@ -54,14 +54,20 @@ fun SearchScreen(
     LaunchedEffect(key1 = inputText) {
         searchViewModel.setSearchQuery(cityName = inputText)
     }
-    Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
+    Box(
+        modifier = Modifier
+            .background(
+                color = MaterialTheme.colorScheme.background
+            )
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 0.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             SearchScreen(
+                modifier = Modifier.padding(horizontal = 16.dp),
                 searchUIState = searchUIState,
                 searchInputText = inputText,
                 popularCities = cityList,
@@ -86,6 +92,7 @@ fun SearchScreen(
 
 @Composable
 fun SearchScreen(
+    modifier: Modifier = Modifier,
     searchUIState: SavableSearchState,
     searchInputText: String,
     popularCities: List<String>,
@@ -96,7 +103,7 @@ fun SearchScreen(
 ) {
     //stateless
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         TopSearchBar(
             modifier = Modifier.padding(top = 16.dp),
@@ -170,8 +177,10 @@ private fun TopSearchBar(
                 .focusRequester(focusRequester)
                 .weight(weight = 1f, fill = true),
             placeholder = {
-                    Text(text = "Search",
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
+                Text(
+                    text = "Search",
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                )
             },
             leadingIcon = {
                 Icon(

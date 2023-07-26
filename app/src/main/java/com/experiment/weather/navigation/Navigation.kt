@@ -2,25 +2,16 @@ package com.experiment.weather.navigation
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavGraph
-import androidx.navigation.NavHost
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
-//import com.experiment.weather.presentation.manageLocationsRoute
-//import com.experiment.weather.presentation.manageLocationsScreen
-//import com.experiment.weather.presentation.toManageLocations
 import com.weather.feature.managelocations.manageLocationsRoute
 import com.weather.feature.managelocations.manageLocationsScreen
 import com.weather.feature.managelocations.toManageLocations
-import com.weather.feature.search.searchRoute
 import com.weather.feature.search.searchScreen
 import com.weather.feature.search.toSearchScreen
-import com.weather.feature.settings.SETTINGS_ROUTE
 import com.weather.feature.settings.settingsScreen
 import com.weather.feature.settings.toSettings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -60,7 +51,16 @@ fun WeatherNavHost(
                 navController.popBackStack()
             },
             onItemSelected = { cityName ->
-                navController.popBackStack()
+                navController.navigate(
+                    route = Graph.Forecast.ForecastScreen,
+                    navOptions = navOptions {
+                    popUpTo(
+                        route = Graph.Forecast.ForecastScreen,
+                        popUpToBuilder = {
+                            inclusive = true
+                        }
+                    )
+                })
             }
         )
         searchScreen(onSearchItemSelected = {
