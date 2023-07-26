@@ -62,8 +62,9 @@ fun WeatherForecastScreen(
         }
     } else {
         Box(modifier = Modifier
-            .background(color = MaterialTheme.colorScheme.background)
-            .padding(horizontal = 16.dp)) {
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+            .background(color = MaterialTheme.colorScheme.background)) {
             WeatherForecastScreen(
                 weatherUIState = weatherUIState,
                 isSyncing = syncing,
@@ -78,6 +79,7 @@ fun WeatherForecastScreen(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun WeatherForecastScreen(
+    modifier: Modifier = Modifier,
     weatherUIState: SavableForecastData,
     isSyncing: Boolean,
     onNavigateToManageLocations: () -> Unit,
@@ -87,8 +89,7 @@ fun WeatherForecastScreen(
     val lazyListState = rememberLazyListState()
     // stateless
     Box(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = modifier,
     ) {
         val pullRefreshState = rememberPullRefreshState(
             refreshing = isSyncing,
@@ -117,7 +118,6 @@ fun WeatherForecastScreen(
         }
         Column(
             modifier = Modifier
-                .fillMaxSize()
                 .pullRefresh(pullRefreshState),
         ) {
             ForecastTopBar(

@@ -87,26 +87,28 @@ fun ManageLocations(
                 ) {
                     onBackPressed()
                 }
-                Spacer(modifier = Modifier.height(16.dp))
-                SearchBarCard(onNavigateToSearch)
-                Spacer(modifier = Modifier.height(16.dp))
-                FavoriteLocations(
-                    dataList = dataState.data,
-                    onItemSelected = { coordinate ->
-                        onItemSelected(coordinate)
-                    },
-                    onDeleteItem = { locationData ->
-                        onDeleteItem(locationData)
-                    },
-                    onSetFavoriteItem = { locationsData ->
-                        onSetFavoriteItem(locationsData)
-                    })
+                Column(modifier = Modifier.padding(horizontal = 0.dp)) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    SearchBarCard(onNavigateToSearch)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    FavoriteLocations(
+                        modifier = Modifier,
+                        dataList = dataState.data,
+                        onItemSelected = { coordinate ->
+                            onItemSelected(coordinate)
+                        },
+                        onDeleteItem = { locationData ->
+                            onDeleteItem(locationData)
+                        },
+                        onSetFavoriteItem = { locationsData ->
+                            onSetFavoriteItem(locationsData)
+                        })
+                }
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBarCard(onClick: () -> Unit) {
     Surface(
@@ -137,13 +139,14 @@ fun SearchBarCard(onClick: () -> Unit) {
 @ExperimentalFoundationApi
 @Composable
 fun FavoriteLocations(
+    modifier: Modifier = Modifier,
     dataList: List<ManageLocationsData>,
     onItemSelected: (Coordinate) -> Unit,
     onDeleteItem: (ManageLocationsData) -> Unit,
     onSetFavoriteItem: (ManageLocationsData) -> Unit,
 ) {
     LazyColumn(
-        modifier = Modifier,
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(dataList, key = {
