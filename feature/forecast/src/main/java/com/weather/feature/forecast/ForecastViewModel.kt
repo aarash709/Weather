@@ -64,21 +64,30 @@ class ForecastViewModel @Inject constructor(
             .flowOn(Dispatchers.IO)
             .combine(getUserSettings()) { weather, userSettings ->
                 Timber.e("invoked data stream")
-                Timber.e("user settings:  ${userSettings.temperatureUnits}")
-                val current = weather.current.run {
-                    copy(
-                        dew_point = dew_point.convertToUserTemperature(
-                            userSettings.temperatureUnits ?: C
+                Timber.e("user settings temp :  ${userSettings.temperatureUnits}")
+                Timber.e("user settings wind:  ${userSettings.windSpeedUnits}")
+                userSettings.apply {
+                    windSpeedUnits?.let {
+                        userRepository.setWindSpeedUnitSetting(KM)
+                    }
+                    temperatureUnits?.let {
+                        userRepository.setTemperatureUnitSetting(C)
+                    }
+                }
+                val current = weather.current.let {
+                    it.copy(
+                        dew_point = it.dew_point.convertToUserTemperature(
+                            userSettings.temperatureUnits
                         ),
-                        feels_like = feels_like.convertToUserTemperature(
-                            userSettings.temperatureUnits ?: C
+                        feels_like = it.feels_like.convertToUserTemperature(
+                            userSettings.temperatureUnits
                         ),
-                        temp = temp.convertToUserTemperature(
-                            userSettings.temperatureUnits ?: C
+                        temp = it.temp.convertToUserTemperature(
+                            userSettings.temperatureUnits
                         ),
-                        visibility = visibility,
-                        wind_speed = wind_speed.convertToUserSpeed(
-                            userSettings.windSpeedUnits ?: KM
+                        visibility = it.visibility,
+                        wind_speed = it.wind_speed.convertToUserSpeed(
+                            userSettings.windSpeedUnits
                         ),
                     )
                 }
@@ -178,21 +187,27 @@ class ForecastViewModel @Inject constructor(
     }
 
     internal fun Double.convertToUserTemperature(
-        userTempUnit: TemperatureUnits,
+        userTempUnit: TemperatureUnits?,
     ): Double {
         return when (userTempUnit) {
             C -> this.minus(273.15)
             F -> this.minus(273.15).times(1.8f).plus(32)
+            null -> {
+                this.minus(273.15)
+            }
         }
     }
 
     internal fun Double.convertToUserSpeed(
-        userTempUnit: WindSpeedUnits,
+        userTempUnit: WindSpeedUnits?,
     ): Double {
         return when (userTempUnit) {
             KM -> this.times(3.6f).times(100).roundToInt().toDouble().div(100)
             MS -> this
             MPH -> this.times(2.2369f).times(100).roundToInt().toDouble().div(100)
+            null -> {
+                this.times(3.6f).times(100).roundToInt().toDouble().div(100)
+            }
         }
     }
 
