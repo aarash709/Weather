@@ -5,19 +5,18 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOutCubic
 import androidx.compose.animation.core.InfiniteRepeatableSpec
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
@@ -26,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,6 +34,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
+import com.weather.core.design.components.CustomIndicator
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.feature.forecast.components.*
 import com.weather.feature.forecast.components.Daily
@@ -61,10 +62,12 @@ fun WeatherForecastScreen(
             navigateToOnboard()
         }
     } else {
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-            .background(color = MaterialTheme.colorScheme.background)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+                .background(color = MaterialTheme.colorScheme.background)
+        ) {
             WeatherForecastScreen(
                 weatherUIState = weatherUIState,
                 isSyncing = syncing,
@@ -88,7 +91,7 @@ fun WeatherForecastScreen(
 ) {
     val lazyListState = rememberLazyListState()
     // stateless
-    Box(
+    BoxWithConstraints(
         modifier = modifier,
     ) {
         val pullRefreshState = rememberPullRefreshState(
@@ -116,9 +119,27 @@ fun WeatherForecastScreen(
             }
             mutableStateOf(state)
         }
+        val translateY by animateFloatAsState(
+            targetValue = when {
+                isSyncing -> constraints.maxHeight.div(10f)
+                !isSyncing ->
+                    pullRefreshState.progress.times(100)
+
+                else -> {
+                    0.0f
+                }
+            },
+            animationSpec = if (!isSyncing) tween(0) else spring(),
+            label = "translateY"
+        )
+
+        CustomIndicator(modifier = Modifier, pullRefreshState, isSyncing)
         Column(
             modifier = Modifier
-                .pullRefresh(pullRefreshState),
+                .pullRefresh(pullRefreshState)
+                .graphicsLayer {
+                    translationY = translateY
+                },
         ) {
             ForecastTopBar(
                 cityName = weatherUIState.weather.coordinates.name,
@@ -142,15 +163,14 @@ fun WeatherForecastScreen(
                 }
             }
         }
-        PullRefreshIndicator(
-            refreshing = isSyncing,
-            state = pullRefreshState,
-            modifier = Modifier.align(Alignment.TopCenter),
-            scale = true
-        )
+//        PullRefreshIndicator(
+//            refreshing = isSyncing,
+//            state = pullRefreshState,
+//            modifier = Modifier.align(Alignment.TopCenter),
+//            scale = true
+//        )
     }
 }
-
 
 @Composable
 fun ConditionAndDetails(
