@@ -19,7 +19,8 @@ import androidx.compose.ui.Modifier
 @Composable
 fun CustomIndicator(
     modifier: Modifier = Modifier,
-    state: PullRefreshState,
+    distance: Float,
+    targetHeight: Float,
     isRefreshing: Boolean,
 ) {
     Surface(
@@ -42,7 +43,7 @@ fun CustomIndicator(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.Top
                 ) {
-                    Crossfade(targetState = state.progress >= 1, label = "pull trigger") {
+                    Crossfade(targetState = distance >= targetHeight, label = "pull trigger") {
                         if (it) {
                             Text(text = "release to refresh")
                             Icon(

@@ -5,6 +5,7 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOutCubic
 import androidx.compose.animation.core.InfiniteRepeatableSpec
+import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
@@ -27,8 +28,10 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.ContentInfoCompat.Flags
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.placeholder.PlaceholderHighlight
@@ -41,6 +44,8 @@ import com.weather.feature.forecast.components.Daily
 import com.weather.feature.forecast.components.HourlyForecast
 import com.weather.model.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import timber.log.Timber
 import kotlin.math.roundToInt
 
 @ExperimentalCoroutinesApi
@@ -94,6 +99,11 @@ fun WeatherForecastScreen(
     BoxWithConstraints(
         modifier = modifier,
     ) {
+        //debug
+        var debugPullDelta by remember {
+            mutableFloatStateOf(0f)
+        }
+
         val pullRefreshState = rememberPullRefreshState(
             refreshing = isSyncing,
             onRefresh = {
@@ -102,6 +112,7 @@ fun WeatherForecastScreen(
                 })
             },
         )
+        val scope = rememberCoroutineScope()
         val speedUnit by remember(weatherUIState) {
             val state = when (weatherUIState.userSettings.windSpeedUnits) {
                 WindSpeedUnits.KM -> "km/h"
@@ -111,6 +122,9 @@ fun WeatherForecastScreen(
             }
             mutableStateOf(state)
         }
+        var currentDistance by remember {
+            mutableFloatStateOf(0f)
+        }
         val temperatureUnit by remember(weatherUIState) {
             val state = when (weatherUIState.userSettings.temperatureUnits) {
                 TemperatureUnits.C -> "C"
@@ -119,27 +133,58 @@ fun WeatherForecastScreen(
             }
             mutableStateOf(state)
         }
+        val indicatorPullDistance = 500f
         val translateY by animateFloatAsState(
-            targetValue = when {
-                isSyncing -> constraints.maxHeight.div(10f)
-                !isSyncing ->
-                    pullRefreshState.progress.times(100)
-
-                else -> {
-                    0.0f
-                }
-            },
+            targetValue = 200f.times(currentDistance / constraints.maxHeight),
             animationSpec = if (!isSyncing) tween(0) else spring(),
             label = "translateY"
         )
+        LaunchedEffect(key1 = debugPullDelta) {
+            Timber.e("delta: $debugPullDelta")
+        }
+        fun onPull(delta: Float): Float = when {
+            isSyncing -> 0f
+            else -> {
+                val newOffset = (currentDistance + delta).coerceAtLeast(0f)
+                val dragConsumed = newOffset - currentDistance
+                debugPullDelta = dragConsumed
 
-        CustomIndicator(modifier = Modifier, pullRefreshState, isSyncing)
+                currentDistance = newOffset
+                dragConsumed
+            }
+        }
+
+        fun onRelease(velocity: Float): Float {
+            if (isSyncing) return 0f // Already refreshing - don't call refresh again.
+            var targetValue = 0f
+            if (currentDistance > indicatorPullDistance) {
+                targetValue = indicatorPullDistance
+                onRefresh(weatherUIState.weather.coordinates.let {
+                    Coordinate(it.name, it.lat.toString(), it.lon.toString())
+                })
+            }
+            scope.launch {
+                animate(initialValue = currentDistance, targetValue = targetValue) { value, _ ->
+                    currentDistance = value
+                }
+            }
+            // Only consume if the fling is downwards and the indicator is visible
+            return if (velocity > 0f && currentDistance > 0f) {
+                velocity
+            } else {
+                0f
+            }
+        }
+
+        CustomIndicator(modifier = Modifier, currentDistance, targetHeight = indicatorPullDistance, isSyncing)
         Column(
             modifier = Modifier
-                .pullRefresh(pullRefreshState)
-                .graphicsLayer {
-                    translationY = translateY
-                },
+                .pullRefresh(onPull = ::onPull, onRelease = ::onRelease)
+//                .pullRefresh(pullRefreshState)
+                .offset(x = 0.dp, y = translateY.dp)
+//                .graphicsLayer {
+//                    translationY = translateY
+//                },
         ) {
             ForecastTopBar(
                 cityName = weatherUIState.weather.coordinates.name,
