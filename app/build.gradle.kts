@@ -68,6 +68,7 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:design"))
     implementation(project(":core:repository"))
+    implementation(project(":core:common"))
     implementation(project(":feature:forecast"))
     implementation(project(":feature:search"))
     implementation(project(":feature:managelocations"))

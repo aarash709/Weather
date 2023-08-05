@@ -1,6 +1,7 @@
 package com.weather.feature.forecast
 
 import androidx.lifecycle.*
+import com.experiment.weather.core.common.extentions.convertToUserSettings
 import com.weather.core.repository.UserRepository
 import com.weather.core.repository.WeatherRepository
 import com.weather.model.*
@@ -46,7 +47,7 @@ class ForecastViewModel @Inject constructor(
     init {
         Timber.e("init")
         Timber.e("navigated city:$cityName")
-        checkDatabase()
+        checkDatabaseIsEmpty()
     }
 
     @ExperimentalCoroutinesApi
@@ -63,59 +64,18 @@ class ForecastViewModel @Inject constructor(
             }
             .flowOn(Dispatchers.IO)
             .combine(getUserSettings()) { weather, userSettings ->
-                Timber.e("invoked data stream")
-                Timber.e("user settings temp :  ${userSettings.temperatureUnits}")
-                Timber.e("user settings wind:  ${userSettings.windSpeedUnits}")
-                userSettings.apply {
-                    windSpeedUnits?.let {
-                        userRepository.setWindSpeedUnitSetting(KM)
-                    }
-                    temperatureUnits?.let {
-                        userRepository.setTemperatureUnitSetting(C)
-                    }
-                }
-                val current = weather.current.let {
-                    it.copy(
-                        dew_point = it.dew_point.convertToUserTemperature(
-                            userSettings.temperatureUnits
-                        ),
-                        feels_like = it.feels_like.convertToUserTemperature(
-                            userSettings.temperatureUnits
-                        ),
-                        temp = it.temp.convertToUserTemperature(
-                            userSettings.temperatureUnits
-                        ),
-                        visibility = it.visibility,
-                        wind_speed = it.wind_speed.convertToUserSpeed(
-                            userSettings.windSpeedUnits
-                        ),
-                    )
-                }
+                userSettings.setDefaultIfNull()
+                val current = weather.current.convertToUserSettings(
+                    userSettings.temperatureUnits,
+                    userSettings.windSpeedUnits
+                )
                 val daily = weather.daily.map {
-                    it.copy(
-                        dew_point = it.dew_point.convertToUserTemperature(
-                            userSettings.temperatureUnits ?: C
-                        ),
-                        dt = unixMillisToHumanDate(it.dt.toLong(), "EEE"),
-                        dayTemp = it.dayTemp.convertToUserTemperature(
-
-                            userSettings.temperatureUnits ?: C
-                        ),
-                        nightTemp = it.nightTemp.convertToUserTemperature(
-                            userSettings.temperatureUnits ?: C
-                        )
+                    it.convertToUserSettings(
+                        userSettings.temperatureUnits
                     )
                 }
                 val hourly = weather.hourly.map {
-                    it.copy(
-                        dew_point = it.dew_point.convertToUserTemperature(
-                            userSettings.temperatureUnits ?: C
-                        ),
-                        dt = unixMillisToHumanDate(it.dt.toLong(), "HH:mm"),
-                        temp = it.temp.convertToUserTemperature(
-                            userSettings.temperatureUnits ?: C
-                        )
-                    )
+                   it.convertToUserSettings(userSettings.temperatureUnits)
                 }
                 val newWeather = weather.copy(current = current, daily = daily, hourly = hourly)
                 SavableForecastData(
@@ -142,14 +102,13 @@ class ForecastViewModel @Inject constructor(
             }
     }
 
-    private fun checkDatabase() {
+    private fun checkDatabaseIsEmpty() {
         viewModelScope.launch {
             val isEmpty = weatherRepository.isDatabaseEmpty() == 0
             _dataBaseOrCityIsEmpty.value = isEmpty
         }
     }
 
-    @ExperimentalCoroutinesApi
     private fun getFavoriteCityCoordinate(): Flow<Coordinate?> {
         return userRepository.getFavoriteCityCoordinate()
     }
@@ -172,12 +131,6 @@ class ForecastViewModel @Inject constructor(
             }
     }
 
-    private fun unixMillisToHumanDate(unixTimeStamp: Long, pattern: String): String {
-        val formatter = SimpleDateFormat(pattern, Locale.getDefault())
-        val date = Date(unixTimeStamp * 1000) //to millisecond
-        return formatter.format(date)
-    }
-
     internal fun isDataExpired(dataTimestamp: Int, minutesThreshold: Int): Boolean {
         val currentTime = Instant.now().epochSecond
         val differanceInSeconds = currentTime.minus(dataTimestamp)
@@ -186,43 +139,16 @@ class ForecastViewModel @Inject constructor(
         return differanceInMinutes > minutesThreshold
     }
 
-    internal fun Double.convertToUserTemperature(
-        userTempUnit: TemperatureUnits?,
-    ): Double {
-        return when (userTempUnit) {
-            C -> this.minus(273.15)
-            F -> this.minus(273.15).times(1.8f).plus(32)
-            null -> {
-                this.minus(273.15)
+    private suspend fun SettingsData.setDefaultIfNull(
+        defaultWindSpeedUnits: WindSpeedUnits = KM,
+        defaultTemperature: TemperatureUnits = C,
+    ) {
+        this.apply {
+            windSpeedUnits?.let {
+                userRepository.setWindSpeedUnitSetting(defaultWindSpeedUnits)
             }
-        }
-    }
-
-    internal fun Double.convertToUserSpeed(
-        userTempUnit: WindSpeedUnits?,
-    ): Double {
-        return when (userTempUnit) {
-            KM -> this.times(3.6f).times(100).roundToInt().toDouble().div(100)
-            MS -> this
-            MPH -> this.times(2.2369f).times(100).roundToInt().toDouble().div(100)
-            null -> {
-                this.times(3.6f).times(100).roundToInt().toDouble().div(100)
-            }
-        }
-    }
-
-    internal fun Int.compactVisibilityMeasurement(): Int {
-        return when {
-            this < 1000 -> {
-                return this
-            }
-
-            this > 1000 -> {
-                return this.div(1000)
-            }
-
-            else -> {
-                this
+            temperatureUnits?.let {
+                userRepository.setTemperatureUnitSetting(defaultTemperature)
             }
         }
     }
