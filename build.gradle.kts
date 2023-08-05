@@ -5,6 +5,7 @@ plugins{
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.kotlinGradle) apply false
     alias(libs.plugins.kotlinSerialization) apply false
+    alias(libs.plugins.com.android.library) apply false
 }
 buildscript {
 

@@ -1,23 +1,37 @@
 package com.weather.feature.forecast
 
-import androidx.lifecycle.*
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.experiment.weather.core.common.extentions.convertToUserSettings
 import com.weather.core.repository.UserRepository
 import com.weather.core.repository.WeatherRepository
-import com.weather.model.*
-import com.weather.model.TemperatureUnits.*
-import com.weather.model.WindSpeedUnits.*
+import com.weather.model.Coordinate
+import com.weather.model.SavableForecastData
+import com.weather.model.SettingsData
+import com.weather.model.TemperatureUnits
+import com.weather.model.TemperatureUnits.C
+import com.weather.model.WindSpeedUnits
+import com.weather.model.WindSpeedUnits.KM
 import com.weather.sync.work.utils.SyncManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.retry
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.text.SimpleDateFormat
-import java.time.*
-import java.util.*
+import java.time.Duration
+import java.time.Instant
 import javax.inject.Inject
-import kotlin.math.roundToInt
 
 @HiltViewModel
 class ForecastViewModel @Inject constructor(
@@ -44,13 +58,10 @@ class ForecastViewModel @Inject constructor(
     )
 
     init {
-        Timber.e("init")
-        Timber.e("navigated city:$cityName")
-        checkDatabase()
+        checkDatabaseIsEmpty()
     }
 
-    @ExperimentalCoroutinesApi
-    internal fun getWeatherData(): Flow<SavableForecastData> {
+    private fun getWeatherData(): Flow<SavableForecastData> {
         return weatherRepository.getAllForecastWeatherData()
             .combine(getFavoriteCityCoordinate()) { allWeather, coordinate ->
                 Timber.e("cityName: ${coordinate?.cityName}")
@@ -63,50 +74,18 @@ class ForecastViewModel @Inject constructor(
             }
             .flowOn(Dispatchers.IO)
             .combine(getUserSettings()) { weather, userSettings ->
-                Timber.e("invoked data stream")
-                Timber.e("user settings:  ${userSettings.temperatureUnits}")
-                val current = weather.current.run {
-                    copy(
-                        dew_point = dew_point.convertToUserTemperature(
-                            userSettings.temperatureUnits ?: C
-                        ),
-                        feels_like = feels_like.convertToUserTemperature(
-                            userSettings.temperatureUnits ?: C
-                        ),
-                        temp = temp.convertToUserTemperature(
-                            userSettings.temperatureUnits ?: C
-                        ),
-                        visibility = visibility,
-                        wind_speed = wind_speed.convertToUserSpeed(
-                            userSettings.windSpeedUnits ?: KM
-                        ),
-                    )
-                }
+                userSettings.setDefaultIfNull()
+                val current = weather.current.convertToUserSettings(
+                    userSettings.temperatureUnits,
+                    userSettings.windSpeedUnits
+                )
                 val daily = weather.daily.map {
-                    it.copy(
-                        dew_point = it.dew_point.convertToUserTemperature(
-                            userSettings.temperatureUnits ?: C
-                        ),
-                        dt = unixMillisToHumanDate(it.dt.toLong(), "EEE"),
-                        dayTemp = it.dayTemp.convertToUserTemperature(
-
-                            userSettings.temperatureUnits ?: C
-                        ),
-                        nightTemp = it.nightTemp.convertToUserTemperature(
-                            userSettings.temperatureUnits ?: C
-                        )
+                    it.convertToUserSettings(
+                        userSettings.temperatureUnits
                     )
                 }
                 val hourly = weather.hourly.map {
-                    it.copy(
-                        dew_point = it.dew_point.convertToUserTemperature(
-                            userSettings.temperatureUnits ?: C
-                        ),
-                        dt = unixMillisToHumanDate(it.dt.toLong(), "HH:mm"),
-                        temp = it.temp.convertToUserTemperature(
-                            userSettings.temperatureUnits ?: C
-                        )
-                    )
+                   it.convertToUserSettings(userSettings.temperatureUnits)
                 }
                 val newWeather = weather.copy(current = current, daily = daily, hourly = hourly)
                 SavableForecastData(
@@ -133,14 +112,13 @@ class ForecastViewModel @Inject constructor(
             }
     }
 
-    private fun checkDatabase() {
+    private fun checkDatabaseIsEmpty() {
         viewModelScope.launch {
             val isEmpty = weatherRepository.isDatabaseEmpty() == 0
             _dataBaseOrCityIsEmpty.value = isEmpty
         }
     }
 
-    @ExperimentalCoroutinesApi
     private fun getFavoriteCityCoordinate(): Flow<Coordinate?> {
         return userRepository.getFavoriteCityCoordinate()
     }
@@ -163,12 +141,6 @@ class ForecastViewModel @Inject constructor(
             }
     }
 
-    private fun unixMillisToHumanDate(unixTimeStamp: Long, pattern: String): String {
-        val formatter = SimpleDateFormat(pattern, Locale.getDefault())
-        val date = Date(unixTimeStamp * 1000) //to millisecond
-        return formatter.format(date)
-    }
-
     internal fun isDataExpired(dataTimestamp: Int, minutesThreshold: Int): Boolean {
         val currentTime = Instant.now().epochSecond
         val differanceInSeconds = currentTime.minus(dataTimestamp)
@@ -177,37 +149,16 @@ class ForecastViewModel @Inject constructor(
         return differanceInMinutes > minutesThreshold
     }
 
-    internal fun Double.convertToUserTemperature(
-        userTempUnit: TemperatureUnits,
-    ): Double {
-        return when (userTempUnit) {
-            C -> this.minus(273.15)
-            F -> this.minus(273.15).times(1.8f).plus(32)
-        }
-    }
-
-    internal fun Double.convertToUserSpeed(
-        userTempUnit: WindSpeedUnits,
-    ): Double {
-        return when (userTempUnit) {
-            KM -> this.times(3.6f).times(100).roundToInt().toDouble().div(100)
-            MS -> this
-            MPH -> this.times(2.2369f).times(100).roundToInt().toDouble().div(100)
-        }
-    }
-
-    internal fun Int.compactVisibilityMeasurement(): Int {
-        return when {
-            this < 1000 -> {
-                return this
+    private suspend fun SettingsData.setDefaultIfNull(
+        defaultWindSpeedUnits: WindSpeedUnits = KM,
+        defaultTemperature: TemperatureUnits = C,
+    ) {
+        this.apply {
+            windSpeedUnits?.let {
+                userRepository.setWindSpeedUnitSetting(defaultWindSpeedUnits)
             }
-
-            this > 1000 -> {
-                return this.div(1000)
-            }
-
-            else -> {
-                this
+            temperatureUnits?.let {
+                userRepository.setTemperatureUnitSetting(defaultTemperature)
             }
         }
     }
