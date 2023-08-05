@@ -1,24 +1,37 @@
 package com.weather.feature.forecast
 
-import androidx.lifecycle.*
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.experiment.weather.core.common.extentions.convertToUserSettings
 import com.weather.core.repository.UserRepository
 import com.weather.core.repository.WeatherRepository
-import com.weather.model.*
-import com.weather.model.TemperatureUnits.*
-import com.weather.model.WindSpeedUnits.*
+import com.weather.model.Coordinate
+import com.weather.model.SavableForecastData
+import com.weather.model.SettingsData
+import com.weather.model.TemperatureUnits
+import com.weather.model.TemperatureUnits.C
+import com.weather.model.WindSpeedUnits
+import com.weather.model.WindSpeedUnits.KM
 import com.weather.sync.work.utils.SyncManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.retry
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.text.SimpleDateFormat
-import java.time.*
-import java.util.*
+import java.time.Duration
+import java.time.Instant
 import javax.inject.Inject
-import kotlin.math.roundToInt
 
 @HiltViewModel
 class ForecastViewModel @Inject constructor(
@@ -45,13 +58,10 @@ class ForecastViewModel @Inject constructor(
     )
 
     init {
-        Timber.e("init")
-        Timber.e("navigated city:$cityName")
         checkDatabaseIsEmpty()
     }
 
-    @ExperimentalCoroutinesApi
-    internal fun getWeatherData(): Flow<SavableForecastData> {
+    private fun getWeatherData(): Flow<SavableForecastData> {
         return weatherRepository.getAllForecastWeatherData()
             .combine(getFavoriteCityCoordinate()) { allWeather, coordinate ->
                 Timber.e("cityName: ${coordinate?.cityName}")
