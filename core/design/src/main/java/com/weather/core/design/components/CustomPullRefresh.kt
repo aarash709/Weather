@@ -43,17 +43,15 @@ fun CustomIndicator(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.Top
                 ) {
-                    Crossfade(targetState = distance >= targetHeight, label = "pull trigger") {
-                        if (it) {
-                            Text(text = "release to refresh")
-                            Icon(
-                                imageVector = Icons.Default.KeyboardDoubleArrowUp,
-                                contentDescription = ""
-                            )
-                        } else {
-                            Text(text = "pull")
-                            Icon(imageVector = Icons.Default.KeyboardArrowDown, contentDescription = "")
-                        }
+                    if (distance >= targetHeight) {
+                        Text(text = "release to refresh")
+                        Icon(
+                            imageVector = Icons.Default.KeyboardDoubleArrowUp,
+                            contentDescription = ""
+                        )
+                    } else {
+                        Text(text = "pull")
+                        Icon(imageVector = Icons.Default.KeyboardArrowDown, contentDescription = "")
                     }
 
                 }

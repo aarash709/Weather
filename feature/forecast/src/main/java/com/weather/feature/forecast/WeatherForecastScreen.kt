@@ -19,19 +19,15 @@ import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.view.ContentInfoCompat.Flags
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.placeholder.PlaceholderHighlight
@@ -99,19 +95,6 @@ fun WeatherForecastScreen(
     BoxWithConstraints(
         modifier = modifier,
     ) {
-        //debug
-        var debugPullDelta by remember {
-            mutableFloatStateOf(0f)
-        }
-
-        val pullRefreshState = rememberPullRefreshState(
-            refreshing = isSyncing,
-            onRefresh = {
-                onRefresh(weatherUIState.weather.coordinates.let {
-                    Coordinate(it.name, it.lat.toString(), it.lon.toString())
-                })
-            },
-        )
         val scope = rememberCoroutineScope()
         val speedUnit by remember(weatherUIState) {
             val state = when (weatherUIState.userSettings.windSpeedUnits) {
@@ -122,7 +105,7 @@ fun WeatherForecastScreen(
             }
             mutableStateOf(state)
         }
-        var currentDistance by remember {
+        var distanceDelta by remember {
             mutableFloatStateOf(0f)
         }
         val temperatureUnit by remember(weatherUIState) {
@@ -133,58 +116,68 @@ fun WeatherForecastScreen(
             }
             mutableStateOf(state)
         }
-        val indicatorPullDistance = 500f
+        val indicatorPullHeight = 200f
         val translateY by animateFloatAsState(
-            targetValue = 200f.times(currentDistance / constraints.maxHeight),
+            targetValue = (distanceDelta.div(maxHeight.value)).times(indicatorPullHeight),
             animationSpec = if (!isSyncing) tween(0) else spring(),
-            label = "translateY"
+            label = "translateY",
         )
-        LaunchedEffect(key1 = debugPullDelta) {
-            Timber.e("delta: $debugPullDelta")
+        LaunchedEffect(key1 = isSyncing) {
+            //push up after syncing complete
+            if (!isSyncing && translateY >= indicatorPullHeight.div(constraints.maxHeight)) {
+                scope.launch {
+                    animate(initialValue = distanceDelta, targetValue = 0f) { value, _ ->
+                        distanceDelta = value
+                    }
+                }
+            }
         }
+        fun refresh() {
+            onRefresh(weatherUIState.weather.coordinates.let {
+                Coordinate(it.name, it.lat.toString(), it.lon.toString())
+            })
+        }
+
         fun onPull(delta: Float): Float = when {
             isSyncing -> 0f
             else -> {
-                val newOffset = (currentDistance + delta).coerceAtLeast(0f)
-                val dragConsumed = newOffset - currentDistance
-                debugPullDelta = dragConsumed
-
-                currentDistance = newOffset
-                dragConsumed
+                distanceDelta = (distanceDelta + delta).coerceAtLeast(0f)
+                delta
             }
         }
 
         fun onRelease(velocity: Float): Float {
             if (isSyncing) return 0f // Already refreshing - don't call refresh again.
             var targetValue = 0f
-            if (currentDistance > indicatorPullDistance) {
-                targetValue = indicatorPullDistance
-                onRefresh(weatherUIState.weather.coordinates.let {
-                    Coordinate(it.name, it.lat.toString(), it.lon.toString())
-                })
+            if (distanceDelta > indicatorPullHeight) {
+                targetValue = indicatorPullHeight
+                refresh()
             }
             scope.launch {
-                animate(initialValue = currentDistance, targetValue = targetValue) { value, _ ->
-                    currentDistance = value
+                animate(initialValue = distanceDelta, targetValue = targetValue) { value, _ ->
+                    distanceDelta = value
                 }
             }
             // Only consume if the fling is downwards and the indicator is visible
-            return if (velocity > 0f && currentDistance > 0f) {
+            return if (velocity > 0f && distanceDelta > 0f) {
                 velocity
             } else {
                 0f
             }
         }
 
-        CustomIndicator(modifier = Modifier, currentDistance, targetHeight = indicatorPullDistance, isSyncing)
+        if (translateY > 0){
+            CustomIndicator(
+                    modifier = Modifier.padding(vertical = 8.dp).height(indicatorPullHeight.dp),
+            distance = distanceDelta,
+            targetHeight = indicatorPullHeight,
+            isRefreshing = isSyncing
+            )
+        }
         Column(
             modifier = Modifier
                 .pullRefresh(onPull = ::onPull, onRelease = ::onRelease)
-//                .pullRefresh(pullRefreshState)
-                .offset(x = 0.dp, y = translateY.dp)
-//                .graphicsLayer {
-//                    translationY = translateY
-//                },
+                .offset(x = 0.dp, y = translateY.coerceAtMost(indicatorPullHeight).dp)
         ) {
             ForecastTopBar(
                 cityName = weatherUIState.weather.coordinates.name,
@@ -208,12 +201,6 @@ fun WeatherForecastScreen(
                 }
             }
         }
-//        PullRefreshIndicator(
-//            refreshing = isSyncing,
-//            state = pullRefreshState,
-//            modifier = Modifier.align(Alignment.TopCenter),
-//            scale = true
-//        )
     }
 }
 
