@@ -30,7 +30,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.accompanist.placeholder.PlaceholderDefaults
 import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.color
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
 import com.weather.core.design.components.CustomIndicator
@@ -166,12 +168,14 @@ fun WeatherForecastScreen(
             }
         }
 
-        if (translateY > 0){
+        if (translateY > 0) {
             CustomIndicator(
-                    modifier = Modifier.padding(vertical = 8.dp).height(indicatorPullHeight.dp),
-            distance = distanceDelta,
-            targetHeight = indicatorPullHeight,
-            isRefreshing = isSyncing
+                modifier = Modifier
+                    .padding(vertical = 8.dp)
+                    .height(indicatorPullHeight.dp),
+                distance = distanceDelta,
+                targetHeight = indicatorPullHeight,
+                isRefreshing = isSyncing
             )
         }
         Column(
@@ -236,6 +240,9 @@ fun ConditionAndDetails(
                                 tween(1000)
                             )
                         ),
+                        color = PlaceholderDefaults.color(
+                            backgroundColor = MaterialTheme.colorScheme.surface,
+                        ),
                         contentFadeTransitionSpec = { tween(250) },
                     ),
                 weatherData = weatherData.current,
@@ -252,6 +259,9 @@ fun ConditionAndDetails(
                             tween(1000)
                         )
                     ),
+                    color = PlaceholderDefaults.color(
+                        backgroundColor = MaterialTheme.colorScheme.surface,
+                    ),
                     contentFadeTransitionSpec = { tween(250) },
                 ),
             dailyList = weatherData.daily.map { it.toDailyPreview() })
@@ -263,6 +273,9 @@ fun ConditionAndDetails(
                         animationSpec = InfiniteRepeatableSpec(
                             tween(1000)
                         )
+                    ),
+                    color = PlaceholderDefaults.color(
+                        backgroundColor = MaterialTheme.colorScheme.surface,
                     ),
                     contentFadeTransitionSpec = { tween(250) },
                 ),
@@ -377,6 +390,9 @@ private fun CurrentWeather(
                         animationSpec = InfiniteRepeatableSpec(
                             tween(1000)
                         )
+                    ),
+                    color = PlaceholderDefaults.color(
+                        backgroundColor = MaterialTheme.colorScheme.surface,
                     ),
                     contentFadeTransitionSpec = { tween(250) },
                 ),
