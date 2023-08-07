@@ -143,8 +143,11 @@ fun WeatherForecastScreen(
         fun onPull(delta: Float): Float = when {
             isSyncing -> 0f
             else -> {
-                distanceDelta = (distanceDelta + delta).coerceAtLeast(0f)
-                delta
+                val newOffset = (distanceDelta + delta).coerceAtLeast(0f)
+                val dragConsumed = newOffset - distanceDelta
+
+                distanceDelta = newOffset
+                dragConsumed
             }
         }
 
