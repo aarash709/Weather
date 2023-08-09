@@ -45,9 +45,6 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window,false)
 
         setContent {
-            LaunchedEffect(key1 = hasInternet, block = {
-                Timber.e("internet: $hasInternet")
-            })
             WeatherApp(hasInternet = hasInternet)
         }
     }

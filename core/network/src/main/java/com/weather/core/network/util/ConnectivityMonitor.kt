@@ -14,7 +14,7 @@ import javax.inject.Singleton
 @Singleton
 class ConnectivityMonitor @Inject constructor(
     @ApplicationContext context: Context,
-):NetworkManager {
+) : NetworkManager {
     override val hasInternet = callbackFlow {
         val connectivityManager =
             context.getSystemService(ConnectivityManager::class.java)
@@ -30,6 +30,11 @@ class ConnectivityMonitor @Inject constructor(
                 super.onAvailable(network)
                 channel.trySend(true)
 
+            }
+
+            override fun onLost(network: Network) {
+                super.onLost(network)
+                channel.trySend(false)
             }
         }
         val request =
