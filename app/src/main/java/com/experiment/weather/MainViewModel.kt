@@ -1,20 +1,31 @@
 package com.experiment.weather
 
-import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.ConnectivityManager.*
 import android.net.NetworkCapabilities.*
 import android.os.Build
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.internal.Contexts.getApplication
+import androidx.lifecycle.viewModelScope
+import com.weather.core.network.util.ConnectivityMonitor
+import com.weather.core.network.util.NetworkManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
+    networkManager : NetworkManager
 ) : ViewModel() {
+
+    val hasInternet : StateFlow<Boolean> = networkManager.hasInternet.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(1_000),
+        initialValue = false
+    )
+
     private fun hasNetworkConnection(context: Context): Boolean {
         val connectivityManager = context.applicationContext
             .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
