@@ -85,7 +85,7 @@ class ForecastViewModel @Inject constructor(
                     )
                 }
                 val hourly = weather.hourly.map {
-                   it.convertToUserSettings(userSettings.temperatureUnits)
+                    it.convertToUserSettings(userSettings.temperatureUnits)
                 }
                 val newWeather = weather.copy(current = current, daily = daily, hourly = hourly)
                 SavableForecastData(
@@ -153,14 +153,8 @@ class ForecastViewModel @Inject constructor(
         defaultWindSpeedUnits: WindSpeedUnits = KM,
         defaultTemperature: TemperatureUnits = C,
     ) {
-        this.apply {
-            windSpeedUnits?.let {
-                userRepository.setWindSpeedUnitSetting(defaultWindSpeedUnits)
-            }
-            temperatureUnits?.let {
-                userRepository.setTemperatureUnitSetting(defaultTemperature)
-            }
-        }
+        windSpeedUnits ?: userRepository.setWindSpeedUnitSetting(defaultWindSpeedUnits)
+        temperatureUnits ?: userRepository.setTemperatureUnitSetting(defaultTemperature)
     }
 }
 
