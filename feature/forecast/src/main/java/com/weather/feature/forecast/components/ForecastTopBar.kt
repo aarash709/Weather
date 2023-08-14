@@ -19,7 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.placeholder.PlaceholderDefaults
 import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.color
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
 import com.weather.core.design.theme.WeatherTheme
@@ -78,6 +80,8 @@ private fun ForecastTitle(
                         tween(1000)
                     )
                 ),
+                color = PlaceholderDefaults.color(
+                    MaterialTheme.colorScheme.surface),
                 contentFadeTransitionSpec = { tween(250) },
             ),
         verticalAlignment = Alignment.CenterVertically,
@@ -104,7 +108,7 @@ private fun Topbar() {
     WeatherTheme() {
         ForecastTopBar(
             cityName = "cityName",
-            showPlaceholder = false,
+            showPlaceholder = true,
             onNavigateToManageLocations = { },
             onNavigateToSettings = { }
         )
