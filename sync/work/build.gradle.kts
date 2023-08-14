@@ -1,7 +1,6 @@
 plugins {
-    id("com.android.library")
+    id("weather.android.library")
     id("dagger.hilt.android.plugin")
-    id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.serialization")
     id("kotlin-kapt")
 }

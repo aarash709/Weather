@@ -15,12 +15,20 @@ dependencies{
 gradlePlugin{
     plugins {
         register("compose-application"){
-            id = "compose.application"
+            id = "weather.compose.application"
             implementationClass = "ComposeApplicationConventionPlugin"
         }
         register("compose-library"){
-            id = "compose.library"
+            id = "weather.compose.library"
             implementationClass = "ComposeLibraryConventionPlugin"
+        }
+        register("application-convention"){
+            id = "weather.android.application"
+            implementationClass = "ApplicationConventionPlugin"
+        }
+        register("library-convention"){
+            id = "weather.android.library"
+            implementationClass = "LibraryConventionPlugin"
         }
     }
 }

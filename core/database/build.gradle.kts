@@ -1,26 +1,17 @@
 plugins {
-    id("com.android.library")
+    id("weather.android.library")
     id("dagger.hilt.android.plugin")
     id("org.jetbrains.kotlin.plugin.serialization")
-    id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
 }
 
 android {
     namespace = "com.weather.core.database"
-    compileSdk = 33
     defaultConfig {
-        minSdk = 26
-        targetSdk = 33
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
 
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
         jvmTarget = "17"
