@@ -1,5 +1,5 @@
 plugins {
-    id("compose.library")
+    id("weather.compose.library")
     id("weather.android.library")
     id("dagger.hilt.android.plugin")
     id("org.jetbrains.kotlin.plugin.serialization")
