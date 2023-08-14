@@ -1,9 +1,9 @@
 plugins {
+    id ("weather.android.application")
     id ("compose.application")
-    id ("kotlin-android")
+    id ("org.jetbrains.kotlin.android")
     id ("dagger.hilt.android.plugin")
     id ("org.jetbrains.kotlin.plugin.serialization")
-    id ("org.jetbrains.kotlin.android")
     id ("kotlin-kapt")
 }
 
