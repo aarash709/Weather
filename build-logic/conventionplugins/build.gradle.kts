@@ -26,5 +26,9 @@ gradlePlugin{
             id = "weather.android.application"
             implementationClass = "ApplicationConventionPlugin"
         }
+        register("library-convention"){
+            id = "weather.android.library"
+            implementationClass = "LibraryConventionPlugin"
+        }
     }
 }

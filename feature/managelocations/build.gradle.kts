@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
 
 plugins {
     id("compose.library")
-    id("org.jetbrains.kotlin.android")
+    id("weather.android.library")
     id("dagger.hilt.android.plugin")
     id("org.jetbrains.kotlin.plugin.serialization")
     id("kotlin-kapt")
