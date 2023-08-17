@@ -5,8 +5,11 @@ Work in progress 🚧 android weather app written entirely in Kotlin and jetpack
 ## Roadmap
 
 * [ ] Redesign Forecast page
-* [ ] Add background to Forecast page
 * [ ] Redesign pullrefresh
+* [ ] Add background to Forecast page
+* [ ] Data Sync strategy
+* [ ] Test module
+* [ ] Add testing for core layer and feature modules
 
 ## Architecture
 
