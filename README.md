@@ -21,7 +21,7 @@ Your `local.properties` file shoud have the following proprties:
 BASE_URL=https://api.openweathermap.org/
 API_KEY=[GeneratedApiKey]
 ```
-To access to these properties and if you are using AGP 8.1 an up, you nees to set buildConfig to true in your module`s build.gradle.kts file like this:
+To access to these properties and if you are using AGP 8.1 an up, you need to set buildConfig to true in your module`s build.gradle.kts file like this:
 ```gradle
 buildFeatures {
   buildConfig = true
