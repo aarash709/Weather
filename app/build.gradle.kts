@@ -4,6 +4,7 @@ plugins {
     id ("org.jetbrains.kotlin.android")
     id ("dagger.hilt.android.plugin")
     id ("org.jetbrains.kotlin.plugin.serialization")
+    id (libs.plugins.kotlinx.ksp.get().pluginId)
     id ("kotlin-kapt")
 }
 
@@ -107,14 +108,16 @@ dependencies {
 
     implementation(libs.androidx.datastore)
 
-    implementation(libs.timberLogger)
 
     implementation(libs.hilt.navigationCompose)
+
     implementation(libs.hilt.android)
     kapt(libs.hilt.kaptCompiler)
 
     implementation(libs.androidx.hiltWork)
     kapt(libs.androidx.hiltKaptCompiler)
+
+    implementation(libs.timberLogger)
 
     //Testing
     testImplementation(libs.junit)
