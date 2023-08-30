@@ -2,6 +2,7 @@ plugins {
     id("weather.android.library")
     id("dagger.hilt.android.plugin")
     id("org.jetbrains.kotlin.plugin.serialization")
+    id (libs.plugins.kotlinx.ksp.get().pluginId)
     id("kotlin-kapt")
 }
 
@@ -29,8 +30,7 @@ dependencies {
 
     implementation(libs.androidx.roomCommon)
     implementation(libs.androidx.roomKtx)
-    annotationProcessor(libs.androidx.roomCompiler)
-    kapt(libs.androidx.roomCompiler)
+    ksp(libs.androidx.roomCompiler)
     implementation(libs.androidx.roomRuntime)
 
     //test
