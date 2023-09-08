@@ -1,13 +1,15 @@
 package com.weather.core.database
 
-import com.weather.core.database.entities.onecall.*
+import com.weather.core.database.entities.onecall.CurrentEntity
+import com.weather.core.database.entities.onecall.CurrentWeatherEntity
+import com.weather.core.database.entities.onecall.DailyEntity
+import com.weather.core.database.entities.onecall.OneCallEntity
+import com.weather.core.database.entities.onecall.OneCallHourlyEntity
 import com.weather.core.database.entities.relation.OneCallAndCurrent
 import com.weather.model.WeatherData
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 
 class WeatherLocalDataSource(
     private val dao: WeatherDao,
@@ -72,14 +74,12 @@ class WeatherLocalDataSource(
         daily: List<DailyEntity>,
         hourly: List<OneCallHourlyEntity>,
     ) {
-        withContext(Dispatchers.IO) {
-            dao.insertData(
-                oneCall = oneCall,
-                oneCallCurrent = current,
-                currentWeatherList = currentWeather,
-                daily = daily,
-                hourly = hourly
-            )
-        }
+        dao.insertData(
+            oneCall = oneCall,
+            oneCallCurrent = current,
+            currentWeatherList = currentWeather,
+            daily = daily,
+            hourly = hourly
+        )
     }
 }
