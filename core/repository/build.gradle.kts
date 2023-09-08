@@ -25,6 +25,7 @@ dependencies {
     implementation(project(":core:database"))
     implementation(project(":core:datastore"))
     implementation(project(":core:model"))
+    implementation(project(":core:common"))
 
     implementation(libs.timberLogger)
     implementation(libs.androidx.lifecycleRuntimeKtx) //fixed duplicate class error while running android test.
