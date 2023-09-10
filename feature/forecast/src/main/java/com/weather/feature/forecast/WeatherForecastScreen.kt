@@ -4,7 +4,6 @@ import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOutCubic
-import androidx.compose.animation.core.InfiniteRepeatableSpec
 import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
@@ -15,10 +14,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,20 +29,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.placeholder.PlaceholderDefaults
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.material.color
-import com.google.accompanist.placeholder.material.placeholder
-import com.google.accompanist.placeholder.material.shimmer
 import com.weather.core.design.components.CustomIndicator
+import com.weather.core.design.components.PlaceholderHighlight
+import com.weather.core.design.components.shimmer
+import com.weather.core.design.components.weatherPlaceholder
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.feature.forecast.components.*
-import com.weather.feature.forecast.components.Daily
-import com.weather.feature.forecast.components.HourlyForecast
 import com.weather.model.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import kotlin.math.roundToInt
 
 @ExperimentalCoroutinesApi
@@ -236,17 +231,8 @@ fun ConditionAndDetails(
                 modifier = Modifier
                     .padding(horizontal = 1.dp)
                     .fillMaxWidth()
-                    .placeholder(
+                    .weatherPlaceholder(
                         visible = showPlaceholder,
-                        highlight = PlaceholderHighlight.shimmer(
-                            animationSpec = InfiniteRepeatableSpec(
-                                tween(1000)
-                            )
-                        ),
-                        color = PlaceholderDefaults.color(
-                            backgroundColor = MaterialTheme.colorScheme.surface,
-                        ),
-                        contentFadeTransitionSpec = { tween(250) },
                     ),
                 weatherData = weatherData.current,
                 speedUnit = speedUnit,
@@ -255,32 +241,14 @@ fun ConditionAndDetails(
         Daily(
             modifier = Modifier
                 .fillMaxWidth()
-                .placeholder(
+                .weatherPlaceholder(
                     visible = showPlaceholder,
-                    highlight = PlaceholderHighlight.shimmer(
-                        animationSpec = InfiniteRepeatableSpec(
-                            tween(1000)
-                        )
-                    ),
-                    color = PlaceholderDefaults.color(
-                        backgroundColor = MaterialTheme.colorScheme.surface,
-                    ),
-                    contentFadeTransitionSpec = { tween(250) },
                 ),
             dailyList = weatherData.daily.map { it.toDailyPreview() })
         HourlyForecast(
             modifier = Modifier
-                .placeholder(
+                .weatherPlaceholder(
                     visible = showPlaceholder,
-                    highlight = PlaceholderHighlight.shimmer(
-                        animationSpec = InfiniteRepeatableSpec(
-                            tween(1000)
-                        )
-                    ),
-                    color = PlaceholderDefaults.color(
-                        backgroundColor = MaterialTheme.colorScheme.surface,
-                    ),
-                    contentFadeTransitionSpec = { tween(250) },
                 ),
             data = weatherData.hourly
         )
@@ -387,17 +355,8 @@ private fun CurrentWeather(
         CurrentTempAndCondition(
             modifier = Modifier
                 .fillMaxWidth()
-                .placeholder(
+                .weatherPlaceholder(
                     visible = showPlaceholder,
-                    highlight = PlaceholderHighlight.shimmer(
-                        animationSpec = InfiniteRepeatableSpec(
-                            tween(1000)
-                        )
-                    ),
-                    color = PlaceholderDefaults.color(
-                        backgroundColor = MaterialTheme.colorScheme.surface,
-                    ),
-                    contentFadeTransitionSpec = { tween(250) },
                 ),
             temp = weatherData.temp.roundToInt().toString(),
             temperatureUnit = temperatureUnit,
@@ -553,10 +512,17 @@ private fun CurrentTempAndCondition(
 }
 
 @ExperimentalMaterialApi
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO)
+@Preview(name = "night",showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Preview(name = "day",showBackground = true, uiMode = UI_MODE_NIGHT_NO)
 @Composable
 fun MainPagePreview() {
+    var placeholder by remember {
+        mutableStateOf(true)
+    }
+    LaunchedEffect(key1 = Unit, block = {
+        delay(1000)
+        placeholder = false
+    })
     WeatherTheme {
         val data = SavableForecastData(
             weather = WeatherData(
@@ -589,7 +555,7 @@ fun MainPagePreview() {
                 hourly = HourlyStaticData,
             ),
             userSettings = SettingsData(WindSpeedUnits.KM, TemperatureUnits.C),
-            showPlaceHolder = false
+            showPlaceHolder = placeholder
         )
         Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
             WeatherForecastScreen(weatherUIState = data,

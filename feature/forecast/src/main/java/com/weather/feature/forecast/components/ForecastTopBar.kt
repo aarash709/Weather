@@ -2,28 +2,22 @@ package com.weather.feature.forecast.components
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import androidx.compose.animation.core.InfiniteRepeatableSpec
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.accompanist.placeholder.PlaceholderDefaults
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.material.color
-import com.google.accompanist.placeholder.material.placeholder
-import com.google.accompanist.placeholder.material.shimmer
+import com.weather.core.design.components.PlaceholderHighlight
+import com.weather.core.design.components.shimmer
+import com.weather.core.design.components.weatherPlaceholder
 import com.weather.core.design.theme.WeatherTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,16 +67,10 @@ private fun ForecastTitle(
     }
     Row(
         modifier = Modifier
-            .placeholder(
+            .weatherPlaceholder(
                 visible = showPlaceholder,
                 highlight = PlaceholderHighlight.shimmer(
-                    animationSpec = InfiniteRepeatableSpec(
-                        tween(1000)
-                    )
                 ),
-                color = PlaceholderDefaults.color(
-                    MaterialTheme.colorScheme.surface),
-                contentFadeTransitionSpec = { tween(250) },
             ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceAround
