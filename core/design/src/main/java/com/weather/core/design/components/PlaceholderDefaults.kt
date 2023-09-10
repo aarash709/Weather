@@ -79,4 +79,11 @@ object PlaceholderDefaults {
             repeatMode = RepeatMode.Restart
         )
     }
+
+    val weatherShimmerAnimationSpec: InfiniteRepeatableSpec<Float> by lazy {
+        infiniteRepeatable(
+            animation = tween(durationMillis = 1000, delayMillis = 25),
+            repeatMode = RepeatMode.Restart
+        )
+    }
 }

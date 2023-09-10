@@ -12,6 +12,15 @@ import androidx.compose.ui.util.lerp
 import kotlin.math.max
 
 @Composable
+fun PlaceholderHighlight.Companion.weatherShimmer(
+    animationSpec: InfiniteRepeatableSpec<Float> = PlaceholderDefaults.weatherShimmerAnimationSpec,
+    @FloatRange(from = 0.0, to = 1.0) progressForMaxAlpha: Float = 0.6f,
+): PlaceholderHighlight = PlaceholderHighlight.shimmer(
+    highlightColor = PlaceholderDefaults.shimmerHighlightColor(),
+    animationSpec = animationSpec,
+    progressForMaxAlpha = progressForMaxAlpha,
+)
+@Composable
 fun PlaceholderHighlight.Companion.shimmer(
     animationSpec: InfiniteRepeatableSpec<Float> = PlaceholderDefaults.shimmerAnimationSpec,
     @FloatRange(from = 0.0, to = 1.0) progressForMaxAlpha: Float = 0.6f,

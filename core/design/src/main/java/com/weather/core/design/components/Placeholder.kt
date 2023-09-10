@@ -2,8 +2,10 @@ package com.weather.core.design.components
 
 import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
@@ -37,14 +39,22 @@ fun Modifier.weatherPlaceholder(
     color: Color = Color.Unspecified,
     shape: Shape? = null,
     highlight: PlaceholderHighlight? = null,
-    placeholderFadeTransitionSpec: @Composable Transition.Segment<Boolean>.() -> FiniteAnimationSpec<Float> = { tween(100) },
-    contentFadeTransitionSpec: @Composable Transition.Segment<Boolean>.() -> FiniteAnimationSpec<Float> = { tween(50) },
+    placeholderFadeTransitionSpec: @Composable Transition.Segment<Boolean>.() -> FiniteAnimationSpec<Float> = {
+        tween(
+            100
+        )
+    },
+    contentFadeTransitionSpec: @Composable Transition.Segment<Boolean>.() -> FiniteAnimationSpec<Float> = {
+        tween(
+            50
+        )
+    },
 ): Modifier = composed {
     placeholder(
         visible = visible,
         color = if (color.isSpecified) color else PlaceholderDefaults.weatherColor(),
         shape = shape ?: MaterialTheme.shapes.small,
-        highlight = highlight ?: PlaceholderHighlight.shimmer(),
+        highlight = highlight ?: PlaceholderHighlight.weatherShimmer(),
         placeholderFadeTransitionSpec = placeholderFadeTransitionSpec,
         contentFadeTransitionSpec = contentFadeTransitionSpec
     )
