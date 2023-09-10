@@ -2,6 +2,7 @@ package com.weather.core.design.components
 
 import androidx.annotation.FloatRange
 import androidx.compose.animation.core.InfiniteRepeatableSpec
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
@@ -10,11 +11,29 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.util.lerp
 import kotlin.math.max
 
+@Composable
+fun PlaceholderHighlight.Companion.shimmer(
+    animationSpec: InfiniteRepeatableSpec<Float> = PlaceholderDefaults.shimmerAnimationSpec,
+    @FloatRange(from = 0.0, to = 1.0) progressForMaxAlpha: Float = 0.6f,
+): PlaceholderHighlight = PlaceholderHighlight.shimmer(
+    highlightColor = PlaceholderDefaults.shimmerHighlightColor(),
+    animationSpec = animationSpec,
+    progressForMaxAlpha = progressForMaxAlpha,
+)
+
+@Composable
+fun PlaceholderHighlight.Companion.fade(
+    animationSpec: InfiniteRepeatableSpec<Float> = PlaceholderDefaults.fadeAnimationSpec,
+): PlaceholderHighlight = PlaceholderHighlight.fade(
+    highlightColor = PlaceholderDefaults.fadeHighlightColor(),
+    animationSpec = animationSpec,
+)
+
 interface PlaceholderHighlight {
     /**
      * The optional [AnimationSpec] to use when running the animation for this highlight.
      */
-    public val animationSpec: InfiniteRepeatableSpec<Float>?
+    val animationSpec: InfiniteRepeatableSpec<Float>?
 
     /**
      * Return a [Brush] to draw for the given [progress] and [size].
@@ -22,7 +41,7 @@ interface PlaceholderHighlight {
      * @param progress the current animated progress in the range of 0f..1f.
      * @param size The size of the current layout to draw in.
      */
-    public fun brush(
+    fun brush(
         @FloatRange(from = 0.0, to = 1.0) progress: Float,
         size: Size,
     ): Brush
@@ -47,7 +66,7 @@ interface PlaceholderHighlight {
  * @param animationSpec the [AnimationSpec] to configure the animation.
  */
 
-fun PlaceholderHighlight.Companion.fade(
+private fun PlaceholderHighlight.Companion.fade(
     highlightColor: Color,
     animationSpec: InfiniteRepeatableSpec<Float> = PlaceholderDefaults.fadeAnimationSpec,
 ): PlaceholderHighlight = Fade(
@@ -70,7 +89,7 @@ fun PlaceholderHighlight.Companion.fade(
  * Defaults to 0.6f.
  */
 
-fun PlaceholderHighlight.Companion.shimmer(
+private fun PlaceholderHighlight.Companion.shimmer(
     highlightColor: Color,
     animationSpec: InfiniteRepeatableSpec<Float> = PlaceholderDefaults.shimmerAnimationSpec,
     @FloatRange(from = 0.0, to = 1.0) progressForMaxAlpha: Float = 0.6f,

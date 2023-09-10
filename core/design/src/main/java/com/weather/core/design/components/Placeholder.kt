@@ -1,12 +1,9 @@
 package com.weather.core.design.components
 
 import androidx.compose.animation.core.FiniteAnimationSpec
-import androidx.compose.animation.core.InfiniteRepeatableSpec
 import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
@@ -40,14 +37,14 @@ fun Modifier.weatherPlaceholder(
     color: Color = Color.Unspecified,
     shape: Shape? = null,
     highlight: PlaceholderHighlight? = null,
-    placeholderFadeTransitionSpec: @Composable Transition.Segment<Boolean>.() -> FiniteAnimationSpec<Float> = { spring() },
-    contentFadeTransitionSpec: @Composable Transition.Segment<Boolean>.() -> FiniteAnimationSpec<Float> = { spring() },
+    placeholderFadeTransitionSpec: @Composable Transition.Segment<Boolean>.() -> FiniteAnimationSpec<Float> = { tween(100) },
+    contentFadeTransitionSpec: @Composable Transition.Segment<Boolean>.() -> FiniteAnimationSpec<Float> = { tween(50) },
 ): Modifier = composed {
     placeholder(
         visible = visible,
-        color = if (color.isSpecified) color else PlaceholderDefaults.color(),
+        color = if (color.isSpecified) color else PlaceholderDefaults.weatherColor(),
         shape = shape ?: MaterialTheme.shapes.small,
-        highlight = highlight,
+        highlight = highlight ?: PlaceholderHighlight.shimmer(),
         placeholderFadeTransitionSpec = placeholderFadeTransitionSpec,
         contentFadeTransitionSpec = contentFadeTransitionSpec
     )
@@ -210,26 +207,4 @@ private inline fun DrawScope.withLayer(
     canvas.saveLayer(size.toRect(), paint)
     drawBlock()
     canvas.restore()
-}
-
-object PlaceholderDefaults {
-    /**
-     * The default [InfiniteRepeatableSpec] to use for [fade].
-     */
-    public val fadeAnimationSpec: InfiniteRepeatableSpec<Float> by lazy {
-        infiniteRepeatable(
-            animation = tween(delayMillis = 200, durationMillis = 600),
-            repeatMode = RepeatMode.Reverse,
-        )
-    }
-
-    /**
-     * The default [InfiniteRepeatableSpec] to use for [shimmer].
-     */
-    public val shimmerAnimationSpec: InfiniteRepeatableSpec<Float> by lazy {
-        infiniteRepeatable(
-            animation = tween(durationMillis = 1700, delayMillis = 200),
-            repeatMode = RepeatMode.Restart
-        )
-    }
 }
