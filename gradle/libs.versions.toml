@@ -75,7 +75,6 @@ kotlix-CoroutinesCore = { group = "org.jetbrains.kotlinx", name = "kotlinx-corou
 kotlix-CoroutinesTest = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 kotlix-CoroutinesAndroid = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
 accompanist-FlowLayout = { group = "com.google.accompanist", name = "accompanist-flowlayout", version.ref = "accompanist" }
-accompanist-placeholder = { group = "com.google.accompanist", name = "accompanist-placeholder-material", version.ref = "accompanist" }
 accompanist-SystemUIController = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist" }
 timberLogger = { group = "com.jakewharton.timber", name = "timber", version.ref = "timberLogger" }
 hilt_NavigationCompose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
