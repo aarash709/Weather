@@ -25,6 +25,8 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.kaptCompiler)
 
+    implementation(libs.kotlix.coroutinesAndroid)
+
     testImplementation(libs.junit)
     testImplementation(libs.kotlix.coroutinesTest)
     androidTestImplementation(libs.androidx.test.junit)
