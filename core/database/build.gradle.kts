@@ -26,6 +26,8 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.kaptCompiler)
 
+    implementation(libs.kotlix.coroutinesAndroid)
+
     implementation(libs.androidx.lifecycleRuntimeKtx) //fixed duplicate class error while running android test.
 
     implementation(libs.androidx.roomCommon)
@@ -34,7 +36,8 @@ dependencies {
     implementation(libs.androidx.roomRuntime)
 
     //test
-    testImplementation(libs.junit)
+    androidTestImplementation(libs.junit)
+    androidTestImplementation(libs.kotlix.coroutinesTest)
     androidTestImplementation(libs.androidx.test.junit)
     androidTestImplementation(libs.androidx.test.espressoCore)
 }
