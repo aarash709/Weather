@@ -36,8 +36,5 @@ dependencies {
     implementation(libs.androidx.roomRuntime)
 
     //test
-    androidTestImplementation(libs.junit)
-    androidTestImplementation(libs.kotlix.coroutinesTest)
-    androidTestImplementation(libs.androidx.test.junit)
-    androidTestImplementation(libs.androidx.test.espressoCore)
+    androidTestImplementation(project(":core:testing"))
 }

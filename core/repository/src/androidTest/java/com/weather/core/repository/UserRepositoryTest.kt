@@ -29,7 +29,8 @@ import org.junit.runner.RunWith
 class UserRepositoryTest {
 
     private val testContext: Context = ApplicationProvider.getApplicationContext()
-    private val testScope = TestScope(StandardTestDispatcher())
+    private val testDispatcher = StandardTestDispatcher()
+    private val testScope = TestScope(testDispatcher)
     private lateinit var dataStore : DataStore<Preferences>
     private lateinit var localPreferences : LocalUserPreferences
 
@@ -45,7 +46,9 @@ class UserRepositoryTest {
             }
         )
         localPreferences = LocalUserPreferences(dataStore)
-        userRepo = UserRepositoryImpl(userPreferences = localPreferences)
+        userRepo = UserRepositoryImpl(
+            userPreferences = localPreferences,
+            IODispatcher = testDispatcher)
     }
 
     @Test

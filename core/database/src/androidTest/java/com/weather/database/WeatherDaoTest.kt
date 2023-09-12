@@ -5,11 +5,11 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.weather.core.database.WeatherDao
 import com.weather.core.database.WeatherDatabase
-import com.weather.core.database.entities.onecall.CurrentEntity
-import com.weather.core.database.entities.onecall.CurrentWeatherEntity
-import com.weather.core.database.entities.onecall.DailyEntity
-import com.weather.core.database.entities.onecall.OneCallEntity
-import com.weather.core.database.entities.onecall.OneCallHourlyEntity
+import com.weather.core.testing.currentWeather
+import com.weather.core.testing.current
+import com.weather.core.testing.daily
+import com.weather.core.testing.hourly
+import com.weather.core.testing.oneCall
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After

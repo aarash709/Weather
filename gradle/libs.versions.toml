@@ -68,6 +68,7 @@ androidx-roomCommon = { group = "androidx.room", name = "room-common", version.r
 androidx-roomKtx = { group = "androidx.room", name = "room-ktx", version.ref = "androidxRoom" }
 androidx-roomCompiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidxRoom" }
 androidx-roomRuntime = { group = "androidx.room", name = "room-runtime", version.ref = "androidxRoom" }
+androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidxTestJunit" }
 androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestJunit" }
 androidx-test-espressoCore = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidxEspresso" }
 kotlix-Serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
