@@ -29,22 +29,24 @@ android {
 dependencies {
 
     implementation(project(":core:model"))
+    implementation(project(":core:common"))
 
     implementation(libs.androidx.lifecycleRuntimeKtx) //fixed duplicate class error while running android test.
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.kaptCompiler)
+
     //implementation("com.squareup.retrofit2:retrofit:$retrofit_version")
     implementation(libs.retrofitMoshi)
     implementation(libs.moshi)
     implementation(libs.moshiKotlin)
+
     implementation(libs.kotlix.serialization)
+
     implementation(libs.timberLogger)
 
     implementation(libs.bundles.ktor)
 
 
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.junit)
-    androidTestImplementation(libs.androidx.test.espressoCore)
+    testImplementation(project(":core:testing"))
 }
