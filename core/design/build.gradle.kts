@@ -31,7 +31,6 @@ dependencies {
     api(libs.compose.ui.toolingPreview)
     debugApi(libs.compose.ui.tooling)
 
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.junit)
-    androidTestImplementation(libs.androidx.test.espressoCore)
+    testImplementation(project(":core:testing"))
+    androidTestImplementation(project(":core:testing"))
 }

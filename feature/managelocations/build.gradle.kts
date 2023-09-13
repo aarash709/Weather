@@ -55,8 +55,6 @@ dependencies {
     implementation(libs.androidx.datastore)
     implementation(libs.timberLogger)
 
-    testImplementation(libs.junit)
-    testImplementation(libs.kotlix.coroutinesTest)
-    androidTestImplementation(libs.androidx.test.junit)
-    androidTestImplementation(libs.androidx.test.espressoCore)
+    androidTestImplementation(project(":core:testing"))
+    testImplementation(project(":core:testing"))
 }

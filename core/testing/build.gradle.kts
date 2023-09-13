@@ -25,6 +25,10 @@ dependencies {
     implementation(project(":core:network"))
     implementation(project(":core:database"))
 
+    api(libs.compose.ui.test)
+    api(libs.compose.ui.testManifest)
+    api(libs.androidx.navigation.testing)
+    api(libs.androidx.test.core)
     api(libs.androidx.test.core)
     api(libs.kotlix.coroutinesTest)
     api(libs.androidx.test.junit)

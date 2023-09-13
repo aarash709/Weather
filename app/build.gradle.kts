@@ -120,8 +120,6 @@ dependencies {
     implementation(libs.timberLogger)
 
     //Testing
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.junit)
-    androidTestImplementation(libs.androidx.test.espressoCore)
-    androidTestImplementation(libs.compose.ui.test)
+    testImplementation(project(":core:testing"))
+    androidTestImplementation(project(":core:testing"))
 }
