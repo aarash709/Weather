@@ -1,19 +1,20 @@
 package com.weather.core.network
 
+import com.experiment.weather.core.common.extentions.Dispachers
+import com.experiment.weather.core.common.extentions.WeatherDidpatchers
 import com.weather.core.network.model.weather.NetworkCurrent
 import com.weather.core.network.model.weather.NetworkOneCall
 import com.weather.model.Resource
 import com.weather.model.geocode.GeoSearchItem
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
 class FakeWeatherRemoteDataSource(
-    val IODispatcher : CoroutineContext
+    @Dispachers(WeatherDidpatchers.IO) val dispatcher : CoroutineContext
 ) {
 
     suspend fun getRemoteData(): Resource<NetworkOneCall> {
-        return withContext(IODispatcher) {
+        return withContext(dispatcher) {
             Resource.Success(
                 data = NetworkOneCall(
                     current = NetworkCurrent(
@@ -45,7 +46,7 @@ class FakeWeatherRemoteDataSource(
     }
 
     suspend fun directGeocode(cityName: String): List<GeoSearchItem> {
-        return withContext(IODispatcher) {
+        return withContext(dispatcher) {
             listOf(
                 GeoSearchItem(
                     country = "iran",

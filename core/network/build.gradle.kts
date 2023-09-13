@@ -29,6 +29,7 @@ android {
 dependencies {
 
     implementation(project(":core:model"))
+    implementation(project(":core:common"))
 
     implementation(libs.androidx.lifecycleRuntimeKtx) //fixed duplicate class error while running android test.
 
