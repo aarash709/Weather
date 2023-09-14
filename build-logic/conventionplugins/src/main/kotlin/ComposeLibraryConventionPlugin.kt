@@ -9,8 +9,6 @@ class ComposeLibraryConventionPlugin : Plugin<Project> {
         with(target) {
             pluginManager.apply("com.android.library")
             extensions.configure<LibraryExtension> {
-                compileSdk = 34
-                defaultConfig.targetSdk = 34
                 composeBuildConfiguration(this)
             }
         }

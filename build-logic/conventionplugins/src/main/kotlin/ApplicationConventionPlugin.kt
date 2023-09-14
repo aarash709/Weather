@@ -14,7 +14,6 @@ class ApplicationConventionPlugin : Plugin<Project> {
                 apply("org.jetbrains.kotlin.android")
             }
             extensions.configure<ApplicationExtension> {
-                compileSdk = 34
                 defaultConfig.targetSdk = 34
                 configureAndroid(this)
             }
