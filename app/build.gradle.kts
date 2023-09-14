@@ -14,13 +14,9 @@ kapt {
 
 android {
     namespace = "com.experiment.weather"
-
-    compileSdk = 34
-
     defaultConfig {
         applicationId = "com.experiment.weather"
         minSdk = 26
-        targetSdk  = 34
         versionCode = 1
         versionName = "0.1-alpha"
 
