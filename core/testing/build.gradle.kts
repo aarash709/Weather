@@ -34,5 +34,6 @@ dependencies {
     api(libs.androidx.test.junit)
     api(libs.junit)
     api(libs.androidx.test.espressoCore)
+    api(libs.hilt.androidTesting)
 
 }

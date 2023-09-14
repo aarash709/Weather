@@ -84,6 +84,7 @@ timberLogger = { group = "com.jakewharton.timber", name = "timber", version.ref 
 hilt_NavigationCompose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 hilt_Android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltAndroid" }
 hilt_KaptCompiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hiltAndroid" }
+hilt_androidTesting = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hiltAndroid" }
 retrofitMoshi = { group = "com.squareup.retrofit2", name = "converter-moshi", version.ref = "retrofit" }
 moshi = { group = "com.squareup.moshi", name = "moshi", version.ref = "moshi" }
 moshiKotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi" }
