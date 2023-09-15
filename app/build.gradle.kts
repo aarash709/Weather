@@ -20,7 +20,7 @@ android {
         versionCode = 1
         versionName = "0.1-alpha"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.weather.core.testing.WeatherTestRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
