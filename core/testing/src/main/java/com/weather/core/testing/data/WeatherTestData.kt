@@ -1,4 +1,4 @@
-package com.weather.core.testing
+package com.weather.core.testing.data
 
 import com.weather.core.database.entities.onecall.CurrentEntity
 import com.weather.core.database.entities.onecall.CurrentWeatherEntity
