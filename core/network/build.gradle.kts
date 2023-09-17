@@ -8,10 +8,6 @@ plugins {
 android {
     namespace = "com.weather.core.network"
 
-    defaultConfig {
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-//        consumerProguardFiles = "consumer-rules.pro"
-    }
     buildFeatures {
         buildConfig = true
     }
