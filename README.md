@@ -9,7 +9,7 @@ Work in progress [🚧] sample android weather app written entirely in Kotlin an
 * [ ] Add background to Forecast page
 * [ ] Data Sync strategy
 * [x] ~Test module~
-* [ ] Add testing for core layer and feature modules
+* [x] ~Add testing for core layer and feature modules~
 
 ## Data
 
