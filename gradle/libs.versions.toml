@@ -7,18 +7,18 @@ androidGradlePlugin = "8.1.0"
 androidxComposeBom = "2023.09.00"
 androidxCompose = "1.5.0"
 androidxComposeCompiler = "1.5.3"
-andoidxMaterial3 = "1.1.1"
+androidxMaterial3 = "1.1.1"
 androidxCore = "1.10.1"
 androidxAppcompat = "1.6.1"
-andoidxWindow = "1.1.0"
-andoidxWork = "2.8.1"
+androidxWindow = "1.1.0"
+androidxWork = "2.8.1"
 androidxNavigation = "2.7.2"
 andoidxLifecycle = "2.6.1"
 androidxActivityCompose = "1.7.2"
 androidxHiltWork = "1.0.0"
 androidxRoom = "2.5.2"
 androidxSplashScreen = "1.0.1"
-andoidxDatastorePreferences = "1.0.0"
+androidxDatastorePreferences = "1.0.0"
 androidxTestCore = "1.5.0"
 androidxTestJunit = "1.1.5"
 androidxEspresso = "3.5.1"
@@ -54,9 +54,9 @@ compose-material3-windowSizeClass = { group = "androidx.compose.material3", name
 compose-material-iconsExtended = { group = "androidx.compose.material", name = "material-icons-extended" }
 androidx-coreKtx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
 androidx-splashScreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidxSplashScreen" }
-androidx-Window = { group = "androidx.window", name = "window", version.ref = "andoidxWindow" }
-androidx-work = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "andoidxWork" }
-androidx-work-testing = { group = "androidx.work", name = "work-testing", version = "andoidxWork" }
+androidx-Window = { group = "androidx.window", name = "window", version.ref = "androidxWindow" }
+androidx-work = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "androidxWork" }
+androidx-work-testing = { group = "androidx.work", name = "work-testing", version = "androidxWork" }
 androidx-NavigationCompose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxNavigation" }
 androidx-navigation-testing = { group = "androidx.navigation", name = "navigation-testing", version.ref = "androidxNavigation" }
 androidx-LifecycleRuntimeKtx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "andoidxLifecycle" }
