@@ -14,17 +14,13 @@ kapt {
 
 android {
     namespace = "com.experiment.weather"
-
-    compileSdk = 34
-
     defaultConfig {
         applicationId = "com.experiment.weather"
         minSdk = 26
-        targetSdk  = 34
         versionCode = 1
         versionName = "0.1-alpha"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.weather.core.testing.WeatherTestRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -120,8 +116,8 @@ dependencies {
     implementation(libs.timberLogger)
 
     //Testing
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.junit)
-    androidTestImplementation(libs.androidx.test.espressoCore)
-    androidTestImplementation(libs.compose.ui.test)
+    testImplementation(project(":core:testing"))
+    androidTestImplementation(project(":core:testing"))
+    androidTestImplementation(libs.androidx.work.testing)
+    kaptAndroidTest(libs.androidx.hiltKaptCompiler)
 }
