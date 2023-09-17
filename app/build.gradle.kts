@@ -118,6 +118,6 @@ dependencies {
     //Testing
     testImplementation(project(":core:testing"))
     androidTestImplementation(project(":core:testing"))
-    kaptAndroidTest(libs.androidx.hiltKaptCompiler)
     androidTestImplementation(libs.androidx.work.testing)
+    kaptAndroidTest(libs.androidx.hiltKaptCompiler)
 }

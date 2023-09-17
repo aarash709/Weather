@@ -13,7 +13,7 @@ androidxAppcompat = "1.6.1"
 androidxWindow = "1.1.0"
 androidxWork = "2.8.1"
 androidxNavigation = "2.7.2"
-andoidxLifecycle = "2.6.1"
+androidxLifecycle = "2.6.1"
 androidxActivityCompose = "1.7.2"
 androidxHiltWork = "1.0.0"
 androidxRoom = "2.5.2"
@@ -56,16 +56,16 @@ androidx-coreKtx = { group = "androidx.core", name = "core-ktx", version.ref = "
 androidx-splashScreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidxSplashScreen" }
 androidx-Window = { group = "androidx.window", name = "window", version.ref = "androidxWindow" }
 androidx-work = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "androidxWork" }
-androidx-work-testing = { group = "androidx.work", name = "work-testing", version = "androidxWork" }
+androidx-work-testing = { group = "androidx.work", name = "work-testing", version = "2.8.1" }
 androidx-NavigationCompose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxNavigation" }
 androidx-navigation-testing = { group = "androidx.navigation", name = "navigation-testing", version.ref = "androidxNavigation" }
-androidx-LifecycleRuntimeKtx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "andoidxLifecycle" }
-androidx-LifecycleViewModelKtx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "andoidxLifecycle" }
-androidx-LifecycleLiveDataKtx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "andoidxLifecycle" }
-androidx-LifecycleComposeRuntime = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "andoidxLifecycle" }
-androidx-LifecycleViewModelCompose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "andoidxLifecycle" }
+androidx-LifecycleRuntimeKtx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidxLifecycle" }
+androidx-LifecycleViewModelKtx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "androidxLifecycle" }
+androidx-LifecycleLiveDataKtx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "androidxLifecycle" }
+androidx-LifecycleComposeRuntime = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidxLifecycle" }
+androidx-LifecycleViewModelCompose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "androidxLifecycle" }
 androidx-ActivityCompose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidxActivityCompose" }
-androidx-Datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "andoidxDatastorePreferences" }
+androidx-Datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidxDatastorePreferences" }
 androidx-HiltWork = { group = "androidx.hilt", name = "hilt-work", version.ref = "androidxHiltWork" }
 androidx-HiltKaptCompiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "androidxHiltWork" }
 androidx-roomCommon = { group = "androidx.room", name = "room-common", version.ref = "androidxRoom" }
