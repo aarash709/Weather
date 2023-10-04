@@ -8,8 +8,8 @@ Work in progress [🚧] sample android weather app written entirely in Kotlin an
 * [ ] Redesign pullrefresh
 * [ ] Add background to Forecast page
 * [ ] Data Sync strategy
-* [x] ~Test module~
-* [x] ~Add testing for core layer and feature modules~
+* [x] Test module
+* [x] Add testing for core layer and feature modules
 
 ## Data
 
@@ -46,3 +46,8 @@ Hybrid model is used for modules which is the best for managing code and readabi
 * Networking: [Retrofit]()
 * Serialization: [Kotlinx.Serialization]()
 * DI: [DaggerHilt]()
+
+# License
+
+**Weather Sample** is distributed under the terms of the Apache License (Version 2.0). See the
+[license](LICENSE) for more information.
