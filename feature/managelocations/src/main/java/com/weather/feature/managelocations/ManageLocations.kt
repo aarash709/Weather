@@ -4,6 +4,8 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.WaterDrop
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -145,14 +148,25 @@ fun FavoriteLocations(
     onDeleteItem: (ManageLocationsData) -> Unit,
     onSetFavoriteItem: (ManageLocationsData) -> Unit,
 ) {
+    var selectedCities by rememberSaveable {
+        mutableStateOf(emptySet<String>())
+    }
+    val inSelectionMode by remember {
+        derivedStateOf { selectedCities.isNotEmpty() }
+    }
     LazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items(dataList, key = {
-            it.locationName
-        }) { locationData ->
+        items(
+            items = dataList,
+            key = {
+                it.locationName
+            }) { locationData ->
             val currentItem by rememberUpdatedState(newValue = locationData)
+            val selected by remember {
+                derivedStateOf { locationData.locationName in selectedCities }
+            }
             CustomSwipeDismiss(
                 modifier = Modifier.animateItemPlacement(),
                 dismissThreshold = 0.5f,
@@ -160,7 +174,23 @@ fun FavoriteLocations(
                 onSetFavoriteItem = { onSetFavoriteItem(currentItem) }
             ) {
                 SavedLocationItem(
+                    modifier = if (inSelectionMode) {
+                        Modifier.clickable {
+                            if (selected)
+                                selectedCities -= locationData.locationName
+                            else
+                                selectedCities += locationData.locationName
+
+                        }
+                    } else {
+                        Modifier.combinedClickable(
+                            onClick = { },
+                            onLongClick = { selectedCities += locationData.locationName }
+                        )
+                    },
                     data = locationData,
+                    inSelectionMode = inSelectionMode,
+                    selected = selected,
                     onItemSelected = { coordinate ->
                         onItemSelected(coordinate)
                     }
@@ -173,12 +203,15 @@ fun FavoriteLocations(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SavedLocationItem(
+    modifier: Modifier = Modifier,
     data: ManageLocationsData,
+    inSelectionMode: Boolean,
+    selected: Boolean,
     onItemSelected: (Coordinate) -> Unit,
 ) {
     Surface(
-        onClick = { onItemSelected(Coordinate(data.locationName, data.latitude, data.longitude)) },
-        modifier = Modifier
+//        onClick = { onItemSelected(Coordinate(data.locationName, data.latitude, data.longitude)) },
+        modifier = modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         border =
@@ -194,6 +227,9 @@ fun SavedLocationItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            if (inSelectionMode) {
+                RadioButton(selected = selected, onClick = { })
+            }
             Column(horizontalAlignment = Alignment.Start) {
                 Text(
                     text = data.locationName,
@@ -295,7 +331,9 @@ fun CityItemPreview() {
                 humidity = "46",
                 feelsLike = "1"
             ),
-            onItemSelected = {}
+            onItemSelected = {},
+            inSelectionMode = true,
+            selected = false
         )
     }
 }
