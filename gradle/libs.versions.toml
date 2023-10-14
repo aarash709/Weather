@@ -14,7 +14,7 @@ andoidxWindow = "1.1.0"
 andoidxWork = "2.8.1"
 andoidxNavigation = "2.7.1"
 andoidxLifecycle = "2.6.1"
-androidxActivityCompose = "1.7.2"
+androidxActivityCompose = "1.8.0"
 androidxHiltWork = "1.0.0"
 androidxRoom = "2.5.2"
 androidxSplashScreen = "1.0.1"
@@ -77,7 +77,6 @@ kotlix-CoroutinesCore = { group = "org.jetbrains.kotlinx", name = "kotlinx-corou
 kotlix-CoroutinesTest = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 kotlix-CoroutinesAndroid = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
 accompanist-FlowLayout = { group = "com.google.accompanist", name = "accompanist-flowlayout", version.ref = "accompanist" }
-accompanist-SystemUIController = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist" }
 timberLogger = { group = "com.jakewharton.timber", name = "timber", version.ref = "timberLogger" }
 hilt_NavigationCompose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 hilt_Android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltAndroid" }
