@@ -9,7 +9,7 @@ plugins {
 android {
     namespace = "com.weather.core.database"
     defaultConfig {
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.weather.core.testing.WeatherTestRunner"
     }
     buildTypes {
 
@@ -36,5 +36,7 @@ dependencies {
     implementation(libs.androidx.roomRuntime)
 
     //test
-    androidTestImplementation(project(":core:testing"))
+    androidTestImplementation(project(":core:testing")){
+        exclude(libs.compose.ui.test.get().group)
+    }
 }

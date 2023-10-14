@@ -8,10 +8,8 @@ plugins {
 
 android {
     namespace = "com.weather.feature.search"
-    compileSdk = 33
     defaultConfig {
         minSdk = 26
-        targetSdk = 33
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 //        consumerProguardFiles = "consumer-rules.pro"
@@ -59,8 +57,6 @@ dependencies {
 
     implementation(libs.timberLogger)
 
-    testImplementation(libs.junit)
-    testImplementation(libs.kotlix.coroutinesTest)
-    androidTestImplementation(libs.androidx.test.junit)
-    androidTestImplementation(libs.androidx.test.espressoCore)
+    androidTestImplementation(project(":core:testing"))
+    testImplementation(project(":core:testing"))
 }
