@@ -88,7 +88,6 @@ dependencies {
     implementation(libs.compose.material)
 
     implementation(libs.androidx.window)
-    implementation(libs.accompanist.systemUIController)
 
     implementation(libs.androidx.work)
 
