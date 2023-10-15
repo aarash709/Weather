@@ -7,6 +7,8 @@ plugins{
     alias(libs.plugins.kotlinSerialization) apply false
     alias(libs.plugins.com.android.library) apply false
     alias(libs.plugins.kotlinx.ksp) apply false
+    alias(libs.plugins.detekt) apply false
+    alias(libs.plugins.kotlinter) apply false
 }
 buildscript {
 
@@ -15,7 +17,19 @@ buildscript {
         mavenCentral()
     }
 }
+subprojects {
+    apply(plugin = "io.gitlab.arturbosch.detekt")
 
+}
+tasks.withType(io.gitlab.arturbosch.detekt.Detekt::class.java).configureEach {
+    reports{
+        html.required.set(true)
+        xml.required.set(false)
+        txt.required.set(false)
+        sarif.required.set(false)
+        md.required.set(false)
+    }
+}
 task("clean", Delete::class){
     delete(rootProject.buildDir)
 }

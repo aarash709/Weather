@@ -34,6 +34,8 @@ ktor = "2.3.0"
 gradleSecret = "2.0.1"
 junit = "4.13.2"
 appcompat = "1.6.1"
+detekt = "1.23.1"
+kotlinter = "4.0.0"
 
 [libraries]
 material = {group = "com.google.android.material", name = "material", version.ref = "material"}
@@ -133,3 +135,5 @@ kotlinGradle = {id = "org.jetbrains.kotlin.android", version.ref = "kotlin"}
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
 com-android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 kotlinx-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlinxKsp" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+kotlinter = { id = "org.jmailen.kotlinter", version.ref = "kotlinter" }
