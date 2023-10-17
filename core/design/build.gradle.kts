@@ -1,6 +1,6 @@
 plugins {
-    id("weather.android.library")
-    id ("weather.compose.library")
+    alias (libs.plugins.weather.android.library)
+    alias (libs.plugins.weather.android.compose.library)
     id("org.jetbrains.kotlin.plugin.serialization")
     id("kotlin-kapt")
 }

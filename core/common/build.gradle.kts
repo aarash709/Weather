@@ -1,6 +1,6 @@
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
-    id("weather.android.library")
+    alias (libs.plugins.weather.android.library)
     id("kotlin-kapt")
 }
 

@@ -1,6 +1,6 @@
 plugins {
-    id("weather.compose.library")
-    id("weather.android.library")
+    alias (libs.plugins.weather.android.library)
+    alias (libs.plugins.weather.android.compose.library)
     id("dagger.hilt.android.plugin")
     id("org.jetbrains.kotlin.plugin.serialization")
     id("kotlin-kapt")
@@ -9,16 +9,10 @@ plugins {
 android {
     namespace = "com.weather.feature.search"
     defaultConfig {
-        minSdk = 26
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 //        consumerProguardFiles = "consumer-rules.pro"
     }
     buildTypes {
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
         jvmTarget = "17"
