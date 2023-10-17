@@ -36,7 +36,7 @@ junit = "4.13.2"
 appcompat = "1.6.1"
 
 [libraries]
-material = {group = "com.google.android.material", name = "material", version.ref = "material"}
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }
 compose-animation = { group = "androidx.compose.animation", name = "animation" }
 compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
@@ -127,9 +127,15 @@ ktor = [
 ]
 [plugins]
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "gradleSecret" }
-andoirdGradle = {id = "com.android.application", version.ref = "androidGradlePlugin"}
-kotlinSerialization = {id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
-kotlinGradle = {id = "org.jetbrains.kotlin.android", version.ref = "kotlin"}
+andoirdGradle = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlinGradle = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
 com-android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 kotlinx-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlinxKsp" }
+
+#custom plugins
+weather-android-application = { id = "weather.android.application", version = "unspecified" }
+weather-android-library = { id = "weather.android.library", version = "unspecified" }
+weather-android-compose-application = { id = "weather.compose.application", version = "unspecified" }
+weather-android-compose-library = { id = "weather.compose.library", version = "unspecified" }
