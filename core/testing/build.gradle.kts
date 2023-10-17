@@ -1,19 +1,13 @@
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
-    id("weather.android.library")
+    alias(libs.plugins.weather.android.library)
 }
 
 android {
     namespace = "com.weather.core.testing"
-
-    defaultConfig {
-        minSdk = 26
-    }
-
     buildTypes {
 
     }
-
     kotlinOptions {
         jvmTarget = "17"
     }

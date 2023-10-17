@@ -1,7 +1,6 @@
 plugins {
-    id ("weather.android.application")
-    id ("weather.compose.application")
-    id ("org.jetbrains.kotlin.android")
+    alias (libs.plugins.weather.android.application)
+    alias (libs.plugins.weather.android.compose.application)
     id ("dagger.hilt.android.plugin")
     id ("org.jetbrains.kotlin.plugin.serialization")
     id (libs.plugins.kotlinx.ksp.get().pluginId)
