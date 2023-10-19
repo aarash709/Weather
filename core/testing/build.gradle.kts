@@ -19,7 +19,7 @@ dependencies {
     implementation(project(":core:database"))
     implementation(project(":core:design"))
 
-    androidTestApi(libs.compose.ui.test)
+    api(libs.compose.ui.test)
     api(libs.compose.ui.testManifest)
     debugApi(libs.androidx.navigation.testing)
     api(libs.androidx.test.core)

@@ -5,13 +5,11 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -29,6 +27,30 @@ fun Settings(
     onBackPressed: () -> Unit,
 ) {
     val settingsUIState by viewModel.settingsUIState.collectAsStateWithLifecycle()
+    var tempUnit by remember {
+        mutableStateOf("")
+    }
+    var windUnit by remember {
+        mutableStateOf("")
+    }
+    LaunchedEffect(key1 = settingsUIState){
+        when(settingsUIState){
+            is SettingsUIState.Success ->{
+                tempUnit = when ((settingsUIState as SettingsUIState.Success).settingsData.temperatureUnits) {
+                    TemperatureUnits.C -> "°C"
+                    TemperatureUnits.F -> "°F"
+                    else -> "null"
+                }
+                windUnit = when ((settingsUIState as SettingsUIState.Success).settingsData.windSpeedUnits) {
+                    WindSpeedUnits.KM -> "Kilometer per hour"
+                    WindSpeedUnits.MS -> "Meters per second"
+                    WindSpeedUnits.MPH -> "Miles per hour"
+                    else -> "null"
+                }
+            }
+            else -> {}
+        }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -37,6 +59,8 @@ fun Settings(
         SettingsContent(
             modifier = Modifier.padding(horizontal = 16.dp),
             settingsState = settingsUIState,
+            tempUnit = tempUnit,
+            windUnit = windUnit,
             onBackPressed = { onBackPressed() },
             setTemperature = viewModel::setTemperatureUnit,
             setWindSpeed = viewModel::setWindSpeedUnit
@@ -47,8 +71,10 @@ fun Settings(
 
 @Composable
 internal fun SettingsContent(
-    modifier : Modifier = Modifier,
+    modifier: Modifier = Modifier,
     settingsState: SettingsUIState,
+    tempUnit: String,
+    windUnit: String,
     onBackPressed: () -> Unit,
     setTemperature: (TemperatureUnits) -> Unit,
     setWindSpeed: (WindSpeedUnits) -> Unit,
@@ -60,75 +86,25 @@ internal fun SettingsContent(
                 modifier = modifier
                     .fillMaxSize()
             ) {
-                val tempUnit = when (settingsState.settingsData.temperatureUnits) {
-                    TemperatureUnits.C -> "°C"
-                    TemperatureUnits.F -> "°F"
-                    null -> "null"
-                }
-                val windUnit = when (settingsState.settingsData.windSpeedUnits) {
-                    null -> "null"
-                    WindSpeedUnits.KM -> "Kilometer per hour"
-                    WindSpeedUnits.MS -> "Meters per second"
-                    WindSpeedUnits.MPH -> "Miles per hour"
-                }
                 CustomTopBar(modifier = Modifier.fillMaxWidth(), text = "Settings") {
                     onBackPressed()
                 }
-                Column(modifier = Modifier) {
-                    Text(
-                        text = "Units",
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = .5f),
-                        fontSize = 12.sp
+                SettingGroup(
+                    modifier = Modifier,
+                    groupName = "Units"
+                ) {
+                    TemperatureSection(
+                        title = "Temperature",
+                        tempUnitName = tempUnit,
+                        setTemperature = setTemperature
                     )
-                    Surface(
-                        modifier = Modifier
-                            .padding(vertical = 4.dp)
-                            .fillMaxWidth(),
-                        shape = RoundedCornerShape(8.dp),
-                        color = MaterialTheme.colorScheme.background,
-                        shadowElevation = 0.dp
-                    ) {
-                        var expanded by remember {
-                            mutableStateOf(false)
-                        }
-                        SettingItem(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { expanded = true }
-                                .padding(vertical = 8.dp),
-                        ) {
-                            Text("Temperature Unit", color = MaterialTheme.colorScheme.onBackground)
-                            TemperatureMenu(
-                                tempUnit,
-                                expanded,
-                                setTemperature,
-                                setExpanded = { expanded = it })
-                        }
-                    }
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        shape = RoundedCornerShape(8.dp),
-                        color = MaterialTheme.colorScheme.background,
-                        shadowElevation = 0.dp
-                    ) {
-                        var expanded by remember {
-                            mutableStateOf(false)
-                        }
-                        SettingItem(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { expanded = true }
-                                .padding(vertical = 8.dp)
-                        ) {
-                            Text("Wind Speed Unit", color = MaterialTheme.colorScheme.onBackground)
-                            WindSpeedMenu(
-                                windUnit = windUnit,
-                                expanded = expanded,
-                                setWindSpeed = setWindSpeed,
-                                setExpanded = { expanded = it })
-                        }
-                    }
+                    WindSpeedSection(
+                        title = "Wind Speed",
+                        windSpeedUnitName = windUnit,
+                        setWindSpeed = setWindSpeed
+                    )
+                }
+                SettingGroup(groupName = "About") {
                     About()
                 }
             }
@@ -140,14 +116,7 @@ internal fun SettingsContent(
 private fun About() {
     Column {
         Text(
-            text = "About",
-            modifier = Modifier.padding(top = 16.dp),
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = .5f),
-            fontSize = 12.sp
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = "This DEMO app is not a production application and is a work in progress 🚧.",
+            text = "A work in progress 🚧 Weather sample app.",
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = .5f),
             fontSize = 12.sp,
         )
@@ -157,106 +126,6 @@ private fun About() {
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = .5f),
             fontSize = 12.sp,
         )
-    }
-}
-
-@Composable
-fun SettingItem(
-    modifier: Modifier = Modifier,
-    horizontalArrangement: Arrangement.Horizontal = Arrangement.SpaceBetween,
-    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
-    content: @Composable RowScope.() -> Unit,
-) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = horizontalArrangement,
-        verticalAlignment = verticalAlignment
-    ) {
-        content()
-    }
-}
-
-@Composable
-private fun WindSpeedMenu(
-    windUnit: String,
-    expanded: Boolean,
-    setWindSpeed: (WindSpeedUnits) -> Unit,
-    setExpanded: (Boolean) -> Unit,
-) {
-    Column {
-        Text(
-            text = windUnit,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
-        )
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { setExpanded(false) },
-            modifier = Modifier.wrapContentSize(),
-            offset = DpOffset(x = 25.dp, y = 4.dp),
-        ) {
-            DropdownMenuItem(
-                text = { Text(text = "km/h") },
-                onClick = {
-                    setWindSpeed(WindSpeedUnits.KM)
-                    setExpanded(false)
-                },
-                enabled = true
-            )
-            DropdownMenuItem(
-                text = { Text(text = "m/s") },
-                onClick = {
-                    setWindSpeed(WindSpeedUnits.MS)
-                    setExpanded(false)
-                },
-                enabled = true
-            )
-            DropdownMenuItem(
-                text = { Text(text = "mph") },
-                onClick = {
-                    setWindSpeed(WindSpeedUnits.MPH)
-                    setExpanded(false)
-                },
-                enabled = true
-            )
-        }
-    }
-}
-
-@Composable
-private fun TemperatureMenu(
-    tempUnit: String,
-    expanded: Boolean,
-    setTemperature: (TemperatureUnits) -> Unit,
-    setExpanded: (Boolean) -> Unit,
-) {
-    Column {
-        Text(
-            text = tempUnit,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-        )
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { setExpanded(false) },
-            modifier = Modifier.wrapContentSize(),
-            offset = DpOffset(x = 25.dp, y = 4.dp),
-        ) {
-            DropdownMenuItem(
-                text = { Text(text = "°C") },
-                onClick = {
-                    setTemperature(TemperatureUnits.C)
-                    setExpanded(false)
-                },
-                enabled = true
-            )
-            DropdownMenuItem(
-                text = { Text(text = "°F") },
-                onClick = {
-                    setTemperature(TemperatureUnits.F)
-                    setExpanded(false)
-                },
-                enabled = true
-            )
-        }
     }
 }
 
@@ -272,6 +141,8 @@ private fun SettingsPreview() {
                 modifier = Modifier,
                 settingsState = SettingsUIState
                     .Success(settingsData = SettingsData(wind, temp)),
+                tempUnit = temp.toString(),
+                windUnit = wind.toString(),
                 onBackPressed = {},
                 setTemperature = {},
                 setWindSpeed = {}

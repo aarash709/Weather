@@ -31,6 +31,8 @@ class SettingsTest {
         composeTestRule.setContent {
             SettingsContent(
                 settingsState = settingsState,
+                tempUnit = "°C",
+                windUnit = "km/h",
                 onBackPressed = {  },
                 setTemperature = {_-> },
                 setWindSpeed = { _-> }
@@ -57,6 +59,8 @@ class SettingsTest {
         composeTestRule.setContent {
             SettingsContent(
                 settingsState = settingsState,
+                tempUnit = "°C",
+                windUnit = "km/h",
                 onBackPressed = {  },
                 setTemperature = {_-> },
                 setWindSpeed = { _-> }
