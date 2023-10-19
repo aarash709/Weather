@@ -1,5 +1,6 @@
 package com.weather.feature.settings
 
+import android.app.Dialog
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.background
@@ -14,6 +15,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.window.SecureFlagPolicy
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.weather.core.design.components.CustomTopBar
@@ -47,7 +50,7 @@ fun Settings(
 
 @Composable
 internal fun SettingsContent(
-    modifier : Modifier = Modifier,
+    modifier: Modifier = Modifier,
     settingsState: SettingsUIState,
     onBackPressed: () -> Unit,
     setTemperature: (TemperatureUnits) -> Unit,
@@ -188,35 +191,31 @@ private fun WindSpeedMenu(
             text = windUnit,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
         )
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { setExpanded(false) },
-            modifier = Modifier.wrapContentSize(),
-            offset = DpOffset(x = 25.dp, y = 4.dp),
+        SettingDialog(
+            modifier = Modifier
+                .windowInsetsPadding(WindowInsets(left = 100, right = 100)),
+            showDialog = expanded,
+            onDismissRequest = {
+                setExpanded(false)
+            }
         ) {
-            DropdownMenuItem(
-                text = { Text(text = "km/h") },
+            DialogItem(
+                itemName = "km/h",
                 onClick = {
                     setWindSpeed(WindSpeedUnits.KM)
-                    setExpanded(false)
-                },
-                enabled = true
+                    setExpanded(false) }
             )
-            DropdownMenuItem(
-                text = { Text(text = "m/s") },
+            DialogItem(
+                itemName = "m/s",
                 onClick = {
                     setWindSpeed(WindSpeedUnits.MS)
-                    setExpanded(false)
-                },
-                enabled = true
+                    setExpanded(false) }
             )
-            DropdownMenuItem(
-                text = { Text(text = "mph") },
+            DialogItem(
+                itemName = "mph",
                 onClick = {
                     setWindSpeed(WindSpeedUnits.MPH)
-                    setExpanded(false)
-                },
-                enabled = true
+                    setExpanded(false) }
             )
         }
     }
@@ -234,29 +233,88 @@ private fun TemperatureMenu(
             text = tempUnit,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
         )
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { setExpanded(false) },
-            modifier = Modifier.wrapContentSize(),
-            offset = DpOffset(x = 25.dp, y = 4.dp),
+        SettingDialog(
+            modifier = Modifier
+                .windowInsetsPadding(WindowInsets(left = 100, right = 100)),
+            showDialog = expanded,
+            onDismissRequest = {
+                setExpanded(false)
+            }
         ) {
-            DropdownMenuItem(
-                text = { Text(text = "°C") },
+            Surface(
                 onClick = {
                     setTemperature(TemperatureUnits.C)
                     setExpanded(false)
                 },
-                enabled = true
-            )
-            DropdownMenuItem(
-                text = { Text(text = "°F") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Min)
+            ) {
+                Text(
+                    text = "°C",
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+            Surface(
                 onClick = {
                     setTemperature(TemperatureUnits.F)
                     setExpanded(false)
                 },
-                enabled = true
-            )
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Min)
+            ) {
+                Text(
+                    text = "°F",
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
         }
+//        AlertDialog(
+//            onDismissRequest = { setExpanded(false) },
+//            modifier = Modifier
+//                .windowInsetsPadding(WindowInsets(left = 100, right = 100)),
+//            properties = DialogProperties(
+//                dismissOnBackPress = true,
+//                dismissOnClickOutside = true,
+//                securePolicy = SecureFlagPolicy.Inherit
+//            )
+//        ) {
+//            Surface(
+//                modifier = Modifier,
+//                shape = RoundedCornerShape(16.dp)
+//            ) {
+//                Column(
+//                    modifier = Modifier
+//                ) {
+//
+//                }
+//            }
+//        }
+
+//        DropdownMenu(
+//            expanded = expanded,
+//            onDismissRequest = { setExpanded(false) },
+//            modifier = Modifier.wrapContentSize(),
+//            offset = DpOffset(x = 25.dp, y = 4.dp),
+//        ) {
+//            DropdownMenuItem(
+//                text = { Text(text = "°C") },
+//                onClick = {
+//                    setTemperature(TemperatureUnits.C)
+//                    setExpanded(false)
+//                },
+//                enabled = true
+//            )
+//            DropdownMenuItem(
+//                text = { Text(text = "°F") },
+//                onClick = {
+//                    setTemperature(TemperatureUnits.F)
+//                    setExpanded(false)
+//                },
+//                enabled = true
+//            )
+//        }
     }
 }
 
