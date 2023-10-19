@@ -116,7 +116,7 @@ internal fun SettingsContent(
 private fun About() {
     Column {
         Text(
-            text = "This DEMO app is not a production application and is a work in progress 🚧.",
+            text = "A work in progress 🚧 Weather sample app.",
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = .5f),
             fontSize = 12.sp,
         )
