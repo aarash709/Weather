@@ -23,8 +23,8 @@ class SettingsTest {
     )
 
     //item buttons
-    private val temperatureItem = hasText(text = "Temperature Unit")
-    private val windSpeedItem = hasText(text = "Wind Speed Unit")
+    private val temperatureItem = hasText(text = "Temperature")
+    private val windSpeedItem = hasText(text = "Wind Speed")
 
     @Test
     fun click_on_temperature_item_test() {
@@ -60,7 +60,7 @@ class SettingsTest {
             SettingsContent(
                 settingsState = settingsState,
                 tempUnit = "°C",
-                windUnit = "km/h",
+                windUnit = "Kilometer per hour",
                 onBackPressed = {  },
                 setTemperature = {_-> },
                 setWindSpeed = { _-> }
