@@ -22,6 +22,8 @@ android {
 dependencies {
     implementation(project(":core:model"))
 
+    api(platform(libs.arrow.stack))
+    api(libs.arrow.optics)
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.kaptCompiler)
