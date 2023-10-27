@@ -1,7 +1,10 @@
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     alias (libs.plugins.weather.android.library)
+    alias(libs.plugins.kotlinx.ksp)
     id("kotlin-kapt")
+
+
 }
 
 android {
@@ -24,6 +27,7 @@ dependencies {
 
     api(platform(libs.arrow.stack))
     api(libs.arrow.optics)
+    ksp(libs.arrow.optics.ksp)
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.kaptCompiler)
