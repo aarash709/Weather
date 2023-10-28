@@ -113,8 +113,6 @@ dependencies {
 
     implementation(libs.timberLogger)
 
-    ksp(libs.arrow.optics.ksp)
-
     //Testing
     testImplementation(project(":core:testing"))
     androidTestImplementation(project(":core:testing"))

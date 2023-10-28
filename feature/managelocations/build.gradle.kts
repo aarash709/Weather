@@ -28,6 +28,7 @@ dependencies {
     implementation(project(":feature:forecast")) //needs removal
     implementation(project(":feature:search")) //needs removal
     implementation(project(":core:model"))
+    implementation(project(":core:common"))
 
     implementation(libs.compose.runtime.livedata)
     implementation(libs.compose.animation)
