@@ -1,10 +1,10 @@
 package com.weather.feature.managelocations
 
-import android.app.Application
 import android.content.Context
 import android.os.Vibrator
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.experiment.weather.core.common.extentions.convertTotoUserSettings
 import com.weather.core.repository.UserRepository
 import com.weather.core.repository.WeatherRepository
 import com.weather.model.Coordinate
@@ -20,7 +20,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import timber.log.Timber
 import javax.inject.Inject
-import kotlin.math.roundToInt
 
 @HiltViewModel
 class ManageLocationsViewModel @Inject constructor(
@@ -34,18 +33,15 @@ class ManageLocationsViewModel @Inject constructor(
         getFavoriteCityCoordinate(),
         userRepository.getTemperatureUnitSetting()
     )
-    { weatherList, favoriteCoordinate, temperatureSetting ->
+    {
+            weatherList,
+            favoriteCoordinate,
+            temperatureSetting ->
         val tempUnit = temperatureSetting ?: C
-        val locationData = weatherList.map {
-            val isFavorite = it.locationName == favoriteCoordinate?.cityName
-            it.copy(
-                currentTemp = it.currentTemp.toDouble()
-                    .convertToUserTemperature(userTempUnit = tempUnit).roundToInt().toString(),
-                feelsLike = it.feelsLike.toDouble()
-                    .convertToUserTemperature(userTempUnit = tempUnit).roundToInt().toString(),
-                isFavorite = isFavorite
-            )
-        }
+        val locationData = weatherList.convertTotoUserSettings(
+            tempUnit = tempUnit,
+            favoriteCoordinate = favoriteCoordinate
+        )
         LocationsUIState.Success(locationData)
     }
         .catch {

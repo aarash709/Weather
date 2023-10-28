@@ -1,20 +1,29 @@
 package com.weather.model
 
+import arrow.optics.optics
+
+@optics
 data class WeatherData(
     val coordinates: OneCallCoordinates,
     val current: Current,
     val daily: List<Daily>,
     val hourly: List<Hourly>,
-)
+){
+    companion object
+}
 
+@optics
 data class OneCallCoordinates(
     val name: String,
     val lat: Double,
     val lon: Double,
     val timezone: String,
     val timezone_offset: Int,
-)
+){
+    companion object
+}
 
+@optics
 data class Current(
     val clouds: Int,
     val dew_point: Double,
@@ -30,8 +39,11 @@ data class Current(
     val wind_deg: Int,
     val wind_speed: Double,
     val weather: List<Weather>,
-)
+){
+    companion object
+}
 
+@optics
 data class Daily(
     val clouds: Int,
     val dew_point: Double,
@@ -94,6 +106,7 @@ data class Daily(
     }
 }
 
+@optics
 data class Hourly(
     val clouds: Int,
     val dew_point: Double,
@@ -138,13 +151,17 @@ data class Hourly(
     }
 }
 
+@optics
 data class FeelsLike(
     val day: Double,
     val eve: Double,
     val morn: Double,
     val night: Double,
-)
+){
+    companion object
+}
 
+@optics
 data class Temp(
     val day: Double,
     val eve: Double,
@@ -152,8 +169,11 @@ data class Temp(
     val min: Double,
     val morn: Double,
     val night: Double,
-)
+){
+    companion object
+}
 
+@optics
 data class Weather(
     val description: String,
     val icon: String,

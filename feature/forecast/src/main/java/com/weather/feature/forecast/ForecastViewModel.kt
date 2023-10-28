@@ -75,19 +75,7 @@ class ForecastViewModel @Inject constructor(
             .flowOn(Dispatchers.IO)
             .combine(getUserSettings()) { weather, userSettings ->
                 userSettings.setDefaultIfNull()
-                val current = weather.current.convertToUserSettings(
-                    userSettings.temperatureUnits,
-                    userSettings.windSpeedUnits
-                )
-                val daily = weather.daily.map {
-                    it.convertToUserSettings(
-                        userSettings.temperatureUnits
-                    )
-                }
-                val hourly = weather.hourly.map {
-                    it.convertToUserSettings(userSettings.temperatureUnits)
-                }
-                val newWeather = weather.copy(current = current, daily = daily, hourly = hourly)
+                val newWeather = weather.convertToUserSettings(userSettings = userSettings)
                 SavableForecastData(
                     weather = newWeather,
                     userSettings = userSettings,
