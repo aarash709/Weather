@@ -1,5 +1,8 @@
 package com.weather.model
 
+import arrow.optics.optics
+
+@optics
 data class ManageLocationsData(
     val locationName: String,
     val latitude: String,
@@ -8,4 +11,6 @@ data class ManageLocationsData(
     val humidity: String,
     val feelsLike: String,
     val isFavorite: Boolean = false,
-)
+){
+    companion object
+}
