@@ -100,8 +100,8 @@ ktor-ciaoClient = { group = "io.ktor", name = "ktor-client-cio", version.ref = "
 ktor-okhttpClient = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 arrow-stack = { module = "io.arrow-kt:arrow-stack", version.ref = "arrow" }
-arrow_optics = { module = "io.arrow-kt:arrow-optics"}
-arrow_optics_ksp = { module = "arrow-kt:arrow-optics-ksp-plugin"}
+arrow_optics = { module = "io.arrow-kt:arrow-optics" }
+arrow_optics_ksp = { module = "io.arrow-kt:arrow-optics-ksp-plugin", version.ref = "arrow" }
 
 #build-logic dependecies
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
