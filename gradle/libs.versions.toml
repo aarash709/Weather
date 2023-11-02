@@ -4,7 +4,7 @@ kotlinxSerialization = "1.6.0"
 kotlinxCoroutines = "1.7.3"
 kotlinxKsp = "1.9.10-1.0.13"
 androidGradlePlugin = "8.1.2"
-androidxComposeBom = "2023.10.00"
+androidxComposeBom = "2023.10.01"
 androidxCompose = "1.5.0"
 androidxComposeCompiler = "1.5.3"
 androidxMaterial3 = "1.1.1"
@@ -12,11 +12,12 @@ androidxCore = "1.12.0"
 androidxAppcompat = "1.6.1"
 androidxWindow = "1.1.0"
 androidxWork = "2.8.1"
-androidxNavigation = "2.7.4"
+androidxNavigation = "2.7.5"
 androidxLifecycle = "2.6.2"
 androidxActivityCompose = "1.8.0"
-androidxHiltWork = "1.0.0"
-androidxRoom = "2.5.2"
+androidxHiltWork = "1.1.0"
+androidxHiltNavigationCompose = "1.1.0"
+androidxRoom = "2.6.0"
 androidxSplashScreen = "1.0.1"
 androidxDatastorePreferences = "1.0.0"
 androidxTestCore = "1.5.0"
@@ -24,7 +25,6 @@ androidxTestJunit = "1.1.5"
 androidxEspresso = "3.5.1"
 material = "1.10.0"
 accompanist = "0.30.1"
-hiltNavigationCompose = "1.0.0"
 hiltAndroid = "2.48.1"
 timberLogger = "5.0.1"
 retrofit = "2.9.0"
@@ -82,7 +82,7 @@ kotlix-CoroutinesTest = { group = "org.jetbrains.kotlinx", name = "kotlinx-corou
 kotlix-CoroutinesAndroid = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
 accompanist-FlowLayout = { group = "com.google.accompanist", name = "accompanist-flowlayout", version.ref = "accompanist" }
 timberLogger = { group = "com.jakewharton.timber", name = "timber", version.ref = "timberLogger" }
-hilt_NavigationCompose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+hilt_NavigationCompose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHiltNavigationCompose" }
 hilt_Android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltAndroid" }
 hilt_KaptCompiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hiltAndroid" }
 hilt_androidTesting = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hiltAndroid" }
