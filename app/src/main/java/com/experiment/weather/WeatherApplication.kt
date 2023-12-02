@@ -2,18 +2,14 @@ package com.experiment.weather
 
 import android.app.Application
 import android.util.Log
-import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
 import com.weather.sync.work.CustomWorkerFactory
-import com.weather.sync.work.FetchRemoteWeatherWorker
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 import javax.inject.Inject
 
 @HiltAndroidApp
-class WeatherApplication: Application(), Configuration.Provider {
+class WeatherApplication : Application(), Configuration.Provider {
 
     @Inject
     lateinit var customWorkerFactory: CustomWorkerFactory
@@ -23,12 +19,13 @@ class WeatherApplication: Application(), Configuration.Provider {
         Timber.e("this is a timber test in application class")
     }
 
-    override fun getWorkManagerConfiguration(): Configuration {
-        Timber.e("this is a timber custom config")
+    override val workManagerConfiguration: Configuration
+        get() {
+            Timber.e("this is a timber custom config")
+            return Configuration.Builder()
+                .setMinimumLoggingLevel(Log.ERROR)
+                .setWorkerFactory(customWorkerFactory)
+                .build()
+        }
 
-        return Configuration.Builder()
-            .setMinimumLoggingLevel(Log.ERROR)
-            .setWorkerFactory(customWorkerFactory)
-            .build()
-    }
 }
