@@ -1,8 +1,13 @@
 package com.weather.sync.work
 
 import android.content.Context
-import androidx.lifecycle.asFlow
-import androidx.work.*
+import androidx.work.Constraints
+import androidx.work.Data
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import com.weather.model.Coordinate
 import com.weather.sync.work.utils.SyncManager
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -18,8 +23,7 @@ class WorkSyncStatus @Inject constructor(
     @ApplicationContext private val context: Context,
 ) : SyncManager {
     override val isSyncing: Flow<Boolean> = WorkManager.getInstance(context)
-        .getWorkInfosForUniqueWorkLiveData(WEATHER_FETCH_WORK_NAME)
-        .asFlow()
+        .getWorkInfosForUniqueWorkFlow(WEATHER_FETCH_WORK_NAME)
         .map { workInfoList ->
             workInfoList.any {
                 it.state == WorkInfo.State.RUNNING
