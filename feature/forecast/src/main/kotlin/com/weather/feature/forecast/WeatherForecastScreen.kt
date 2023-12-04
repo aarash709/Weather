@@ -2,6 +2,7 @@ package com.weather.feature.forecast
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOutCubic
 import androidx.compose.animation.core.animate
@@ -17,6 +18,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,6 +29,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.widget.EdgeEffectCompat.onPull
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.weather.core.design.components.CustomIndicator
@@ -113,6 +116,15 @@ fun WeatherForecastScreen(
             }
             mutableStateOf(state)
         }
+        val refreshState =
+            rememberPullRefreshState(refreshing = isSyncing, onRefresh = {
+                onRefresh(
+                    weatherUIState.weather.coordinates.let {
+                        Coordinate(it.name, it.lat.toString(), it.lon.toString())
+                    }
+                )
+            })
+
         val indicatorPullHeight = 200f
         val translateY by animateFloatAsState(
             targetValue = (distanceDelta.div(maxHeight.value)).times(indicatorPullHeight),
@@ -129,77 +141,82 @@ fun WeatherForecastScreen(
                 }
             }
         }
-        fun refresh() {
-            onRefresh(weatherUIState.weather.coordinates.let {
-                Coordinate(it.name, it.lat.toString(), it.lon.toString())
-            })
-        }
+//        fun refresh() {
+//            onRefresh(weatherUIState.weather.coordinates.let {
+//                Coordinate(it.name, it.lat.toString(), it.lon.toString())
+//            })
+//        }
+//
+//        fun onPull(delta: Float): Float = when {
+//            isSyncing -> 0f
+//            else -> {
+//                val newOffset = (distanceDelta + delta).coerceAtLeast(0f)
+//                val dragConsumed = newOffset - distanceDelta
+//
+//                distanceDelta = newOffset
+//                dragConsumed
+//            }
+//        }
 
-        fun onPull(delta: Float): Float = when {
-            isSyncing -> 0f
-            else -> {
-                val newOffset = (distanceDelta + delta).coerceAtLeast(0f)
-                val dragConsumed = newOffset - distanceDelta
+//        fun onRelease(velocity: Float): Float {
+//            if (isSyncing) return 0f // Already refreshing - don't call refresh again.
+//            var targetValue = 0f
+//            if (distanceDelta > indicatorPullHeight) {
+//                targetValue = indicatorPullHeight
+//                refresh()
+//            }
+//            scope.launch {
+//                animate(initialValue = distanceDelta, targetValue = targetValue) { value, _ ->
+//                    distanceDelta = value
+//                }
+//            }
+//            // Only consume if the fling is downwards and the indicator is visible
+//            return if (velocity > 0f && distanceDelta > 0f) {
+//                velocity
+//            } else {
+//                0f
+//            }
+//        }
 
-                distanceDelta = newOffset
-                dragConsumed
-            }
-        }
 
-        fun onRelease(velocity: Float): Float {
-            if (isSyncing) return 0f // Already refreshing - don't call refresh again.
-            var targetValue = 0f
-            if (distanceDelta > indicatorPullHeight) {
-                targetValue = indicatorPullHeight
-                refresh()
-            }
-            scope.launch {
-                animate(initialValue = distanceDelta, targetValue = targetValue) { value, _ ->
-                    distanceDelta = value
-                }
-            }
-            // Only consume if the fling is downwards and the indicator is visible
-            return if (velocity > 0f && distanceDelta > 0f) {
-                velocity
-            } else {
-                0f
-            }
-        }
-
-        if (translateY > 0) {
-            CustomIndicator(
-                modifier = Modifier
-                    .padding(vertical = 8.dp)
-                    .height(indicatorPullHeight.dp),
-                distance = distanceDelta,
-                targetHeight = indicatorPullHeight,
-                isRefreshing = isSyncing
-            )
-        }
         Column(
             modifier = Modifier
-                .pullRefresh(onPull = ::onPull, onRelease = ::onRelease)
-                .offset(x = 0.dp, y = translateY.coerceAtMost(indicatorPullHeight).dp)
-        ) {
+                .pullRefresh(refreshState)
+////                .offset(x = 0.dp, y = translateY.coerceAtMost(indicatorPullHeight).dp)
+        )
+        {
+            Text(text = "$isSyncing")
             ForecastTopBar(
                 cityName = weatherUIState.weather.coordinates.name,
                 showPlaceholder = weatherUIState.showPlaceHolder,
                 onNavigateToManageLocations = { onNavigateToManageLocations() },
                 onNavigateToSettings = { onNavigateToSettings() })
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                state = lazyListState,
-                contentPadding = WindowInsets.navigationBars.asPaddingValues(),
-                verticalArrangement = Arrangement.spacedBy(0.dp)
-            ) {
-                item {
-                    ConditionAndDetails(
-                        modifier = Modifier.fillMaxSize(),
-                        weatherData = weatherUIState.weather,
-                        showPlaceholder = weatherUIState.showPlaceHolder,
-                        speedUnit = speedUnit,
-                        temperatureUnit = temperatureUnit,
+            Box(modifier = Modifier) {
+                androidx.compose.animation.AnimatedVisibility(isSyncing) {
+                    CustomIndicator(
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                            .height(indicatorPullHeight.dp),
+                        distance = distanceDelta,
+                        targetHeight = indicatorPullHeight,
+                        isRefreshing = isSyncing
                     )
+                }
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    state = lazyListState,
+                    contentPadding = WindowInsets.navigationBars.asPaddingValues(),
+                    verticalArrangement = Arrangement.spacedBy(0.dp)
+                ) {
+                    item {
+                        ConditionAndDetails(
+                            modifier = Modifier.fillMaxSize(),
+                            weatherData = weatherUIState.weather,
+                            showPlaceholder = weatherUIState.showPlaceHolder,
+                            speedUnit = speedUnit,
+                            temperatureUnit = temperatureUnit,
+                        )
+                    }
                 }
             }
         }
@@ -512,8 +529,8 @@ private fun CurrentTempAndCondition(
 }
 
 @ExperimentalMaterialApi
-@Preview(name = "night",showBackground = true, uiMode = UI_MODE_NIGHT_YES)
-@Preview(name = "day",showBackground = true, uiMode = UI_MODE_NIGHT_NO)
+@Preview(name = "night", showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Preview(name = "day", showBackground = true, uiMode = UI_MODE_NIGHT_NO)
 @Composable
 fun MainPagePreview() {
     var placeholder by remember {
