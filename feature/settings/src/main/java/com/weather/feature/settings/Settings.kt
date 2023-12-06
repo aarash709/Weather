@@ -47,7 +47,7 @@ fun Settings(
 
 @Composable
 internal fun SettingsContent(
-    modifier : Modifier = Modifier,
+    modifier: Modifier = Modifier,
     settingsState: SettingsUIState,
     onBackPressed: () -> Unit,
     setTemperature: (TemperatureUnits) -> Unit,
@@ -71,9 +71,10 @@ internal fun SettingsContent(
                     WindSpeedUnits.MS -> "Meters per second"
                     WindSpeedUnits.MPH -> "Miles per hour"
                 }
-                CustomTopBar(modifier = Modifier.fillMaxWidth(), text = "Settings") {
-                    onBackPressed()
-                }
+                CustomTopBar(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = "Settings",
+                    onBackPressed = { onBackPressed() })
                 Column(modifier = Modifier) {
                     Text(
                         text = "Units",
