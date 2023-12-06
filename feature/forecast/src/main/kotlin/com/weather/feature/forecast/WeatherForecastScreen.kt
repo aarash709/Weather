@@ -2,6 +2,7 @@ package com.weather.feature.forecast
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOutCubic
 import androidx.compose.animation.core.animate
@@ -9,6 +10,9 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
+import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -16,7 +20,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,9 +30,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.widget.EdgeEffectCompat.onPull
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.weather.core.design.components.CustomIndicator
@@ -89,103 +98,43 @@ fun WeatherForecastScreen(
 ) {
     val lazyListState = rememberLazyListState()
     // stateless
-    BoxWithConstraints(
-        modifier = modifier,
-    ) {
-        val scope = rememberCoroutineScope()
-        val speedUnit by remember(weatherUIState) {
-            val state = when (weatherUIState.userSettings.windSpeedUnits) {
-                WindSpeedUnits.KM -> "km/h"
-                WindSpeedUnits.MS -> "m/s"
-                WindSpeedUnits.MPH -> "mph"
-                null -> "null"
-            }
-            mutableStateOf(state)
+    val speedUnit by remember(weatherUIState) {
+        val state = when (weatherUIState.userSettings.windSpeedUnits) {
+            WindSpeedUnits.KM -> "km/h"
+            WindSpeedUnits.MS -> "m/s"
+            WindSpeedUnits.MPH -> "mph"
+            null -> "null"
         }
-        var distanceDelta by remember {
-            mutableFloatStateOf(0f)
+        mutableStateOf(state)
+    }
+    val temperatureUnit by remember(weatherUIState) {
+        val state = when (weatherUIState.userSettings.temperatureUnits) {
+            TemperatureUnits.C -> "C"
+            TemperatureUnits.F -> "F"
+            null -> "null"
         }
-        val temperatureUnit by remember(weatherUIState) {
-            val state = when (weatherUIState.userSettings.temperatureUnits) {
-                TemperatureUnits.C -> "C"
-                TemperatureUnits.F -> "F"
-                null -> "null"
-            }
-            mutableStateOf(state)
-        }
-        val indicatorPullHeight = 200f
-        val translateY by animateFloatAsState(
-            targetValue = (distanceDelta.div(maxHeight.value)).times(indicatorPullHeight),
-            animationSpec = if (!isSyncing) tween(0) else spring(),
-            label = "translateY",
-        )
-        LaunchedEffect(key1 = isSyncing) {
-            //push up after syncing complete
-            if (!isSyncing && translateY >= indicatorPullHeight.div(constraints.maxHeight)) {
-                scope.launch {
-                    animate(initialValue = distanceDelta, targetValue = 0f) { value, _ ->
-                        distanceDelta = value
-                    }
+        mutableStateOf(state)
+    }
+    val refreshState =
+        rememberPullRefreshState(refreshing = isSyncing, onRefresh = {
+            onRefresh(
+                weatherUIState.weather.coordinates.let {
+                    Coordinate(it.name, it.lat.toString(), it.lon.toString())
                 }
-            }
-        }
-        fun refresh() {
-            onRefresh(weatherUIState.weather.coordinates.let {
-                Coordinate(it.name, it.lat.toString(), it.lon.toString())
-            })
-        }
-
-        fun onPull(delta: Float): Float = when {
-            isSyncing -> 0f
-            else -> {
-                val newOffset = (distanceDelta + delta).coerceAtLeast(0f)
-                val dragConsumed = newOffset - distanceDelta
-
-                distanceDelta = newOffset
-                dragConsumed
-            }
-        }
-
-        fun onRelease(velocity: Float): Float {
-            if (isSyncing) return 0f // Already refreshing - don't call refresh again.
-            var targetValue = 0f
-            if (distanceDelta > indicatorPullHeight) {
-                targetValue = indicatorPullHeight
-                refresh()
-            }
-            scope.launch {
-                animate(initialValue = distanceDelta, targetValue = targetValue) { value, _ ->
-                    distanceDelta = value
-                }
-            }
-            // Only consume if the fling is downwards and the indicator is visible
-            return if (velocity > 0f && distanceDelta > 0f) {
-                velocity
-            } else {
-                0f
-            }
-        }
-
-        if (translateY > 0) {
-            CustomIndicator(
-                modifier = Modifier
-                    .padding(vertical = 8.dp)
-                    .height(indicatorPullHeight.dp),
-                distance = distanceDelta,
-                targetHeight = indicatorPullHeight,
-                isRefreshing = isSyncing
             )
-        }
-        Column(
-            modifier = Modifier
-                .pullRefresh(onPull = ::onPull, onRelease = ::onRelease)
-                .offset(x = 0.dp, y = translateY.coerceAtMost(indicatorPullHeight).dp)
-        ) {
-            ForecastTopBar(
-                cityName = weatherUIState.weather.coordinates.name,
-                showPlaceholder = weatherUIState.showPlaceHolder,
-                onNavigateToManageLocations = { onNavigateToManageLocations() },
-                onNavigateToSettings = { onNavigateToSettings() })
+        })
+    Column(
+        modifier = Modifier
+            .pullRefresh(refreshState)
+    )
+    {
+        ForecastTopBar(
+            cityName = weatherUIState.weather.coordinates.name,
+            showPlaceholder = weatherUIState.showPlaceHolder,
+            onNavigateToManageLocations = { onNavigateToManageLocations() },
+            onNavigateToSettings = { onNavigateToSettings() })
+        Box(modifier = Modifier, contentAlignment = Alignment.TopCenter) {
+            PullRefreshIndicator(refreshing = isSyncing, state = refreshState)
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 state = lazyListState,
@@ -512,8 +461,8 @@ private fun CurrentTempAndCondition(
 }
 
 @ExperimentalMaterialApi
-@Preview(name = "night",showBackground = true, uiMode = UI_MODE_NIGHT_YES)
-@Preview(name = "day",showBackground = true, uiMode = UI_MODE_NIGHT_NO)
+@Preview(name = "night", showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Preview(name = "day", showBackground = true, uiMode = UI_MODE_NIGHT_NO)
 @Composable
 fun MainPagePreview() {
     var placeholder by remember {
