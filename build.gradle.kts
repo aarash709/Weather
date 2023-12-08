@@ -1,5 +1,7 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.libsDirectory
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-plugins{
+plugins {
     alias(libs.plugins.secrets) apply false
     alias(libs.plugins.andoirdGradle) apply false
     alias(libs.plugins.hilt) apply false
@@ -10,26 +12,25 @@ plugins{
     alias(libs.plugins.detekt) apply false
     alias(libs.plugins.kotlinter) apply false
 }
-buildscript {
 
+buildscript {
     repositories {
         google()
         mavenCentral()
     }
 }
+
 subprojects {
     apply(plugin = "io.gitlab.arturbosch.detekt")
-
-}
-tasks.withType(io.gitlab.arturbosch.detekt.Detekt::class.java).configureEach {
-    reports{
-        html.required.set(true)
-        xml.required.set(false)
-        txt.required.set(false)
-        sarif.required.set(false)
-        md.required.set(false)
+    tasks.withType(io.gitlab.arturbosch.detekt.Detekt::class.java).configureEach {
+        exclude("**/resources/**")
+        exclude("**/build/**")
+        config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+        buildUponDefaultConfig = false
+        parallel = true
     }
 }
-task("clean", Delete::class){
+
+task("clean", Delete::class) {
     delete(rootProject.buildDir)
 }
