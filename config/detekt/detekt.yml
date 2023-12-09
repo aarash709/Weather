@@ -1,0 +1,25 @@
+build:
+  maxIssues: 0
+output-reports:
+  active: true
+  exclude:
+    #  - 'HtmlOutputReport'
+    - 'TxtOutputReport'
+    - 'XmlOutputReport'
+    - 'SarifOutputReport'
+    - 'MdOutputReport'
+naming:
+  FunctionNaming:
+    active: true
+    #    functionPattern: '[a-zA-Z][a-zA-Z]*'
+    ignoreAnnotated:
+      - 'Composable'
+complexity:
+  LongMethod:
+    active: true
+    ignoreAnnotated:
+      - 'Composable'
+  LongParameterList:
+    active: true
+    ignoreAnnotated:
+      - 'Composable'
