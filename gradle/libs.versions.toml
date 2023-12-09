@@ -1,22 +1,23 @@
 [versions]
-kotlin = "1.9.10"
-kotlinxSerialization = "1.5.1"
-kotlinxCoroutines = "1.7.1"
+kotlin = "1.9.20"
+kotlinxSerialization = "1.6.0"
+kotlinxCoroutines = "1.7.3"
 kotlinxKsp = "1.9.10-1.0.13"
-androidGradlePlugin = "8.1.2"
-androidxComposeBom = "2023.10.00"
+androidGradlePlugin = "8.2.0"
+androidxComposeBom = "2023.10.01"
 androidxCompose = "1.5.0"
-androidxComposeCompiler = "1.5.3"
+androidxComposeCompiler = "1.5.5"
 androidxMaterial3 = "1.1.1"
 androidxCore = "1.12.0"
 androidxAppcompat = "1.6.1"
-androidxWindow = "1.1.0"
-androidxWork = "2.8.1"
-androidxNavigation = "2.7.4"
+androidxWindow = "1.2.0"
+androidxWork = "2.9.0"
+androidxNavigation = "2.7.5"
 androidxLifecycle = "2.6.2"
-androidxActivityCompose = "1.8.0"
-androidxHiltWork = "1.0.0"
-androidxRoom = "2.5.2"
+androidxActivityCompose = "1.8.1"
+androidxHiltWork = "1.1.0"
+androidxHiltNavigationCompose = "1.1.0"
+androidxRoom = "2.6.1"
 androidxSplashScreen = "1.0.1"
 androidxDatastorePreferences = "1.0.0"
 androidxTestCore = "1.5.0"
@@ -24,21 +25,23 @@ androidxTestJunit = "1.1.5"
 androidxEspresso = "3.5.1"
 material = "1.10.0"
 accompanist = "0.30.1"
-hiltNavigationCompose = "1.0.0"
-hiltAndroid = "2.48"
+hiltAndroid = "2.48.1"
 timberLogger = "5.0.1"
 retrofit = "2.9.0"
 moshi = "1.14.0"
-coil = "2.2.2"
+coil = "2.4.0"
 ktor = "2.3.0"
 gradleSecret = "2.0.1"
 junit = "4.13.2"
 appcompat = "1.6.1"
+arrow = "1.2.0"
 detekt = "1.23.1"
 kotlinter = "4.0.0"
 
+
+
 [libraries]
-material = {group = "com.google.android.material", name = "material", version.ref = "material"}
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }
 compose-animation = { group = "androidx.compose.animation", name = "animation" }
 compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
@@ -83,7 +86,7 @@ kotlix-CoroutinesTest = { group = "org.jetbrains.kotlinx", name = "kotlinx-corou
 kotlix-CoroutinesAndroid = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
 accompanist-FlowLayout = { group = "com.google.accompanist", name = "accompanist-flowlayout", version.ref = "accompanist" }
 timberLogger = { group = "com.jakewharton.timber", name = "timber", version.ref = "timberLogger" }
-hilt_NavigationCompose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+hilt_NavigationCompose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHiltNavigationCompose" }
 hilt_Android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltAndroid" }
 hilt_KaptCompiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hiltAndroid" }
 hilt_androidTesting = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hiltAndroid" }
@@ -100,6 +103,9 @@ ktor-LoggingClient = { group = "io.ktor", name = "ktor-client-logging", version.
 ktor-ciaoClient = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor" }
 ktor-okhttpClient = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
+arrow-stack = { module = "io.arrow-kt:arrow-stack", version.ref = "arrow" }
+arrow_optics = { module = "io.arrow-kt:arrow-optics" }
+arrow_optics_ksp = { module = "io.arrow-kt:arrow-optics-ksp-plugin", version.ref = "arrow" }
 
 #build-logic dependecies
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
@@ -129,11 +135,17 @@ ktor = [
 ]
 [plugins]
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "gradleSecret" }
-andoirdGradle = {id = "com.android.application", version.ref = "androidGradlePlugin"}
-kotlinSerialization = {id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
-kotlinGradle = {id = "org.jetbrains.kotlin.android", version.ref = "kotlin"}
+andoirdGradle = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlinGradle = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
 com-android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 kotlinx-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlinxKsp" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 kotlinter = { id = "org.jmailen.kotlinter", version.ref = "kotlinter" }
+
+#custom plugins
+weather-android-application = { id = "weather.android.application", version = "unspecified" }
+weather-android-library = { id = "weather.android.library", version = "unspecified" }
+weather-android-compose-application = { id = "weather.compose.application", version = "unspecified" }
+weather-android-compose-library = { id = "weather.compose.library", version = "unspecified" }

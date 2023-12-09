@@ -1,6 +1,6 @@
 plugins {
-    id("weather.compose.library")
-    id("weather.android.library")
+    alias (libs.plugins.weather.android.library)
+    alias (libs.plugins.weather.android.compose.library)
     id("dagger.hilt.android.plugin")
     id("org.jetbrains.kotlin.plugin.serialization")
     id("kotlin-kapt")
@@ -10,17 +10,11 @@ android {
     namespace = "com.weather.feature.managelocations"
 
     defaultConfig {
-        minSdk = 26
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 //        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
         jvmTarget = "17"
@@ -34,6 +28,7 @@ dependencies {
     implementation(project(":feature:forecast")) //needs removal
     implementation(project(":feature:search")) //needs removal
     implementation(project(":core:model"))
+    implementation(project(":core:common"))
 
     implementation(libs.compose.runtime.livedata)
     implementation(libs.compose.animation)

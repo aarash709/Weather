@@ -1,5 +1,5 @@
 plugins {
-    id("weather.android.library")
+    alias (libs.plugins.weather.android.library)
     id("kotlin-kapt")
 }
 

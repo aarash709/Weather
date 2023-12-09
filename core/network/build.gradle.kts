@@ -1,9 +1,9 @@
 plugins {
-    id("weather.android.library")
+    alias(libs.plugins.weather.android.library)
+    alias(libs.plugins.secrets)
     id("dagger.hilt.android.plugin")
     id("org.jetbrains.kotlin.plugin.serialization")
     id("kotlin-kapt")
-    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 android {
     namespace = "com.weather.core.network"
@@ -14,7 +14,7 @@ android {
     buildTypes {
 
     }
-   
+
     kotlinOptions {
         jvmTarget = "17"
     }
