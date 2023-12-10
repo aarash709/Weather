@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -53,7 +52,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -90,8 +88,7 @@ fun ManageLocations(
             onItemSelected = { coordinate ->
                 onItemSelected(coordinate.cityName.toString())
             },
-            onDeleteItem = { locationData ->
-                val cityNames = locationData.map { it.locationName }
+            onDeleteItem = { cityNames ->
                 viewModel.deleteWeatherByCityName(cityNames = cityNames, context = context)
             },
             onSetFavoriteItem = { locationData ->
@@ -113,7 +110,7 @@ fun ManageLocations(
     onNavigateToSearch: () -> Unit,
     onBackPressed: () -> Unit,
     onItemSelected: (Coordinate) -> Unit,
-    onDeleteItem: (List<ManageLocationsData>) -> Unit,
+    onDeleteItem: (List<String>) -> Unit,
     onSetFavoriteItem: (ManageLocationsData) -> Unit,
 ) {
     var selectedCities by rememberSaveable {
@@ -129,7 +126,7 @@ fun ManageLocations(
         mutableStateOf(false)
     }
     var itemsToDelete by remember() {
-        mutableStateOf(listOf<ManageLocationsData>())
+        mutableStateOf(listOf<String>())
     }
     LaunchedEffect(key1 = isAllSelected) {
         if (isAllSelected) {
@@ -138,17 +135,8 @@ fun ManageLocations(
             selectedCities = emptySet()
         }
     }
-    LaunchedEffect(key1 = selectedCities){
-        itemsToDelete = selectedCities.map {
-            ManageLocationsData(locationName = it,
-                latitude = "",
-                longitude = "",
-                currentTemp = "",
-                humidity = "",
-                feelsLike = "",
-                isFavorite = false
-            )
-        }
+    LaunchedEffect(key1 = selectedCities) {
+        itemsToDelete = selectedCities.toList()
     }
     BackHandler(enabled = isInEditMode) {
         if (isInEditMode)
@@ -213,7 +201,10 @@ fun ManageLocations(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Column {
-                            IconButton(onClick = { onDeleteItem(itemsToDelete) }) {
+                            IconButton(onClick = {
+                                onDeleteItem(itemsToDelete)
+                                selectedCities = emptySet()
+                            }) {
                                 Icon(
                                     imageVector = Icons.Default.DeleteOutline,
                                     contentDescription = "Delete button"
@@ -235,11 +226,13 @@ fun ManageLocations(
                 }
                 Column(
                     modifier = Modifier
-                        .fillMaxSize()
                         .padding(padding)
                         .padding(horizontal = 16.dp)
                 ) {
-                    Column(modifier = Modifier) {
+                    Column(
+                        modifier = Modifier,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
                         Spacer(modifier = Modifier.height(16.dp))
                         SearchBarCard(onNavigateToSearch)
                         Spacer(modifier = Modifier.height(16.dp))
@@ -247,41 +240,47 @@ fun ManageLocations(
                         val inSelectionMode by remember {
                             derivedStateOf { selectedCities.isNotEmpty() }
                         }
-                        LazyColumn(
-                            modifier = Modifier,
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            items(
-                                items = dataState.data,
-                                key = {
-                                    it.locationName
-                                }) { locationData ->
-                                val currentItem by rememberUpdatedState(newValue = locationData)
-                                val selected by remember {
-                                    derivedStateOf { locationData.locationName in selectedCities }
-                                }
-                                SavedLocationItem(
-                                    modifier = if (inSelectionMode) {
-                                        Modifier.clickable {
-                                            if (selected)
-                                                selectedCities -= locationData.locationName
-                                            else
-                                                selectedCities += locationData.locationName
-
-                                        }
-                                    } else {
-                                        Modifier.combinedClickable(
-                                            onClick = { },
-                                            onLongClick = { selectedCities += locationData.locationName }
-                                        )
-                                    },
-                                    data = locationData,
-                                    inSelectionMode = inSelectionMode,
-                                    selected = selected,
-                                    onItemSelected = { coordinate ->
-                                        onItemSelected(coordinate)
+                        if (dataState.data.isEmpty()) {
+                            Text(
+                                text = "Search and add a location",
+                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = .75f),
+                                fontSize = 12.sp
+                            )
+                        } else {
+                            LazyColumn(
+                                modifier = Modifier,
+                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                items(
+                                    items = dataState.data,
+                                    key = {
+                                        it.locationName
+                                    }) { locationData ->
+                                    val selected by remember {
+                                        derivedStateOf { locationData.locationName in selectedCities }
                                     }
-                                )
+                                    SavedLocationItem(
+                                        modifier = if (inSelectionMode) {
+                                            Modifier.clickable {
+                                                if (selected)
+                                                    selectedCities -= locationData.locationName
+                                                else
+                                                    selectedCities += locationData.locationName
+                                            }
+                                        } else {
+                                            Modifier.combinedClickable(
+                                                onClick = { },
+                                                onLongClick = { selectedCities += locationData.locationName }
+                                            )
+                                        },
+                                        data = locationData,
+                                        inSelectionMode = inSelectionMode,
+                                        selected = selected,
+                                        onItemSelected = { coordinate ->
+                                            onItemSelected(coordinate)
+                                        }
+                                    )
+                                }
                             }
                         }
                     }
