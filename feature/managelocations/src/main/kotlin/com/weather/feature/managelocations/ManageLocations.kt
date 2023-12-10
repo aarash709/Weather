@@ -1,20 +1,64 @@
 package com.weather.feature.managelocations
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChecklistRtl
+import androidx.compose.material.icons.filled.Circle
+import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.WaterDrop
-import androidx.compose.runtime.*
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,8 +91,8 @@ fun ManageLocations(
                 onItemSelected(coordinate.cityName.toString())
             },
             onDeleteItem = { locationData ->
-                val cityName = locationData.locationName
-                viewModel.deleteWeatherByCityName(cityName = cityName, context = context)
+                val cityNames = locationData.map { it.locationName }
+                viewModel.deleteWeatherByCityName(cityNames = cityNames, context = context)
             },
             onSetFavoriteItem = { locationData ->
                 val coordinate = Coordinate(
@@ -69,43 +113,182 @@ fun ManageLocations(
     onNavigateToSearch: () -> Unit,
     onBackPressed: () -> Unit,
     onItemSelected: (Coordinate) -> Unit,
-    onDeleteItem: (ManageLocationsData) -> Unit,
+    onDeleteItem: (List<ManageLocationsData>) -> Unit,
     onSetFavoriteItem: (ManageLocationsData) -> Unit,
 ) {
-    //stateless
-    when (dataState) {
-        is LocationsUIState.Loading -> ShowLoadingText()
-        is LocationsUIState.Success -> {
-            Column(
+    var selectedCities by rememberSaveable {
+        mutableStateOf(emptySet<String>())
+    }
+    val isInEditMode by remember {
+        derivedStateOf { selectedCities.isNotEmpty() }
+    }
+    var locationsList by remember {
+        mutableStateOf(emptyList<ManageLocationsData>())
+    }
+    var isAllSelected by rememberSaveable {
+        mutableStateOf(false)
+    }
+    var itemsToDelete by remember() {
+        mutableStateOf(listOf<ManageLocationsData>())
+    }
+    LaunchedEffect(key1 = isAllSelected) {
+        if (isAllSelected) {
+            selectedCities += locationsList.map { it.locationName }
+        } else {
+            selectedCities = emptySet()
+        }
+    }
+    LaunchedEffect(key1 = selectedCities){
+        itemsToDelete = selectedCities.map {
+            ManageLocationsData(locationName = it,
+                latitude = "",
+                longitude = "",
+                currentTemp = "",
+                humidity = "",
+                feelsLike = "",
+                isFavorite = false
+            )
+        }
+    }
+    BackHandler(enabled = isInEditMode) {
+        if (isInEditMode)
+            selectedCities = emptySet()
+    }
+    Scaffold(
+        modifier = Modifier,
+        topBar = {
+            CustomTopBar(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp)
-            ) {
-                CustomTopBar(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = "Manage Locations"
-                ) {
-                    onBackPressed()
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                text = if (isInEditMode) {
+                    "Selected Items ${selectedCities.size}"
+                } else {
+                    "Manage Locations"
+                },
+                onBackPressed = { onBackPressed() },
+                navigationIcon = {
+                    AnimatedContent(
+                        targetState = isInEditMode,
+                        label = "Top bar Icon"
+                    ) { isInEditMode ->
+                        if (isInEditMode) {
+                            IconButton(onClick = { selectedCities = emptySet() }) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Close,
+                                    tint = MaterialTheme.colorScheme.onBackground,
+                                    contentDescription = "Clear selection Button"
+                                )
+                            }
+                        } else {
+                            IconButton(onClick = { onBackPressed() }) {
+                                Icon(
+                                    imageVector = Icons.Outlined.ArrowBack,
+                                    tint = MaterialTheme.colorScheme.onBackground,
+                                    contentDescription = "back icon"
+                                )
+                            }
+                        }
+                    }
+                },
+                actions = {
+                    if (isInEditMode) IconButton(onClick = { isAllSelected = !isAllSelected }) {
+                        Icon(
+                            imageVector = Icons.Default.ChecklistRtl,
+                            contentDescription = "Select all button"
+                        )
+                    }
                 }
-                Column(modifier = Modifier.padding(horizontal = 0.dp)) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    SearchBarCard(onNavigateToSearch)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    FavoriteLocations(
-                        modifier = Modifier,
-                        dataList = dataState.data,
-                        onItemSelected = { coordinate ->
-                            onItemSelected(coordinate)
-                        },
-                        onDeleteItem = { locationData ->
-                            onDeleteItem(locationData)
-                        },
-                        onSetFavoriteItem = { locationsData ->
-                            onSetFavoriteItem(locationsData)
-                        })
+            )
+        },
+        bottomBar = {
+            AnimatedVisibility(
+                visible = isInEditMode,
+                enter = fadeIn() + slideInVertically(initialOffsetY = { it }),
+                exit = fadeOut() + slideOutVertically(targetOffsetY = { it })
+            ) {
+                BottomAppBar {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Column {
+                            IconButton(onClick = { onDeleteItem(itemsToDelete) }) {
+                                Icon(
+                                    imageVector = Icons.Default.DeleteOutline,
+                                    contentDescription = "Delete button"
+                                )
+
+                            }
+                            Text(text = "Delete")
+                        }
+                    }
                 }
             }
         }
+    ) { padding ->
+        when (dataState) {
+            is LocationsUIState.Loading -> ShowLoadingText()
+            is LocationsUIState.Success -> {
+                LaunchedEffect(key1 = dataState) {
+                    locationsList = dataState.data
+                }
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                        .padding(horizontal = 16.dp)
+                ) {
+                    Column(modifier = Modifier) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        SearchBarCard(onNavigateToSearch)
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        val inSelectionMode by remember {
+                            derivedStateOf { selectedCities.isNotEmpty() }
+                        }
+                        LazyColumn(
+                            modifier = Modifier,
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            items(
+                                items = dataState.data,
+                                key = {
+                                    it.locationName
+                                }) { locationData ->
+                                val currentItem by rememberUpdatedState(newValue = locationData)
+                                val selected by remember {
+                                    derivedStateOf { locationData.locationName in selectedCities }
+                                }
+                                SavedLocationItem(
+                                    modifier = if (inSelectionMode) {
+                                        Modifier.clickable {
+                                            if (selected)
+                                                selectedCities -= locationData.locationName
+                                            else
+                                                selectedCities += locationData.locationName
+
+                                        }
+                                    } else {
+                                        Modifier.combinedClickable(
+                                            onClick = { },
+                                            onLongClick = { selectedCities += locationData.locationName }
+                                        )
+                                    },
+                                    data = locationData,
+                                    inSelectionMode = inSelectionMode,
+                                    selected = selected,
+                                    onItemSelected = { coordinate ->
+                                        onItemSelected(coordinate)
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
     }
 }
 
@@ -136,65 +319,54 @@ fun SearchBarCard(onClick: () -> Unit) {
     }
 }
 
-@ExperimentalFoundationApi
-@Composable
-fun FavoriteLocations(
-    modifier: Modifier = Modifier,
-    dataList: List<ManageLocationsData>,
-    onItemSelected: (Coordinate) -> Unit,
-    onDeleteItem: (ManageLocationsData) -> Unit,
-    onSetFavoriteItem: (ManageLocationsData) -> Unit,
-) {
-    LazyColumn(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        items(dataList, key = {
-            it.locationName
-        }) { locationData ->
-            val currentItem by rememberUpdatedState(newValue = locationData)
-            CustomSwipeDismiss(
-                modifier = Modifier.animateItemPlacement(),
-                dismissThreshold = 0.5f,
-                onDeleteItem = { onDeleteItem(currentItem) },
-                onSetFavoriteItem = { onSetFavoriteItem(currentItem) }
-            ) {
-                SavedLocationItem(
-                    data = locationData,
-                    onItemSelected = { coordinate ->
-                        onItemSelected(coordinate)
-                    }
-                )
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SavedLocationItem(
+    modifier: Modifier = Modifier,
     data: ManageLocationsData,
+    inSelectionMode: Boolean,
+    selected: Boolean,
     onItemSelected: (Coordinate) -> Unit,
 ) {
     Surface(
-        onClick = { onItemSelected(Coordinate(data.locationName, data.latitude, data.longitude)) },
+//        onClick = { /*onItemSelected(Coordinate(data.locationName, data.latitude, data.longitude))*/ },
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp)) then modifier,
         shape = RoundedCornerShape(16.dp),
         border =
         if (data.isFavorite)
             BorderStroke(
-                width = 1.dp,
+                width = 2.dp,
                 color = MaterialTheme.colorScheme.primary
             )
         else null,
     ) {
         Row(
-            modifier = Modifier.padding(vertical = 24.dp, horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 24.dp, horizontal = 16.dp),
+            horizontalArrangement = Arrangement.Absolute.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(horizontalAlignment = Alignment.Start) {
+            AnimatedVisibility(
+                visible = inSelectionMode,
+                enter = fadeIn() + scaleIn() + expandHorizontally(),
+                exit = fadeOut() + scaleOut() + shrinkHorizontally(),
+                label = "selection button"
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Circle,
+                    contentDescription = "selected Icon",
+                    tint =
+                    if (selected)
+                        MaterialTheme.colorScheme.primary
+                    else
+                        MaterialTheme.colorScheme.onSurface
+                )
+            }
+            Column(
+                horizontalAlignment = Alignment.Start
+            ) {
                 Text(
                     text = data.locationName,
                     fontSize = 18.sp
@@ -270,7 +442,7 @@ fun ManageLocationsPreview() {
 @Composable
 fun TopBarPreview() {
     WeatherTheme {
-        CustomTopBar(text = "text") {}
+        CustomTopBar(text = "text", onBackPressed = {})
     }
 }
 
@@ -295,7 +467,9 @@ fun CityItemPreview() {
                 humidity = "46",
                 feelsLike = "1"
             ),
-            onItemSelected = {}
+            onItemSelected = {},
+            inSelectionMode = true,
+            selected = false
         )
     }
 }

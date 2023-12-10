@@ -4,7 +4,6 @@ import com.weather.core.database.WeatherLocalDataSource
 import com.weather.core.network.WeatherRemoteDatasource
 import com.weather.model.Coordinate
 import com.weather.model.ManageLocationsData
-import com.weather.model.Resource
 import com.weather.model.WeatherData
 import com.weather.model.geocode.GeoSearchItem
 import kotlinx.coroutines.flow.*
@@ -15,8 +14,8 @@ class WeatherRepositoryImpl @Inject constructor(
     private val remoteWeather: WeatherRemoteDatasource,
     private val localWeather: WeatherLocalDataSource,
 ) : WeatherRepository {
-    override suspend fun deleteWeatherByCityName(cityName: String) {
-        localWeather.deleteWeatherByCityName(cityName = cityName)
+    override suspend fun deleteWeatherByCityName(cityNames: List<String>) {
+        localWeather.deleteWeatherByCityName(cityNames = cityNames)
     }
 
     override fun isDatabaseEmpty(): Int = localWeather.databaseIsEmpty()

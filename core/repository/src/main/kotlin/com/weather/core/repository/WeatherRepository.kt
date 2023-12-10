@@ -12,7 +12,7 @@ interface WeatherRepository {
 
     suspend fun syncWeather(cityName: String, coordinate: Coordinate)
     suspend fun syncWeather(coordinate: Coordinate)
-    suspend fun deleteWeatherByCityName(cityName: String)
+    suspend fun deleteWeatherByCityName(cityName: List<String>)
 
     fun getLocalWeatherByCityName(cityName: String): Flow<WeatherData>
 

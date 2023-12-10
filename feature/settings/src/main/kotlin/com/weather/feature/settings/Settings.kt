@@ -86,9 +86,7 @@ internal fun SettingsContent(
                 modifier = modifier
                     .fillMaxSize()
             ) {
-                CustomTopBar(modifier = Modifier.fillMaxWidth(), text = "Settings") {
-                    onBackPressed()
-                }
+                CustomTopBar(modifier = Modifier.fillMaxWidth(), text = "Settings",onBackPressed = { onBackPressed()})
                 SettingGroup(
                     modifier = Modifier,
                     groupName = "Units"

@@ -69,10 +69,10 @@ class ManageLocationsViewModel @Inject constructor(
         return userRepository.getFavoriteCityCoordinate()
     }
 
-    fun deleteWeatherByCityName(cityName: String, context: Context) {
+    fun deleteWeatherByCityName(cityNames: List<String>, context: Context) {
         val hapticFeedback = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         viewModelScope.launch(Dispatchers.IO) {
-            weatherRepository.deleteWeatherByCityName(cityName = cityName)
+            weatherRepository.deleteWeatherByCityName(cityName = cityNames)
             hapticFeedback.cancel()
             hapticFeedback.vibrate(60)
         }
