@@ -22,7 +22,7 @@ class FakeWeatherRepository : WeatherRepository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun deleteWeatherByCityName(cityName: String) {
+    override suspend fun deleteWeatherByCityName(cityNames: List<String>) {
         TODO("Not yet implemented")
     }
 

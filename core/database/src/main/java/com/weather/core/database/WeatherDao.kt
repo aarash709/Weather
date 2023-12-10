@@ -49,8 +49,8 @@ interface WeatherDao {
     fun getAllOneCallAndCurrent(): Flow<List<OneCallAndCurrent>>
 
     //delete
-    @Query("DELETE FROM one_call WHERE cityName = :cityName")
-    suspend fun deleteWeatherByCityName(cityName: String)
+    @Query("DELETE FROM one_call WHERE cityName in (:cityNames)")
+    suspend fun deleteWeatherByCityName(cityNames: List<String>)
 
     @Query("select * from one_call_daily where cityName= :cityName")
     fun getDailyByCityName(cityName: String): Flow<List<DailyEntity>>

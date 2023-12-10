@@ -1,6 +1,5 @@
 package com.weather.feature.managelocations
 
-import android.app.Application
 import android.content.Context
 import android.os.Vibrator
 import androidx.lifecycle.ViewModel
@@ -73,14 +72,13 @@ class ManageLocationsViewModel @Inject constructor(
         return userRepository.getFavoriteCityCoordinate()
     }
 
-    fun deleteWeatherByCityName(cityName: String, context: Context) {
+    fun deleteWeatherByCityName(cityNames: List<String>, context: Context) {
         val hapticFeedback = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         viewModelScope.launch(Dispatchers.IO) {
-            weatherRepository.deleteWeatherByCityName(cityName = cityName)
+            weatherRepository.deleteWeatherByCityName(cityNames = cityNames)
             hapticFeedback.cancel()
             hapticFeedback.vibrate(60)
         }
-
     }
 
     internal fun Double.convertToUserTemperature(
