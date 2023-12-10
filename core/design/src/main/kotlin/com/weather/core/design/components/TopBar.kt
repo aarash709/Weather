@@ -18,6 +18,14 @@ fun CustomTopBar(
     modifier: Modifier = Modifier,
     text: String,
     onBackPressed: () -> Unit,
+    navigationIcon: @Composable () -> Unit = {
+        Icon(
+            modifier = Modifier.clickable(onClick = { onBackPressed() }),
+            imageVector = Icons.Default.ArrowBack,
+            contentDescription = "Back Icon"
+        )
+    },
+    actions: @Composable () -> Unit = {},
 ) {
     CenterAlignedTopAppBar(
         title = {
@@ -28,13 +36,8 @@ fun CustomTopBar(
             )
         },
         modifier = modifier,
-        navigationIcon = {
-            Icon(
-                modifier = Modifier.clickable(onClick = { onBackPressed() }),
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = "Back Icon"
-            )
-        },
+        navigationIcon = { navigationIcon() },
+        actions = { actions() },
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = MaterialTheme.colorScheme.background)
     )
 }
@@ -44,6 +47,6 @@ fun CustomTopBar(
 @Composable
 private fun TopBarPreview() {
     WeatherTheme() {
-        CustomTopBar(text = "Page name") {}
+        CustomTopBar(text = "Page name", onBackPressed = {})
     }
 }

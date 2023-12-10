@@ -30,8 +30,8 @@ class WeatherLocalDataSource(
     )
 
     fun databaseIsEmpty(): Int = dao.databaseIsEmpty()
-    suspend fun deleteWeatherByCityName(cityName: String) =
-        dao.deleteWeatherByCityName(cityName = cityName)
+    suspend fun deleteWeatherByCityName(cityNames: List<String>) =
+        dao.deleteWeatherByCityName(cityName = cityNames)
 
 
     fun getAllForecastData(): Flow<List<WeatherData>> =
