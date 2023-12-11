@@ -41,6 +41,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -66,10 +68,10 @@ fun SearchScreen(
     //stateful
     val searchUIState by searchViewModel.searchUIState.collectAsStateWithLifecycle()
     var inputText by remember {
-        mutableStateOf("")
+        mutableStateOf(TextFieldValue(""))
     }
     LaunchedEffect(key1 = inputText) {
-        searchViewModel.setSearchQuery(cityName = inputText)
+        searchViewModel.setSearchQuery(cityName = inputText.text.trim())
     }
     Box(
         modifier = Modifier
@@ -88,15 +90,18 @@ fun SearchScreen(
                 searchUIState = searchUIState,
                 searchInputText = inputText,
                 popularCities = cityList,
-                popularCityIndex = { inputText = cityList[it] },
+                popularCityIndex = {
+                    val value = cityList[it]
+                    inputText = TextFieldValue(
+                        text = value,
+                        selection = TextRange(value.length)
+                    )
+                },
                 onSearchTextChange = { cityName ->
-                    inputText = cityName.ifBlank {
-                        cityName.trim()
-                    }
-
+                    inputText = cityName
                 },
                 onClearSearch = {
-                    inputText = ""
+                    inputText = TextFieldValue(text = "")
                 },
                 selectedSearchItem = { searchItem ->
                     searchViewModel.syncWeather(searchItem)
@@ -111,10 +116,10 @@ fun SearchScreen(
 fun SearchScreen(
     modifier: Modifier = Modifier,
     searchUIState: SavableSearchState,
-    searchInputText: String,
+    searchInputText: TextFieldValue,
     popularCities: List<String>,
     popularCityIndex: (Int) -> Unit,
-    onSearchTextChange: (String) -> Unit,
+    onSearchTextChange: (TextFieldValue) -> Unit,
     onClearSearch: () -> Unit,
     selectedSearchItem: (GeoSearchItem) -> Unit,
 ) {
@@ -132,7 +137,7 @@ fun SearchScreen(
                 onClearSearch()
             }
         )
-        if (searchInputText.isEmpty()) {
+        if (searchInputText.text.isEmpty()) {
             Text(
                 text = "Popular Cities",
                 modifier = Modifier.padding(top = 24.dp),
@@ -164,8 +169,8 @@ fun SearchScreen(
 @Composable
 private fun TopSearchBar(
     modifier: Modifier,
-    searchText: String,
-    onTextChange: (String) -> Unit,
+    searchText: TextFieldValue,
+    onTextChange: (TextFieldValue) -> Unit,
     onClearSearch: () -> Unit,
 ) {
     val textFieldColors = TextFieldDefaults.colors(
@@ -208,7 +213,7 @@ private fun TopSearchBar(
 
             },
             trailingIcon = {
-                if (searchText.isNotBlank()) {
+                if (searchText.text.isNotEmpty()) {
                     TextButton(
                         onClick = { onClearSearch() },
                         colors = ButtonDefaults.buttonColors(
@@ -244,7 +249,7 @@ private fun SearchList(
                 modifier = Modifier
                     .weatherPlaceholder(
                         visible = showPlaceholder
-                        )
+                    )
                     .clickable { onSearchItemSelected(searchItemItem) },
                 item = searchItemItem
             )
@@ -341,7 +346,7 @@ private fun PopularCityItem(
 private fun SearchPreview() {
     WeatherTheme {
         var inputText by remember {
-            mutableStateOf("Tehran")
+            mutableStateOf(TextFieldValue(text = "Tehran"))
         }
         Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
             SearchScreen(
@@ -360,7 +365,11 @@ private fun SearchPreview() {
 @Composable
 private fun TopSearchBarPreview() {
     WeatherTheme {
-        TopSearchBar(Modifier, searchText = "", onTextChange = {}, onClearSearch = {})
+        TopSearchBar(
+            Modifier,
+            searchText = TextFieldValue(""),
+            onTextChange = {},
+            onClearSearch = {})
     }
 }
 
