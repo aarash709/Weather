@@ -1,33 +1,28 @@
 package com.experiment.weather.navigation
 
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
-import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.LaunchedEffect
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.navArgument
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
+import androidx.navigation.navArgument
 import com.weather.feature.forecast.WeatherForecastScreen
 import com.weather.feature.managelocations.manageLocationsRoute
 import com.weather.feature.settings.SETTINGS_ROUTE
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import timber.log.Timber
 
+const val forecastRoute = "forecastRoute"
+
 @ExperimentalCoroutinesApi
-@OptIn(ExperimentalMaterialApi::class)
-@ExperimentalAnimationApi
 fun NavGraphBuilder.homeNavGraph(
     navigateToManageLocations: () -> Unit,
     navigateToSettings: () -> Unit,
-    navigateToOnboard: () -> Unit,
 ) {
-    navigation(
-        startDestination = Graph.Forecast.ForecastScreen,
-        route = Graph.Forecast.graph,
+    composable(
+        route = forecastRoute,
         enterTransition = {
             when (initialState.destination.route) {
                 SETTINGS_ROUTE -> {
@@ -37,6 +32,7 @@ fun NavGraphBuilder.homeNavGraph(
                         initialOffset = { it / 3 }
                     )
                 }
+
                 manageLocationsRoute -> {
                     slideIntoContainer(
                         towards = AnimatedContentTransitionScope.SlideDirection.Left,
@@ -46,9 +42,8 @@ fun NavGraphBuilder.homeNavGraph(
                 }
 
                 else -> {
-                    slideIntoContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                        animationSpec = tween(400),initialOffset = { it/3 })}
+                    fadeIn()
+                }
             }
         },
         exitTransition = {
@@ -56,34 +51,31 @@ fun NavGraphBuilder.homeNavGraph(
                 SETTINGS_ROUTE -> {
                     slideOutOfContainer(
                         towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                        animationSpec = tween(400),targetOffset = { it/3})
+                        animationSpec = tween(400), targetOffset = { it / 3 })
                 }
+
                 manageLocationsRoute -> {
                     slideOutOfContainer(
                         towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                        animationSpec = tween(400),targetOffset = { it/3})
+                        animationSpec = tween(400), targetOffset = { it / 3 })
                 }
-                else -> { null}
+
+                else -> {
+                    fadeOut()
+                }
             }
-        }
+        },
+        arguments = listOf(navArgument(name = "cityName") { nullable = true })
     ) {
-        composable(
-            route = Graph.Forecast.ForecastScreen,
-            arguments = listOf(navArgument(name = "cityName") { nullable = true })
-        ) {
-            LaunchedEffect(key1 = Unit) {
-                Timber.e(it.arguments?.getString("cityName"))
-            }
-            WeatherForecastScreen(
-                navigateToManageLocations = {
-                    navigateToManageLocations()
-                },
-                onNavigateToSettings = {
-                    navigateToSettings()
-                },
-                navigateToOnboard = {
-                    navigateToOnboard()
-                })
+        LaunchedEffect(key1 = Unit) {
+            Timber.e(it.arguments?.getString("cityName"))
         }
+        WeatherForecastScreen(
+            navigateToManageLocations = {
+                navigateToManageLocations()
+            },
+            onNavigateToSettings = {
+                navigateToSettings()
+            })
     }
 }
