@@ -6,22 +6,22 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.navArgument
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
+import androidx.navigation.navArgument
 import com.weather.feature.forecast.WeatherForecastScreen
 import com.weather.feature.managelocations.manageLocationsRoute
 import com.weather.feature.settings.SETTINGS_ROUTE
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import timber.log.Timber
+
 const val forecastRoute = "forecastRoute"
+
 @ExperimentalCoroutinesApi
 fun NavGraphBuilder.homeNavGraph(
     navigateToManageLocations: () -> Unit,
     navigateToSettings: () -> Unit,
 ) {
-    navigation(
-        startDestination = forecastRoute,
+    composable(
         route = forecastRoute,
         enterTransition = {
             when (initialState.destination.route) {
@@ -64,22 +64,18 @@ fun NavGraphBuilder.homeNavGraph(
                     fadeOut()
                 }
             }
-        }
+        },
+        arguments = listOf(navArgument(name = "cityName") { nullable = true })
     ) {
-        composable(
-            route = forecastRoute,
-            arguments = listOf(navArgument(name = "cityName") { nullable = true })
-        ) {
-            LaunchedEffect(key1 = Unit) {
-                Timber.e(it.arguments?.getString("cityName"))
-            }
-            WeatherForecastScreen(
-                navigateToManageLocations = {
-                    navigateToManageLocations()
-                },
-                onNavigateToSettings = {
-                    navigateToSettings()
-                })
+        LaunchedEffect(key1 = Unit) {
+            Timber.e(it.arguments?.getString("cityName"))
         }
+        WeatherForecastScreen(
+            navigateToManageLocations = {
+                navigateToManageLocations()
+            },
+            onNavigateToSettings = {
+                navigateToSettings()
+            })
     }
 }
