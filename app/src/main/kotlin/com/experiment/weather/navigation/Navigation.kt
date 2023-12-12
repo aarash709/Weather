@@ -18,6 +18,7 @@ import com.weather.feature.settings.toSettings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
+@FlowPreview
 @ExperimentalFoundationApi
 @ExperimentalCoroutinesApi
 @ExperimentalAnimationApi
@@ -54,8 +55,9 @@ fun WeatherNavHost(
                 navController.navigate(
                     route = forecastRoute,
                     navOptions = navOptions {
+                        launchSingleTop = true
                         popUpTo(
-                            route = forecastRoute,
+                            route = manageLocationsRoute,
                             popUpToBuilder = {
                                 inclusive = true
                             }

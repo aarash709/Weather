@@ -269,7 +269,15 @@ fun ManageLocations(
                                             }
                                         } else {
                                             Modifier.combinedClickable(
-                                                onClick = { },
+                                                onClick = {
+                                                    onItemSelected(
+                                                        Coordinate(
+                                                            locationData.locationName,
+                                                            locationData.latitude,
+                                                            locationData.longitude
+                                                        )
+                                                    )
+                                                },
                                                 onLongClick = { selectedCities += locationData.locationName }
                                             )
                                         },
