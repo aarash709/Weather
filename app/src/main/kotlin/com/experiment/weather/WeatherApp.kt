@@ -30,7 +30,10 @@ import kotlinx.coroutines.FlowPreview
 @FlowPreview
 @ExperimentalAnimationApi
 @Composable
-fun WeatherApp(hasInternet: Boolean) {
+fun WeatherApp(
+    hasInternet: Boolean,
+    isDatabaseEmpty: Boolean,
+) {
     WeatherTheme {
         val navController = rememberNavController()
         val snackbarHostState = remember { SnackbarHostState() }
@@ -59,7 +62,8 @@ fun WeatherApp(hasInternet: Boolean) {
                     }
                     WeatherNavHost(
                         modifier = Modifier,
-                        navController = navController
+                        navController = navController,
+                        isDatabaseEmpty = isDatabaseEmpty
                     )
                 }
             })

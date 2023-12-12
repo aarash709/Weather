@@ -34,6 +34,7 @@ class MainActivity : ComponentActivity() {
 
     private val mainViewModel: MainViewModel by viewModels()
     private var hasInternet by mutableStateOf(false)
+    private var isDatabaseEmpty by mutableStateOf(false)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @FlowPreview
@@ -44,6 +45,15 @@ class MainActivity : ComponentActivity() {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 mainViewModel.hasInternet.collect {
                     hasInternet = it
+                }
+
+            }
+        }
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                mainViewModel.dataBaseIsEmpty.collect {
+                    Timber.e("database is empty?:$it")
+                    isDatabaseEmpty = it
                 }
             }
         }
@@ -70,7 +80,10 @@ class MainActivity : ComponentActivity() {
                     }
                 )
             }
-            WeatherApp(hasInternet = hasInternet)
+            WeatherApp(
+                hasInternet = hasInternet,
+                isDatabaseEmpty = isDatabaseEmpty
+            )
         }
     }
 }

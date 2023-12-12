@@ -10,6 +10,7 @@ import androidx.navigation.navOptions
 import com.weather.feature.managelocations.manageLocationsRoute
 import com.weather.feature.managelocations.manageLocationsScreen
 import com.weather.feature.managelocations.toManageLocations
+import com.weather.feature.search.searchRoute
 import com.weather.feature.search.searchScreen
 import com.weather.feature.search.toSearchScreen
 import com.weather.feature.settings.settingsScreen
@@ -19,15 +20,17 @@ import kotlinx.coroutines.FlowPreview
 
 @ExperimentalFoundationApi
 @ExperimentalCoroutinesApi
-@FlowPreview
 @ExperimentalAnimationApi
 @Composable
 fun WeatherNavHost(
     modifier: Modifier = Modifier,
-    navController: NavHostController) {
+    navController: NavHostController,
+    isDatabaseEmpty: Boolean,
+) {
+    val startDestination = if (isDatabaseEmpty) searchRoute else forecastRoute
     NavHost(
         navController = navController,
-        startDestination = Graph.Forecast.graph,
+        startDestination = startDestination,
         modifier = modifier
     ) {
         homeNavGraph(
@@ -37,10 +40,7 @@ fun WeatherNavHost(
             },
             navigateToSettings = {
                 navController.toSettings()
-            },
-            navigateToOnboard = {
-                navController.toSearchScreen()
-            },
+            }
         )
         manageLocationsScreen(
             onNavigateToSearch = {
@@ -52,20 +52,20 @@ fun WeatherNavHost(
             },
             onItemSelected = { cityName ->
                 navController.navigate(
-                    route = Graph.Forecast.ForecastScreen,
+                    route = forecastRoute,
                     navOptions = navOptions {
-                    popUpTo(
-                        route = Graph.Forecast.ForecastScreen,
-                        popUpToBuilder = {
-                            inclusive = true
-                        }
-                    )
-                })
+                        popUpTo(
+                            route = forecastRoute,
+                            popUpToBuilder = {
+                                inclusive = true
+                            }
+                        )
+                    })
             }
         )
         searchScreen(onSearchItemSelected = {
             navController.toManageLocations(navOptions = navOptions {
-                popUpTo(manageLocationsRoute){
+                popUpTo(manageLocationsRoute) {
                     inclusive = true
                 }
             })
@@ -75,40 +75,4 @@ fun WeatherNavHost(
         })
 
     }
-}
-
-sealed class Screen(val route: String) {
-    object MainForecast : Screen(route = "mainForecast?cityName={cityName}") {
-        fun passString(cityName: String): String {
-            return this.route.replace(
-                "{cityName}", cityName
-            )
-        }
-    }
-
-    object Search : Screen(route = "search")
-    object ManageLocation : Screen(route = "manageLocation")
-    object Welcome : Screen(route = "welcome")
-}
-
-sealed class Graph(val graph: String) {
-    object Forecast : Graph("forecast") {
-        val ForecastScreen = "forecast?cityName={cityName}"
-        fun passForecastArgument(cityName: String): String {
-            return ForecastScreen.replace("{cityName}", cityName)
-        }
-    }
-
-    object Search : Graph("search") {
-        val ManageLocationScreen = "${graph}manageLocation"
-        val SearchScreen = "${graph}search"
-    }
-
-    object GetStarted : Graph("getStarted") {
-        val WelcomeScreen = "${graph}welcome"
-        val ManageLocationScreen = "${graph}manageLocation"
-        val SearchScreen = "${graph}search"
-    }
-
-    object Root : Graph("root") // this is show when user has no data yet
 }

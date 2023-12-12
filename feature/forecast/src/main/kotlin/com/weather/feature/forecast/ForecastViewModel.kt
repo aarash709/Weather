@@ -43,9 +43,6 @@ class ForecastViewModel @Inject constructor(
 
     private val cityName = savedStateHandle.get<String>("cityName").orEmpty()
 
-    private val _dataBaseOrCityIsEmpty = MutableStateFlow(false)
-    val dataBaseOrCityIsEmpty = _dataBaseOrCityIsEmpty.asStateFlow()
-
     internal var isSyncing = syncStatus.isSyncing
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), false)
 
@@ -56,11 +53,6 @@ class ForecastViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(1000),
         initialValue = SavableForecastData.placeholderDefault
     )
-
-    init {
-        checkDatabaseIsEmpty()
-    }
-
     private fun getWeatherData(): Flow<SavableForecastData> {
         return weatherRepository.getAllForecastWeatherData()
             .combine(getFavoriteCityCoordinate()) { allWeather, coordinate ->
@@ -96,15 +88,7 @@ class ForecastViewModel @Inject constructor(
             .retry(2)
             .catch {
                 Timber.e("data state:${it.message}")
-                Timber.e("catch2: ${dataBaseOrCityIsEmpty.value}")
             }
-    }
-
-    private fun checkDatabaseIsEmpty() {
-        viewModelScope.launch {
-            val isEmpty = weatherRepository.isDatabaseEmpty() == 0
-            _dataBaseOrCityIsEmpty.value = isEmpty
-        }
     }
 
     private fun getFavoriteCityCoordinate(): Flow<Coordinate?> {
@@ -144,10 +128,4 @@ class ForecastViewModel @Inject constructor(
         windSpeedUnits ?: userRepository.setWindSpeedUnitSetting(defaultWindSpeedUnits)
         temperatureUnits ?: userRepository.setTemperatureUnitSetting(defaultTemperature)
     }
-}
-
-
-sealed class WeatherUIState {
-    object Loading : WeatherUIState()
-    data class Success(val data: SavableForecastData) : WeatherUIState()
 }

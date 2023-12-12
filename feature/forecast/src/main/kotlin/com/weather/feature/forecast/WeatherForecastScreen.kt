@@ -2,17 +2,10 @@ package com.weather.feature.forecast
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOutCubic
-import androidx.compose.animation.core.animate
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectVerticalDragGestures
-import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -30,24 +23,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.widget.EdgeEffectCompat.onPull
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.weather.core.design.components.CustomIndicator
-import com.weather.core.design.components.PlaceholderHighlight
-import com.weather.core.design.components.shimmer
 import com.weather.core.design.components.weatherPlaceholder
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.feature.forecast.components.*
 import com.weather.model.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @ExperimentalCoroutinesApi
@@ -56,19 +42,11 @@ fun WeatherForecastScreen(
     viewModel: ForecastViewModel = hiltViewModel(),
     navigateToManageLocations: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    navigateToOnboard: () -> Unit,
 ) {
     //stateful
-    val databaseIsEmpty by viewModel.dataBaseOrCityIsEmpty.collectAsStateWithLifecycle()
     val weatherUIState by viewModel
         .weatherUIState.collectAsStateWithLifecycle()
     val syncing by viewModel.isSyncing.collectAsStateWithLifecycle()
-
-    if (databaseIsEmpty) {
-        LaunchedEffect(key1 = Unit) {
-            navigateToOnboard()
-        }
-    } else {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -82,7 +60,6 @@ fun WeatherForecastScreen(
                 onNavigateToSettings = { onNavigateToSettings() },
                 onRefresh = viewModel::sync
             )
-        }
     }
 }
 
