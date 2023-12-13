@@ -4,12 +4,12 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
@@ -278,7 +278,8 @@ fun ManageLocations(
                                                         )
                                                     )
                                                 },
-                                                onLongClick = { selectedCities += locationData.locationName }
+                                                onLongClick = {
+                                                    selectedCities += locationData.locationName }
                                             )
                                         },
                                         data = locationData,
@@ -334,8 +335,14 @@ fun SavedLocationItem(
     selected: Boolean,
     onItemSelected: (Coordinate) -> Unit,
 ) {
+    val transition = updateTransition(targetState = inSelectionMode)
+    val itemHorizontalPadding by transition.animateDp(label = "item padding") { inEditMode ->
+            if (inEditMode) 32.dp else 0.dp
+        }
+    val textSize by transition.animateFloat(label = "text size") {inEditMode->
+        if (inEditMode) 9f else 12f
+    }
     Surface(
-//        onClick = { /*onItemSelected(Coordinate(data.locationName, data.latitude, data.longitude))*/ },
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp)) then modifier,
@@ -352,13 +359,13 @@ fun SavedLocationItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 24.dp, horizontal = 16.dp),
-            horizontalArrangement = Arrangement.Absolute.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             AnimatedVisibility(
                 visible = inSelectionMode,
-                enter = fadeIn() + scaleIn() + expandHorizontally(),
-                exit = fadeOut() + scaleOut() + shrinkHorizontally(),
+                modifier = Modifier,
+                enter = fadeIn(animationSpec = tween(25)),
+                exit = fadeOut(animationSpec = tween(25)),
                 label = "selection button"
             ) {
                 Icon(
@@ -371,38 +378,45 @@ fun SavedLocationItem(
                         MaterialTheme.colorScheme.onSurface
                 )
             }
-            Column(
-                horizontalAlignment = Alignment.Start
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = itemHorizontalPadding),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = data.locationName,
-                    fontSize = 18.sp
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        modifier = Modifier.size(14.dp),
-                        imageVector = Icons.Outlined.WaterDrop,
-                        contentDescription = "Humidity Icon"
-                    )
+                Column(
+                    horizontalAlignment = Alignment.Start
+                ) {
                     Text(
-                        text = "${data.humidity}%",
-                        fontSize = 12.sp
+                        text = data.locationName,
+                        fontSize = 18.sp
                     )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Text(
-                        text = "Real Feel: ${
-                            data.feelsLike
-                        }°",
-                        fontSize = 12.sp
-                    )
-//                    Text(text = "30°/20°")
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            modifier = Modifier.size(14.dp),
+                            imageVector = Icons.Outlined.WaterDrop,
+                            contentDescription = "Humidity Icon"
+                        )
+                        Text(
+                            text = "${data.humidity}%",
+                            fontSize = textSize.sp
+                        )
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Text(
+                            text = "Real Feel: ${
+                                data.feelsLike
+                            }°",
+                            fontSize = textSize.sp
+                        )
+                    }
                 }
+                Text(
+                    text = "${data.currentTemp}°",
+                    fontSize = 28.sp
+                )
             }
-            Text(
-                text = "${data.currentTemp}°",
-                fontSize = 28.sp
-            )
         }
     }
 }
@@ -461,7 +475,7 @@ fun SearchCardPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = false)
 @Composable
 fun CityItemPreview() {
     WeatherTheme {
