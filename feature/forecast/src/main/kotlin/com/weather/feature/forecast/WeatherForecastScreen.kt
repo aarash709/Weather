@@ -47,19 +47,18 @@ fun WeatherForecastScreen(
     val weatherUIState by viewModel
         .weatherUIState.collectAsStateWithLifecycle()
     val syncing by viewModel.isSyncing.collectAsStateWithLifecycle()
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
-                .background(color = MaterialTheme.colorScheme.background)
-        ) {
-            WeatherForecastScreen(
-                weatherUIState = weatherUIState,
-                isSyncing = syncing,
-                onNavigateToManageLocations = { navigateToManageLocations() },
-                onNavigateToSettings = { onNavigateToSettings() },
-                onRefresh = viewModel::sync
-            )
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.background)
+    ) {
+        WeatherForecastScreen(
+            weatherUIState = weatherUIState,
+            isSyncing = syncing,
+            onNavigateToManageLocations = { navigateToManageLocations() },
+            onNavigateToSettings = { onNavigateToSettings() },
+            onRefresh = viewModel::sync
+        )
     }
 }
 
@@ -110,7 +109,11 @@ fun WeatherForecastScreen(
             showPlaceholder = weatherUIState.showPlaceHolder,
             onNavigateToManageLocations = { onNavigateToManageLocations() },
             onNavigateToSettings = { onNavigateToSettings() })
-        Box(modifier = Modifier, contentAlignment = Alignment.TopCenter) {
+        Box(
+            modifier = Modifier
+                .padding(horizontal = 16.dp),
+            contentAlignment = Alignment.TopCenter
+        ) {
             PullRefreshIndicator(refreshing = isSyncing, state = refreshState)
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),

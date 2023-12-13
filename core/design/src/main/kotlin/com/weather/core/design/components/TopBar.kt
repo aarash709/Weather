@@ -19,11 +19,12 @@ fun CustomTopBar(
     text: String,
     onBackPressed: () -> Unit,
     navigationIcon: @Composable () -> Unit = {
-        Icon(
-            modifier = Modifier.clickable(onClick = { onBackPressed() }),
-            imageVector = Icons.Default.ArrowBack,
-            contentDescription = "Back Icon"
-        )
+        IconButton(onClick = { onBackPressed()}) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "Back Icon"
+            )
+        }
     },
     actions: @Composable () -> Unit = {},
 ) {
