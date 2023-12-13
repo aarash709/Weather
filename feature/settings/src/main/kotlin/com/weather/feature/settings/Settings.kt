@@ -57,7 +57,7 @@ fun Settings(
             .background(color = MaterialTheme.colorScheme.background),
     ) {
         SettingsContent(
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier.padding(horizontal = 0.dp),
             settingsState = settingsUIState,
             tempUnit = tempUnit,
             windUnit = windUnit,
@@ -86,9 +86,9 @@ internal fun SettingsContent(
                 modifier = modifier
                     .fillMaxSize()
             ) {
-                CustomTopBar(modifier = Modifier.fillMaxWidth(), text = "Settings",onBackPressed = { onBackPressed()})
+                CustomTopBar(modifier = Modifier, text = "Settings",onBackPressed = { onBackPressed()})
                 SettingGroup(
-                    modifier = Modifier,
+                    modifier = Modifier.padding(16.dp),
                     groupName = "Units"
                 ) {
                     TemperatureSection(
@@ -102,7 +102,9 @@ internal fun SettingsContent(
                         setWindSpeed = setWindSpeed
                     )
                 }
-                SettingGroup(groupName = "About") {
+                SettingGroup(
+                    modifier = Modifier.padding(16.dp),
+                    groupName = "About") {
                     About()
                 }
             }

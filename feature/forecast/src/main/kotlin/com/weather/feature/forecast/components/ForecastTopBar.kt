@@ -37,18 +37,20 @@ fun ForecastTopBar(
             )
         },
         navigationIcon = {
-            Icon(
-                modifier = Modifier.clickable { onNavigateToManageLocations() },
-                imageVector = Icons.Default.Search,
-                contentDescription = "Search Icon"
-            )
+            IconButton(onClick = { onNavigateToManageLocations() }) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Search Icon"
+                )
+            }
         },
         actions = {
-            Icon(
-                modifier = Modifier.clickable { onNavigateToSettings() },
-                imageVector = Icons.Default.Settings,
-                contentDescription = "Location Pick Icon"
-            )
+            IconButton(onClick = { onNavigateToSettings() }) {
+                Icon(
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = "Location Pick Icon"
+                )
+            }
         },
         colors = TopAppBarDefaults
             .centerAlignedTopAppBarColors(

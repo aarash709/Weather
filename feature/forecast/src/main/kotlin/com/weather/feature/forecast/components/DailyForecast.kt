@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.model.Daily
 import com.weather.model.DailyPreview
@@ -24,7 +25,7 @@ fun Daily(
     dailyList: List<DailyPreview>,
 ) {
     Surface(
-        modifier = modifier,
+        modifier = Modifier.bouncyTapEffect() then modifier,
         shape = RoundedCornerShape(16.dp),
     ) {
         Column(

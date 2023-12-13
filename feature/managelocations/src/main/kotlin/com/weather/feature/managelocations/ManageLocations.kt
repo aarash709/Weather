@@ -4,12 +4,12 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
@@ -52,6 +52,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -65,6 +66,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.weather.core.design.components.CustomTopBar
 import com.weather.core.design.components.ShowLoadingText
+import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.model.Coordinate
 import com.weather.model.ManageLocationsData
@@ -147,8 +149,7 @@ fun ManageLocations(
         topBar = {
             CustomTopBar(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .fillMaxWidth(),
                 text = if (isInEditMode) {
                     "Selected Items ${selectedCities.size}"
                 } else {
@@ -227,68 +228,67 @@ fun ManageLocations(
                 Column(
                     modifier = Modifier
                         .padding(padding)
-                        .padding(horizontal = 16.dp)
+                        .padding(horizontal = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Column(
-                        modifier = Modifier,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Spacer(modifier = Modifier.height(16.dp))
-                        SearchBarCard(onNavigateToSearch)
-                        Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
+                    SearchBarCard(onNavigateToSearch)
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                        val inSelectionMode by remember {
-                            derivedStateOf { selectedCities.isNotEmpty() }
-                        }
-                        if (dataState.data.isEmpty()) {
-                            Text(
-                                text = "Search and add a location",
-                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = .75f),
-                                fontSize = 12.sp
-                            )
-                        } else {
-                            LazyColumn(
-                                modifier = Modifier,
-                                verticalArrangement = Arrangement.spacedBy(16.dp)
-                            ) {
-                                items(
-                                    items = dataState.data,
-                                    key = {
-                                        it.locationName
-                                    }) { locationData ->
-                                    val selected by remember {
-                                        derivedStateOf { locationData.locationName in selectedCities }
-                                    }
-                                    SavedLocationItem(
-                                        modifier = if (inSelectionMode) {
-                                            Modifier.clickable {
-                                                if (selected)
-                                                    selectedCities -= locationData.locationName
-                                                else
-                                                    selectedCities += locationData.locationName
-                                            }
-                                        } else {
-                                            Modifier.combinedClickable(
-                                                onClick = {
-                                                    onItemSelected(
-                                                        Coordinate(
-                                                            locationData.locationName,
-                                                            locationData.latitude,
-                                                            locationData.longitude
-                                                        )
-                                                    )
-                                                },
-                                                onLongClick = { selectedCities += locationData.locationName }
-                                            )
-                                        },
-                                        data = locationData,
-                                        inSelectionMode = inSelectionMode,
-                                        selected = selected,
-                                        onItemSelected = { coordinate ->
-                                            onItemSelected(coordinate)
-                                        }
-                                    )
+                    val inSelectionMode by remember {
+                        derivedStateOf { selectedCities.isNotEmpty() }
+                    }
+                    if (dataState.data.isEmpty()) {
+                        Text(
+                            text = "Search and add a location",
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = .75f),
+                            fontSize = 12.sp
+                        )
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier,
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            items(
+                                items = dataState.data,
+                                key = {
+                                    it.locationName
+                                }) { locationData ->
+                                val selected by remember {
+                                    derivedStateOf { locationData.locationName in selectedCities }
                                 }
+                                SavedLocationItem(
+                                    modifier = Modifier.bouncyTapEffect() then
+                                            if (inSelectionMode) {
+                                                Modifier.clickable {
+                                                    if (selected)
+                                                        selectedCities -= locationData.locationName
+                                                    else
+                                                        selectedCities += locationData.locationName
+                                                }
+                                            } else {
+                                                Modifier.combinedClickable(
+                                                    onClick = {
+                                                        onItemSelected(
+                                                            Coordinate(
+                                                                locationData.locationName,
+                                                                locationData.latitude,
+                                                                locationData.longitude
+                                                            )
+                                                        )
+                                                    },
+                                                    onLongClick = {
+                                                        selectedCities += locationData.locationName
+                                                    }
+                                                )
+                                            },
+                                    data = locationData,
+                                    inSelectionMode = inSelectionMode,
+                                    selected = selected,
+                                    onItemSelected = { coordinate ->
+                                        onItemSelected(coordinate)
+                                    }
+                                )
                             }
                         }
                     }
@@ -334,8 +334,14 @@ fun SavedLocationItem(
     selected: Boolean,
     onItemSelected: (Coordinate) -> Unit,
 ) {
+    val transition = updateTransition(targetState = inSelectionMode)
+    val itemHorizontalPadding by transition.animateDp(label = "item padding") { inEditMode ->
+        if (inEditMode) 32.dp else 0.dp
+    }
+    val textSize by transition.animateFloat(label = "text size") { inEditMode ->
+        if (inEditMode) 9f else 12f
+    }
     Surface(
-//        onClick = { /*onItemSelected(Coordinate(data.locationName, data.latitude, data.longitude))*/ },
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp)) then modifier,
@@ -352,13 +358,13 @@ fun SavedLocationItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 24.dp, horizontal = 16.dp),
-            horizontalArrangement = Arrangement.Absolute.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             AnimatedVisibility(
                 visible = inSelectionMode,
-                enter = fadeIn() + scaleIn() + expandHorizontally(),
-                exit = fadeOut() + scaleOut() + shrinkHorizontally(),
+                modifier = Modifier,
+                enter = fadeIn(animationSpec = tween(25)),
+                exit = fadeOut(animationSpec = tween(25)),
                 label = "selection button"
             ) {
                 Icon(
@@ -371,38 +377,45 @@ fun SavedLocationItem(
                         MaterialTheme.colorScheme.onSurface
                 )
             }
-            Column(
-                horizontalAlignment = Alignment.Start
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = itemHorizontalPadding),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = data.locationName,
-                    fontSize = 18.sp
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        modifier = Modifier.size(14.dp),
-                        imageVector = Icons.Outlined.WaterDrop,
-                        contentDescription = "Humidity Icon"
-                    )
+                Column(
+                    horizontalAlignment = Alignment.Start
+                ) {
                     Text(
-                        text = "${data.humidity}%",
-                        fontSize = 12.sp
+                        text = data.locationName,
+                        fontSize = 18.sp
                     )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Text(
-                        text = "Real Feel: ${
-                            data.feelsLike
-                        }°",
-                        fontSize = 12.sp
-                    )
-//                    Text(text = "30°/20°")
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            modifier = Modifier.size(14.dp),
+                            imageVector = Icons.Outlined.WaterDrop,
+                            contentDescription = "Humidity Icon"
+                        )
+                        Text(
+                            text = "${data.humidity}%",
+                            fontSize = textSize.sp
+                        )
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Text(
+                            text = "Real Feel: ${
+                                data.feelsLike
+                            }°",
+                            fontSize = textSize.sp
+                        )
+                    }
                 }
+                Text(
+                    text = "${data.currentTemp}°",
+                    fontSize = 28.sp
+                )
             }
-            Text(
-                text = "${data.currentTemp}°",
-                fontSize = 28.sp
-            )
         }
     }
 }
@@ -461,7 +474,7 @@ fun SearchCardPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = false)
 @Composable
 fun CityItemPreview() {
     WeatherTheme {
