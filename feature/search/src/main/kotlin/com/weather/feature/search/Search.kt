@@ -2,6 +2,7 @@ package com.weather.feature.search
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -52,6 +54,7 @@ import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.flowlayout.MainAxisAlignment
 import com.weather.core.design.components.weatherPlaceholder
+import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.model.geocode.GeoSearchItem
 import com.weather.model.geocode.SavableSearchState
@@ -137,28 +140,36 @@ fun SearchScreen(
                 onClearSearch()
             }
         )
-        if (searchInputText.text.isEmpty()) {
-            Text(
-                text = "Popular Cities",
-                modifier = Modifier.padding(top = 24.dp),
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-                fontSize = 14.sp
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            PopularCities(
-                popularCities = popularCities,
-                popularCityIndex = { popularCityIndex(it) })
+        AnimatedContent(
+            targetState = searchInputText.text.isEmpty(),
+            label = "search content"
+        ) { isTextSesrchEmpty ->
+            Column {
+                if (isTextSesrchEmpty) {
+                    Text(
+                        text = "Popular Cities",
+                        modifier = Modifier.padding(top = 24.dp),
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                        fontSize = 14.sp
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    PopularCities(
+                        modifier = Modifier,
+                        popularCities = popularCities,
+                        popularCityIndex = { popularCityIndex(it) })
 
-        } else {
-            Spacer(modifier = Modifier.height(16.dp))
-            SearchList(
-                searchList = searchUIState.geoSearchItems,
-                showPlaceholder = searchUIState.showPlaceholder,
-                onSearchItemSelected = { SearchItem ->
-                    selectedSearchItem(SearchItem)
-                    //fetch and store weather based on selection
-                    //maybe navigate to main page after successful IO
-                })
+                } else {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    SearchList(
+                        searchList = searchUIState.geoSearchItems,
+                        showPlaceholder = searchUIState.showPlaceholder,
+                        onSearchItemSelected = { SearchItem ->
+                            selectedSearchItem(SearchItem)
+                            //fetch and store weather based on selection
+                            //maybe navigate to main page after successful IO
+                        })
+                }
+            }
         }
 
 
@@ -247,6 +258,8 @@ private fun SearchList(
         items(searchList) { searchItemItem ->
             SearchItem(
                 modifier = Modifier
+                    .bouncyTapEffect()
+                    .clip(RoundedCornerShape(16.dp))
                     .weatherPlaceholder(
                         visible = showPlaceholder
                     )
@@ -267,7 +280,6 @@ private fun SearchItem(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        shape = RoundedCornerShape(16.dp),
     ) {
         Row(
             modifier = Modifier
@@ -294,11 +306,12 @@ private fun SearchItem(
 //popular city
 @Composable
 private fun PopularCities(
+    modifier: Modifier = Modifier,
     popularCities: List<String>,
     popularCityIndex: (Int) -> Unit,
 ) {
     FlowRow(
-        modifier = Modifier.fillMaxWidth(fraction = 1f),
+        modifier = Modifier.fillMaxWidth() then modifier,
 //        mainAxisSize = SizeMode.Wrap, //buggy
         mainAxisAlignment = MainAxisAlignment.Start,
         mainAxisSpacing = 16.dp,
@@ -307,7 +320,10 @@ private fun PopularCities(
     ) {
         popularCities.forEachIndexed { index, cityName ->
             PopularCityItem(
-                modifier = Modifier.clickable { popularCityIndex(index) },
+                modifier = Modifier
+                    .bouncyTapEffect(targetScale = 0.9f)
+                    .clip(shape = RoundedCornerShape(size = 16.dp))
+                    .clickable { popularCityIndex(index) },
                 cityName = cityName
             )
         }
@@ -321,7 +337,7 @@ private fun PopularCityItem(
     cityName: String,
 ) {
     Card(
-        modifier = modifier,
+        modifier = Modifier then modifier,
         shape = RoundedCornerShape(size = 16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
