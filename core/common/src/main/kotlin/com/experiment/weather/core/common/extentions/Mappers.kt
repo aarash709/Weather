@@ -1,5 +1,6 @@
 package com.experiment.weather.core.common.extentions
 
+import android.util.Log
 import arrow.optics.copy
 import com.weather.model.Coordinate
 import com.weather.model.Current
@@ -25,9 +26,15 @@ import com.weather.model.nightTemp
 import com.weather.model.temp
 import com.weather.model.wind_speed
 import java.text.SimpleDateFormat
+import java.time.Duration
+import java.time.Instant
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
+import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.milliseconds
 
 fun Current.convertToUserSettings(
     temperature: TemperatureUnits?,
@@ -63,7 +70,15 @@ fun List<Hourly>.convertToUserSettings(temperature: TemperatureUnits?): List<Hou
                     temperature
                 )
             }
-            Hourly.dt transform { dt -> unixMillisToHumanDate(dt.toLong(), "EEE") }
+            Hourly.dt transform { dt ->
+                val timeMillis = dt.toLong()
+                val diffrence = Duration.ofSeconds(timeMillis.minus(Instant.now().epochSecond)).toMinutes()
+                Log.e("mapper",diffrence.toString())
+                if (diffrence in 0 .. 60)
+                    "Now"
+                else
+                    unixMillisToHumanDate(timeMillis, "HH:mm")
+            }
             Hourly.temp transform { temp -> temp.convertToUserTemperature(temperature) }
         }
     }
