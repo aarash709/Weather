@@ -25,6 +25,8 @@ import com.weather.model.nightTemp
 import com.weather.model.temp
 import com.weather.model.wind_speed
 import java.text.SimpleDateFormat
+import java.time.Duration
+import java.time.Instant
 import java.util.Date
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -47,7 +49,7 @@ fun List<Daily>.convertToUserSettings(temperature: TemperatureUnits?): List<Dail
     return map { daily ->
         daily.copy {
             Daily.dew_point transform { dewPoint -> dewPoint.convertToUserTemperature(temperature) }
-            Daily.dt transform { dt -> unixMillisToHumanDate(dt.toLong(), "EEE") }
+            Daily.dt transform { dt -> unixMillisToHumanDate(dt.toLong(), DAILY_PATTERN) }
             Daily.dayTemp transform { dayTemp -> dayTemp.convertToUserTemperature(temperature) }
             Daily.nightTemp.transform { nightTemp -> nightTemp.convertToUserTemperature(temperature) }
         }
@@ -63,7 +65,7 @@ fun List<Hourly>.convertToUserSettings(temperature: TemperatureUnits?): List<Hou
                     temperature
                 )
             }
-            Hourly.dt transform { dt -> unixMillisToHumanDate(dt.toLong(), "EEE") }
+            Hourly.dt transform { hourlyTimeMillis -> calculateUIDailyTime(hourlyTimeMillis) }
             Hourly.temp transform { temp -> temp.convertToUserTemperature(temperature) }
         }
     }
@@ -77,15 +79,8 @@ fun WeatherData.convertToUserSettings(userSettings: SettingsData): WeatherData {
                 userSettings.windSpeedUnits
             )
         }
-        WeatherData.daily transform {
-
-            it.convertToUserSettings(userSettings.temperatureUnits)
-
-
-        }
-        WeatherData.hourly transform {
-            it.convertToUserSettings(userSettings.temperatureUnits)
-        }
+        WeatherData.daily transform { it.convertToUserSettings(userSettings.temperatureUnits) }
+        WeatherData.hourly transform { it.convertToUserSettings(userSettings.temperatureUnits) }
 
     }
 }
@@ -116,4 +111,14 @@ private fun unixMillisToHumanDate(unixTimeStamp: Long, pattern: String): String 
     val formatter = SimpleDateFormat(pattern, Locale.getDefault())
     val date = Date(unixTimeStamp * 1000) //to millisecond
     return formatter.format(date)
+}
+
+private fun calculateUIDailyTime(hourlyTimeMillis: String): String {
+    val timeMillis = hourlyTimeMillis.toLong()
+    val differenceInMinutes =
+        Duration.ofSeconds(timeMillis.minus(Instant.now().epochSecond)).toMinutes()
+    return if (differenceInMinutes in hourlyRangeThreshold)
+        NOW
+    else
+        unixMillisToHumanDate(timeMillis, HOURLY_PATTERN)
 }
