@@ -5,6 +5,8 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
@@ -16,6 +18,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -82,6 +89,63 @@ fun HourlyItem(
     }
 }
 
+
+@Composable
+fun HourlyGraph() {
+    Spacer(modifier = Modifier
+        .aspectRatio(16 / 9f)
+        .drawWithCache {
+            val data = HourlyStaticData
+            val min = data.minBy { it.temp }
+            val max = data.maxBy { it.temp }
+            val range = max.temp - min.temp
+            val maxRelativeHeight = size.height.div(range.toFloat())
+            val path = Path()
+
+//            data.forEachIndexed { index, hourly ->
+//                if (index == 0) {
+//                    path.moveTo(
+//                        x = 0f,
+//                        y = size.height - (hourly.temp / min.temp).toFloat() * maxRelativeHeight
+//                    )
+//                }
+//                val y = (size.height / hourly.temp.toFloat()) * index
+//                val x = (size.width / data.size) * index
+////                path.lineTo(x = x, y = size.height / hourly.temp.toFloat())
+//                drawCircle(color = Color.Magenta, radius = 10f,center =  Offset(x = x,y = y))
+//            }
+            onDrawBehind {
+                drawRect(color = Color.Red, style = Stroke(width = 5f))
+                data.forEachIndexed { index, hourly ->
+                    if (index == 0) {
+                        path.moveTo(
+                            x = 0f,
+                            y = size.height - (hourly.temp / min.temp).toFloat() * maxRelativeHeight
+                        )
+                    }
+                    val y = size.height - (range * (hourly.temp.toFloat())).toFloat()
+                    val x = (size.width / data.size) * index
+//                path.lineTo(x = x, y = size.height / hourly.temp.toFloat())
+                    drawCircle(
+                        color = Color.Magenta,
+                        radius = 10f,
+                        center = Offset(x = x, y = y)
+                    )
+                }
+//                drawPath(
+//                    path = path,
+//                    color = Color.Magenta,
+//                    style = Stroke(width = 10f)
+//                )
+            }
+        })
+}
+
+@Preview
+@Composable
+private fun HourlyGraphPreview() {
+    HourlyGraph()
+}
 
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO)
