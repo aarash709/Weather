@@ -23,6 +23,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -95,48 +96,64 @@ fun HourlyGraph() {
     Spacer(modifier = Modifier
         .aspectRatio(16 / 9f)
         .drawWithCache {
+            val width = size.width
+            val height = size.height
             val data = HourlyStaticData
-            val min = data.minBy { it.temp }
-            val max = data.maxBy { it.temp }
-            val range = max.temp - min.temp
-            val maxRelativeHeight = size.height.div(range.toFloat())
+            val dataSize = data.size
+            val min = data.minBy { it.temp }.temp
+            val max = data.maxBy { it.temp }.temp
+            val rangeSteps = (max - min).toFloat()
+            val maxRelativeHeight = size.height.div(data.size)
             val path = Path()
-
-//            data.forEachIndexed { index, hourly ->
-//                if (index == 0) {
-//                    path.moveTo(
-//                        x = 0f,
-//                        y = size.height - (hourly.temp / min.temp).toFloat() * maxRelativeHeight
-//                    )
-//                }
-//                val y = (size.height / hourly.temp.toFloat()) * index
-//                val x = (size.width / data.size) * index
-////                path.lineTo(x = x, y = size.height / hourly.temp.toFloat())
-//                drawCircle(color = Color.Magenta, radius = 10f,center =  Offset(x = x,y = y))
-//            }
             onDrawBehind {
-                drawRect(color = Color.Red, style = Stroke(width = 5f))
+                drawRect(color = Color.Gray, style = Stroke(width = 5f))
                 data.forEachIndexed { index, hourly ->
+                    val temp = hourly.temp.toFloat()
+                    val y = height - ((temp - min) / rangeSteps)
+                        .times(height)
+                        .toFloat()
+                    val x = (size.width / data.size)
                     if (index == 0) {
                         path.moveTo(
                             x = 0f,
-                            y = size.height - (hourly.temp / min.temp).toFloat() * maxRelativeHeight
+                            y = y
                         )
                     }
-                    val y = size.height - (range * (hourly.temp.toFloat())).toFloat()
-                    val x = (size.width / data.size) * index
-//                path.lineTo(x = x, y = size.height / hourly.temp.toFloat())
+                    path.lineTo(x = x * (index), y = y)
                     drawCircle(
-                        color = Color.Magenta,
-                        radius = 10f,
-                        center = Offset(x = x, y = y)
+                        color = Color.Red   ,
+                        radius = 15f,
+                        center = Offset(x = x * index, y = y)
+                    )
+                    this.drawContext.canvas.nativeCanvas.drawText(
+                        "$index",
+                        x * index,
+                        height - 10,
+                        android.graphics
+                            .Paint()
+                            .apply {
+                                color = android.graphics.Color.WHITE
+                            }
+                    )
+                    this.drawContext.canvas.nativeCanvas.drawText(
+                        "$temp",
+                        5f,
+                        height - (height / dataSize)
+                            .times(index + 1)
+                            .minus(11f),
+                        android.graphics
+                            .Paint()
+                            .apply {
+                                color = android.graphics.Color.WHITE
+                            }
                     )
                 }
-//                drawPath(
-//                    path = path,
-//                    color = Color.Magenta,
-//                    style = Stroke(width = 10f)
-//                )
+
+                drawPath(
+                    path = path,
+                    color = Color.White,
+                    style = Stroke(width = 10f)
+                )
             }
         })
 }
@@ -214,7 +231,7 @@ val HourlyStaticData = listOf(
         humidity = 1,
         pop = 0.0,
         pressure = 0,
-        temp = 9.0,
+        temp = 10.0,
         uvi = 0.0,
         visibility = 100,
         description = "description",
@@ -233,7 +250,7 @@ val HourlyStaticData = listOf(
         humidity = 1,
         pop = 0.0,
         pressure = 0,
-        temp = 11.0,
+        temp = 14.0,
         uvi = 0.0,
         visibility = 100,
         description = "description",
@@ -252,7 +269,7 @@ val HourlyStaticData = listOf(
         humidity = 1,
         pop = 0.0,
         pressure = 0,
-        temp = 15.0,
+        temp = 17.0,
         uvi = 0.0,
         visibility = 100,
         description = "description",
