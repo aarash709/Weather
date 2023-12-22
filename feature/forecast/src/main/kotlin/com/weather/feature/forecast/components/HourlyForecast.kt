@@ -20,8 +20,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.tooling.preview.Preview
@@ -92,42 +94,88 @@ fun HourlyItem(
 
 
 @Composable
-fun HourlyGraph() {
-    Spacer(modifier = Modifier
+fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
+    Spacer(modifier = modifier then Modifier
         .aspectRatio(16 / 9f)
         .drawWithCache {
             val width = size.width
             val height = size.height
-            val data = HourlyStaticData
             val dataSize = data.size
-            val min = data.minBy { it.temp }.temp
-            val max = data.maxBy { it.temp }.temp
-            val rangeSteps = (max - min).toFloat()
-            val maxRelativeHeight = size.height.div(data.size)
+            val minTemp = data.minBy { it.temp }.temp
+            val maxTemp = data.maxBy { it.temp }.temp
+            val rangeSteps = (maxTemp - minTemp).toFloat()
+            val textVerticalOffsetPx = 10.dp.toPx()
+            val textHorizontalOffsetPx = 4.dp.toPx()
+            val topOffset = 16.dp.toPx()
             val path = Path()
+            var previousTemp = height
+            var previousX = 0f
+
+//            val x3 = width
+//            val y3 = height
             onDrawBehind {
-                drawRect(color = Color.Gray, style = Stroke(width = 5f))
+//                drawRect(color = Color.Gray, style = Stroke(width = 5f))
+                path.reset()
                 data.forEachIndexed { index, hourly ->
                     val temp = hourly.temp.toFloat()
-                    val y = height - ((temp - min) / rangeSteps)
-                        .times(height)
+                    val y = height - ((temp - minTemp) / rangeSteps)
+                        .times(height.minus(topOffset))
                         .toFloat()
-                    val x = (size.width / data.size)
+                    val x = (size.width / dataSize.minus(1))
                     if (index == 0) {
                         path.moveTo(
                             x = 0f,
                             y = y
                         )
                     }
-                    path.lineTo(x = x * (index), y = y)
-                    drawCircle(
-                        color = Color.Red   ,
-                        radius = 15f,
-                        center = Offset(x = x * index, y = y)
+                    val XPerIndex = x * index
+                    val controlPoints1 = Offset(XPerIndex.minus(x / 2), previousTemp)
+                    val controlPoints2 = Offset(XPerIndex.minus(x / 2), y)
+                    path.cubicTo(
+                        x1 = controlPoints1.x,
+                        y1 = controlPoints1.y,
+                        x2 = controlPoints2.x,
+                        y2 = controlPoints2.y,
+                        x3 = x.times(index),
+                        y3 = y
                     )
+                    drawLine(
+                        color = Color.White,
+                        start = Offset(x = 0f, topOffset),
+                        end = Offset(x = width, y = topOffset),
+                        pathEffect = PathEffect.dashPathEffect(
+                            floatArrayOf(10f, 10f),
+                            phase = 0f
+                        ),
+                    )
+                    drawPath(
+                        path = path,
+                        brush = Brush.verticalGradient(
+                            listOf(
+                                Color.Red,
+                                Color.Yellow,
+                                Color.Green
+                            )
+                        ),
+                        style = Stroke(width = 10f)
+                    )
+                    previousTemp = y
+                    previousX = x
+                    //temp text
+                    this.drawContext.canvas.nativeCanvas.drawText(
+                        "$temp",
+                        (x * index).minus(textHorizontalOffsetPx),
+                        y - textVerticalOffsetPx,
+                        android.graphics
+                            .Paint()
+                            .apply {
+                                color = android.graphics.Color.WHITE
+                            }
+                    )
+                    //x numbers
                     this.drawContext.canvas.nativeCanvas.drawText(
                         "$index",
-                        x * index,
+                        (x * index),
                         height - 10,
                         android.graphics
                             .Paint()
@@ -135,25 +183,21 @@ fun HourlyGraph() {
                                 color = android.graphics.Color.WHITE
                             }
                     )
+                    //y numbers
                     this.drawContext.canvas.nativeCanvas.drawText(
                         "$temp",
                         5f,
-                        height - (height / dataSize)
-                            .times(index + 1)
-                            .minus(11f),
+                        height - (height.minus(topOffset) / dataSize.minus(1))
+                            .times(index)
+                            .minus(0),
                         android.graphics
                             .Paint()
                             .apply {
                                 color = android.graphics.Color.WHITE
                             }
                     )
-                }
 
-                drawPath(
-                    path = path,
-                    color = Color.White,
-                    style = Stroke(width = 10f)
-                )
+                }
             }
         })
 }
@@ -161,7 +205,15 @@ fun HourlyGraph() {
 @Preview
 @Composable
 private fun HourlyGraphPreview() {
-    HourlyGraph()
+    HourlyGraph(data = HourlyStaticData)
+}
+
+@Preview
+@Composable
+private fun HourlyWithGraphTestPreview() {
+    WeatherTheme {
+        HourlyForecast(data = HourlyStaticData)
+    }
 }
 
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
@@ -270,6 +322,42 @@ val HourlyStaticData = listOf(
         pop = 0.0,
         pressure = 0,
         temp = 17.0,
+        uvi = 0.0,
+        visibility = 100,
+        description = "description",
+        icon = "icon",
+        id = 100,
+        main = "main",
+        wind_deg = 10,
+        wind_gust = 0.0,
+        wind_speed = 0.0
+    ), Hourly(
+        clouds = 0,
+        dew_point = 0.0,
+        dt = "17:00",
+        feels_like = 0.0,
+        humidity = 1,
+        pop = 0.0,
+        pressure = 0,
+        temp = 12.0,
+        uvi = 0.0,
+        visibility = 100,
+        description = "description",
+        icon = "icon",
+        id = 100,
+        main = "main",
+        wind_deg = 10,
+        wind_gust = 0.0,
+        wind_speed = 0.0
+    ), Hourly(
+        clouds = 0,
+        dew_point = 0.0,
+        dt = "17:00",
+        feels_like = 0.0,
+        humidity = 1,
+        pop = 0.0,
+        pressure = 0,
+        temp = 10.0,
         uvi = 0.0,
         visibility = 100,
         description = "description",
