@@ -312,11 +312,12 @@ private fun PopularCities(
 ) {
     FlowRow(
         modifier = Modifier.fillMaxWidth() then modifier,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         popularCities.forEachIndexed { index, cityName ->
             PopularCityItem(
                 modifier = Modifier
-                    .padding(8.dp)
                     .bouncyTapEffect(targetScale = 0.9f)
                     .clip(shape = RoundedCornerShape(size = 16.dp))
                     .clickable { popularCityIndex(index) },
