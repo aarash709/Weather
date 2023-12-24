@@ -8,6 +8,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -50,10 +52,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
-import com.google.accompanist.flowlayout.FlowRow
-import com.google.accompanist.flowlayout.MainAxisAlignment
 import com.weather.core.design.components.weatherPlaceholder
 import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
@@ -305,6 +303,7 @@ private fun SearchItem(
 }
 
 //popular city
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun PopularCities(
     modifier: Modifier = Modifier,
@@ -313,15 +312,11 @@ private fun PopularCities(
 ) {
     FlowRow(
         modifier = Modifier.fillMaxWidth() then modifier,
-//        mainAxisSize = SizeMode.Wrap, //buggy
-        mainAxisAlignment = MainAxisAlignment.Start,
-        mainAxisSpacing = 16.dp,
-        crossAxisAlignment = FlowCrossAxisAlignment.Center,
-        crossAxisSpacing = 16.dp,
     ) {
         popularCities.forEachIndexed { index, cityName ->
             PopularCityItem(
                 modifier = Modifier
+                    .padding(8.dp)
                     .bouncyTapEffect(targetScale = 0.9f)
                     .clip(shape = RoundedCornerShape(size = 16.dp))
                     .clickable { popularCityIndex(index) },
