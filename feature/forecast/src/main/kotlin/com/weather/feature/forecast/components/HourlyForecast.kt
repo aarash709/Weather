@@ -96,6 +96,7 @@ fun HourlyItem(
 @Composable
 fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
     Spacer(modifier = modifier then Modifier
+        .padding(start = 16.dp, bottom = 16.dp)
         .aspectRatio(16 / 9f)
         .drawWithCache {
             val width = size.width
@@ -109,12 +110,8 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
             val topOffset = 16.dp.toPx()
             val path = Path()
             var previousTemp = height
-            var previousX = 0f
 
-//            val x3 = width
-//            val y3 = height
             onDrawBehind {
-//                drawRect(color = Color.Gray, style = Stroke(width = 5f))
                 path.reset()
                 data.forEachIndexed { index, hourly ->
                     val temp = hourly.temp.toFloat()
@@ -123,20 +120,18 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
                         .toFloat()
                     val x = (size.width / dataSize.minus(1))
                     if (index == 0) {
-                        path.moveTo(
-                            x = 0f,
-                            y = y
-                        )
+                        path.reset()
+                        path.moveTo(0f, y)
                     }
-                    val XPerIndex = x * index
-                    val controlPoints1 = Offset(XPerIndex.minus(x / 2), previousTemp)
-                    val controlPoints2 = Offset(XPerIndex.minus(x / 2), y)
+                    val xPerIndex = x * (index)
+                    val controlPoints1 = Offset(xPerIndex.minus(x / 2), previousTemp)
+                    val controlPoints2 = Offset(xPerIndex.minus(x / 2), y)
                     path.cubicTo(
                         x1 = controlPoints1.x,
                         y1 = controlPoints1.y,
                         x2 = controlPoints2.x,
                         y2 = controlPoints2.y,
-                        x3 = x.times(index),
+                        x3 = xPerIndex,
                         y3 = y
                     )
                     drawLine(
@@ -160,7 +155,6 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
                         style = Stroke(width = 10f)
                     )
                     previousTemp = y
-                    previousX = x
                     //temp text
                     this.drawContext.canvas.nativeCanvas.drawText(
                         "$temp",
@@ -172,31 +166,6 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
                                 color = android.graphics.Color.WHITE
                             }
                     )
-                    //x numbers
-                    this.drawContext.canvas.nativeCanvas.drawText(
-                        "$index",
-                        (x * index),
-                        height - 10,
-                        android.graphics
-                            .Paint()
-                            .apply {
-                                color = android.graphics.Color.WHITE
-                            }
-                    )
-                    //y numbers
-                    this.drawContext.canvas.nativeCanvas.drawText(
-                        "$temp",
-                        5f,
-                        height - (height.minus(topOffset) / dataSize.minus(1))
-                            .times(index)
-                            .minus(0),
-                        android.graphics
-                            .Paint()
-                            .apply {
-                                color = android.graphics.Color.WHITE
-                            }
-                    )
-
                 }
             }
         })
@@ -264,7 +233,7 @@ val HourlyStaticData = listOf(
         humidity = 1,
         pop = 0.0,
         pressure = 0,
-        temp = 11.0,
+        temp = 9.0,
         uvi = 0.0,
         visibility = 100,
         description = "description",
@@ -283,7 +252,7 @@ val HourlyStaticData = listOf(
         humidity = 1,
         pop = 0.0,
         pressure = 0,
-        temp = 10.0,
+        temp = 11.0,
         uvi = 0.0,
         visibility = 100,
         description = "description",
@@ -302,7 +271,7 @@ val HourlyStaticData = listOf(
         humidity = 1,
         pop = 0.0,
         pressure = 0,
-        temp = 14.0,
+        temp = 12.0,
         uvi = 0.0,
         visibility = 100,
         description = "description",
@@ -321,7 +290,79 @@ val HourlyStaticData = listOf(
         humidity = 1,
         pop = 0.0,
         pressure = 0,
-        temp = 17.0,
+        temp = 15.0,
+        uvi = 0.0,
+        visibility = 100,
+        description = "description",
+        icon = "icon",
+        id = 100,
+        main = "main",
+        wind_deg = 10,
+        wind_gust = 0.0,
+        wind_speed = 0.0
+    ), Hourly(
+        clouds = 0,
+        dew_point = 0.0,
+        dt = "17:00",
+        feels_like = 0.0,
+        humidity = 1,
+        pop = 0.0,
+        pressure = 0,
+        temp = 15.0,
+        uvi = 0.0,
+        visibility = 100,
+        description = "description",
+        icon = "icon",
+        id = 100,
+        main = "main",
+        wind_deg = 10,
+        wind_gust = 0.0,
+        wind_speed = 0.0
+    ), Hourly(
+        clouds = 0,
+        dew_point = 0.0,
+        dt = "17:00",
+        feels_like = 0.0,
+        humidity = 1,
+        pop = 0.0,
+        pressure = 0,
+        temp = 16.0,
+        uvi = 0.0,
+        visibility = 100,
+        description = "description",
+        icon = "icon",
+        id = 100,
+        main = "main",
+        wind_deg = 10,
+        wind_gust = 0.0,
+        wind_speed = 0.0
+    ), Hourly(
+        clouds = 0,
+        dew_point = 0.0,
+        dt = "17:00",
+        feels_like = 0.0,
+        humidity = 1,
+        pop = 0.0,
+        pressure = 0,
+        temp = 15.0,
+        uvi = 0.0,
+        visibility = 100,
+        description = "description",
+        icon = "icon",
+        id = 100,
+        main = "main",
+        wind_deg = 10,
+        wind_gust = 0.0,
+        wind_speed = 0.0
+    ), Hourly(
+        clouds = 0,
+        dew_point = 0.0,
+        dt = "17:00",
+        feels_like = 0.0,
+        humidity = 1,
+        pop = 0.0,
+        pressure = 0,
+        temp = 14.0,
         uvi = 0.0,
         visibility = 100,
         description = "description",
