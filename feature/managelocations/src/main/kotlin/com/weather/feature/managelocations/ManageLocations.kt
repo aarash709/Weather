@@ -40,12 +40,15 @@ import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.WaterDrop
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -68,14 +71,17 @@ import com.weather.core.design.components.CustomTopBar
 import com.weather.core.design.components.ShowLoadingText
 import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
+import com.weather.feature.search.SearchScreen
 import com.weather.model.Coordinate
 import com.weather.model.ManageLocationsData
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.launch
 
 @ExperimentalFoundationApi
 @Composable
 fun ManageLocations(
     viewModel: ManageLocationsViewModel = hiltViewModel(),
-    onNavigateToSearch: () -> Unit,
     onBackPressed: () -> Unit,
     onItemSelected: (String) -> Unit,
 ) {
@@ -85,7 +91,6 @@ fun ManageLocations(
     Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
         ManageLocations(
             dataState = dataState,
-            onNavigateToSearch = { onNavigateToSearch() },
             onBackPressed = onBackPressed,
             onItemSelected = { coordinate ->
                 onItemSelected(coordinate.cityName.toString())
@@ -105,11 +110,15 @@ fun ManageLocations(
     }
 }
 
-@ExperimentalFoundationApi
+@OptIn(
+    ExperimentalCoroutinesApi::class,
+    FlowPreview::class,
+    ExperimentalFoundationApi::class,
+    ExperimentalMaterial3Api::class
+)
 @Composable
 fun ManageLocations(
     dataState: LocationsUIState,
-    onNavigateToSearch: () -> Unit,
     onBackPressed: () -> Unit,
     onItemSelected: (Coordinate) -> Unit,
     onDeleteItem: (List<String>) -> Unit,
@@ -130,6 +139,11 @@ fun ManageLocations(
     var itemsToDelete by remember() {
         mutableStateOf(listOf<String>())
     }
+    var showSearchSheet by remember {
+        mutableStateOf(false)
+    }
+    val searchSheetSate = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
     LaunchedEffect(key1 = isAllSelected) {
         if (isAllSelected) {
             selectedCities += locationsList.map { it.locationName }
@@ -194,7 +208,8 @@ fun ManageLocations(
             AnimatedVisibility(
                 visible = isInEditMode,
                 enter = fadeIn() + slideInVertically(initialOffsetY = { it }),
-                exit = fadeOut() + slideOutVertically(targetOffsetY = { it })
+                exit = fadeOut() + slideOutVertically(targetOffsetY = { it }),
+                label = "bottom bar content"
             ) {
                 BottomAppBar {
                     Row(
@@ -219,6 +234,18 @@ fun ManageLocations(
             }
         }
     ) { padding ->
+
+        if (showSearchSheet) {
+            ModalBottomSheet(
+                onDismissRequest = { showSearchSheet = false },
+                sheetState = searchSheetSate
+            ) {
+                SearchScreen {
+                    scope.launch { searchSheetSate.hide() }
+                        .invokeOnCompletion { showSearchSheet = false }
+                }
+            }
+        }
         when (dataState) {
             is LocationsUIState.Loading -> ShowLoadingText()
             is LocationsUIState.Success -> {
@@ -232,7 +259,9 @@ fun ManageLocations(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Spacer(modifier = Modifier.height(16.dp))
-                    SearchBarCard(onNavigateToSearch)
+                    SearchBarCard(onClick = {
+                        showSearchSheet = true
+                    })
                     Spacer(modifier = Modifier.height(16.dp))
 
                     val inSelectionMode by remember {
@@ -449,7 +478,6 @@ fun ManageLocationsPreview() {
         Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
             ManageLocations(
                 dataState = data,
-                onNavigateToSearch = {},
                 onBackPressed = {},
                 onItemSelected = {},
                 onDeleteItem = {},
