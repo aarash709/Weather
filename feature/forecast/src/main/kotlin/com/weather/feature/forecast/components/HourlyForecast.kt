@@ -2,6 +2,7 @@ package com.weather.feature.forecast.components
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +28,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -49,6 +52,7 @@ fun HourlyForecast(
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                 color = LocalContentColor.current.copy(alpha = 0.5f)
             )
+//            HourlyGraph(data = data)
             LazyRow(
                 modifier = modifier
                     .fillMaxWidth()
@@ -95,8 +99,12 @@ fun HourlyItem(
 
 @Composable
 fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
+    val textColor = MaterialTheme.colorScheme.background
     Spacer(modifier = modifier then Modifier
-        .padding(start = 16.dp, bottom = 16.dp)
+        .background(color = MaterialTheme.colorScheme.onBackground)
+        .padding(start = 0.dp, bottom = 0.dp)
+//        .height(50.dp)
+        .fillMaxWidth()
         .aspectRatio(16 / 9f)
         .drawWithCache {
             val width = size.width
@@ -106,66 +114,71 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
             val maxTemp = data.maxBy { it.temp }.temp
             val rangeSteps = (maxTemp - minTemp).toFloat()
             val textVerticalOffsetPx = 10.dp.toPx()
-            val textHorizontalOffsetPx = 4.dp.toPx()
+            val textHorizontalOffsetPx = 6.dp.toPx()
             val topOffset = 16.dp.toPx()
             val path = Path()
             var previousTemp = height
-
             onDrawBehind {
-                path.reset()
                 data.forEachIndexed { index, hourly ->
                     val temp = hourly.temp.toFloat()
                     val y = height - ((temp - minTemp) / rangeSteps)
                         .times(height.minus(topOffset))
                         .toFloat()
-                    val x = (size.width / dataSize.minus(1))
-                    if (index == 0) {
-                        path.reset()
-                        path.moveTo(0f, y)
-                    }
+                    val x = width / (dataSize - 1)
                     val xPerIndex = x * (index)
                     val controlPoints1 = Offset(xPerIndex.minus(x / 2), previousTemp)
                     val controlPoints2 = Offset(xPerIndex.minus(x / 2), y)
-                    path.cubicTo(
-                        x1 = controlPoints1.x,
-                        y1 = controlPoints1.y,
-                        x2 = controlPoints2.x,
-                        y2 = controlPoints2.y,
-                        x3 = xPerIndex,
-                        y3 = y
-                    )
-                    drawLine(
-                        color = Color.White,
-                        start = Offset(x = 0f, topOffset),
-                        end = Offset(x = width, y = topOffset),
-                        pathEffect = PathEffect.dashPathEffect(
-                            floatArrayOf(10f, 10f),
-                            phase = 0f
-                        ),
-                    )
-                    drawPath(
-                        path = path,
-                        brush = Brush.verticalGradient(
-                            listOf(
-                                Color.Red,
-                                Color.Yellow,
-                                Color.Green
-                            )
-                        ),
-                        style = Stroke(width = 10f)
-                    )
-                    previousTemp = y
-                    //temp text
+
                     this.drawContext.canvas.nativeCanvas.drawText(
-                        "$temp",
+                        "${temp.roundToInt()}",
                         (x * index).minus(textHorizontalOffsetPx),
                         y - textVerticalOffsetPx,
                         android.graphics
                             .Paint()
                             .apply {
-                                color = android.graphics.Color.WHITE
+                                textSize = 25f
+                                color = textColor.toArgb()
                             }
                     )
+                    if (index == 0) {
+                        path.reset()
+                        path.moveTo(0f, y)
+                    } else {
+                        path.cubicTo(
+                            x1 = controlPoints1.x,
+                            y1 = controlPoints1.y,
+                            x2 = controlPoints2.x,
+                            y2 = controlPoints2.y,
+                            x3 = xPerIndex,
+                            y3 = y
+                        )
+                        path.lineTo(
+                            x = xPerIndex,
+                            y = y
+                        )
+                        drawLine(
+                            color = Color.White,
+                            start = Offset(x = 0f, topOffset),
+                            end = Offset(x = width, y = topOffset),
+                            pathEffect = PathEffect.dashPathEffect(
+                                floatArrayOf(10f, 10f),
+                                phase = 0f
+                            ),
+                        )
+                        drawPath(
+                            path = path,
+                            brush = Brush.verticalGradient(
+                                listOf(
+                                    Color.Red,
+                                    Color.Yellow,
+                                    Color.Green
+                                )
+                            ),
+                            style = Stroke(width = 10f)
+                        )
+                        previousTemp = y
+                        //temp text
+                    }
                 }
             }
         })
