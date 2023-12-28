@@ -24,7 +24,6 @@ fun NavController.toManageLocations(navOptions: NavOptions? = null) {
 @ExperimentalAnimationApi
 @FlowPreview
 fun NavGraphBuilder.manageLocationsScreen(
-    onNavigateToSearch: () -> Unit,
     onBackPressed: () -> Unit,
     onItemSelected: (String) -> Unit,
 ) {
@@ -50,7 +49,6 @@ fun NavGraphBuilder.manageLocationsScreen(
         }
     ) {
         ManageLocations(
-            onNavigateToSearch = { onNavigateToSearch() },
             onBackPressed = { onBackPressed() },
             onItemSelected = { onItemSelected(it) }
         )

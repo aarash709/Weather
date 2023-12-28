@@ -44,10 +44,6 @@ fun WeatherNavHost(
             }
         )
         manageLocationsScreen(
-            onNavigateToSearch = {
-                navController.toSearchScreen(navOptions = navOptions {
-                })
-            },
             onBackPressed = {
                 navController.popBackStack()
             },

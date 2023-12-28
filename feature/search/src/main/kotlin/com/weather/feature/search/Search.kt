@@ -8,6 +8,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,8 +27,10 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -50,9 +54,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
-import com.google.accompanist.flowlayout.FlowRow
-import com.google.accompanist.flowlayout.MainAxisAlignment
 import com.weather.core.design.components.weatherPlaceholder
 import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
@@ -61,11 +62,13 @@ import com.weather.model.geocode.SavableSearchState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
+@OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalCoroutinesApi
 @FlowPreview
 @Composable
 fun SearchScreen(
     searchViewModel: SearchViewModel = hiltViewModel(),
+    shouldRequestFocus: Boolean = true,
     onSelectSearchItem: () -> Unit,
 ) {
     //stateful
@@ -88,9 +91,10 @@ fun SearchScreen(
                 .padding(horizontal = 0.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            SearchScreen(
+            SearchScreenContent(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 searchUIState = searchUIState,
+                shouldRequestFocus = shouldRequestFocus,
                 searchInputText = inputText,
                 popularCities = cityList,
                 popularCityIndex = {
@@ -116,9 +120,10 @@ fun SearchScreen(
 }
 
 @Composable
-fun SearchScreen(
+fun SearchScreenContent(
     modifier: Modifier = Modifier,
     searchUIState: SavableSearchState,
+    shouldRequestFocus: Boolean = true,
     searchInputText: TextFieldValue,
     popularCities: List<String>,
     popularCityIndex: (Int) -> Unit,
@@ -133,6 +138,7 @@ fun SearchScreen(
         TopSearchBar(
             modifier = Modifier.padding(top = 16.dp),
             searchText = searchInputText,
+            shouldRequestFocus = shouldRequestFocus,
             onTextChange = {
                 onSearchTextChange(it)
             },
@@ -181,6 +187,7 @@ fun SearchScreen(
 private fun TopSearchBar(
     modifier: Modifier,
     searchText: TextFieldValue,
+    shouldRequestFocus: Boolean,
     onTextChange: (TextFieldValue) -> Unit,
     onClearSearch: () -> Unit,
 ) {
@@ -195,8 +202,10 @@ private fun TopSearchBar(
     val focusRequester = remember {
         FocusRequester()
     }
-    LaunchedEffect(key1 = Unit) {
-        focusRequester.requestFocus()
+    if (shouldRequestFocus) {
+        LaunchedEffect(key1 = Unit) {
+            focusRequester.requestFocus()
+        }
     }
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -304,6 +313,7 @@ private fun SearchItem(
 }
 
 //popular city
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun PopularCities(
     modifier: Modifier = Modifier,
@@ -312,11 +322,8 @@ private fun PopularCities(
 ) {
     FlowRow(
         modifier = Modifier.fillMaxWidth() then modifier,
-//        mainAxisSize = SizeMode.Wrap, //buggy
-        mainAxisAlignment = MainAxisAlignment.Start,
-        mainAxisSpacing = 16.dp,
-        crossAxisAlignment = FlowCrossAxisAlignment.Center,
-        crossAxisSpacing = 16.dp,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         popularCities.forEachIndexed { index, cityName ->
             PopularCityItem(
@@ -365,9 +372,10 @@ private fun SearchPreview() {
             mutableStateOf(TextFieldValue(text = "Tehran"))
         }
         Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
-            SearchScreen(
+            SearchScreenContent(
                 searchUIState = SavableSearchState(GeoSearchItem.empty, true),
                 searchInputText = inputText,
+                shouldRequestFocus = false,
                 popularCities = cityList,
                 popularCityIndex = {},
                 onClearSearch = {},
@@ -385,7 +393,9 @@ private fun TopSearchBarPreview() {
             Modifier,
             searchText = TextFieldValue(""),
             onTextChange = {},
-            onClearSearch = {})
+            onClearSearch = {},
+            shouldRequestFocus = false
+        )
     }
 }
 
