@@ -31,10 +31,24 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import co.yml.charts.axis.AxisData
+import co.yml.charts.common.model.Point
+import co.yml.charts.ui.linechart.LineChart
+import co.yml.charts.ui.linechart.model.GridLines
+import co.yml.charts.ui.linechart.model.IntersectionPoint
+import co.yml.charts.ui.linechart.model.Line
+import co.yml.charts.ui.linechart.model.LineChartData
+import co.yml.charts.ui.linechart.model.LinePlotData
+import co.yml.charts.ui.linechart.model.LineStyle
+import co.yml.charts.ui.linechart.model.SelectionHighlightPoint
+import co.yml.charts.ui.linechart.model.SelectionHighlightPopUp
+import co.yml.charts.ui.linechart.model.ShadowUnderLine
 import coil.compose.AsyncImage
+import com.patrykandpatrick.vico.core.model.Point as VicoPoint
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.model.Hourly
 import kotlin.math.roundToInt
+import kotlin.random.Random
 
 
 @Composable
@@ -182,6 +196,60 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
                 }
             }
         })
+}
+
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun Ychart() {
+    val sampleData = List(6) { it }
+    val points = HourlyStaticData.mapIndexed { index, hourly ->
+        Point(index.toFloat(), hourly.temp.toFloat())
+    }
+//    val points = sampleData.mapIndexed { index, number ->
+//        Point(number.toFloat(), index.toFloat())
+//    }
+    val steps = HourlyStaticData.size
+    WeatherTheme {
+        val xAxisData = AxisData.Builder()
+            .axisStepSize(100.dp)
+            .steps(HourlyStaticData.size - 1)
+            .labelData { i -> i.toString() }
+            .labelAndAxisLinePadding(15.dp)
+            .backgroundColor(MaterialTheme.colorScheme.surface)
+            .axisLabelColor(MaterialTheme.colorScheme.onSurface)
+            .build()
+
+        val yAxisData = AxisData.Builder()
+            .steps(HourlyStaticData.maxOf { it.temp }.toInt())
+            .labelAndAxisLinePadding(20.dp)
+            .axisLineColor(MaterialTheme.colorScheme.onSurface)
+            .axisLabelColor(MaterialTheme.colorScheme.onSurface)
+            .backgroundColor(MaterialTheme.colorScheme.surface)
+//            .labelData { i ->
+//                (i).toString()
+//            }
+            .build()
+        val linechart = LineChartData(
+            linePlotData = LinePlotData(
+                lines = listOf(
+                    Line(
+                        dataPoints = points,
+                        lineStyle = LineStyle(color = MaterialTheme.colorScheme.onSurface),
+                        intersectionPoint = IntersectionPoint(color = MaterialTheme.colorScheme.onSurface),
+                        selectionHighlightPoint = SelectionHighlightPoint(),
+                        shadowUnderLine = ShadowUnderLine(),
+                        selectionHighlightPopUp = SelectionHighlightPopUp()
+                    )
+                ),
+            ),
+            xAxisData = xAxisData,
+            yAxisData = yAxisData,
+//        gridLines = GridLines(),
+            backgroundColor = MaterialTheme.colorScheme.surface
+        )
+
+        LineChart(modifier = Modifier.aspectRatio(16 / 9f), lineChartData = linechart)
+    }
 }
 
 @Preview
