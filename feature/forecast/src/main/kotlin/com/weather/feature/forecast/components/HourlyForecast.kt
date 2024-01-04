@@ -3,15 +3,19 @@ package com.weather.feature.forecast.components
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -29,12 +33,12 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import co.yml.charts.axis.AxisData
 import co.yml.charts.common.model.Point
 import co.yml.charts.ui.linechart.LineChart
-import co.yml.charts.ui.linechart.model.GridLines
 import co.yml.charts.ui.linechart.model.IntersectionPoint
 import co.yml.charts.ui.linechart.model.Line
 import co.yml.charts.ui.linechart.model.LineChartData
@@ -44,11 +48,9 @@ import co.yml.charts.ui.linechart.model.SelectionHighlightPoint
 import co.yml.charts.ui.linechart.model.SelectionHighlightPopUp
 import co.yml.charts.ui.linechart.model.ShadowUnderLine
 import coil.compose.AsyncImage
-import com.patrykandpatrick.vico.core.model.Point as VicoPoint
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.model.Hourly
 import kotlin.math.roundToInt
-import kotlin.random.Random
 
 
 @Composable
@@ -110,18 +112,73 @@ fun HourlyItem(
     }
 }
 
+@Composable
+fun HourlyWidgetWithGraph(
+    modifier: Modifier = Modifier,
+    itemCount: Int,
+    hourlyGraph: @Composable () -> Unit,
+    hourlyTimeStamps: @Composable (index: Int) -> Unit,
+) {
+    val timeStamps = @Composable { repeat(itemCount) { hourlyTimeStamps(it) } }
+    Layout(
+        contents = listOf(hourlyGraph, timeStamps),
+        modifier = modifier
+    ) {
+            (graphMeasurable, timestampsMeasurable),
+            constraints,
+        ->
+        val timestampPlaceable = timestampsMeasurable.map { measurable ->
+            measurable.measure(
+                constraints
+            )
+        }
+        val graphWidth = 100 * itemCount
+        val dailyGraphPlaceable = graphMeasurable
+            .first()
+            .measure(
+                constraints.copy(
+                    minWidth = graphWidth,
+                    maxWidth = graphWidth,
+                    maxHeight = graphWidth,
+                    minHeight = constraints.minHeight
+                )
+            )
+
+//        val placeable = dailyMeasurable.first().measure(constrints)
+
+        val height =
+            timestampPlaceable.maxOf { it.height } + dailyGraphPlaceable.height
+        val width = dailyGraphPlaceable.width + 200
+        layout(width = width, height = height) {
+            val xPosition = timestampPlaceable[0].width
+            val offset = 16.dp.toPx().roundToInt()
+            dailyGraphPlaceable.place(x = 0, y = 0)
+            timestampPlaceable.forEachIndexed { index, placeable ->
+                placeable.place(
+                    x = placeable.width.plus(offset).times(index),
+                    y = dailyGraphPlaceable.height
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun HourlyBarGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
+
+}
 
 @Composable
 fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
     val textColor = MaterialTheme.colorScheme.background
     Spacer(modifier = modifier then Modifier
-        .background(color = MaterialTheme.colorScheme.onBackground)
+//        .background(color = MaterialTheme.colorScheme.background)
         .padding(start = 0.dp, bottom = 0.dp)
 //        .height(50.dp)
         .fillMaxWidth()
-        .aspectRatio(16 / 9f)
+//        .aspectRatio(16 / 9f)
         .drawWithCache {
-            val width = size.width
+            val width = size.width * 2
             val height = size.height
             val dataSize = data.size
             val minTemp = data.minBy { it.temp }.temp
@@ -198,6 +255,28 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
         })
 }
 
+@Preview(uiMode = UI_MODE_NIGHT_NO)
+@Composable
+private fun HourlyCustomLayoutPreview() {
+    WeatherTheme {
+        val scrollState = rememberScrollState()
+        HourlyWidgetWithGraph(
+            modifier = Modifier
+//                .fillMaxSize()
+                .height(100.dp)
+                .border(width = 2.dp, Color.Red)
+                .background(MaterialTheme.colorScheme.surface)
+                .horizontalScroll(scrollState),
+            itemCount = HourlyStaticData.size,
+            hourlyGraph = { HourlyGraph(data = HourlyStaticData) },
+            hourlyTimeStamps = { index ->
+                val timeStamp = HourlyStaticData[index].dt
+                Text(text = timeStamp)
+            },
+        )
+    }
+}
+
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun Ychart() {
@@ -255,7 +334,10 @@ private fun Ychart() {
 @Preview
 @Composable
 private fun HourlyGraphPreview() {
-    HourlyGraph(data = HourlyStaticData)
+    HourlyGraph(
+        modifier = Modifier,
+        data = HourlyStaticData
+    )
 }
 
 @Preview
@@ -266,8 +348,8 @@ private fun HourlyWithGraphTestPreview() {
     }
 }
 
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO)
+@Preview(showBackground = false, uiMode = UI_MODE_NIGHT_YES)
+@Preview(showBackground = false, uiMode = UI_MODE_NIGHT_NO)
 @Composable
 fun HourlyPreview() {
     WeatherTheme {
@@ -384,7 +466,7 @@ val HourlyStaticData = listOf(
     ), Hourly(
         clouds = 0,
         dew_point = 0.0,
-        dt = "17:00",
+        dt = "18:00",
         feels_like = 0.0,
         humidity = 1,
         pop = 0.0,
@@ -402,7 +484,7 @@ val HourlyStaticData = listOf(
     ), Hourly(
         clouds = 0,
         dew_point = 0.0,
-        dt = "17:00",
+        dt = "19:00",
         feels_like = 0.0,
         humidity = 1,
         pop = 0.0,
@@ -420,7 +502,7 @@ val HourlyStaticData = listOf(
     ), Hourly(
         clouds = 0,
         dew_point = 0.0,
-        dt = "17:00",
+        dt = "20:00",
         feels_like = 0.0,
         humidity = 1,
         pop = 0.0,
@@ -438,7 +520,7 @@ val HourlyStaticData = listOf(
     ), Hourly(
         clouds = 0,
         dew_point = 0.0,
-        dt = "17:00",
+        dt = "21:00",
         feels_like = 0.0,
         humidity = 1,
         pop = 0.0,
@@ -456,7 +538,7 @@ val HourlyStaticData = listOf(
     ), Hourly(
         clouds = 0,
         dew_point = 0.0,
-        dt = "17:00",
+        dt = "22:00",
         feels_like = 0.0,
         humidity = 1,
         pop = 0.0,
@@ -474,7 +556,7 @@ val HourlyStaticData = listOf(
     ), Hourly(
         clouds = 0,
         dew_point = 0.0,
-        dt = "17:00",
+        dt = "23:00",
         feels_like = 0.0,
         humidity = 1,
         pop = 0.0,

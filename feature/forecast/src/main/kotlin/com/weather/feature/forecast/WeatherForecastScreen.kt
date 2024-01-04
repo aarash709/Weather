@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ImageNotSupported
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -167,6 +168,25 @@ fun ConditionAndDetails(
                 speedUnit = speedUnit,
             )
         }
+        Surface {
+            HourlyWidgetWithGraph(
+                itemCount = weatherData.hourly.size,
+                hourlyGraph = { HourlyGraph(data = weatherData.hourly) },
+                modifier = Modifier
+                    .height(100.dp)
+                    .horizontalScroll(rememberScrollState()),
+                hourlyTimeStamps = {
+                    val times = weatherData.hourly[it].dt
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Image(
+                            imageVector = Icons.Default.ImageNotSupported,
+                            contentDescription = ""
+                        )
+                        Text(text = times)
+                    }
+                },
+            )
+        }
         Daily(
             modifier = Modifier
                 .fillMaxWidth()
@@ -174,6 +194,7 @@ fun ConditionAndDetails(
                     visible = showPlaceholder,
                 ),
             dailyList = weatherData.daily.map { it.toDailyPreview() })
+
         HourlyForecast(
             modifier = Modifier
                 .weatherPlaceholder(
@@ -446,7 +467,7 @@ private fun CurrentTempAndCondition(
 @Composable
 fun MainPagePreview() {
     var placeholder by remember {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
     LaunchedEffect(key1 = Unit, block = {
         delay(1000)
