@@ -7,11 +7,12 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.LayoutScopeMarker
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -22,6 +23,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
@@ -34,11 +37,15 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.ParentDataModifier
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import co.yml.charts.axis.AxisData
 import co.yml.charts.common.model.Point
-import co.yml.charts.ui.linechart.LineChart
 import co.yml.charts.ui.linechart.model.IntersectionPoint
 import co.yml.charts.ui.linechart.model.Line
 import co.yml.charts.ui.linechart.model.LineChartData
@@ -50,6 +57,9 @@ import co.yml.charts.ui.linechart.model.ShadowUnderLine
 import coil.compose.AsyncImage
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.model.Hourly
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.temporal.ChronoUnit
 import kotlin.math.roundToInt
 
 
@@ -116,47 +126,53 @@ fun HourlyItem(
 fun HourlyWidgetWithGraph(
     modifier: Modifier = Modifier,
     itemCount: Int,
-    hourlyGraph: @Composable () -> Unit,
+    graphHeight: Dp,
+    hourlyGraph: @Composable HourlyGraphScope.() -> Unit,
     hourlyTimeStamps: @Composable (index: Int) -> Unit,
 ) {
     val timeStamps = @Composable { repeat(itemCount) { hourlyTimeStamps(it) } }
+    val tempGraph = @Composable { HourlyGraphScope.hourlyGraph() }
     Layout(
-        contents = listOf(hourlyGraph, timeStamps),
+        contents = listOf(tempGraph, timeStamps),
         modifier = modifier
     ) {
-            (graphMeasurable, timestampsMeasurable),
+            (tempGraphMeasurable, timestampsMeasurable),
             constraints,
         ->
+        val topOffset = 16.dp.toPx().roundToInt()
+        var timestampTotalWidth = 0
+
         val timestampPlaceable = timestampsMeasurable.map { measurable ->
-            measurable.measure(
-                constraints
-            )
+            val timeStampPlaceable = measurable.measure(constraints)
+            timestampTotalWidth += timeStampPlaceable.width
+            timeStampPlaceable
         }
+
         val graphWidth = 100 * itemCount
-        val dailyGraphPlaceable = graphMeasurable
-            .first()
-            .measure(
-                constraints.copy(
-                    minWidth = graphWidth,
-                    maxWidth = graphWidth,
-                    maxHeight = graphWidth,
-                    minHeight = constraints.minHeight
+        val dailyGraphPlaceable = tempGraphMeasurable
+            .map { measurable ->
+                val height = graphHeight.toPx().toInt()
+                val graphPlaceable = measurable.measure(
+                    constraints
+                        .copy(
+                            minWidth = timestampTotalWidth,
+                            maxWidth = timestampTotalWidth,
+                            minHeight = height,
+                            maxHeight = height,
+                        )
                 )
-            )
+                graphPlaceable
+            }
 
-//        val placeable = dailyMeasurable.first().measure(constrints)
-
-        val height =
-            timestampPlaceable.maxOf { it.height } + dailyGraphPlaceable.height
-        val width = dailyGraphPlaceable.width + 200
-        layout(width = width, height = height) {
-            val xPosition = timestampPlaceable[0].width
-            val offset = 16.dp.toPx().roundToInt()
-            dailyGraphPlaceable.place(x = 0, y = 0)
+        val height = dailyGraphPlaceable.first().height + timestampPlaceable.maxOf { it.height }
+        layout(width = timestampTotalWidth, height = height) {
+//            val xPosition = timestampPlaceable[0].width
+//            val offset = 16.dp.toPx().roundToInt()
+            dailyGraphPlaceable.first().place(x = 0, y = 0)
             timestampPlaceable.forEachIndexed { index, placeable ->
                 placeable.place(
-                    x = placeable.width.plus(offset).times(index),
-                    y = dailyGraphPlaceable.height
+                    x = placeable.width.times(index),
+                    y = dailyGraphPlaceable.first().height
                 )
             }
         }
@@ -171,6 +187,7 @@ fun HourlyBarGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
 @Composable
 fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
     val textColor = MaterialTheme.colorScheme.background
+    val textMeasurer = rememberTextMeasurer()
     Spacer(modifier = modifier then Modifier
 //        .background(color = MaterialTheme.colorScheme.background)
         .padding(start = 0.dp, bottom = 0.dp)
@@ -178,12 +195,12 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
         .fillMaxWidth()
 //        .aspectRatio(16 / 9f)
         .drawWithCache {
-            val width = size.width * 2
+            val width = size.width
             val height = size.height
             val dataSize = data.size
             val minTemp = data.minBy { it.temp }.temp
             val maxTemp = data.maxBy { it.temp }.temp
-            val rangeSteps = (maxTemp - minTemp).toFloat()
+            val tempRange = (maxTemp - minTemp).toFloat()
             val textVerticalOffsetPx = 10.dp.toPx()
             val textHorizontalOffsetPx = 6.dp.toPx()
             val topOffset = 16.dp.toPx()
@@ -192,7 +209,7 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
             onDrawBehind {
                 data.forEachIndexed { index, hourly ->
                     val temp = hourly.temp.toFloat()
-                    val y = height - ((temp - minTemp) / rangeSteps)
+                    val y = height - ((temp - minTemp) / tempRange)
                         .times(height.minus(topOffset))
                         .toFloat()
                     val x = width / (dataSize - 1)
@@ -200,17 +217,21 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
                     val controlPoints1 = Offset(xPerIndex.minus(x / 2), previousTemp)
                     val controlPoints2 = Offset(xPerIndex.minus(x / 2), y)
 
-                    this.drawContext.canvas.nativeCanvas.drawText(
-                        "${temp.roundToInt()}",
-                        (x * index).minus(textHorizontalOffsetPx),
-                        y - textVerticalOffsetPx,
-                        android.graphics
-                            .Paint()
-                            .apply {
-                                textSize = 25f
-                                color = textColor.toArgb()
-                            }
+                    drawText(
+                        textMeasurer.measure("${temp.roundToInt()}"),
+                        topLeft = Offset(xPerIndex - 30, y - 70)
                     )
+//                    this.drawContext.canvas.nativeCanvas.drawText(
+//                        "${temp.roundToInt()}",
+//                        (x * index).minus(textHorizontalOffsetPx),
+//                        y - textVerticalOffsetPx,
+//                        android.graphics
+//                            .Paint()
+//                            .apply {
+//                                textSize = 25f
+//                                color = textColor.toArgb()
+//                            }
+//                    )
                     if (index == 0) {
                         path.reset()
                         path.moveTo(0f, y)
@@ -223,10 +244,10 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
                             x3 = xPerIndex,
                             y3 = y
                         )
-                        path.lineTo(
-                            x = xPerIndex,
-                            y = y
-                        )
+//                        path.lineTo(
+//                            x = xPerIndex,
+//                            y = y
+//                        )
                         drawLine(
                             color = Color.White,
                             start = Offset(x = 0f, topOffset),
@@ -236,23 +257,54 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
                                 phase = 0f
                             ),
                         )
+                        drawCircle(Color.Black, radius = 10f, center = Offset(xPerIndex, y))
                         drawPath(
                             path = path,
                             brush = Brush.verticalGradient(
-                                listOf(
+                                colors = listOf(
                                     Color.Red,
                                     Color.Yellow,
-                                    Color.Green
+                                    Color.Green,
                                 )
                             ),
                             style = Stroke(width = 10f)
                         )
                         previousTemp = y
-                        //temp text
                     }
                 }
             }
         })
+}
+
+@LayoutScopeMarker
+@Immutable
+object HourlyGraphScope {
+    @Stable
+    fun Modifier.timeGraphBar(
+        start: LocalDateTime,
+        end: LocalDateTime,
+        hours: List<Int>,
+    ): Modifier {
+        val earliestTime = LocalTime.of(hours.first(), 0)
+        val durationInHours = ChronoUnit.MINUTES.between(start, end) / 60f
+        val durationFromEarliestToStartInHours =
+            ChronoUnit.MINUTES.between(earliestTime, start.toLocalTime()) / 60f
+        // we add extra half of an hour as hour label text is visually centered in its slot
+        val offsetInHours = durationFromEarliestToStartInHours + 0.5f
+        return then(
+            HourlyGraphParentData(
+                duration = durationInHours / hours.size,
+                offset = offsetInHours / hours.size
+            )
+        )
+    }
+}
+
+class HourlyGraphParentData(
+    val duration: Float,
+    val offset: Float,
+) : ParentDataModifier {
+    override fun Density.modifyParentData(parentData: Any?) = this@HourlyGraphParentData
 }
 
 @Preview(uiMode = UI_MODE_NIGHT_NO)
@@ -262,12 +314,13 @@ private fun HourlyCustomLayoutPreview() {
         val scrollState = rememberScrollState()
         HourlyWidgetWithGraph(
             modifier = Modifier
-//                .fillMaxSize()
-                .height(100.dp)
+                .fillMaxWidth()
+                .aspectRatio(21 / 9f)
                 .border(width = 2.dp, Color.Red)
                 .background(MaterialTheme.colorScheme.surface)
                 .horizontalScroll(scrollState),
             itemCount = HourlyStaticData.size,
+            graphHeight = 50.dp,
             hourlyGraph = { HourlyGraph(data = HourlyStaticData) },
             hourlyTimeStamps = { index ->
                 val timeStamp = HourlyStaticData[index].dt
@@ -326,8 +379,7 @@ private fun Ychart() {
 //        gridLines = GridLines(),
             backgroundColor = MaterialTheme.colorScheme.surface
         )
-
-        LineChart(modifier = Modifier.aspectRatio(16 / 9f), lineChartData = linechart)
+//        LineChart(modifier = Modifier.aspectRatio(16 / 9f), lineChartData = linechart)
     }
 }
 
@@ -363,7 +415,7 @@ fun HourlyPreview() {
 fun HourlyItemPreview() {
     WeatherTheme {
         Surface {
-            HourlyItem(item = HourlyStaticData[0])
+//            HourlyItem(item = HourlyStaticData[0])
         }
     }
 }
