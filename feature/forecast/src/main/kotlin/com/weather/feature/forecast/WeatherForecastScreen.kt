@@ -6,7 +6,6 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOutCubic
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -28,7 +27,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ImageNotSupported
 import androidx.compose.material.icons.outlined.Air
 import androidx.compose.material.icons.outlined.North
 import androidx.compose.material.icons.outlined.Visibility
@@ -62,6 +60,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.weather.core.design.components.weatherPlaceholder
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.feature.forecast.components.Daily
@@ -216,7 +215,11 @@ fun ConditionAndDetails(
                 speedUnit = speedUnit,
             )
         }
-        Surface(shape = RoundedCornerShape(16.dp)) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp)
+        ) {
             Column {
                 Text(
                     text = "Hourly",
@@ -225,7 +228,6 @@ fun ConditionAndDetails(
                 )
                 HourlyWidgetWithGraph(
                     modifier = Modifier
-                        .fillMaxWidth()
                         .horizontalScroll(rememberScrollState()),
                     itemCount = weatherData.hourly.size,
                     graphHeight = 80.dp,
@@ -234,9 +236,13 @@ fun ConditionAndDetails(
                     },
                     hourlyTimeStamps = {
                         val times = weatherData.hourly[it].dt
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Image(
-                                imageVector = Icons.Default.ImageNotSupported,
+                        Column(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            val icon = weatherData.hourly.first().icon
+                            AsyncImage(
+                                model = "https://openweathermap.org/img/wn/${icon}@2x.png",
                                 contentDescription = ""
                             )
                             Text(text = times)

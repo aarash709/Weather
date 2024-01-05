@@ -148,7 +148,6 @@ fun HourlyWidgetWithGraph(
             timeStampPlaceable
         }
 
-        val graphWidth = 100 * itemCount
         val dailyGraphPlaceable = tempGraphMeasurable
             .map { measurable ->
                 val height = graphHeight.toPx().toInt()
@@ -165,23 +164,25 @@ fun HourlyWidgetWithGraph(
             }
 
         val height = dailyGraphPlaceable.first().height + timestampPlaceable.maxOf { it.height }
-        layout(width = timestampTotalWidth, height = height) {
-//            val xPosition = timestampPlaceable[0].width
-//            val offset = 16.dp.toPx().roundToInt()
+        layout(width = timestampTotalWidth + 100, height = height) {
+            val horizontalOffset = 16.dp.toPx().toInt()
+
             dailyGraphPlaceable.first().place(x = 0, y = 0)
+
             timestampPlaceable.forEachIndexed { index, placeable ->
-                placeable.place(
-                    x = placeable.width.times(index),
-                    y = dailyGraphPlaceable.first().height
-                )
+                if (index == 0) {
+                    placeable.place(
+                        x = placeable.width.times(index),
+                        y = dailyGraphPlaceable.maxOf { it.height })
+                } else {
+                    placeable.place(
+                        x = placeable.width.times(index),
+                        y = dailyGraphPlaceable.maxOf { it.height }
+                    )
+                }
             }
         }
     }
-}
-
-@Composable
-fun HourlyBarGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
-
 }
 
 @Composable
@@ -201,8 +202,6 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
             val minTemp = data.minBy { it.temp }.temp
             val maxTemp = data.maxBy { it.temp }.temp
             val tempRange = (maxTemp - minTemp).toFloat()
-            val textVerticalOffsetPx = 10.dp.toPx()
-            val textHorizontalOffsetPx = 6.dp.toPx()
             val topOffset = 16.dp.toPx()
             val path = Path()
             var previousTemp = height
@@ -219,21 +218,10 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
 
                     drawText(
                         textMeasurer.measure("${temp.roundToInt()}"),
-                        topLeft = Offset(xPerIndex - 30, y - 70)
+                        topLeft = Offset(xPerIndex - 15, y - 70)
                     )
-//                    this.drawContext.canvas.nativeCanvas.drawText(
-//                        "${temp.roundToInt()}",
-//                        (x * index).minus(textHorizontalOffsetPx),
-//                        y - textVerticalOffsetPx,
-//                        android.graphics
-//                            .Paint()
-//                            .apply {
-//                                textSize = 25f
-//                                color = textColor.toArgb()
-//                            }
-//                    )
                     if (index == 0) {
-                        path.reset()
+//                        path.reset()
                         path.moveTo(0f, y)
                     } else {
                         path.cubicTo(
@@ -267,7 +255,7 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
                                     Color.Green,
                                 )
                             ),
-                            style = Stroke(width = 10f)
+                            style = Stroke(width = 5f)
                         )
                         previousTemp = y
                     }
