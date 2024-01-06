@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.LayoutScopeMarker
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
@@ -34,8 +33,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.ParentDataModifier
 import androidx.compose.ui.text.drawText
@@ -46,6 +43,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import co.yml.charts.axis.AxisData
 import co.yml.charts.common.model.Point
+import co.yml.charts.ui.linechart.LineChart
 import co.yml.charts.ui.linechart.model.IntersectionPoint
 import co.yml.charts.ui.linechart.model.Line
 import co.yml.charts.ui.linechart.model.LineChartData
@@ -140,22 +138,32 @@ fun HourlyWidgetWithGraph(
             constraints,
         ->
         val topOffset = 16.dp.toPx().roundToInt()
-        var timestampTotalWidth = 0
-
-        val timestampPlaceable = timestampsMeasurable.map { measurable ->
-            val timeStampPlaceable = measurable.measure(constraints)
-            timestampTotalWidth += timeStampPlaceable.width
-            timeStampPlaceable
+        var totalWidth = 0
+        var graphStartXOffset = 0 //x axis start offset placing
+        var firstTimeStampHalfWidth = 0
+        var lastTimeStampHalfWidth = 0
+        val timestampPlaceable = timestampsMeasurable.mapIndexed() { index, measurable ->
+            val timePlaceable = measurable.measure(constraints)
+            if (index == 0) {
+                firstTimeStampHalfWidth = timePlaceable.width / 2
+                graphStartXOffset = firstTimeStampHalfWidth
+            }
+            if (index == timestampsMeasurable.lastIndex) {
+                lastTimeStampHalfWidth = timePlaceable.width / 2
+            }
+            totalWidth += timePlaceable.width
+            timePlaceable
         }
 
         val dailyGraphPlaceable = tempGraphMeasurable
             .map { measurable ->
                 val height = graphHeight.toPx().toInt()
+                val width = totalWidth.minus(firstTimeStampHalfWidth + lastTimeStampHalfWidth)
                 val graphPlaceable = measurable.measure(
                     constraints
                         .copy(
-                            minWidth = timestampTotalWidth,
-                            maxWidth = timestampTotalWidth,
+                            minWidth = width,
+                            maxWidth = width,
                             minHeight = height,
                             maxHeight = height,
                         )
@@ -164,30 +172,38 @@ fun HourlyWidgetWithGraph(
             }
 
         val height = dailyGraphPlaceable.first().height + timestampPlaceable.maxOf { it.height }
-        layout(width = timestampTotalWidth + 100, height = height) {
+        layout(width = totalWidth + 200, height = height) {
             val horizontalOffset = 16.dp.toPx().toInt()
-
-            dailyGraphPlaceable.first().place(x = 0, y = 0)
 
             timestampPlaceable.forEachIndexed { index, placeable ->
                 if (index == 0) {
-                    placeable.place(
-                        x = placeable.width.times(index),
-                        y = dailyGraphPlaceable.maxOf { it.height })
-                } else {
-                    placeable.place(
-                        x = placeable.width.times(index),
-                        y = dailyGraphPlaceable.maxOf { it.height }
-                    )
+                    graphStartXOffset = placeable.width / 2
                 }
+                placeable.place(
+                    x = placeable.width.times(index),
+                    y = dailyGraphPlaceable.maxOf { it.height })
             }
+            dailyGraphPlaceable.first().place(x = graphStartXOffset, y = 0)
         }
     }
 }
 
 @Composable
+fun TempPoints(modifier: Modifier = Modifier) {
+    val pointsColor = MaterialTheme.colorScheme.onSurface
+    Spacer(modifier = modifier
+        .fillMaxWidth()
+        .drawWithCache {
+            val center = Offset(x = 0.0f, y = 0.0f)
+            onDrawBehind {
+                drawCircle(color = pointsColor, radius = 10f, center = center)
+            }
+        })
+}
+
+@Composable
 fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
-    val textColor = MaterialTheme.colorScheme.background
+    val textColor = MaterialTheme.colorScheme.onSurface
     val textMeasurer = rememberTextMeasurer()
     Spacer(modifier = modifier then Modifier
 //        .background(color = MaterialTheme.colorScheme.background)
@@ -202,7 +218,7 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
             val minTemp = data.minBy { it.temp }.temp
             val maxTemp = data.maxBy { it.temp }.temp
             val tempRange = (maxTemp - minTemp).toFloat()
-            val topOffset = 16.dp.toPx()
+            val topOffset = 20.dp.toPx()
             val path = Path()
             var previousTemp = height
             onDrawBehind {
@@ -218,28 +234,50 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
 
                     drawText(
                         textMeasurer.measure("${temp.roundToInt()}"),
+                        color = textColor,
                         topLeft = Offset(xPerIndex - 15, y - 70)
+                    )
+                    drawCircle(Color.Black, radius = 10f, center = Offset(xPerIndex, y))
+                    drawLine(
+                        color = Color.Red.copy(alpha = 0.5f),
+                        start = Offset(x = xPerIndex, y),
+                        end = Offset(x = xPerIndex, y = y + height),
+                        strokeWidth = 3f,
+                        pathEffect = PathEffect.dashPathEffect(
+                            floatArrayOf(10f, 10f),
+                            phase = 0f
+                        ),
                     )
                     if (index == 0) {
 //                        path.reset()
                         path.moveTo(0f, y)
                     } else {
-                        path.cubicTo(
-                            x1 = controlPoints1.x,
-                            y1 = controlPoints1.y,
-                            x2 = controlPoints2.x,
-                            y2 = controlPoints2.y,
-                            x3 = xPerIndex,
-                            y3 = y
-                        )
-//                        path.lineTo(
-//                            x = xPerIndex,
-//                            y = y
+//                        path.cubicTo(
+//                            x1 = controlPoints1.x,
+//                            y1 = controlPoints1.y,
+//                            x2 = controlPoints2.x,
+//                            y2 = controlPoints2.y,
+//                            x3 = xPerIndex,
+//                            y3 = y
 //                        )
+                        path.lineTo(
+                            x = xPerIndex,
+                            y = y
+                        )
                         drawLine(
-                            color = Color.White,
+                            color = textColor,
                             start = Offset(x = 0f, topOffset),
                             end = Offset(x = width, y = topOffset),
+                            pathEffect = PathEffect.dashPathEffect(
+                                floatArrayOf(10f, 10f),
+                                phase = 0f
+                            ),
+                        )
+                        drawLine(
+                            color = Color.Red.copy(alpha = 0.5f),
+                            start = Offset(x = xPerIndex, y),
+                            end = Offset(x = xPerIndex, y = y + height),
+                            strokeWidth = 3f,
                             pathEffect = PathEffect.dashPathEffect(
                                 floatArrayOf(10f, 10f),
                                 phase = 0f
@@ -302,7 +340,6 @@ private fun HourlyCustomLayoutPreview() {
         val scrollState = rememberScrollState()
         HourlyWidgetWithGraph(
             modifier = Modifier
-                .fillMaxWidth()
                 .aspectRatio(21 / 9f)
                 .border(width = 2.dp, Color.Red)
                 .background(MaterialTheme.colorScheme.surface)
@@ -367,7 +404,7 @@ private fun Ychart() {
 //        gridLines = GridLines(),
             backgroundColor = MaterialTheme.colorScheme.surface
         )
-//        LineChart(modifier = Modifier.aspectRatio(16 / 9f), lineChartData = linechart)
+        LineChart(modifier = Modifier.aspectRatio(16 / 9f), lineChartData = linechart)
     }
 }
 
