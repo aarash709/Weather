@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.weather.core.design.theme.WeatherTheme
+import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
 import com.weather.model.Hourly
 import kotlin.math.roundToInt
 
@@ -82,9 +83,8 @@ fun HourlyItem(
     }
 }
 
-
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO)
+@Preview(showBackground = false, uiMode = UI_MODE_NIGHT_YES)
+@Preview(showBackground = false, uiMode = UI_MODE_NIGHT_NO)
 @Composable
 fun HourlyPreview() {
     WeatherTheme {
@@ -98,105 +98,7 @@ fun HourlyPreview() {
 fun HourlyItemPreview() {
     WeatherTheme {
         Surface {
-            HourlyItem(item = HourlyStaticData[0])
+//            HourlyItem(item = HourlyStaticData[0])
         }
     }
 }
-
-val HourlyStaticData = listOf(
-    Hourly(
-        clouds = 0,
-        dew_point = 0.0,
-        dt = "13:00",
-        feels_like = 0.0,
-        humidity = 1,
-        pop = 0.0,
-        pressure = 0,
-        temp = 8.0,
-        uvi = 0.0,
-        visibility = 100,
-        description = "description",
-        icon = "icon",
-        id = 100,
-        main = "main",
-        wind_deg = 10,
-        wind_gust = 0.0,
-        wind_speed = 0.0
-    ),
-    Hourly(
-        clouds = 0,
-        dew_point = 0.0,
-        dt = "14:00",
-        feels_like = 0.0,
-        humidity = 1,
-        pop = 0.0,
-        pressure = 0,
-        temp = 11.0,
-        uvi = 0.0,
-        visibility = 100,
-        description = "description",
-        icon = "icon",
-        id = 100,
-        main = "main",
-        wind_deg = 10,
-        wind_gust = 0.0,
-        wind_speed = 0.0
-    ),
-    Hourly(
-        clouds = 0,
-        dew_point = 0.0,
-        dt = "15:00",
-        feels_like = 0.0,
-        humidity = 1,
-        pop = 0.0,
-        pressure = 0,
-        temp = 9.0,
-        uvi = 0.0,
-        visibility = 100,
-        description = "description",
-        icon = "icon",
-        id = 100,
-        main = "main",
-        wind_deg = 10,
-        wind_gust = 0.0,
-        wind_speed = 0.0
-    ),
-    Hourly(
-        clouds = 0,
-        dew_point = 0.0,
-        dt = "16:00",
-        feels_like = 0.0,
-        humidity = 1,
-        pop = 0.0,
-        pressure = 0,
-        temp = 11.0,
-        uvi = 0.0,
-        visibility = 100,
-        description = "description",
-        icon = "icon",
-        id = 100,
-        main = "main",
-        wind_deg = 10,
-        wind_gust = 0.0,
-        wind_speed = 0.0
-    ),
-    Hourly(
-        clouds = 0,
-        dew_point = 0.0,
-        dt = "17:00",
-        feels_like = 0.0,
-        humidity = 1,
-        pop = 0.0,
-        pressure = 0,
-        temp = 15.0,
-        uvi = 0.0,
-        visibility = 100,
-        description = "description",
-        icon = "icon",
-        id = 100,
-        main = "main",
-        wind_deg = 10,
-        wind_gust = 0.0,
-        wind_speed = 0.0
-    )
-)
