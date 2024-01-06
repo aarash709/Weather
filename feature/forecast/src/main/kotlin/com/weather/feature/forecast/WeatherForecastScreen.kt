@@ -66,7 +66,6 @@ import com.weather.core.design.theme.WeatherTheme
 import com.weather.feature.forecast.components.Daily
 import com.weather.feature.forecast.components.DailyStaticData
 import com.weather.feature.forecast.components.ForecastTopBar
-import com.weather.feature.forecast.components.HourlyForecast
 import com.weather.feature.forecast.components.HourlyGraph
 import com.weather.feature.forecast.components.HourlyStaticData
 import com.weather.feature.forecast.components.HourlyWidgetWithGraph
@@ -215,6 +214,13 @@ fun ConditionAndDetails(
                 speedUnit = speedUnit,
             )
         }
+        Daily(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weatherPlaceholder(
+                    visible = showPlaceholder,
+                ),
+            dailyList = weatherData.daily.map { it.toDailyPreview() })
         Surface(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -223,8 +229,8 @@ fun ConditionAndDetails(
             Column {
                 Text(
                     text = "Hourly",
-                    modifier = Modifier
-                        .padding(horizontal = 12.dp, vertical = 8.dp)
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                    color = LocalContentColor.current.copy(alpha = 0.5f)
                 )
                 HourlyWidgetWithGraph(
                     modifier = Modifier
@@ -237,7 +243,7 @@ fun ConditionAndDetails(
                     hourlyTimeStamps = {
                         val times = weatherData.hourly[it].dt
                         Column(
-                            modifier = Modifier.padding(horizontal = 16.dp),
+                            modifier = Modifier.padding(all = 16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
                             val icon = weatherData.hourly.first().icon
@@ -251,21 +257,13 @@ fun ConditionAndDetails(
                 )
             }
         }
-        Daily(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weatherPlaceholder(
-                    visible = showPlaceholder,
-                ),
-            dailyList = weatherData.daily.map { it.toDailyPreview() })
-
-        HourlyForecast(
-            modifier = Modifier
-                .weatherPlaceholder(
-                    visible = showPlaceholder,
-                ),
-            data = weatherData.hourly
-        )
+//        HourlyForecast(
+//            modifier = Modifier
+//                .weatherPlaceholder(
+//                    visible = showPlaceholder,
+//                ),
+//            data = weatherData.hourly
+//        )
     }
 }
 
