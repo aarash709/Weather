@@ -1,6 +1,8 @@
 package com.weather.feature.forecast.components
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -15,7 +17,21 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import co.yml.charts.axis.AxisData
+import co.yml.charts.common.model.Point
+import co.yml.charts.ui.linechart.LineChart
+import co.yml.charts.ui.linechart.model.IntersectionPoint
+import co.yml.charts.ui.linechart.model.Line
+import co.yml.charts.ui.linechart.model.LineChartData
+import co.yml.charts.ui.linechart.model.LinePlotData
+import co.yml.charts.ui.linechart.model.LineStyle
+import co.yml.charts.ui.linechart.model.SelectionHighlightPoint
+import co.yml.charts.ui.linechart.model.SelectionHighlightPopUp
+import co.yml.charts.ui.linechart.model.ShadowUnderLine
+import com.weather.core.design.theme.WeatherTheme
+import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
 import com.weather.model.Hourly
 import kotlin.math.roundToInt
 
@@ -38,11 +54,8 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
     val textMeasurer = rememberTextMeasurer()
 //    val a = rememberVectorPainter(image = Icons.Outlined.Radio) //test
     Spacer(modifier = modifier then Modifier
-//        .background(color = MaterialTheme.colorScheme.background)
         .padding(start = 0.dp, bottom = 0.dp)
-//        .height(50.dp)
         .fillMaxWidth()
-//        .aspectRatio(16 / 9f)
         .drawWithCache {
             val width = size.width
             val height = size.height
@@ -57,6 +70,16 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
 //                with(a){
 //                    draw(a.intrinsicSize) //test
 //                }
+                //horizontal line
+                drawLine(
+                    color = textColor,
+                    start = Offset(x = 0f, topOffset),
+                    end = Offset(x = width, y = topOffset),
+                    pathEffect = PathEffect.dashPathEffect(
+                        floatArrayOf(10f, 10f),
+                        phase = 0f
+                    ),
+                )
                 data.forEachIndexed { index, hourly ->
                     val temp = hourly.temp.toFloat()
                     val y = height - ((temp - minTemp) / tempRange)
@@ -76,7 +99,7 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
                     drawLine(
                         color = Color.Red.copy(alpha = 0.5f),
                         start = Offset(x = xPerIndex, y),
-                        end = Offset(x = xPerIndex, y = y + height),
+                        end = Offset(x = xPerIndex, y = y),
                         strokeWidth = 3f,
                         pathEffect = PathEffect.dashPathEffect(
                             floatArrayOf(10f, 10f),
@@ -86,6 +109,17 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
                     if (index == 0) {
 //                        path.reset()
                         path.moveTo(0f, y)
+                        //draw vertical on first point
+                        drawLine(
+                            color = Color.Red.copy(alpha = 0.5f),
+                            start = Offset(x = 0f, y),
+                            end = Offset(x = 0f, y = y + 50.dp.toPx()),
+                            strokeWidth = 3f,
+                            pathEffect = PathEffect.dashPathEffect(
+                                floatArrayOf(10f, 10f),
+                                phase = 0f
+                            ),
+                        )
                     } else {
 //                        path.cubicTo(
 //                            x1 = controlPoints1.x,
@@ -99,25 +133,17 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
                             x = xPerIndex,
                             y = y
                         )
-                        drawLine(
-                            color = textColor,
-                            start = Offset(x = 0f, topOffset),
-                            end = Offset(x = width, y = topOffset),
-                            pathEffect = PathEffect.dashPathEffect(
-                                floatArrayOf(10f, 10f),
-                                phase = 0f
-                            ),
-                        )
-                        drawLine(
-                            color = Color.Red.copy(alpha = 0.5f),
-                            start = Offset(x = xPerIndex, y),
-                            end = Offset(x = xPerIndex, y = y + height),
-                            strokeWidth = 3f,
-                            pathEffect = PathEffect.dashPathEffect(
-                                floatArrayOf(10f, 10f),
-                                phase = 0f
-                            ),
-                        )
+                        //vertical lines
+//                        drawLine(
+//                            color = Color.Red.copy(alpha = 0.5f),
+//                            start = Offset(x = xPerIndex, y),
+//                            end = Offset(x = xPerIndex, y = y + height),
+//                            strokeWidth = 3f,
+//                            pathEffect = PathEffect.dashPathEffect(
+//                                floatArrayOf(10f, 10f),
+//                                phase = 0f
+//                            ),
+//                        )
                         drawCircle(Color.Black, radius = 10f, center = Offset(xPerIndex, y))
                         drawPath(
                             path = path,
@@ -135,4 +161,66 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
                 }
             }
         })
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun Ychart() {
+    val sampleData = List(6) { it }
+    val points = HourlyStaticData.mapIndexed { index, hourly ->
+        Point(index.toFloat(), hourly.temp.toFloat())
+    }
+//    val points = sampleData.mapIndexed { index, number ->
+//        Point(number.toFloat(), index.toFloat())
+//    }
+    val steps = HourlyStaticData.size
+    WeatherTheme {
+        val xAxisData = AxisData.Builder()
+            .axisStepSize(100.dp)
+            .steps(HourlyStaticData.size - 1)
+            .labelData { i -> i.toString() }
+            .labelAndAxisLinePadding(15.dp)
+            .backgroundColor(MaterialTheme.colorScheme.surface)
+            .axisLabelColor(MaterialTheme.colorScheme.onSurface)
+            .build()
+
+        val yAxisData = AxisData.Builder()
+            .steps(HourlyStaticData.maxOf { it.temp }.toInt())
+            .labelAndAxisLinePadding(20.dp)
+            .axisLineColor(MaterialTheme.colorScheme.onSurface)
+            .axisLabelColor(MaterialTheme.colorScheme.onSurface)
+            .backgroundColor(MaterialTheme.colorScheme.surface)
+//            .labelData { i ->
+//                (i).toString()
+//            }
+            .build()
+        val linechart = LineChartData(
+            linePlotData = LinePlotData(
+                lines = listOf(
+                    Line(
+                        dataPoints = points,
+                        lineStyle = LineStyle(color = MaterialTheme.colorScheme.onSurface),
+                        intersectionPoint = IntersectionPoint(color = MaterialTheme.colorScheme.onSurface),
+                        selectionHighlightPoint = SelectionHighlightPoint(),
+                        shadowUnderLine = ShadowUnderLine(),
+                        selectionHighlightPopUp = SelectionHighlightPopUp()
+                    )
+                ),
+            ),
+            xAxisData = xAxisData,
+            yAxisData = yAxisData,
+//        gridLines = GridLines(),
+            backgroundColor = MaterialTheme.colorScheme.surface
+        )
+        LineChart(modifier = Modifier.aspectRatio(16 / 9f), lineChartData = linechart)
+    }
+}
+
+@Preview
+@Composable
+private fun HourlyGraphPreview() {
+    HourlyGraph(
+        modifier = Modifier,
+        data = HourlyStaticData
+    )
 }

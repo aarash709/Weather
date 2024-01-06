@@ -67,9 +67,9 @@ import com.weather.feature.forecast.components.Daily
 import com.weather.feature.forecast.components.DailyStaticData
 import com.weather.feature.forecast.components.ForecastTopBar
 import com.weather.feature.forecast.components.HourlyGraph
-import com.weather.feature.forecast.components.HourlyStaticData
 import com.weather.feature.forecast.components.HourlyWidgetWithGraph
 import com.weather.feature.forecast.components.WindDetails
+import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
 import com.weather.model.Coordinate
 import com.weather.model.Current
 import com.weather.model.OneCallCoordinates
@@ -236,7 +236,7 @@ fun ConditionAndDetails(
                     modifier = Modifier
                         .horizontalScroll(rememberScrollState()),
                     itemCount = weatherData.hourly.size,
-                    graphHeight = 80.dp,
+                    graphHeight = 50.dp,
                     hourlyGraph = {
                         HourlyGraph(data = weatherData.hourly)
                     },
