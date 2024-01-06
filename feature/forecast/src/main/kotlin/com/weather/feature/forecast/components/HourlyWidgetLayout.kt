@@ -69,8 +69,8 @@ fun HourlyWidgetWithGraph(
                 val graphPlaceable = measurable.measure(
                     constraints
                         .copy(
-                            minWidth = width+25,
-                            maxWidth = width+25,
+                            minWidth = width,
+                            maxWidth = width,
                             minHeight = height,
                             maxHeight = height,
                         )

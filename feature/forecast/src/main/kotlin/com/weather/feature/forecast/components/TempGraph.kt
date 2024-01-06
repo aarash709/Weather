@@ -73,8 +73,8 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
                 //horizontal line
                 drawLine(
                     color = textColor,
-                    start = Offset(x = 0f, topOffset),
-                    end = Offset(x = width, y = topOffset),
+                    start = Offset(x = -130f, topOffset),
+                    end = Offset(x = width + 130, y = topOffset),
                     pathEffect = PathEffect.dashPathEffect(
                         floatArrayOf(10f, 10f),
                         phase = 0f
@@ -89,7 +89,6 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
                     val xPerIndex = x * (index)
                     val controlPoints1 = Offset(xPerIndex.minus(x / 2), previousTemp)
                     val controlPoints2 = Offset(xPerIndex.minus(x / 2), y)
-
                     drawText(
                         textMeasurer.measure("${temp.roundToInt()}"),
                         color = textColor,
@@ -106,14 +105,18 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
                             phase = 0f
                         ),
                     )
+                    if (index == data.lastIndex) {
+                        path.lineTo(xPerIndex + 130, y = y)
+                    }
                     if (index == 0) {
-//                        path.reset()
+                        path.moveTo(0f, y)
+                        path.lineTo(-130f, y = y) //start infinite line
                         path.moveTo(0f, y)
                         //draw vertical on first point
                         drawLine(
                             color = Color.Red.copy(alpha = 0.5f),
                             start = Offset(x = 0f, y),
-                            end = Offset(x = 0f, y = y + 50.dp.toPx()),
+                            end = Offset(x = 0f, y = y + (height - y)),
                             strokeWidth = 3f,
                             pathEffect = PathEffect.dashPathEffect(
                                 floatArrayOf(10f, 10f),
@@ -137,7 +140,7 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
 //                        drawLine(
 //                            color = Color.Red.copy(alpha = 0.5f),
 //                            start = Offset(x = xPerIndex, y),
-//                            end = Offset(x = xPerIndex, y = y + height),
+//                            end = Offset(x = xPerIndex, y = y+(height-y)),
 //                            strokeWidth = 3f,
 //                            pathEffect = PathEffect.dashPathEffect(
 //                                floatArrayOf(10f, 10f),

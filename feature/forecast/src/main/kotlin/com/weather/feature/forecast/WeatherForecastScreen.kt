@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -226,7 +227,7 @@ fun ConditionAndDetails(
                 .fillMaxWidth(),
             shape = RoundedCornerShape(16.dp)
         ) {
-            Column {
+            Column(modifier = Modifier) {
                 Text(
                     text = "Hourly",
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
@@ -243,7 +244,7 @@ fun ConditionAndDetails(
                     hourlyTimeStamps = {
                         val times = weatherData.hourly[it].dt
                         Column(
-                            modifier = Modifier.padding(all = 16.dp),
+                            modifier = Modifier.width(80.dp).padding(horizontal = 16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
                             val icon = weatherData.hourly.first().icon
