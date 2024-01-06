@@ -4,14 +4,23 @@ import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.LayoutScopeMarker
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
@@ -20,15 +29,60 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
+import com.weather.model.Hourly
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 import kotlin.math.roundToInt
 
 @Composable
-fun HourlyWidgetWithGraph(
+fun HourlyWidgetWithGraph(modifier: Modifier = Modifier, hourly: List<Hourly>) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(modifier = Modifier) {
+            Text(
+                text = "Hourly",
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                color = LocalContentColor.current.copy(alpha = 0.5f)
+            )
+            HourlyGraphLayout(
+                modifier = Modifier
+                    .horizontalScroll(rememberScrollState()),
+                itemCount = hourly.size,
+                graphHeight = 50.dp,
+                hourlyGraph = {
+                    HourlyGraph(data = hourly)
+                },
+                hourlyTimeStamps = {
+                    val timeStamp = hourly[it].dt
+                    val icon = hourly[it].icon
+                    Column(
+                        modifier = Modifier
+                            .width(80.dp)
+                            .padding(horizontal = 16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        AsyncImage(
+                            model = "https://openweathermap.org/img/wn/${icon}@2x.png",
+                            contentDescription = ""
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(text = timeStamp)
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                },
+            )
+        }
+    }
+}
+
+@Composable
+fun HourlyGraphLayout(
     modifier: Modifier = Modifier,
     itemCount: Int,
     graphHeight: Dp,
@@ -80,8 +134,6 @@ fun HourlyWidgetWithGraph(
 
         val height = dailyGraphPlaceable.first().height + timestampPlaceable.maxOf { it.height }
         layout(width = totalWidth, height = height) {
-            val horizontalOffset = 16.dp.toPx().toInt()
-
             timestampPlaceable.forEachIndexed { index, placeable ->
                 if (index == 0) {
                     graphStartXOffset = placeable.width / 2
@@ -96,6 +148,7 @@ fun HourlyWidgetWithGraph(
 }
 
 
+//pass required data to the parent modifier to calculate graphs and drawScope
 @LayoutScopeMarker
 @Immutable
 object HourlyGraphScope {
@@ -126,14 +179,14 @@ class HourlyGraphParentData(
 ) : ParentDataModifier {
     override fun Density.modifyParentData(parentData: Any?) = this@HourlyGraphParentData
 }
-
+//
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
 private fun HourlyCustomLayoutPreview() {
     WeatherTheme {
         val scrollState = rememberScrollState()
-        HourlyWidgetWithGraph(
+        HourlyGraphLayout(
             modifier = Modifier
                 .aspectRatio(21 / 9f)
                 .border(width = 2.dp, Color.Red)

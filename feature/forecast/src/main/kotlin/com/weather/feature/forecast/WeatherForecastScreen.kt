@@ -222,49 +222,11 @@ fun ConditionAndDetails(
                     visible = showPlaceholder,
                 ),
             dailyList = weatherData.daily.map { it.toDailyPreview() })
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Column(modifier = Modifier) {
-                Text(
-                    text = "Hourly",
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                    color = LocalContentColor.current.copy(alpha = 0.5f)
-                )
-                HourlyWidgetWithGraph(
-                    modifier = Modifier
-                        .horizontalScroll(rememberScrollState()),
-                    itemCount = weatherData.hourly.size,
-                    graphHeight = 50.dp,
-                    hourlyGraph = {
-                        HourlyGraph(data = weatherData.hourly)
-                    },
-                    hourlyTimeStamps = {
-                        val times = weatherData.hourly[it].dt
-                        Column(
-                            modifier = Modifier.width(80.dp).padding(horizontal = 16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            val icon = weatherData.hourly.first().icon
-                            AsyncImage(
-                                model = "https://openweathermap.org/img/wn/${icon}@2x.png",
-                                contentDescription = ""
-                            )
-                            Text(text = times)
-                        }
-                    },
-                )
-            }
-        }
-//        HourlyForecast(
-//            modifier = Modifier
-//                .weatherPlaceholder(
-//                    visible = showPlaceholder,
-//                ),
-//            data = weatherData.hourly
-//        )
+        HourlyWidgetWithGraph(
+            modifier = Modifier.weatherPlaceholder(
+                visible = showPlaceholder),
+            hourly = weatherData.hourly
+        )
     }
 }
 
