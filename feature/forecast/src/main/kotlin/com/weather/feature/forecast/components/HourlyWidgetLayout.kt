@@ -2,17 +2,18 @@ package com.weather.feature.forecast.components
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.LayoutScopeMarker
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -22,7 +23,6 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.ParentDataModifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -80,6 +80,7 @@ fun HourlyWidgetWithGraph(modifier: Modifier = Modifier, hourly: List<Hourly>) {
         }
     }
 }
+
 
 @Composable
 fun HourlyGraphLayout(
@@ -183,21 +184,40 @@ class HourlyGraphParentData(
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
+private fun HourlyWidgetPreview() {
+    WeatherTheme {
+        //preview wont size correctly when using 'Asyncimage' composable
+//        val scrollState = rememberScrollState()
+//        HourlyWidgetWithGraph(
+//            modifier = Modifier
+//                .background(MaterialTheme.colorScheme.surface),
+//            HourlyStaticData,
+//        )
+    }
+}
+
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Composable
 private fun HourlyCustomLayoutPreview() {
     WeatherTheme {
         val scrollState = rememberScrollState()
         HourlyGraphLayout(
             modifier = Modifier
-                .aspectRatio(21 / 9f)
-                .border(width = 2.dp, Color.Red)
-                .background(MaterialTheme.colorScheme.surface)
-                .horizontalScroll(scrollState),
+//                .fillMaxWidth()
+//                .border(width = 2.dp, Color.Red)
+                .background(MaterialTheme.colorScheme.surface),
             itemCount = HourlyStaticData.size,
             graphHeight = 50.dp,
             hourlyGraph = { HourlyGraph(data = HourlyStaticData) },
             hourlyTimeStamps = { index ->
                 val timeStamp = HourlyStaticData[index].dt
-                Text(text = timeStamp)
+                Column {
+                    Icon(
+                        imageVector = Icons.Default.PhotoLibrary,
+                        contentDescription = ""
+                    )
+                    Text(text = timeStamp)
+                }
             },
         )
     }
