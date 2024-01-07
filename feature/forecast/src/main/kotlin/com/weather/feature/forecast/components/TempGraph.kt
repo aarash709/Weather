@@ -1,5 +1,6 @@
 package com.weather.feature.forecast.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -67,9 +68,6 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
                             phase = 0f
                         ),
                     )
-                    if (index == data.lastIndex) {
-                        path.lineTo(xPerIndex + 130, y = y) //continue the path line at the end
-                    }
                     if (index == 0) {
                         previousTemp = y //fixes controlPoint1.y skip first index set
                         path.moveTo(0f, y)
@@ -97,6 +95,9 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
                             y3 = y
                         )
                     }
+                    if (index == data.lastIndex) {
+                        path.lineTo(xPerIndex + 130, y = y) //continue the path line at the end
+                    }
                 }
                 drawPath(
                     path = path,
@@ -118,8 +119,10 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
 private fun HourlyGraphPreview() {
     HourlyGraph(
         modifier = Modifier
-            .padding(64.dp)
-            .aspectRatio(16 / 9f),
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(16.dp)
+            .aspectRatio(16 / 9f)
+        ,
         data = HourlyStaticData
     )
 }
