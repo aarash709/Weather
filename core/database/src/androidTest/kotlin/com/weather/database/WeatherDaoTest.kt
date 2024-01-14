@@ -90,8 +90,9 @@ class WeatherDaoTest {
             daily,
             hourly
         )
+        val cityNames = listOf(oneCall.cityName)
         weatherDao.deleteWeatherByCityName(
-            oneCall.cityName,
+            cityNames
         )
         val isEmpty = weatherDao.databaseIsEmpty() == 0
         assert(
