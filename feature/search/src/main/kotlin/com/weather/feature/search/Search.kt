@@ -62,7 +62,6 @@ import com.weather.model.geocode.SavableSearchState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
-@OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalCoroutinesApi
 @FlowPreview
 @Composable
