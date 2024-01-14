@@ -23,6 +23,7 @@ android {
 dependencies {
 
     api(libs.compose.foundation)
+    api(libs.compose.animation)
     api(libs.compose.runtime)
     api(libs.compose.material)
     api(libs.compose.material3)

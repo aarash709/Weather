@@ -75,16 +75,12 @@ dependencies {
     implementation(libs.androidx.coreKtx)
     implementation(libs.androidx.splashScreen)
 
-
     implementation(libs.material)
     implementation(libs.kotlix.serialization)
 
     //implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutine_google_version"
     implementation(libs.kotlix.coroutinesCore)
     implementation(libs.kotlix.coroutinesAndroid)
-
-    implementation(libs.compose.runtime.livedata)
-    implementation(libs.compose.material)
 
     implementation(libs.androidx.window)
 
@@ -101,7 +97,6 @@ dependencies {
     implementation(libs.androidx.activityCompose)
 
     implementation(libs.androidx.datastore)
-
 
     implementation(libs.hilt.navigationCompose)
 
