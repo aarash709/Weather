@@ -44,9 +44,6 @@ val picoChart = "1.13.1"
     implementation("co.yml:ycharts:2.1.0")
 
 
-    implementation(libs.compose.runtime.livedata)
-    implementation(libs.compose.animation)
-
     implementation(libs.androidx.navigationCompose)
 
     implementation(libs.kotlix.serialization)

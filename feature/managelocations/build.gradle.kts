@@ -25,13 +25,9 @@ dependencies {
 
     implementation(project(":core:repository"))
     implementation(project(":core:design"))
-    implementation(project(":feature:forecast")) //needs removal
-    implementation(project(":feature:search")) //needs removal
+    implementation(project(":feature:search"))
     implementation(project(":core:model"))
     implementation(project(":core:common"))
-
-    implementation(libs.compose.runtime.livedata)
-    implementation(libs.compose.animation)
 
     implementation(libs.androidx.navigationCompose)
 

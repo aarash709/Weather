@@ -28,10 +28,6 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":sync:work"))
 
-    //Compose
-    implementation(libs.compose.runtime.livedata)
-    implementation(libs.compose.animation)
-
     implementation(libs.androidx.navigationCompose)
 
     implementation(libs.androidx.lifecycleRuntimeKtx)
