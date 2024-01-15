@@ -1,9 +1,9 @@
 plugins {
     alias (libs.plugins.weather.android.library)
     alias (libs.plugins.weather.android.compose.library)
+    alias (libs.plugins.kotlinx.ksp)
     id("dagger.hilt.android.plugin")
     id("org.jetbrains.kotlin.plugin.serialization")
-    id("kotlin-kapt")
 }
 
 android {
@@ -58,7 +58,7 @@ val picoChart = "1.13.1"
 
     implementation(libs.hilt.navigationCompose)
     implementation(libs.hilt.android)
-    kapt(libs.hilt.kaptCompiler)
+    ksp(libs.hilt.kaptCompiler)
 
     implementation(libs.androidx.work)
     implementation(libs.androidx.datastore)

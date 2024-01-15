@@ -1,9 +1,9 @@
 plugins {
     alias(libs.plugins.weather.android.library)
     alias(libs.plugins.secrets)
+    alias(libs.plugins.kotlinx.ksp)
     id("dagger.hilt.android.plugin")
     id("org.jetbrains.kotlin.plugin.serialization")
-    id("kotlin-kapt")
 }
 android {
     namespace = "com.weather.core.network"
@@ -30,7 +30,7 @@ dependencies {
     implementation(libs.androidx.lifecycleRuntimeKtx) //fixed duplicate class error while running android test.
 
     implementation(libs.hilt.android)
-    kapt(libs.hilt.kaptCompiler)
+    ksp(libs.hilt.kaptCompiler)
 
     //implementation("com.squareup.retrofit2:retrofit:$retrofit_version")
     implementation(libs.retrofitMoshi)
