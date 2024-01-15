@@ -1,8 +1,8 @@
 plugins {
     alias (libs.plugins.weather.android.library)
+    alias (libs.plugins.kotlinx.ksp)
     id("dagger.hilt.android.plugin")
     id("org.jetbrains.kotlin.plugin.serialization")
-    id("kotlin-kapt")
 }
 
 android {
@@ -32,11 +32,8 @@ dependencies {
     implementation(libs.androidx.datastore)
     implementation(libs.kotlix.serialization)
     implementation(libs.hilt.android)
-    kapt(libs.hilt.kaptCompiler)
+    ksp(libs.hilt.kaptCompiler)
 
-    testImplementation(libs.kotlix.coroutinesTest)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.kotlix.coroutinesTest)
-    androidTestImplementation(libs.androidx.test.junit)
-    androidTestImplementation(libs.androidx.test.espressoCore)
+    testImplementation(project(":core:testing"))
+    androidTestImplementation(project(":core:testing"))
 }

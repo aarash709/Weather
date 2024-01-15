@@ -2,9 +2,6 @@
 plugins {
     alias (libs.plugins.weather.android.library)
     alias(libs.plugins.kotlinx.ksp)
-    id("kotlin-kapt")
-
-
 }
 
 android {
@@ -26,9 +23,7 @@ dependencies {
     implementation(project(":core:model"))
 
     implementation(libs.hilt.android)
-    kapt(libs.hilt.kaptCompiler)
+    ksp(libs.hilt.kaptCompiler)
 
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.junit)
-    androidTestImplementation(libs.androidx.test.espressoCore)
+    testImplementation(project(":core:testing"))
 }

@@ -1,6 +1,6 @@
 plugins {
     alias (libs.plugins.weather.android.library)
-    id("kotlin-kapt")
+    alias(libs.plugins.kotlinx.ksp)
 }
 
 android {
@@ -23,13 +23,10 @@ dependencies {
     implementation(libs.androidx.lifecycleRuntimeKtx) //fixed duplicate class error while running android test.
 
     implementation(libs.hilt.android)
-    kapt(libs.hilt.kaptCompiler)
+    ksp(libs.hilt.kaptCompiler)
 
     implementation(libs.kotlix.coroutinesAndroid)
 
-    testImplementation(libs.junit)
-    testImplementation(libs.kotlix.coroutinesTest)
-    androidTestImplementation(libs.androidx.test.junit)
-    androidTestImplementation(libs.androidx.test.espressoCore)
-    androidTestImplementation(libs.kotlix.coroutinesTest)
+    testImplementation(project(":core:testing"))
+    androidTestImplementation(project(":core:testing"))
 }

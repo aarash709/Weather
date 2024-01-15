@@ -1,14 +1,9 @@
 plugins {
-    alias (libs.plugins.weather.android.application)
-    alias (libs.plugins.weather.android.compose.application)
-    id ("dagger.hilt.android.plugin")
-    id ("org.jetbrains.kotlin.plugin.serialization")
-    id (libs.plugins.kotlinx.ksp.get().pluginId)
-    id ("kotlin-kapt")
-}
-
-kapt {
-    correctErrorTypes = true
+    alias(libs.plugins.weather.android.application)
+    alias(libs.plugins.weather.android.compose.application)
+    alias(libs.plugins.kotlinx.ksp)
+    id("dagger.hilt.android.plugin")
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -30,11 +25,17 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             signingConfig = signingConfigs.getByName("debug")
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
         debug {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
             signingConfig = signingConfigs.getByName("debug")
         }
     }
@@ -101,10 +102,10 @@ dependencies {
     implementation(libs.hilt.navigationCompose)
 
     implementation(libs.hilt.android)
-    kapt(libs.hilt.kaptCompiler)
+    ksp(libs.hilt.kaptCompiler)
 
     implementation(libs.androidx.hiltWork)
-    kapt(libs.androidx.hiltKaptCompiler)
+    ksp(libs.androidx.hiltKaptCompiler)
 
     implementation(libs.timberLogger)
 
@@ -112,5 +113,5 @@ dependencies {
     testImplementation(project(":core:testing"))
     androidTestImplementation(project(":core:testing"))
     androidTestImplementation(libs.androidx.work.testing)
-    kaptAndroidTest(libs.androidx.hiltKaptCompiler)
+    kspAndroidTest(libs.androidx.hiltKaptCompiler)
 }
