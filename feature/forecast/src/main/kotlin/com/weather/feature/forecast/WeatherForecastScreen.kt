@@ -98,7 +98,8 @@ fun WeatherForecastScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = MaterialTheme.colorScheme.background)
+//            .background(color = MaterialTheme.colorScheme.background)
+            .background(Brush.verticalGradient(listOf(Color.Blue, Color.Green.copy(alpha = .7f))))
     ) {
         WeatherForecastScreen(
             weatherUIState = weatherUIState,
@@ -224,7 +225,8 @@ fun ConditionAndDetails(
             dailyList = weatherData.daily.map { it.toDailyPreview() })
         HourlyWidgetWithGraph(
             modifier = Modifier.weatherPlaceholder(
-                visible = showPlaceholder),
+                visible = showPlaceholder
+            ),
             hourly = weatherData.hourly
         )
     }
@@ -532,7 +534,18 @@ fun MainPagePreview() {
             userSettings = SettingsData(WindSpeedUnits.KM, TemperatureUnits.C),
             showPlaceHolder = placeholder
         )
-        Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
+        Box(
+            modifier = Modifier
+//            .background(color = MaterialTheme.colorScheme.background)
+                .background(
+                    Brush.verticalGradient(
+                        listOf(
+                            Color.Blue.copy(alpha = .5f),
+                            Color.Blue
+                        )
+                    )
+                )
+        ) {
             WeatherForecastScreen(weatherUIState = data,
                 isSyncing = false,
                 onNavigateToManageLocations = {},
