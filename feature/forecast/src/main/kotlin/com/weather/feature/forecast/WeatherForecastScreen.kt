@@ -36,7 +36,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -93,7 +92,7 @@ fun WeatherForecastScreen(
     val syncing by viewModel.isSyncing.collectAsStateWithLifecycle()
     //this should be calculated based on time of current and weather condition.
     //darker color for nights
-    val backgroundBrush = Brush.verticalGradient(
+    val dynamicBackground = Brush.verticalGradient(
         listOf(
             Color(0xFF549CCC),
             Color(0xFF2A4E66),
@@ -102,7 +101,7 @@ fun WeatherForecastScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(backgroundBrush)
+            .background(dynamicBackground)
     ) {
         WeatherForecastScreen(
             weatherUIState = weatherUIState,
@@ -156,31 +155,33 @@ fun WeatherForecastScreen(
             .pullRefresh(refreshState)
     )
     {
-        ForecastTopBar(
-            cityName = weatherUIState.weather.coordinates.name,
-            showPlaceholder = weatherUIState.showPlaceHolder,
-            onNavigateToManageLocations = { onNavigateToManageLocations() },
-            onNavigateToSettings = { onNavigateToSettings() })
-        Box(
-            modifier = Modifier
-                .padding(horizontal = 16.dp),
-            contentAlignment = Alignment.TopCenter
-        ) {
-            PullRefreshIndicator(refreshing = isSyncing, state = refreshState)
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                state = lazyListState,
-                contentPadding = WindowInsets.navigationBars.asPaddingValues(),
-                verticalArrangement = Arrangement.spacedBy(0.dp)
+        CompositionLocalProvider(LocalContentColor provides Color.White) {
+            ForecastTopBar(
+                cityName = weatherUIState.weather.coordinates.name,
+                showPlaceholder = weatherUIState.showPlaceHolder,
+                onNavigateToManageLocations = { onNavigateToManageLocations() },
+                onNavigateToSettings = { onNavigateToSettings() })
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp),
+                contentAlignment = Alignment.TopCenter
             ) {
-                item {
-                    ConditionAndDetails(
-                        modifier = Modifier.fillMaxSize(),
-                        weatherData = weatherUIState.weather,
-                        showPlaceholder = weatherUIState.showPlaceHolder,
-                        speedUnit = speedUnit,
-                        temperatureUnit = temperatureUnit,
-                    )
+                PullRefreshIndicator(refreshing = isSyncing, state = refreshState)
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    state = lazyListState,
+                    contentPadding = WindowInsets.navigationBars.asPaddingValues(),
+                    verticalArrangement = Arrangement.spacedBy(0.dp)
+                ) {
+                    item {
+                        ConditionAndDetails(
+                            modifier = Modifier.fillMaxSize(),
+                            weatherData = weatherUIState.weather,
+                            showPlaceholder = weatherUIState.showPlaceHolder,
+                            speedUnit = speedUnit,
+                            temperatureUnit = temperatureUnit,
+                        )
+                    }
                 }
             }
         }
@@ -200,25 +201,23 @@ fun ConditionAndDetails(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Spacer(modifier = Modifier.height(100.dp))
-        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
-            CurrentWeather(
-                modifier = Modifier.padding(vertical = 60.dp),
-                weatherData = weatherData.current,
-                showPlaceholder = showPlaceholder,
-                temperatureUnit = temperatureUnit
-            )
-            Spacer(modifier = Modifier.height(100.dp))
-            CurrentWeatherDetails(
-                modifier = Modifier
-                    .padding(horizontal = 1.dp)
-                    .fillMaxWidth()
-                    .weatherPlaceholder(
-                        visible = showPlaceholder,
-                    ),
-                weatherData = weatherData.current,
-                speedUnit = speedUnit,
-            )
-        }
+        CurrentWeather(
+            modifier = Modifier.padding(vertical = 60.dp),
+            weatherData = weatherData.current,
+            showPlaceholder = showPlaceholder,
+            temperatureUnit = temperatureUnit
+        )
+        Spacer(modifier = Modifier.height(100.dp))
+        CurrentWeatherDetails(
+            modifier = Modifier
+                .padding(horizontal = 1.dp)
+                .fillMaxWidth()
+                .weatherPlaceholder(
+                    visible = showPlaceholder,
+                ),
+            weatherData = weatherData.current,
+            speedUnit = speedUnit,
+        )
         Daily(
             modifier = Modifier
                 .fillMaxWidth()

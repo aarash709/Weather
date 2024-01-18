@@ -34,7 +34,6 @@ fun Daily(
         modifier = Modifier.bouncyTapEffect() then modifier,
         shape = RoundedCornerShape(16.dp),
         color = surfaceColor,
-        contentColor = Color.White
     ) {
         Column(
             modifier = Modifier.padding(8.dp),
