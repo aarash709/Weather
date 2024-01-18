@@ -7,7 +7,6 @@ import androidx.compose.animation.core.EaseOutCubic
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,10 +20,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
@@ -61,13 +58,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
 import com.weather.core.design.components.weatherPlaceholder
 import com.weather.core.design.theme.WeatherTheme
+import com.weather.core.design.theme.White
 import com.weather.feature.forecast.components.Daily
 import com.weather.feature.forecast.components.DailyStaticData
 import com.weather.feature.forecast.components.ForecastTopBar
-import com.weather.feature.forecast.components.HourlyGraph
 import com.weather.feature.forecast.components.HourlyWidgetWithGraph
 import com.weather.feature.forecast.components.WindDetails
 import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
@@ -95,11 +91,18 @@ fun WeatherForecastScreen(
     val weatherUIState by viewModel
         .weatherUIState.collectAsStateWithLifecycle()
     val syncing by viewModel.isSyncing.collectAsStateWithLifecycle()
+    //this should be calculated based on time of current and weather condition.
+    //darker color for nights
+    val backgroundBrush = Brush.verticalGradient(
+        listOf(
+            Color(0xFF549CCC),
+            Color(0xFF2A4E66),
+        )
+    )
     Box(
         modifier = Modifier
             .fillMaxSize()
-//            .background(color = MaterialTheme.colorScheme.background)
-            .background(Brush.verticalGradient(listOf(Color.Blue, Color.Green.copy(alpha = .7f))))
+            .background(backgroundBrush)
     ) {
         WeatherForecastScreen(
             weatherUIState = weatherUIState,
@@ -197,7 +200,7 @@ fun ConditionAndDetails(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Spacer(modifier = Modifier.height(100.dp))
-        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onBackground) {
+        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
             CurrentWeather(
                 modifier = Modifier.padding(vertical = 60.dp),
                 weatherData = weatherData.current,
@@ -259,7 +262,7 @@ fun CurrentDetails(
         modifier = modifier,
         shape = RoundedCornerShape(8.dp),
     ) {
-        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onBackground) {
+        CompositionLocalProvider(LocalContentColor provides White) {
             Column(
                 modifier = Modifier.padding(12.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
