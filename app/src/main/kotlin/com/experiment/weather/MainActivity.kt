@@ -64,10 +64,6 @@ class MainActivity : ComponentActivity() {
             val isDarkTheme = isSystemInDarkTheme()
             LaunchedEffect(isDarkTheme) {
                 enableEdgeToEdge(
-                    statusBarStyle = SystemBarStyle.light(
-                        Color.TRANSPARENT,
-                        Color.TRANSPARENT,
-                    ),
                     navigationBarStyle = if (isDarkTheme) {
                         SystemBarStyle.dark(
                             Color.TRANSPARENT,
