@@ -24,7 +24,7 @@ import com.weather.model.Hourly
 import kotlin.math.roundToInt
 
 @Composable
-fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
+fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
     val textColor = MaterialTheme.colorScheme.onSurface
     val verticalLineColor = MaterialTheme.colorScheme.primary
     val textMeasurer = rememberTextMeasurer()
@@ -117,7 +117,7 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
 @Preview
 @Composable
 private fun HourlyGraphPreview() {
-    HourlyGraph(
+    HourlyTemperatureGraph(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.surface)
             .padding(16.dp)
