@@ -15,7 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -45,6 +44,7 @@ import kotlin.math.roundToInt
 fun HourlyWidgetWithGraph(
     modifier: Modifier = Modifier,
     hourly: List<Hourly>,
+    speedUnit : String,
     surfaceColor: Color = Color.White.copy(alpha = 0.15f)) {
     Surface(
         modifier = modifier,
@@ -71,7 +71,8 @@ fun HourlyWidgetWithGraph(
                     val windSpeed = hourly[it].wind_speed.toString()
                     Column(
                         modifier = Modifier
-                            .padding(horizontal = 12.dp),
+                            .width(80.dp)
+                            .padding(horizontal = 0.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         AsyncImage(
@@ -79,7 +80,8 @@ fun HourlyWidgetWithGraph(
                             contentDescription = ""
                         )
                         Spacer(modifier = Modifier.height(16.dp))
-                        Text(text = windSpeed, fontSize = 14.sp, color = Color.White.copy(alpha = 0.5f))
+                        Text(text = "$windSpeed$speedUnit", fontSize = 12.sp, color = Color.White.copy(alpha = 0.5f))
+                        Spacer(modifier = Modifier.height(16.dp))
                         Text(text = timeStamp, fontSize = 12.sp, color = Color.White.copy(alpha = 0.5f))
                     }
                 },
@@ -198,6 +200,7 @@ private fun HourlyWidgetPreview() {
         HourlyWidgetWithGraph(
             modifier = Modifier,
             HourlyStaticData,
+            "km/h"
         )
     }
 }

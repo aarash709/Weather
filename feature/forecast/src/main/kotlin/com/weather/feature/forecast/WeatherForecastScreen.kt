@@ -230,7 +230,8 @@ fun ConditionAndDetails(
             modifier = Modifier.weatherPlaceholder(
                 visible = showPlaceholder
             ),
-            hourly = weatherData.hourly
+            hourly = weatherData.hourly,
+            speedUnit = speedUnit
         )
     }
 }
