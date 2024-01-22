@@ -47,17 +47,6 @@ fun WeatherApp(
                     modifier = Modifier
                         .padding(padding)
                 ) {
-                    AnimatedVisibility(visible = hasInternet.not()) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(color = Color.Yellow.copy(alpha = 0.7f)),
-                            contentAlignment = Alignment.Center
-                        )
-                        {
-                            Text(text = "No Internet")
-                        }
-                    }
                     WeatherNavHost(
                         modifier = Modifier,
                         navController = navController,
