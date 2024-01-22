@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.LayoutScopeMarker
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -14,7 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -23,12 +23,14 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.ParentDataModifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
@@ -39,32 +41,38 @@ import java.time.temporal.ChronoUnit
 import kotlin.math.roundToInt
 
 @Composable
-fun HourlyWidgetWithGraph(modifier: Modifier = Modifier, hourly: List<Hourly>) {
+fun HourlyWidgetWithGraph(
+    modifier: Modifier = Modifier,
+    hourly: List<Hourly>,
+    speedUnit : String,
+    surfaceColor: Color = Color.White.copy(alpha = 0.15f)) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(16.dp),
+        color = surfaceColor,
     ) {
-        Column(modifier = Modifier) {
-            Text(
-                text = "Hourly",
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                color = LocalContentColor.current.copy(alpha = 0.5f)
-            )
+        Column(modifier = Modifier.padding(vertical = 16.dp)) {
+//            Text(
+//                text = "Hourly",
+//                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+//                color = LocalContentColor.current.copy(alpha = 0.5f)
+//            )
             HourlyGraphLayout(
                 modifier = Modifier
                     .horizontalScroll(rememberScrollState()),
                 itemCount = hourly.size,
                 graphHeight = 50.dp,
                 hourlyGraph = {
-                    HourlyGraph(data = hourly)
+                    HourlyTemperatureGraph(data = hourly)
                 },
                 hourlyTimeStamps = {
                     val timeStamp = hourly[it].dt
                     val icon = hourly[it].icon
+                    val windSpeed = hourly[it].wind_speed.toString()
                     Column(
                         modifier = Modifier
                             .width(80.dp)
-                            .padding(horizontal = 16.dp),
+                            .padding(horizontal = 0.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         AsyncImage(
@@ -72,8 +80,9 @@ fun HourlyWidgetWithGraph(modifier: Modifier = Modifier, hourly: List<Hourly>) {
                             contentDescription = ""
                         )
                         Spacer(modifier = Modifier.height(16.dp))
-                        Text(text = timeStamp)
+                        Text(text = "$windSpeed$speedUnit", fontSize = 12.sp, color = Color.White.copy(alpha = 0.5f))
                         Spacer(modifier = Modifier.height(16.dp))
+                        Text(text = timeStamp, fontSize = 12.sp, color = Color.White.copy(alpha = 0.5f))
                     }
                 },
             )
@@ -186,13 +195,13 @@ class HourlyGraphParentData(
 @Composable
 private fun HourlyWidgetPreview() {
     WeatherTheme {
-        //preview wont size correctly when using 'Asyncimage' composable
-//        val scrollState = rememberScrollState()
-//        HourlyWidgetWithGraph(
-//            modifier = Modifier
-//                .background(MaterialTheme.colorScheme.surface),
-//            HourlyStaticData,
-//        )
+//        preview wont size correctly when using 'Asyncimage' composable
+        val scrollState = rememberScrollState()
+        HourlyWidgetWithGraph(
+            modifier = Modifier,
+            HourlyStaticData,
+            "km/h"
+        )
     }
 }
 
@@ -208,7 +217,7 @@ private fun HourlyCustomLayoutPreview() {
                 .background(MaterialTheme.colorScheme.surface),
             itemCount = HourlyStaticData.size,
             graphHeight = 50.dp,
-            hourlyGraph = { HourlyGraph(data = HourlyStaticData) },
+            hourlyGraph = { HourlyTemperatureGraph(data = HourlyStaticData) },
             hourlyTimeStamps = { index ->
                 val timeStamp = HourlyStaticData[index].dt
                 Column {

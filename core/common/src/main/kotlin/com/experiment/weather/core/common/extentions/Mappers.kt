@@ -45,7 +45,7 @@ fun Current.convertToUserSettings(
 }
 
 @JvmName("convertListDailyToUserSettings")
-fun List<Daily>.convertToUserSettings(temperature: TemperatureUnits?): List<Daily> {
+fun List<Daily>.convertToUserSettings(temperature: TemperatureUnits): List<Daily> {
     return map { daily ->
         daily.copy {
             Daily.dew_point transform { dewPoint -> dewPoint.convertToUserTemperature(temperature) }
@@ -57,7 +57,10 @@ fun List<Daily>.convertToUserSettings(temperature: TemperatureUnits?): List<Dail
 }
 
 @JvmName("convertListHourlyToUserSettings")
-fun List<Hourly>.convertToUserSettings(temperature: TemperatureUnits?): List<Hourly> {
+fun List<Hourly>.convertToUserSettings(
+    temperature: TemperatureUnits,
+    windSpeed: WindSpeedUnits,
+): List<Hourly> {
     return map { hourly ->
         hourly.copy {
             Hourly.dew_point transform { dewPoint ->
@@ -66,21 +69,24 @@ fun List<Hourly>.convertToUserSettings(temperature: TemperatureUnits?): List<Hou
                 )
             }
             Hourly.dt transform { hourlyTimeMillis -> calculateUIDailyTime(hourlyTimeMillis) }
-            Hourly.temp transform { temp -> temp.convertToUserTemperature(temperature) }
+            Hourly.temp transform { it.convertToUserTemperature(temperature) }
+            Hourly.wind_speed transform { it.convertToUserSpeed(windSpeed) }
         }
     }
 }
 
 fun WeatherData.convertToUserSettings(userSettings: SettingsData): WeatherData {
+    val tempUnit = userSettings.temperatureUnits
+    val windUnit = userSettings.windSpeedUnits
     return copy {
         WeatherData.current transform {
             it.convertToUserSettings(
-                userSettings.temperatureUnits,
-                userSettings.windSpeedUnits
+                tempUnit,
+                windUnit
             )
         }
-        WeatherData.daily transform { it.convertToUserSettings(userSettings.temperatureUnits) }
-        WeatherData.hourly transform { it.convertToUserSettings(userSettings.temperatureUnits) }
+        WeatherData.daily transform { it.convertToUserSettings(tempUnit!!) }
+        WeatherData.hourly transform { it.convertToUserSettings(tempUnit!!, windUnit!!) }
 
     }
 }

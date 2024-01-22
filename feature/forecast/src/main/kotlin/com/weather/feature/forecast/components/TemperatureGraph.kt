@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -24,8 +25,8 @@ import com.weather.model.Hourly
 import kotlin.math.roundToInt
 
 @Composable
-fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
-    val textColor = MaterialTheme.colorScheme.onSurface
+fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
+    val textColor = LocalContentColor.current
     val verticalLineColor = MaterialTheme.colorScheme.primary
     val textMeasurer = rememberTextMeasurer()
 
@@ -117,7 +118,7 @@ fun HourlyGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
 @Preview
 @Composable
 private fun HourlyGraphPreview() {
-    HourlyGraph(
+    HourlyTemperatureGraph(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.surface)
             .padding(16.dp)

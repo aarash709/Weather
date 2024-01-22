@@ -20,18 +20,25 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.time.Duration
 import java.time.Instant
 import javax.inject.Inject
+import kotlin.math.absoluteValue
+
+enum class TimeOfDay {
+    Day,
+    Night,
+    Dawn
+}
 
 @HiltViewModel
 class ForecastViewModel @Inject constructor(
@@ -42,7 +49,8 @@ class ForecastViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val cityName = savedStateHandle.get<String>("cityName").orEmpty()
-
+    private val _timeOfDay = MutableStateFlow(TimeOfDay.Day)
+    val timeOfDay = _timeOfDay
     internal var isSyncing = syncStatus.isSyncing
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), false)
 
@@ -53,6 +61,7 @@ class ForecastViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(1000),
         initialValue = SavableForecastData.placeholderDefault
     )
+
     private fun getWeatherData(): Flow<SavableForecastData> {
         return weatherRepository.getAllForecastWeatherData()
             .combine(getFavoriteCityCoordinate()) { allWeather, coordinate ->
@@ -75,13 +84,22 @@ class ForecastViewModel @Inject constructor(
                 )
             }
             .onEach { forecastData ->
-                val timeStamp = forecastData.weather.current.dt
+                val currentForecastTime = forecastData.weather.current.dt
+                val current = forecastData.weather.current
+                _timeOfDay.update {
+                    calculateTimeOfDay(
+                        currentForecastTime = currentForecastTime.toLong(),
+                        sunrise = current.sunrise.toLong(),
+                        sunset = current.sunset.toLong(),
+                        30
+                    )
+                }
                 val coordinate = Coordinate(
                     forecastData.weather.coordinates.name,
                     forecastData.weather.coordinates.lat.toString(),
                     forecastData.weather.coordinates.lon.toString()
                 )
-                if (isDataExpired(dataTimestamp = timeStamp, minutesThreshold = 30)) {
+                if (isDataExpired(dataTimestamp = currentForecastTime, minutesThreshold = 30)) {
                     sync(coordinate)
                 }
             }
@@ -127,5 +145,23 @@ class ForecastViewModel @Inject constructor(
     ) {
         windSpeedUnits ?: userRepository.setWindSpeedUnitSetting(defaultWindSpeedUnits)
         temperatureUnits ?: userRepository.setTemperatureUnitSetting(defaultTemperature)
+    }
+
+    private fun calculateTimeOfDay(
+        currentForecastTime: Long,
+        sunrise: Long,
+        sunset: Long,
+        dawnMinutesThreshold: Int = 30,
+    ): TimeOfDay {
+        val sunriseDifference = Duration.ofSeconds(currentForecastTime - sunrise).toMinutes()
+        val sunsetDifference = -Duration.ofSeconds(currentForecastTime - sunset).toMinutes()
+        Timber.e("$sunriseDifference")
+        Timber.e("$sunsetDifference")
+        return when {
+            currentForecastTime > sunset || currentForecastTime < sunrise -> TimeOfDay.Night
+            sunriseDifference < dawnMinutesThreshold -> TimeOfDay.Dawn
+            sunsetDifference < dawnMinutesThreshold -> TimeOfDay.Dawn
+            else -> TimeOfDay.Day
+        }
     }
 }

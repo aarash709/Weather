@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -46,20 +45,8 @@ fun WeatherApp(
             content = { padding ->
                 Column(
                     modifier = Modifier
-                        .statusBarsPadding()
                         .padding(padding)
                 ) {
-                    AnimatedVisibility(visible = hasInternet.not()) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(color = Color.Yellow.copy(alpha = 0.7f)),
-                            contentAlignment = Alignment.Center
-                        )
-                        {
-                            Text(text = "No Internet")
-                        }
-                    }
                     WeatherNavHost(
                         modifier = Modifier,
                         navController = navController,

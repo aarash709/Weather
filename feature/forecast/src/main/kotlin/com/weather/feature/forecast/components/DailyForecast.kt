@@ -28,20 +28,17 @@ import kotlin.math.roundToInt
 fun Daily(
     modifier: Modifier = Modifier,
     dailyList: List<DailyPreview>,
+    surfaceColor: Color = Color.White.copy(alpha = 0.15f),
 ) {
     Surface(
         modifier = Modifier.bouncyTapEffect() then modifier,
         shape = RoundedCornerShape(16.dp),
+        color = surfaceColor,
     ) {
         Column(
-            modifier = Modifier,
+            modifier = Modifier.padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(
-                text = "Daily",
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-//                color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
-            )
             dailyList.forEach { daily ->
                 DailyItem(
                     modifier = Modifier
@@ -57,33 +54,22 @@ fun Daily(
 fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = Modifier.weight(4f),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            AsyncImage(
-                model = "https://openweathermap.org/img/wn/${daily.icon}@2x.png",
-                contentDescription = "WeatherIcon",
-                modifier = Modifier
-            )
-            Row {
-                Text(text = daily.time)
-                Text(text = " - ")
-                Text(
-                    text = daily.condition,
-                    color = Color.Gray
-                )
-            }
-        }
+        Text(
+            text = daily.time, modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .weight(2f)
+        )
+        AsyncImage(
+            model = "https://openweathermap.org/img/wn/${daily.icon}@2x.png",
+            contentDescription = "WeatherIcon",
+            modifier = Modifier
+        )
         Row(
             modifier = Modifier
-                .weight(1f)
-                .padding(end = 4.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
+                .weight(2f),
+            horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -93,7 +79,7 @@ fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview) {
             Text(
                 text = " / ",
                 fontSize = 14.sp,
-                color = Color.White.copy(alpha = .7f)
+                color = Color.White.copy(alpha = 0.25f)
             )
             Text(
                 text = "${daily.tempNight.toFloat().roundToInt()}°",
@@ -103,14 +89,22 @@ fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview) {
     }
 }
 
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO)
+@Preview(
+    name = "night", showBackground = true, uiMode = UI_MODE_NIGHT_YES,
+    backgroundColor = 0xFF5366C5
+)
+@Preview(
+    name = "light", showBackground = true, uiMode = UI_MODE_NIGHT_NO,
+    backgroundColor = 0xFF5366C5
+)
 @Composable
 private fun DailyListPreview() {
     WeatherTheme {
         Daily(
             dailyList = DailyPreviewStaticData,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
         )
     }
 }
@@ -128,7 +122,7 @@ val DailyStaticData = listOf(
     Daily(
         0,
         0.0,
-        "time",
+        "Tomorrow",
         0,
         0.0,
         0,
@@ -151,7 +145,7 @@ val DailyStaticData = listOf(
     Daily(
         0,
         0.0,
-        "time",
+        "Friday",
         0,
         0.0,
         0,
@@ -174,7 +168,7 @@ val DailyStaticData = listOf(
     Daily(
         0,
         0.0,
-        "time",
+        "Saturday",
         0,
         0.0,
         0,
@@ -197,7 +191,7 @@ val DailyStaticData = listOf(
     Daily(
         0,
         0.0,
-        "",
+        "Sunday",
         0,
         0.0,
         0,
@@ -243,14 +237,14 @@ val DailyPreviewStaticData = listOf(
     DailyPreview(
         tempDay = "278",
         tempNight = "270",
-        time = "fri",
+        time = "Friday",
         icon = "",
         condition = "Rain"
     ),
     DailyPreview(
         tempDay = "281",
         tempNight = "269",
-        time = "Fri",
+        time = "Saturday",
         icon = "",
         condition = "Snow"
     )
