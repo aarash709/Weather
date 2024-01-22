@@ -79,25 +79,50 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 
+enum class TimeOfDay {
+    Day,
+    Night,
+    Dawn
+}
+
 @ExperimentalCoroutinesApi
 @Composable
 fun WeatherForecastScreen(
     viewModel: ForecastViewModel = hiltViewModel(),
-    navigateToManageLocations: () -> Unit,
+    onNavigateToManageLocations: () -> Unit,
     onNavigateToSettings: () -> Unit,
 ) {
     //stateful
     val weatherUIState by viewModel
         .weatherUIState.collectAsStateWithLifecycle()
     val syncing by viewModel.isSyncing.collectAsStateWithLifecycle()
-    //this should be calculated based on time of current and weather condition.
-    //darker color for nights
-    val dynamicBackground = Brush.verticalGradient(
+    val backgroundBrush = TimeOfDay.Dawn
+
+    val dayColors = Brush.verticalGradient(
         listOf(
-            Color(0xFF549CCC),
-            Color(0xFF2A4E66),
+            Color(0xFF1F4DCC),
+            Color(0xFF4D6199),
         )
     )
+    val nightColors = Brush.verticalGradient(
+        listOf(
+            Color(0xFF071333),
+            Color(0xFF0F2666),
+        )
+    )
+    val dawnColors = Brush.verticalGradient(
+        listOf(
+            Color(0xFF133080),
+            Color(0xFFCC471B),
+        )
+    )
+    //this should be calculated based on time of current and weather condition.
+    //darker color for nights
+    val dynamicBackground = when(backgroundBrush) {
+        TimeOfDay.Day -> dayColors
+        TimeOfDay.Night -> nightColors
+        TimeOfDay.Dawn -> dawnColors
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -106,7 +131,7 @@ fun WeatherForecastScreen(
         WeatherForecastScreen(
             weatherUIState = weatherUIState,
             isSyncing = syncing,
-            onNavigateToManageLocations = { navigateToManageLocations() },
+            onNavigateToManageLocations = { onNavigateToManageLocations() },
             onNavigateToSettings = { onNavigateToSettings() },
             onRefresh = viewModel::sync
         )
