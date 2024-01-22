@@ -79,12 +79,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 
-enum class TimeOfDay {
-    Day,
-    Night,
-    Dawn
-}
-
 @ExperimentalCoroutinesApi
 @Composable
 fun WeatherForecastScreen(
@@ -96,7 +90,7 @@ fun WeatherForecastScreen(
     val weatherUIState by viewModel
         .weatherUIState.collectAsStateWithLifecycle()
     val syncing by viewModel.isSyncing.collectAsStateWithLifecycle()
-    val backgroundBrush = TimeOfDay.Dawn
+    val backgroundBrush = viewModel.timeOfDay.collectAsStateWithLifecycle()
 
     val dayColors = Brush.verticalGradient(
         listOf(
@@ -118,7 +112,7 @@ fun WeatherForecastScreen(
     )
     //this should be calculated based on time of current and weather condition.
     //darker color for nights
-    val dynamicBackground = when(backgroundBrush) {
+    val dynamicBackground = when(backgroundBrush.value) {
         TimeOfDay.Day -> dayColors
         TimeOfDay.Night -> nightColors
         TimeOfDay.Dawn -> dawnColors
