@@ -59,7 +59,7 @@ fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview) {
         Text(
             text = daily.time, modifier = Modifier
                 .align(Alignment.CenterVertically)
-                .weight(2f)
+                .weight(1f)
         )
         AsyncImage(
             model = "https://openweathermap.org/img/wn/${daily.icon}@2x.png",
@@ -68,7 +68,7 @@ fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview) {
         )
         Row(
             modifier = Modifier
-                .weight(2f),
+                .weight(1.5f),
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
