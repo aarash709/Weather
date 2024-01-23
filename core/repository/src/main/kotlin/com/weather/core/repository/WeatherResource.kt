@@ -54,46 +54,46 @@ fun NetworkWeather.toEntity(cityName: String): CurrentWeatherEntity {
 fun NetworkCurrent.toEntity(cityName: String): CurrentEntity {
     return CurrentEntity(
         cityName = cityName,
-        clouds,
-        dew_point,
-        dt,
-        feels_like,
-        humidity,
-        pressure,
-        sunrise,
-        sunset,
-        temp,
-        uvi,
-        visibility,
-        wind_deg,
-        wind_speed
+        clouds = clouds,
+        dew_point = dew_point,
+        dt = dt,
+        feels_like = feels_like,
+        humidity = humidity,
+        pressure = pressure,
+        sunrise = sunrise,
+        sunset = sunset,
+        temp = temp,
+        uvi = uvi,
+        visibility = visibility,
+        wind_deg = wind_deg,
+        wind_speed = wind_speed
     )
 }
 
 fun NetworkDaily.toEntity(cityName: String): DailyEntity {
     return DailyEntity(
-        cityName,
-        clouds,
-        dew_point,
-        dt,
-        humidity,
-        moon_phase,
-        moonrise,
-        moonset,
-        pop,
-        pressure,
-        sunrise,
-        sunset,
-        temp.day,
-        temp.night,
-        weather.first().id,
-        weather.first().main,
-        weather.first().description,
-        weather.first().icon,
-        uvi,
-        wind_deg,
-        wind_gust,
-        wind_speed
+        cityName = cityName,
+        clouds = clouds,
+        dew_point = dew_point,
+        dt = dt,
+        humidity = humidity,
+        moon_phase = moon_phase,
+        moonrise = moonrise,
+        moonset = moonset,
+        pop = pop,
+        pressure = pressure,
+        sunrise = sunrise,
+        sunset = sunset,
+        dayTemp = temp.max,
+        nightTemp = temp.min,
+        id = weather.first().id,
+        main = weather.first().main,
+        description = weather.first().description,
+        icon = weather.first().icon,
+        uvi = uvi,
+        wind_deg = wind_deg,
+        wind_gust = wind_gust,
+        wind_speed = wind_speed
     )
 }
 
@@ -101,8 +101,8 @@ fun NetworkFeelsLike.toFeelsLike(): FeelsLike {
     return FeelsLike(
         day,
         eve,
-        morn,
-        night
+        morn = morn,
+        night = night
     )
 }
 
@@ -119,10 +119,10 @@ fun NetworkHourly.toEntity(cityName: String): OneCallHourlyEntity {
         temp = temp,
         uvi = uvi,
         visibility = visibility,
-        weather.first().id,
-        weather.first().main,
-        weather.first().description,
-        weather.first().icon,
+        id = weather.first().id,
+        main = weather.first().main,
+        description = weather.first().description,
+        icon = weather.first().icon,
         wind_deg = wind_deg,
         wind_gust = wind_gust,
         wind_speed = wind_speed

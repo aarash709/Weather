@@ -27,6 +27,7 @@ import com.weather.model.wind_speed
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.Instant
+import java.time.LocalDateTime
 import java.util.Date
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -49,7 +50,7 @@ fun List<Daily>.convertToUserSettings(temperature: TemperatureUnits): List<Daily
     return map { daily ->
         daily.copy {
             Daily.dew_point transform { dewPoint -> dewPoint.convertToUserTemperature(temperature) }
-            Daily.dt transform { dt -> unixMillisToHumanDate(dt.toLong(), DAILY_PATTERN) }
+            Daily.dt transform { time -> calculateUIDailyTime(time.toLong()) }
             Daily.dayTemp transform { dayTemp -> dayTemp.convertToUserTemperature(temperature) }
             Daily.nightTemp.transform { nightTemp -> nightTemp.convertToUserTemperature(temperature) }
         }
@@ -68,7 +69,7 @@ fun List<Hourly>.convertToUserSettings(
                     temperature
                 )
             }
-            Hourly.dt transform { hourlyTimeMillis -> calculateUIDailyTime(hourlyTimeMillis) }
+            Hourly.dt transform { hourlySeconds -> calculateUIHourlyTime(hourlySeconds.toLong()) }
             Hourly.temp transform { it.convertToUserTemperature(temperature) }
             Hourly.wind_speed transform { it.convertToUserSpeed(windSpeed) }
         }
@@ -85,7 +86,9 @@ fun WeatherData.convertToUserSettings(userSettings: SettingsData): WeatherData {
                 windUnit
             )
         }
-        WeatherData.daily transform { it.convertToUserSettings(tempUnit!!) }
+        WeatherData.daily transform {
+            it.convertToUserSettings(tempUnit!!)
+        }
         WeatherData.hourly transform { it.convertToUserSettings(tempUnit!!, windUnit!!) }
 
     }
@@ -119,12 +122,22 @@ private fun unixMillisToHumanDate(unixTimeStamp: Long, pattern: String): String 
     return formatter.format(date)
 }
 
-private fun calculateUIDailyTime(hourlyTimeMillis: String): String {
-    val timeMillis = hourlyTimeMillis.toLong()
+private fun calculateUIHourlyTime(hourlyTimeSeconds: Long): String {
     val differenceInMinutes =
-        Duration.ofSeconds(timeMillis.minus(Instant.now().epochSecond)).toMinutes()
+        Duration.ofSeconds(hourlyTimeSeconds.minus(Instant.now().epochSecond)).toMinutes()
     return if (differenceInMinutes in hourlyRangeThreshold)
         NOW
     else
-        unixMillisToHumanDate(timeMillis, HOURLY_PATTERN)
+        unixMillisToHumanDate(hourlyTimeSeconds, HOURLY_PATTERN)
+}
+
+private fun calculateUIDailyTime(hourlyTimeSeconds: Long): String {
+    val dayOfWeekOfDailyData = unixMillisToHumanDate(hourlyTimeSeconds, DAILY_PATTERN)
+    val localToday = LocalDateTime.now().dayOfWeek.name
+    val localTomorrow = LocalDateTime.now().plusDays(1).dayOfWeek.name
+    return when (dayOfWeekOfDailyData.uppercase()) {
+        localToday -> TODAY
+        localTomorrow -> TOMORROW
+        else -> dayOfWeekOfDailyData
+    }
 }
