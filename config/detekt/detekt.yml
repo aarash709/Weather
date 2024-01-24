@@ -14,6 +14,7 @@ naming:
     #    functionPattern: '[a-zA-Z][a-zA-Z]*'
     ignoreAnnotated:
       - 'Composable'
+      - 'Test'
 complexity:
   LongMethod:
     active: true

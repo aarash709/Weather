@@ -25,6 +25,7 @@ fun NetworkMinutely.toMinutelyEntity(cityName: String): OneCallMinutelyEntity {
 fun NetworkCurrent.toCurrentEntity(cityName: String): CurrentEntity {
     return CurrentEntity(
         clouds = clouds,
+        icon = weather.first().icon,
         dew_point = dew_point,
         dt = dt,
         feels_like = feels_like,
@@ -55,6 +56,7 @@ fun NetworkCurrent.toEntity(cityName: String): CurrentEntity {
     return CurrentEntity(
         cityName = cityName,
         clouds = clouds,
+        icon = weather.first().icon,
         dew_point = dew_point,
         dt = dt,
         feels_like = feels_like,

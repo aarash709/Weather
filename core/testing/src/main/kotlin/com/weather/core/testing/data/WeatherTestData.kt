@@ -16,6 +16,7 @@ val oneCall = OneCallEntity(
 )
 val current = CurrentEntity(
     cityName = "Sommersdale",
+    icon = "icon",
     clouds = 8337,
     dew_point = 48.49,
     dt = 8025,

@@ -20,6 +20,7 @@ data class CurrentEntity(
     @PrimaryKey(autoGenerate = false)
     val cityName: String,
     val clouds: Int,
+    val icon:String,
     val dew_point: Double,
     val dt: Int,
     val feels_like: Double,

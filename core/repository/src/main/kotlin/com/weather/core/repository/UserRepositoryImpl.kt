@@ -3,7 +3,6 @@ package com.weather.core.repository
 import com.experiment.weather.core.common.extentions.Dispachers
 import com.experiment.weather.core.common.extentions.WeatherDidpatchers
 import com.weather.core.datastore.LocalUserPreferences
-import com.weather.model.Coordinate
 import com.weather.model.TemperatureUnits
 import com.weather.model.WindSpeedUnits
 import kotlinx.coroutines.CoroutineDispatcher
@@ -18,14 +17,8 @@ class UserRepositoryImpl @Inject constructor(
     private val userPreferences: LocalUserPreferences,
     @Dispachers(WeatherDidpatchers.IO) private val IODispatcher: CoroutineDispatcher
 ) : UserRepository {
-    override fun getFavoriteCityCoordinate(): Flow<Coordinate?> {
-        return userPreferences.getFavoriteCity().map { stringCoordinate ->
-            if (stringCoordinate != null) {
-                Json.decodeFromString<Coordinate>(stringCoordinate)
-            } else {
-                null
-            }
-        }
+    override fun getFavoriteCityCoordinate(): Flow<String?> {
+        return userPreferences.getFavoriteCity()
     }
 
     override fun getTemperatureUnitSetting(): Flow<TemperatureUnits?> {

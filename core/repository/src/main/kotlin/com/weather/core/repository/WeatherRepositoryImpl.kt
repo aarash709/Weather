@@ -30,12 +30,13 @@ class WeatherRepositoryImpl @Inject constructor(
             it.map { data ->
                 Timber.e("Saved Locations:${data.oneCall.cityName}")
                 ManageLocationsData(
-                    data.oneCall.cityName,
-                    data.oneCall.lat.toString(),
-                    data.oneCall.lon.toString(),
-                    data.current.temp.toString(),
-                    data.current.humidity.toString(),
-                    data.current.feels_like.toString()
+                    locationName = data.oneCall.cityName,
+                    weatherIcon = data.current.icon,
+                    latitude = data.oneCall.lat.toString(),
+                    longitude = data.oneCall.lon.toString(),
+                    currentTemp = data.current.temp.toString(),
+                    humidity = data.current.humidity.toString(),
+                    feelsLike = data.current.feels_like.toString()
                 )
             }
         }

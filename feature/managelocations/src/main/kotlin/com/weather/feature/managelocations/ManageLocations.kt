@@ -5,14 +5,14 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDp
-import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,10 +32,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ChecklistRtl
-import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.WaterDrop
@@ -61,12 +63,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.weather.core.design.components.CustomTopBar
 import com.weather.core.design.components.ShowLoadingText
 import com.weather.core.design.modifiers.bouncyTapEffect
@@ -98,13 +104,8 @@ fun ManageLocations(
             onDeleteItem = { cityNames ->
                 viewModel.deleteWeatherByCityName(cityNames = cityNames, context = context)
             },
-            onSetFavoriteItem = { locationData ->
-                val coordinate = Coordinate(
-                    cityName = locationData.locationName,
-                    latitude = locationData.latitude,
-                    longitude = locationData.longitude
-                )
-                viewModel.saveFavoriteCityCoordinate(coordinate = coordinate, context = context)
+            onSetFavoriteItem = { favoriteCity ->
+                viewModel.saveFavoriteCityCoordinate(cityName = favoriteCity, context = context)
             }
         )
     }
@@ -122,7 +123,7 @@ fun ManageLocations(
     onBackPressed: () -> Unit,
     onItemSelected: (Coordinate) -> Unit,
     onDeleteItem: (List<String>) -> Unit,
-    onSetFavoriteItem: (ManageLocationsData) -> Unit,
+    onSetFavoriteItem: (String) -> Unit,
 ) {
     var selectedCities by rememberSaveable {
         mutableStateOf(emptySet<String>())
@@ -211,23 +212,27 @@ fun ManageLocations(
                 exit = fadeOut() + slideOutVertically(targetOffsetY = { it }),
                 label = "bottom bar content"
             ) {
-                BottomAppBar {
+                BottomAppBar(
+                    tonalElevation = 0.dp
+                ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Column {
-                            IconButton(onClick = {
+                        BottomBarItem(
+                            buttonName = "Delete",
+                            imageVector = Icons.Default.DeleteOutline,
+                            onClick = {
                                 onDeleteItem(itemsToDelete)
                                 selectedCities = emptySet()
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Default.DeleteOutline,
-                                    contentDescription = "Delete button"
-                                )
-
-                            }
-                            Text(text = "Delete")
+                            })
+                        AnimatedVisibility(selectedCities.size < 2) {
+                            BottomBarItem(
+                                buttonName = "Favorite",
+                                imageVector = Icons.Default.StarBorder,
+                                onClick = {
+                                    onSetFavoriteItem(selectedCities.first())
+                                })
                         }
                     }
                 }
@@ -236,16 +241,16 @@ fun ManageLocations(
     ) { padding ->
 
         if (showSearchSheet) {
-                ModalBottomSheet(
-                    onDismissRequest = { showSearchSheet = false },
-                    sheetState = searchSheetSate,
-                    tonalElevation = 0.dp
-                ) {
-                    SearchScreen(shouldRequestFocus = searchSheetSate.hasExpandedState) {
-                        scope.launch { searchSheetSate.hide() }
-                            .invokeOnCompletion { showSearchSheet = false }
-                    }
+            ModalBottomSheet(
+                onDismissRequest = { showSearchSheet = false },
+                sheetState = searchSheetSate,
+                tonalElevation = 0.dp
+            ) {
+                SearchScreen(shouldRequestFocus = searchSheetSate.hasExpandedState) {
+                    scope.launch { searchSheetSate.hide() }
+                        .invokeOnCompletion { showSearchSheet = false }
                 }
+            }
         }
         when (dataState) {
             is LocationsUIState.Loading -> ShowLoadingText()
@@ -330,6 +335,28 @@ fun ManageLocations(
 }
 
 @Composable
+fun BottomBarItem(
+    modifier: Modifier = Modifier,
+    buttonName: String,
+    imageVector: ImageVector,
+    onClick: () -> Unit,
+) {
+    Column(
+        modifier = modifier.padding(horizontal = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        IconButton(onClick = { onClick() }) {
+            Icon(
+                imageVector = imageVector,
+                modifier = Modifier.size(28.dp),
+                contentDescription = "Delete button"
+            )
+        }
+        Text(text = buttonName, fontSize = 14.sp)
+    }
+}
+
+@Composable
 fun SearchBarCard(onClick: () -> Unit) {
     Surface(
         onClick = onClick,
@@ -364,63 +391,60 @@ fun SavedLocationItem(
     selected: Boolean,
     onItemSelected: (Coordinate) -> Unit,
 ) {
-    val transition = updateTransition(targetState = inSelectionMode)
+    val transition = updateTransition(targetState = inSelectionMode, label = "selection mode")
     val itemHorizontalPadding by transition.animateDp(label = "item padding") { inEditMode ->
-        if (inEditMode) 32.dp else 0.dp
+        if (inEditMode) 12.dp else 0.dp
     }
-    val textSize by transition.animateFloat(label = "text size") { inEditMode ->
-        if (inEditMode) 9f else 12f
-    }
+    val isFavorite = data.isFavorite
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp)) then modifier,
         shape = RoundedCornerShape(16.dp),
-        border =
-        if (data.isFavorite)
-            BorderStroke(
-                width = 2.dp,
-                color = MaterialTheme.colorScheme.primary
-            )
-        else null,
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 24.dp, horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             AnimatedVisibility(
                 visible = inSelectionMode,
                 modifier = Modifier,
-                enter = fadeIn(animationSpec = tween(25)),
-                exit = fadeOut(animationSpec = tween(25)),
+                enter = fadeIn(animationSpec = tween(25))+ expandHorizontally(),
+                exit = fadeOut(animationSpec = tween(25)) + shrinkHorizontally(),
                 label = "selection button"
             ) {
                 Icon(
-                    imageVector = Icons.Default.Circle,
+                    imageVector = Icons.Default.Check,
+                    modifier = Modifier.padding(horizontal = 4.dp),
                     contentDescription = "selected Icon",
                     tint =
                     if (selected)
                         MaterialTheme.colorScheme.primary
                     else
-                        MaterialTheme.colorScheme.onSurface
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
                 )
             }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = itemHorizontalPadding),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
                 Column(
+                    modifier = Modifier.weight(1f) ,
                     horizontalAlignment = Alignment.Start
                 ) {
-                    Text(
-                        text = data.locationName,
-                        fontSize = 18.sp
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = data.locationName,
+                            fontSize = 18.sp
+                        )
+                        Spacer(modifier = Modifier.width(16.dp))
+                        if (isFavorite) {
+                            Icon(
+                                imageVector = Icons.Default.Star,
+                                modifier = Modifier.size(20.dp),
+                                tint = Color.Yellow,
+                                contentDescription = "selected icon star"
+                            )
+                        }
+                    }
                     Spacer(modifier = Modifier.height(4.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
@@ -430,22 +454,34 @@ fun SavedLocationItem(
                         )
                         Text(
                             text = "${data.humidity}%",
-                            fontSize = textSize.sp
+                            fontSize = 12.sp
                         )
                         Spacer(modifier = Modifier.width(16.dp))
                         Text(
                             text = "Real Feel: ${
                                 data.feelsLike
                             }°",
-                            fontSize = textSize.sp
+                            fontSize = 12.sp
                         )
                     }
                 }
-                Text(
-                    text = "${data.currentTemp}°",
-                    fontSize = 28.sp
-                )
-            }
+                Row(
+                    modifier = Modifier.padding(horizontal = itemHorizontalPadding),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    AsyncImage(
+                        model = "https://openweathermap.org/img/wn/${data.weatherIcon}@2x.png",
+                        modifier = Modifier,
+                        contentDescription = "weather icon"
+                    )
+                    Text(
+                        text = "${data.currentTemp}°",
+                        modifier = Modifier.width(60.dp),
+                        textAlign = TextAlign.End,
+                        fontSize = 28.sp
+                    )
+                }
         }
     }
 }
@@ -459,6 +495,7 @@ fun ManageLocationsPreview() {
         listOf(
             ManageLocationsData(
                 locationName = "Tehran",
+                weatherIcon = "",
                 latitude = 10.toString(),
                 longitude = 10.toString(),
                 currentTemp = "2",
@@ -467,6 +504,7 @@ fun ManageLocationsPreview() {
             ),
             ManageLocationsData(
                 locationName = "Tabriz",
+                weatherIcon = "",
                 latitude = 10.toString(),
                 longitude = 10.toString(),
                 currentTemp = "0",
@@ -510,6 +548,7 @@ fun CityItemPreview() {
         SavedLocationItem(
             data = ManageLocationsData(
                 locationName = "Tehran",
+                weatherIcon = "",
                 latitude = 10.toString(),
                 longitude = 10.toString(),
                 currentTemp = "2",
