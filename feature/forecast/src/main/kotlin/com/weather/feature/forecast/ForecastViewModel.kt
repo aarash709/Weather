@@ -32,7 +32,6 @@ import timber.log.Timber
 import java.time.Duration
 import java.time.Instant
 import javax.inject.Inject
-import kotlin.math.absoluteValue
 
 enum class TimeOfDay {
     Day,
@@ -64,14 +63,14 @@ class ForecastViewModel @Inject constructor(
 
     private fun getWeatherData(): Flow<SavableForecastData> {
         return weatherRepository.getAllForecastWeatherData()
-            .combine(getFavoriteCityCoordinate()) { allWeather, coordinate ->
-                Timber.e("cityName: ${coordinate?.cityName}")
-                if (coordinate?.cityName.isNullOrBlank() ||
-                    allWeather.all { it.coordinates.name != coordinate?.cityName }
+            .combine(getFavoriteCityCoordinate()) { allWeather, favoriteCityName ->
+                Timber.e("cityName: $favoriteCityName")
+                if (favoriteCityName.isNullOrBlank() ||
+                    allWeather.all { it.coordinates.name != favoriteCityName }
                 )
                     allWeather.first()
                 else
-                    allWeather.first { it.coordinates.name == coordinate?.cityName }
+                    allWeather.first { it.coordinates.name == favoriteCityName }
             }
             .flowOn(Dispatchers.IO)
             .combine(getUserSettings()) { weather, userSettings ->
@@ -109,7 +108,7 @@ class ForecastViewModel @Inject constructor(
             }
     }
 
-    private fun getFavoriteCityCoordinate(): Flow<Coordinate?> {
+    private fun getFavoriteCityCoordinate(): Flow<String?> {
         return userRepository.getFavoriteCityCoordinate()
     }
 

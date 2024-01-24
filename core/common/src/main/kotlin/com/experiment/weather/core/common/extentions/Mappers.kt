@@ -1,7 +1,6 @@
 package com.experiment.weather.core.common.extentions
 
 import arrow.optics.copy
-import com.weather.model.Coordinate
 import com.weather.model.Current
 import com.weather.model.Daily
 import com.weather.model.Hourly
@@ -96,13 +95,13 @@ fun WeatherData.convertToUserSettings(userSettings: SettingsData): WeatherData {
 
 fun List<ManageLocationsData>.convertTotoUserSettings(
     tempUnit: TemperatureUnits,
-    favoriteCoordinate: Coordinate?,
+    favoriteCityName: String?,
 ): List<ManageLocationsData> {
     return map { manageLocations ->
         manageLocations.copy {
             val isFavorite = ManageLocationsData
                 .locationName
-                .get(manageLocations) == favoriteCoordinate?.cityName
+                .get(manageLocations) == favoriteCityName
             ManageLocationsData.currentTemp transform {
                 it.toDouble().convertToUserTemperature(userTempUnit = tempUnit).roundToInt()
                     .toString()

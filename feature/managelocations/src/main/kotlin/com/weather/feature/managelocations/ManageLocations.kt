@@ -36,6 +36,7 @@ import androidx.compose.material.icons.filled.ChecklistRtl
 import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.WaterDrop
@@ -61,6 +62,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -98,13 +100,8 @@ fun ManageLocations(
             onDeleteItem = { cityNames ->
                 viewModel.deleteWeatherByCityName(cityNames = cityNames, context = context)
             },
-            onSetFavoriteItem = { locationData ->
-                val coordinate = Coordinate(
-                    cityName = locationData.locationName,
-                    latitude = locationData.latitude,
-                    longitude = locationData.longitude
-                )
-                viewModel.saveFavoriteCityCoordinate(coordinate = coordinate, context = context)
+            onSetFavoriteItem = { favoriteCity ->
+                viewModel.saveFavoriteCityCoordinate(cityName = favoriteCity, context = context)
             }
         )
     }
@@ -122,7 +119,7 @@ fun ManageLocations(
     onBackPressed: () -> Unit,
     onItemSelected: (Coordinate) -> Unit,
     onDeleteItem: (List<String>) -> Unit,
-    onSetFavoriteItem: (ManageLocationsData) -> Unit,
+    onSetFavoriteItem: (String) -> Unit,
 ) {
     var selectedCities by rememberSaveable {
         mutableStateOf(emptySet<String>())
@@ -211,23 +208,27 @@ fun ManageLocations(
                 exit = fadeOut() + slideOutVertically(targetOffsetY = { it }),
                 label = "bottom bar content"
             ) {
-                BottomAppBar {
+                BottomAppBar(
+                    tonalElevation = 0.dp
+                ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Column {
-                            IconButton(onClick = {
+                        BottomBarItem(
+                            buttonName = "Delete",
+                            imageVector = Icons.Default.DeleteOutline,
+                            onClick = {
                                 onDeleteItem(itemsToDelete)
                                 selectedCities = emptySet()
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Default.DeleteOutline,
-                                    contentDescription = "Delete button"
-                                )
-
-                            }
-                            Text(text = "Delete")
+                            })
+                        AnimatedVisibility(selectedCities.size < 2) {
+                            BottomBarItem(
+                                buttonName = "Favorite",
+                                imageVector = Icons.Default.StarBorder,
+                                onClick = {
+                                    onSetFavoriteItem(selectedCities.first())
+                                })
                         }
                     }
                 }
@@ -236,16 +237,16 @@ fun ManageLocations(
     ) { padding ->
 
         if (showSearchSheet) {
-                ModalBottomSheet(
-                    onDismissRequest = { showSearchSheet = false },
-                    sheetState = searchSheetSate,
-                    tonalElevation = 0.dp
-                ) {
-                    SearchScreen(shouldRequestFocus = searchSheetSate.hasExpandedState) {
-                        scope.launch { searchSheetSate.hide() }
-                            .invokeOnCompletion { showSearchSheet = false }
-                    }
+            ModalBottomSheet(
+                onDismissRequest = { showSearchSheet = false },
+                sheetState = searchSheetSate,
+                tonalElevation = 0.dp
+            ) {
+                SearchScreen(shouldRequestFocus = searchSheetSate.hasExpandedState) {
+                    scope.launch { searchSheetSate.hide() }
+                        .invokeOnCompletion { showSearchSheet = false }
                 }
+            }
         }
         when (dataState) {
             is LocationsUIState.Loading -> ShowLoadingText()
@@ -326,6 +327,28 @@ fun ManageLocations(
             }
         }
 
+    }
+}
+
+@Composable
+fun BottomBarItem(
+    modifier: Modifier = Modifier,
+    buttonName: String,
+    imageVector: ImageVector,
+    onClick: () -> Unit,
+) {
+    Column(
+        modifier = modifier.padding(horizontal = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        IconButton(onClick = { onClick() }) {
+            Icon(
+                imageVector = imageVector,
+                modifier = Modifier.size(28.dp),
+                contentDescription = "Delete button"
+            )
+        }
+        Text(text = buttonName, fontSize = 14.sp)
     }
 }
 

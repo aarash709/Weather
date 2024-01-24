@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.experiment.weather.core.common.extentions.convertTotoUserSettings
 import com.weather.core.repository.UserRepository
 import com.weather.core.repository.WeatherRepository
-import com.weather.model.Coordinate
 import com.weather.model.ManageLocationsData
 import com.weather.model.TemperatureUnits
 import com.weather.model.TemperatureUnits.*
@@ -16,8 +15,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -35,12 +32,12 @@ class ManageLocationsViewModel @Inject constructor(
     )
     {
             weatherList,
-            favoriteCoordinate,
+            favoriteCityName,
             temperatureSetting ->
         val tempUnit = temperatureSetting ?: C
         val locationData = weatherList.convertTotoUserSettings(
             tempUnit = tempUnit,
-            favoriteCoordinate = favoriteCoordinate
+            favoriteCityName = favoriteCityName
         )
         LocationsUIState.Success(locationData)
     }
@@ -54,18 +51,17 @@ class ManageLocationsViewModel @Inject constructor(
             initialValue = LocationsUIState.Loading
         )
 
-    fun saveFavoriteCityCoordinate(coordinate: Coordinate, context: Context) {
+    fun saveFavoriteCityCoordinate(cityName: String, context: Context) {
         val hapticFeedback = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         viewModelScope.launch {
-            val coordinateString = Json.encodeToString(coordinate)
-            userRepository.setFavoriteCityCoordinate(coordinateString)
+            userRepository.setFavoriteCityCoordinate(cityName)
             hapticFeedback.cancel()
             hapticFeedback.vibrate(60)
         }
     }
 
     @ExperimentalCoroutinesApi
-    private fun getFavoriteCityCoordinate(): Flow<Coordinate?> {
+    private fun getFavoriteCityCoordinate(): Flow<String?> {
         return userRepository.getFavoriteCityCoordinate()
     }
 
