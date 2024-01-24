@@ -27,22 +27,6 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:common"))
     implementation(project(":sync:work"))
-val picoChart = "1.13.1"
-    // For Jetpack Compose.
-    implementation("com.patrykandpatrick.vico:compose:$picoChart")
-
-    // For `compose`. Creates a `ChartStyle` based on an M2 Material Theme.
-//    implementation("com.patrykandpatrick.vico:compose-m2:1.13.1")
-
-    // For `compose`. Creates a `ChartStyle` based on an M3 Material Theme.
-    implementation("com.patrykandpatrick.vico:compose-m3:$picoChart")
-
-    // Houses the core logic for charts and other elements. Included in all other modules.
-    implementation("com.patrykandpatrick.vico:core:$picoChart")
-
-    //ycharts
-    implementation("co.yml:ycharts:2.1.0")
-
 
     implementation(libs.androidx.navigationCompose)
 

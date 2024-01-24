@@ -7,8 +7,10 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -64,11 +66,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.weather.core.design.components.CustomTopBar
 import com.weather.core.design.components.ShowLoadingText
 import com.weather.core.design.modifiers.bouncyTapEffect
@@ -389,7 +393,7 @@ fun SavedLocationItem(
 ) {
     val transition = updateTransition(targetState = inSelectionMode, label = "selection mode")
     val itemHorizontalPadding by transition.animateDp(label = "item padding") { inEditMode ->
-        if (inEditMode) 32.dp else 0.dp
+        if (inEditMode) 12.dp else 0.dp
     }
     val isFavorite = data.isFavorite
     Surface(
@@ -402,17 +406,18 @@ fun SavedLocationItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 24.dp, horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             AnimatedVisibility(
                 visible = inSelectionMode,
                 modifier = Modifier,
-                enter = fadeIn(animationSpec = tween(25)),
-                exit = fadeOut(animationSpec = tween(25)),
+                enter = fadeIn(animationSpec = tween(25))+ expandHorizontally(),
+                exit = fadeOut(animationSpec = tween(25)) + shrinkHorizontally(),
                 label = "selection button"
             ) {
                 Icon(
                     imageVector = Icons.Default.Check,
+                    modifier = Modifier.padding(horizontal = 4.dp),
                     contentDescription = "selected Icon",
                     tint =
                     if (selected)
@@ -421,14 +426,8 @@ fun SavedLocationItem(
                         MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
                 )
             }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = itemHorizontalPadding),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
                 Column(
+                    modifier = Modifier.weight(1f) ,
                     horizontalAlignment = Alignment.Start
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -466,11 +465,23 @@ fun SavedLocationItem(
                         )
                     }
                 }
-                Text(
-                    text = "${data.currentTemp}°",
-                    fontSize = 28.sp
-                )
-            }
+                Row(
+                    modifier = Modifier.padding(horizontal = itemHorizontalPadding),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    AsyncImage(
+                        model = "https://openweathermap.org/img/wn/${data.weatherIcon}@2x.png",
+                        modifier = Modifier,
+                        contentDescription = "weather icon"
+                    )
+                    Text(
+                        text = "${data.currentTemp}°",
+                        modifier = Modifier.width(60.dp),
+                        textAlign = TextAlign.End,
+                        fontSize = 28.sp
+                    )
+                }
         }
     }
 }
@@ -484,6 +495,7 @@ fun ManageLocationsPreview() {
         listOf(
             ManageLocationsData(
                 locationName = "Tehran",
+                weatherIcon = "",
                 latitude = 10.toString(),
                 longitude = 10.toString(),
                 currentTemp = "2",
@@ -492,6 +504,7 @@ fun ManageLocationsPreview() {
             ),
             ManageLocationsData(
                 locationName = "Tabriz",
+                weatherIcon = "",
                 latitude = 10.toString(),
                 longitude = 10.toString(),
                 currentTemp = "0",
@@ -535,6 +548,7 @@ fun CityItemPreview() {
         SavedLocationItem(
             data = ManageLocationsData(
                 locationName = "Tehran",
+                weatherIcon = "",
                 latitude = 10.toString(),
                 longitude = 10.toString(),
                 currentTemp = "2",

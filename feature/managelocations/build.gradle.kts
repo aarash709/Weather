@@ -31,6 +31,8 @@ dependencies {
 
     implementation(libs.androidx.navigationCompose)
 
+    implementation(libs.coilCompose)
+
     implementation(libs.androidx.lifecycleRuntimeKtx)
     implementation(libs.androidx.lifecycleComposeRuntime)
     implementation(libs.androidx.lifecycleViewModelCompose)
