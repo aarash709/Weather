@@ -5,14 +5,12 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDp
-import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,10 +30,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ChecklistRtl
-import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Close
@@ -62,6 +61,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -391,18 +391,12 @@ fun SavedLocationItem(
     val itemHorizontalPadding by transition.animateDp(label = "item padding") { inEditMode ->
         if (inEditMode) 32.dp else 0.dp
     }
+    val isFavorite = data.isFavorite
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp)) then modifier,
         shape = RoundedCornerShape(16.dp),
-        border =
-        if (data.isFavorite)
-            BorderStroke(
-                width = 2.dp,
-                color = MaterialTheme.colorScheme.primary
-            )
-        else null,
     ) {
         Row(
             modifier = Modifier
@@ -418,13 +412,13 @@ fun SavedLocationItem(
                 label = "selection button"
             ) {
                 Icon(
-                    imageVector = Icons.Default.Circle,
+                    imageVector = Icons.Default.Check,
                     contentDescription = "selected Icon",
                     tint =
                     if (selected)
                         MaterialTheme.colorScheme.primary
                     else
-                        MaterialTheme.colorScheme.onSurface
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
                 )
             }
             Row(
@@ -437,10 +431,21 @@ fun SavedLocationItem(
                 Column(
                     horizontalAlignment = Alignment.Start
                 ) {
-                    Text(
-                        text = data.locationName,
-                        fontSize = 18.sp
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = data.locationName,
+                            fontSize = 18.sp
+                        )
+                        Spacer(modifier = Modifier.width(16.dp))
+                        if (isFavorite) {
+                            Icon(
+                                imageVector = Icons.Default.Star,
+                                modifier = Modifier.size(20.dp),
+                                tint = Color.Yellow,
+                                contentDescription = "selected icon star"
+                            )
+                        }
+                    }
                     Spacer(modifier = Modifier.height(4.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
