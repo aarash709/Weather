@@ -387,12 +387,9 @@ fun SavedLocationItem(
     selected: Boolean,
     onItemSelected: (Coordinate) -> Unit,
 ) {
-    val transition = updateTransition(targetState = inSelectionMode)
+    val transition = updateTransition(targetState = inSelectionMode, label = "selection mode")
     val itemHorizontalPadding by transition.animateDp(label = "item padding") { inEditMode ->
         if (inEditMode) 32.dp else 0.dp
-    }
-    val textSize by transition.animateFloat(label = "text size") { inEditMode ->
-        if (inEditMode) 9f else 12f
     }
     Surface(
         modifier = Modifier
@@ -453,14 +450,14 @@ fun SavedLocationItem(
                         )
                         Text(
                             text = "${data.humidity}%",
-                            fontSize = textSize.sp
+                            fontSize = 12.sp
                         )
                         Spacer(modifier = Modifier.width(16.dp))
                         Text(
                             text = "Real Feel: ${
                                 data.feelsLike
                             }°",
-                            fontSize = textSize.sp
+                            fontSize = 12.sp
                         )
                     }
                 }
