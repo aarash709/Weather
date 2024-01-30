@@ -63,16 +63,36 @@ private fun ThemeTest() {
             Box(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
                 Column(
                     Modifier.padding(32.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Surface(
                         border = BorderStroke(1.dp, color = MaterialTheme.colorScheme.onSurface),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text(text = "This is a surface")
+                        Text(text = "A surface",modifier = Modifier.padding(16.dp))
+                    }
+                    Card(
+                        border = BorderStroke(1.dp, color = MaterialTheme.colorScheme.onSurface),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(text = "A card",modifier = Modifier.padding(16.dp))
+                    }
+                    ElevatedCard(
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(text = "An Elevated Card",modifier = Modifier.padding(16.dp))
+                    }
+                    OutlinedCard() {
+                        Text(text = "An Outlined Card",modifier = Modifier.padding(16.dp))
+                    }
+                    Card(
+                        border = BorderStroke(1.dp, color = MaterialTheme.colorScheme.onSurface),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(text = "An Elevated Cardd",modifier = Modifier.padding(16.dp))
                     }
                     Text(text = "this is a text")
-                    Spacer(modifier = Modifier.height(16.dp))
                     TextButton(
                         onClick = {},
                         border = BorderStroke(
@@ -81,13 +101,13 @@ private fun ThemeTest() {
                         ),
                         elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
                     ) {
-                        Text(text = "this is text button")
+                        Text(text = "Text button")
                     }
                     Button(
                         onClick = {},
                         elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
                     ) {
-                        Text(text = "this is a button")
+                        Text(text = "Button")
                     }
                 }
             }
