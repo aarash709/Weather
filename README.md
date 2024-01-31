@@ -4,8 +4,7 @@ Work in progress [🚧] sample android weather app written entirely in Kotlin an
 
 ## Roadmap
 
-* [ ] Redesign Forecast page
-* [x] ~~Redesign pullrefresh~~
+* [x] Redesign Forecast page
 * [x] Add background to Forecast page
 * [ ] Data Sync strategy
 * [x] Test module
