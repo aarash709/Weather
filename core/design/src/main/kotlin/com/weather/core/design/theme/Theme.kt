@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.dp
 //Use in WeatherTheme
 private val darkColorScheme = darkColorScheme(
     primary = primary,
-    surface = Gray70,
-    background = Gray900,
+    surface = Gray80,
+    background = DarkBackground,
     onPrimary = White,
     onBackground = White,
     onSurface = White
@@ -29,8 +29,8 @@ private val darkColorScheme = darkColorScheme(
 
 private val lightColorScheme = lightColorScheme(
     primary = primary,
-    surface = Gray200,
-    background = Gray100,
+    surface = Gray20,
+    background = LightBackground,
     onPrimary = White,
     onBackground = Black,
     onSurface = Black,
