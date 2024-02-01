@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 
 val primary = Color(0xFF2131CC)
 val DarkBackground = Color(0xFF1A1A1A)
-val LightBackground = Color(0xFFCCCCCC)
+val LightBackground = Color(0xFFF2F2F2)
 val White = Color(0xFFF0F0F0)
 val Black = Color(0xFF0A0A0A)
 val Gray90 = Color(0xFF1A1A1A)
