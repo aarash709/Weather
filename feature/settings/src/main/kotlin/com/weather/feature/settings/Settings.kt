@@ -1,13 +1,27 @@
 package com.weather.feature.settings
 
-import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,21 +47,24 @@ fun Settings(
     var windUnit by remember {
         mutableStateOf("")
     }
-    LaunchedEffect(key1 = settingsUIState){
-        when(settingsUIState){
-            is SettingsUIState.Success ->{
-                tempUnit = when ((settingsUIState as SettingsUIState.Success).settingsData.temperatureUnits) {
-                    TemperatureUnits.C -> "°C"
-                    TemperatureUnits.F -> "°F"
-                    else -> "null"
-                }
-                windUnit = when ((settingsUIState as SettingsUIState.Success).settingsData.windSpeedUnits) {
-                    WindSpeedUnits.KM -> "Kilometer per hour"
-                    WindSpeedUnits.MS -> "Meters per second"
-                    WindSpeedUnits.MPH -> "Miles per hour"
-                    else -> "null"
-                }
+    LaunchedEffect(key1 = settingsUIState) {
+        when (settingsUIState) {
+            is SettingsUIState.Success -> {
+                tempUnit =
+                    when ((settingsUIState as SettingsUIState.Success).settingsData.temperatureUnits) {
+                        TemperatureUnits.C -> "°C"
+                        TemperatureUnits.F -> "°F"
+                        else -> "null"
+                    }
+                windUnit =
+                    when ((settingsUIState as SettingsUIState.Success).settingsData.windSpeedUnits) {
+                        WindSpeedUnits.KM -> "Kilometer per hour"
+                        WindSpeedUnits.MS -> "Meters per second"
+                        WindSpeedUnits.MPH -> "Miles per hour"
+                        else -> "null"
+                    }
             }
+
             else -> {}
         }
     }
@@ -79,33 +96,44 @@ internal fun SettingsContent(
     setTemperature: (TemperatureUnits) -> Unit,
     setWindSpeed: (WindSpeedUnits) -> Unit,
 ) {
-    when (settingsState) {
-        is SettingsUIState.Loading -> ShowLoadingText()
-        is SettingsUIState.Success -> {
-            Column(
-                modifier = modifier
-                    .fillMaxSize()
-            ) {
-                CustomTopBar(modifier = Modifier, text = "Settings",onBackPressed = { onBackPressed()})
-                SettingGroup(
-                    modifier = Modifier.padding(16.dp),
-                    groupName = "Units"
+    AnimatedContent(
+        targetState = settingsState,
+        transitionSpec = { fadeIn() togetherWith fadeOut() },
+        label = "settings content"
+    ) { state ->
+        when (state) {
+            is SettingsUIState.Loading -> ShowLoadingText()
+            is SettingsUIState.Success -> {
+                Column(
+                    modifier = modifier
+                        .fillMaxSize()
                 ) {
-                    TemperatureSection(
-                        title = "Temperature",
-                        tempUnitName = tempUnit,
-                        setTemperature = setTemperature
-                    )
-                    WindSpeedSection(
-                        title = "Wind Speed",
-                        windSpeedUnitName = windUnit,
-                        setWindSpeed = setWindSpeed
-                    )
-                }
-                SettingGroup(
-                    modifier = Modifier.padding(16.dp),
-                    groupName = "About") {
-                    About()
+                    CustomTopBar(
+                        modifier = Modifier,
+                        text = "Settings",
+                        onBackPressed = { onBackPressed() })
+                    SettingGroup(
+                        modifier = Modifier.padding(16.dp),
+                        groupName = "Units"
+                    ) {
+                        TemperatureSection(
+                            title = "Temperature",
+                            tempUnitName = tempUnit,
+                            setTemperature = setTemperature
+                        )
+                        WindSpeedSection(
+                            title = "Wind Speed",
+                            windSpeedUnitName = windUnit,
+                            setWindSpeed = setWindSpeed
+                        )
+                    }
+                    SettingsHorizontalDivider()
+                    SettingGroup(
+                        modifier = Modifier.padding(16.dp),
+                        groupName = "About"
+                    ) {
+                        About()
+                    }
                 }
             }
         }
@@ -113,18 +141,25 @@ internal fun SettingsContent(
 }
 
 @Composable
-private fun About() {
-    Column {
+fun SettingsHorizontalDivider() {
+    Divider(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f))
+}
+
+@Composable
+private fun About(modifier: Modifier = Modifier) {
+    Column(
+        modifier = Modifier.fillMaxWidth() then modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         Text(
             text = "A work in progress 🚧 Weather sample app.",
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = .5f),
-            fontSize = 12.sp,
+            fontSize = 14.sp,
         )
-        Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = "Weather Data from Openweathermap.org",
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = .5f),
-            fontSize = 12.sp,
+            fontSize = 14.sp,
         )
     }
 }
@@ -148,16 +183,5 @@ private fun SettingsPreview() {
                 setWindSpeed = {}
             )
         }
-    }
-}
-
-@Composable
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO)
-private fun MenuPreview() {
-    WeatherTheme() {
-        var expanded by remember {
-            mutableStateOf(true)
-        }
-        Text("empty preview")
     }
 }

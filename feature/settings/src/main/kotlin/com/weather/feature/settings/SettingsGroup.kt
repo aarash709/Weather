@@ -3,9 +3,9 @@ package com.weather.feature.settings
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -30,16 +30,16 @@ import com.weather.model.WindSpeedUnits
 fun SettingGroup(
     modifier: Modifier = Modifier,
     groupName: String,
-    content: @Composable () -> Unit,
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
             text = groupName,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = .5f),
-            fontSize = 12.sp
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = .75f),
+            fontSize = 14.sp
         )
         content()
     }
@@ -60,9 +60,18 @@ fun TemperatureSection(
             .clickable { expanded = true }
             .padding(vertical = 8.dp),
     ) {
-        Text(title, color = MaterialTheme.colorScheme.onBackground)
-        TemperatureMenu(
-            tempUnit = tempUnitName,
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(title, color = MaterialTheme.colorScheme.onBackground)
+            Text(
+                text = tempUnitName,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+            )
+        }
+        TemperatureDialogMenu(
             expanded = expanded,
             setTemperature = setTemperature,
             setExpanded = { expanded = it })
@@ -140,17 +149,12 @@ private fun WindSpeedMenu(
 }
 
 @Composable
-private fun TemperatureMenu(
-    tempUnit: String,
+private fun TemperatureDialogMenu(
     expanded: Boolean,
     setTemperature: (TemperatureUnits) -> Unit,
     setExpanded: (Boolean) -> Unit,
 ) {
     Column {
-        Text(
-            text = tempUnit,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-        )
         SettingDialog(
             modifier = Modifier
                 .windowInsetsPadding(WindowInsets(left = 100, right = 100)),
@@ -196,7 +200,7 @@ fun SettingItem(
     modifier: Modifier = Modifier,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.SpaceBetween,
     verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
-    content: @Composable RowScope.() -> Unit,
+    content: @Composable () -> Unit,
 ) {
     Row(
         modifier = modifier,
