@@ -3,6 +3,7 @@ package com.weather.feature.forecast
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.optics.copy
 import com.experiment.weather.core.common.extentions.convertToUserSettings
 import com.weather.core.repository.UserRepository
 import com.weather.core.repository.WeatherRepository
@@ -11,8 +12,10 @@ import com.weather.model.SavableForecastData
 import com.weather.model.SettingsData
 import com.weather.model.TemperatureUnits
 import com.weather.model.TemperatureUnits.C
+import com.weather.model.WeatherData
 import com.weather.model.WindSpeedUnits
 import com.weather.model.WindSpeedUnits.KM
+import com.weather.model.hourly
 import com.weather.sync.work.utils.SyncManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -23,6 +26,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
@@ -76,6 +80,18 @@ class ForecastViewModel @Inject constructor(
             .combine(getUserSettings()) { weather, userSettings ->
                 userSettings.setDefaultIfNull()
                 val newWeather = weather.convertToUserSettings(userSettings = userSettings)
+                val hourlyData = newWeather.hourly
+                val mutableHourly = newWeather.hourly.toMutableList()
+                val a =hourlyData.first { it.dt.toInt() + 1000 <= it.dt.toInt() }
+                hourlyData.forEachIndexed { index, hourly ->
+//                    if (hourly.dt.toInt() <= newWeather.current.sunset) {
+//                        val hourlyBeforeSunrise = hourlyData.elementAt(index).copy(dt = "Sunset")
+//                        mutableHourly.add(index, hourlyBeforeSunrise)
+//                    }
+                }
+                newWeather.copy {
+                    WeatherData.hourly set mutableHourly.toList()
+                }
                 SavableForecastData(
                     weather = newWeather,
                     userSettings = userSettings,
