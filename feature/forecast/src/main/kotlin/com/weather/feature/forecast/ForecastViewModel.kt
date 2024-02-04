@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
@@ -82,13 +81,13 @@ class ForecastViewModel @Inject constructor(
                 val newWeather = weather.convertToUserSettings(userSettings = userSettings)
                 val hourlyData = newWeather.hourly
                 val mutableHourly = newWeather.hourly.toMutableList()
-                val a =hourlyData.first { it.dt.toInt() + 1000 <= it.dt.toInt() }
-                hourlyData.forEachIndexed { index, hourly ->
-//                    if (hourly.dt.toInt() <= newWeather.current.sunset) {
+//                hourlyData.forEachIndexed { index, hourly ->
+//                    val date = SimpleDateFormat("HH:mm", Locale.getDefault())
+//                    if ((date.parse(hourly.dt)?.time ?: 1) /1000 <= newWeather.current.sunset) {
 //                        val hourlyBeforeSunrise = hourlyData.elementAt(index).copy(dt = "Sunset")
 //                        mutableHourly.add(index, hourlyBeforeSunrise)
 //                    }
-                }
+//                }
                 newWeather.copy {
                     WeatherData.hourly set mutableHourly.toList()
                 }
@@ -121,6 +120,7 @@ class ForecastViewModel @Inject constructor(
             .retry(2)
             .catch {
                 Timber.e("data state:${it.message}")
+                Timber.e("data state:${it.cause}")
             }
     }
 

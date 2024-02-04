@@ -110,7 +110,8 @@ data class Daily(
 data class Hourly(
     val clouds: Int,
     val dew_point: Double,
-    val dt: String,
+    val time: String,
+    val dt: Int,
     val feels_like: Double,
     val humidity: Int,
     val pop: Double,
@@ -131,7 +132,8 @@ data class Hourly(
             Hourly(
                 clouds = 0,
                 dew_point = 0.0,
-                dt = "",
+                time = "",
+                dt = 0,
                 feels_like = 0.0,
                 humidity = 0,
                 pop = 0.0,

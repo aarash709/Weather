@@ -48,7 +48,8 @@ data class OneCallHourlyEntity(
         return Hourly(
             clouds = clouds,
             dew_point = dew_point,
-            dt = dt.toString(),
+            time = dt.toString(),
+            dt = dt,
             feels_like = feels_like,
             humidity = humidity,
             pop = pop,
