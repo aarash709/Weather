@@ -6,7 +6,8 @@ val HourlyStaticData = listOf(
     Hourly(
         clouds = 0,
         dew_point = 0.0,
-        dt = "13:00",
+        time = "13:00",
+        dt = 0,
         feels_like = 0.0,
         humidity = 1,
         pop = 0.0,
@@ -25,7 +26,8 @@ val HourlyStaticData = listOf(
     Hourly(
         clouds = 0,
         dew_point = 0.0,
-        dt = "14:00",
+        time = "14:00",
+        dt = 0,
         feels_like = 0.0,
         humidity = 1,
         pop = 0.0,
@@ -44,7 +46,8 @@ val HourlyStaticData = listOf(
     Hourly(
         clouds = 0,
         dew_point = 0.0,
-        dt = "15:00",
+        time = "15:00",
+        dt = 0,
         feels_like = 0.0,
         humidity = 1,
         pop = 0.0,
@@ -63,7 +66,8 @@ val HourlyStaticData = listOf(
     Hourly(
         clouds = 0,
         dew_point = 0.0,
-        dt = "16:00",
+        time = "16:00",
+        dt = 0,
         feels_like = 0.0,
         humidity = 1,
         pop = 0.0,
@@ -82,7 +86,8 @@ val HourlyStaticData = listOf(
     Hourly(
         clouds = 0,
         dew_point = 0.0,
-        dt = "17:00",
+        time = "17:00",
+        dt = 0,
         feels_like = 0.0,
         humidity = 1,
         pop = 0.0,
@@ -100,7 +105,8 @@ val HourlyStaticData = listOf(
     ), Hourly(
         clouds = 0,
         dew_point = 0.0,
-        dt = "18:00",
+        time = "18:00",
+        dt = 0,
         feels_like = 0.0,
         humidity = 1,
         pop = 0.0,
@@ -118,7 +124,8 @@ val HourlyStaticData = listOf(
     ), Hourly(
         clouds = 0,
         dew_point = 0.0,
-        dt = "19:00",
+        time = "19:00",
+        dt = 0,
         feels_like = 0.0,
         humidity = 1,
         pop = 0.0,
@@ -136,7 +143,8 @@ val HourlyStaticData = listOf(
     ), Hourly(
         clouds = 0,
         dew_point = 0.0,
-        dt = "20:00",
+        time = "20:00",
+        dt = 0,
         feels_like = 0.0,
         humidity = 1,
         pop = 0.0,
@@ -154,7 +162,8 @@ val HourlyStaticData = listOf(
     ), Hourly(
         clouds = 0,
         dew_point = 0.0,
-        dt = "21:00",
+        time = "21:00",
+        dt = 0,
         feels_like = 0.0,
         humidity = 1,
         pop = 0.0,
@@ -172,7 +181,8 @@ val HourlyStaticData = listOf(
     ), Hourly(
         clouds = 0,
         dew_point = 0.0,
-        dt = "22:00",
+        time = "22:00",
+        dt = 0,
         feels_like = 0.0,
         humidity = 1,
         pop = 0.0,
@@ -190,7 +200,8 @@ val HourlyStaticData = listOf(
     ), Hourly(
         clouds = 0,
         dew_point = 0.0,
-        dt = "23:00",
+        time = "23:00",
+        dt = 0,
         feels_like = 0.0,
         humidity = 1,
         pop = 0.0,

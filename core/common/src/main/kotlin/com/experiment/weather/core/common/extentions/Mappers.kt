@@ -22,6 +22,7 @@ import com.weather.model.isFavorite
 import com.weather.model.locationName
 import com.weather.model.nightTemp
 import com.weather.model.temp
+import com.weather.model.time
 import com.weather.model.wind_speed
 import java.text.SimpleDateFormat
 import java.time.Duration
@@ -68,7 +69,7 @@ fun List<Hourly>.convertToUserSettings(
                     temperature
                 )
             }
-            Hourly.dt transform { hourlySeconds -> calculateUIHourlyTime(hourlySeconds.toLong()) }
+            Hourly.time transform { timeInSeconds -> calculateUIHourlyTime(timeInSeconds.toLong()) }
             Hourly.temp transform { it.convertToUserTemperature(temperature) }
             Hourly.wind_speed transform { it.convertToUserSpeed(windSpeed) }
         }

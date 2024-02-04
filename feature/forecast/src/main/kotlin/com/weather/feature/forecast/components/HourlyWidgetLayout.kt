@@ -66,7 +66,7 @@ fun HourlyWidgetWithGraph(
                     HourlyTemperatureGraph(data = hourly)
                 },
                 hourlyTimeStamps = {
-                    val timeStamp = hourly[it].dt
+                    val timeStamp = hourly[it].time
                     val icon = hourly[it].icon
                     val windSpeed = hourly[it].wind_speed.toString()
                     Column(
@@ -219,7 +219,7 @@ private fun HourlyCustomLayoutPreview() {
             graphHeight = 50.dp,
             hourlyGraph = { HourlyTemperatureGraph(data = HourlyStaticData) },
             hourlyTimeStamps = { index ->
-                val timeStamp = HourlyStaticData[index].dt
+                val timeStamp = HourlyStaticData[index].time
                 Column {
                     Icon(
                         imageVector = Icons.Default.PhotoLibrary,
