@@ -3,7 +3,6 @@ package com.weather.core.database.entities.onecall
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
 import com.weather.model.Hourly
 
 @Entity(
@@ -48,7 +47,9 @@ data class OneCallHourlyEntity(
         return Hourly(
             clouds = clouds,
             dew_point = dew_point,
-            dt = dt.toString(),
+            time = dt.toString(),
+            dt = dt,
+            sunriseSunset = "",
             feels_like = feels_like,
             humidity = humidity,
             pop = pop,

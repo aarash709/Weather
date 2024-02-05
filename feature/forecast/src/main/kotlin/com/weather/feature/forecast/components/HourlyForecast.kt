@@ -72,7 +72,7 @@ fun HourlyItem(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = item.dt)
+            Text(text = item.time)
         }
         AsyncImage(
             model = "https://openweathermap.org/img/wn/${item.icon}@2x.png",
