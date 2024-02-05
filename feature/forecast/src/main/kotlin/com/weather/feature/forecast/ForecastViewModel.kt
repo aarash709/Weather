@@ -8,6 +8,7 @@ import com.experiment.weather.core.common.extentions.convertToUserSettings
 import com.weather.core.repository.UserRepository
 import com.weather.core.repository.WeatherRepository
 import com.weather.model.Coordinate
+import com.weather.model.Hourly
 import com.weather.model.SavableForecastData
 import com.weather.model.SettingsData
 import com.weather.model.TemperatureUnits
@@ -31,6 +32,7 @@ import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.internal.notify
 import timber.log.Timber
 import java.time.Duration
 import java.time.Instant
@@ -79,20 +81,11 @@ class ForecastViewModel @Inject constructor(
             .combine(getUserSettings()) { weather, userSettings ->
                 userSettings.setDefaultIfNull()
                 val newWeather = weather.convertToUserSettings(userSettings = userSettings)
-                val hourlyData = newWeather.hourly
-                val mutableHourly = newWeather.hourly.toMutableList()
-//                hourlyData.forEachIndexed { index, hourly ->
-//                    val date = SimpleDateFormat("HH:mm", Locale.getDefault())
-//                    if ((date.parse(hourly.dt)?.time ?: 1) /1000 <= newWeather.current.sunset) {
-//                        val hourlyBeforeSunrise = hourlyData.elementAt(index).copy(dt = "Sunset")
-//                        mutableHourly.add(index, hourlyBeforeSunrise)
-//                    }
-//                }
-                newWeather.copy {
-                    WeatherData.hourly set mutableHourly.toList()
-                }
+                val hourly = newWeather.hourly
+                val current = newWeather.current
+                val hourlyData = calculateSunriseAndSunset(hourly, current.sunset, current.sunrise)
                 SavableForecastData(
-                    weather = newWeather,
+                    weather = newWeather.copy(hourly = hourlyData),
                     userSettings = userSettings,
                     showPlaceHolder = false
                 )
@@ -178,5 +171,26 @@ class ForecastViewModel @Inject constructor(
             sunsetDifference < dawnMinutesThreshold -> TimeOfDay.Dawn
             else -> TimeOfDay.Day
         }
+    }
+
+    private fun calculateSunriseAndSunset(
+        hourlyData: List<Hourly>,
+        sunrise: Int,
+        sunset: Int,
+    ): List<Hourly> {
+        val mutableHourly = hourlyData.toMutableList()
+        hourlyData.lastOrNull() { it.dt <= sunset }
+            ?.let { hourly ->
+                val index = hourlyData.indexOf(hourly)
+                val sunsetHourly = hourly.copy(time = "Sunset")
+                mutableHourly.add(index, sunsetHourly)
+            }
+        hourlyData.lastOrNull() { it.dt <= sunrise }
+            ?.let { hourly ->
+                val index = hourlyData.indexOf(hourly)
+                val sunsetHourly = hourly.copy(time = "Sunrise")
+                mutableHourly.add(index, sunsetHourly)
+            }
+        return mutableHourly.toList()
     }
 }
