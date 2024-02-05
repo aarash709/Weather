@@ -8,7 +8,7 @@ data class WeatherData(
     val current: Current,
     val daily: List<Daily>,
     val hourly: List<Hourly>,
-){
+) {
     companion object
 }
 
@@ -19,7 +19,7 @@ data class OneCallCoordinates(
     val lon: Double,
     val timezone: String,
     val timezone_offset: Int,
-){
+) {
     companion object
 }
 
@@ -39,7 +39,7 @@ data class Current(
     val wind_deg: Int,
     val wind_speed: Double,
     val weather: List<Weather>,
-){
+) {
     companion object
 }
 
@@ -112,6 +112,7 @@ data class Hourly(
     val dew_point: Double,
     val time: String,
     val dt: Int,
+    val sunriseSunset: String,
     val feels_like: Double,
     val humidity: Int,
     val pop: Double,
@@ -134,6 +135,7 @@ data class Hourly(
                 dew_point = 0.0,
                 time = "",
                 dt = 0,
+                sunriseSunset = "",
                 feels_like = 0.0,
                 humidity = 0,
                 pop = 0.0,
@@ -159,7 +161,7 @@ data class FeelsLike(
     val eve: Double,
     val morn: Double,
     val night: Double,
-){
+) {
     companion object
 }
 
@@ -171,7 +173,7 @@ data class Temp(
     val min: Double,
     val morn: Double,
     val night: Double,
-){
+) {
     companion object
 }
 

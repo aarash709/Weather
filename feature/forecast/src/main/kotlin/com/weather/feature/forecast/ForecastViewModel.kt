@@ -3,7 +3,6 @@ package com.weather.feature.forecast
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import arrow.optics.copy
 import com.experiment.weather.core.common.extentions.convertToUserSettings
 import com.weather.core.repository.UserRepository
 import com.weather.core.repository.WeatherRepository
@@ -13,10 +12,8 @@ import com.weather.model.SavableForecastData
 import com.weather.model.SettingsData
 import com.weather.model.TemperatureUnits
 import com.weather.model.TemperatureUnits.C
-import com.weather.model.WeatherData
 import com.weather.model.WindSpeedUnits
 import com.weather.model.WindSpeedUnits.KM
-import com.weather.model.hourly
 import com.weather.sync.work.utils.SyncManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -32,10 +29,12 @@ import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import okhttp3.internal.notify
 import timber.log.Timber
+import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.Instant
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 enum class TimeOfDay {
@@ -83,7 +82,11 @@ class ForecastViewModel @Inject constructor(
                 val newWeather = weather.convertToUserSettings(userSettings = userSettings)
                 val hourly = newWeather.hourly
                 val current = newWeather.current
-                val hourlyData = calculateSunriseAndSunset(hourly, current.sunset, current.sunrise)
+                val hourlyData = calculateSunriseAndSunset(
+                    hourlyData = hourly,
+                    sunrise = current.sunrise,
+                    sunset = current.sunset
+                )
                 SavableForecastData(
                     weather = newWeather.copy(hourly = hourlyData),
                     userSettings = userSettings,
@@ -179,16 +182,27 @@ class ForecastViewModel @Inject constructor(
         sunset: Int,
     ): List<Hourly> {
         val mutableHourly = hourlyData.toMutableList()
-        hourlyData.lastOrNull() { it.dt <= sunset }
+        val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
+        val formattedSunset = formatter.format(Date(sunset.toLong() * 1000))
+        val formattedSunrise = formatter.format(Date(sunrise.toLong() * 1000))
+        hourlyData.lastOrNull { it.dt <= sunset }
             ?.let { hourly ->
                 val index = hourlyData.indexOf(hourly)
-                val sunsetHourly = hourly.copy(time = "Sunset")
+                val sunsetHourly = hourly.copy(
+                    sunriseSunset = "Sunset",
+                    time = formattedSunset,
+                    dt = sunset
+                )
                 mutableHourly.add(index, sunsetHourly)
             }
-        hourlyData.lastOrNull() { it.dt <= sunrise }
+        hourlyData.lastOrNull { it.dt <= sunrise }
             ?.let { hourly ->
                 val index = hourlyData.indexOf(hourly)
-                val sunsetHourly = hourly.copy(time = "Sunrise")
+                val sunsetHourly = hourly.copy(
+                    sunriseSunset = "Sunrise",
+                    time = formattedSunrise,
+                    dt = sunrise
+                )
                 mutableHourly.add(index, sunsetHourly)
             }
         return mutableHourly.toList()

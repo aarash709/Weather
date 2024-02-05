@@ -4,7 +4,6 @@ import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.LayoutScopeMarker
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -44,19 +43,15 @@ import kotlin.math.roundToInt
 fun HourlyWidgetWithGraph(
     modifier: Modifier = Modifier,
     hourly: List<Hourly>,
-    speedUnit : String,
-    surfaceColor: Color = Color.White.copy(alpha = 0.15f)) {
+    speedUnit: String,
+    surfaceColor: Color = Color.White.copy(alpha = 0.15f),
+) {
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),
         color = surfaceColor,
     ) {
         Column(modifier = Modifier.padding(vertical = 16.dp)) {
-//            Text(
-//                text = "Hourly",
-//                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-//                color = LocalContentColor.current.copy(alpha = 0.5f)
-//            )
             HourlyGraphLayout(
                 modifier = Modifier
                     .horizontalScroll(rememberScrollState()),
@@ -66,7 +61,7 @@ fun HourlyWidgetWithGraph(
                     HourlyTemperatureGraph(data = hourly)
                 },
                 hourlyTimeStamps = {
-                    val timeStamp = hourly[it].time
+                    val time = hourly[it].time
                     val icon = hourly[it].icon
                     val windSpeed = hourly[it].wind_speed.toString()
                     Column(
@@ -80,12 +75,28 @@ fun HourlyWidgetWithGraph(
                             contentDescription = ""
                         )
                         Spacer(modifier = Modifier.height(16.dp))
-                        Text(text = "$windSpeed$speedUnit", fontSize = 12.sp, color = Color.White.copy(alpha = 0.5f))
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(text = timeStamp, fontSize = 12.sp, color = Color.White.copy(alpha = 0.5f))
+                        if (hourly[it].sunriseSunset.isNotEmpty()) {
+                            Text(
+                                text = hourly[it].sunriseSunset,
+                                fontSize = 10.sp,
+                                color = Color.White
+                            )
+                        } else {
+                            Text(
+                                text = "$windSpeed$speedUnit",
+                                fontSize = 10.sp,
+                                color = Color.White.copy(alpha = 0.5f)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = time,
+                            fontSize = 10.sp,
+                            color = Color.White.copy(alpha = 0.5f)
+                        )
                     }
-                },
-            )
+                })
         }
     }
 }
