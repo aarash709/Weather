@@ -34,7 +34,7 @@ ktor = "2.3.8"
 gradleSecret = "2.0.1"
 junit = "4.13.2"
 appcompat = "1.6.1"
-arrow = "1.2.0"
+arrow = "1.2.1"
 detekt = "1.23.5"
 kotlinter = "4.2.0"
 
