@@ -28,7 +28,6 @@ class WeatherRepositoryImpl @Inject constructor(
     override fun getAllWeatherLocations(): Flow<List<ManageLocationsData>> {
         return localWeather.getAllLocalWeatherData().map {
             it.map { data ->
-                Timber.e("Saved Locations:${data.oneCall.cityName}")
                 ManageLocationsData(
                     locationName = data.oneCall.cityName,
                     weatherIcon = data.current.icon,

@@ -16,12 +16,10 @@ class WeatherApplication : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
         Timber.plant(Timber.DebugTree())
-        Timber.e("this is a timber test in application class")
     }
 
     override val workManagerConfiguration: Configuration
         get() {
-            Timber.e("this is a timber custom config")
             return Configuration.Builder()
                 .setMinimumLoggingLevel(Log.ERROR)
                 .setWorkerFactory(customWorkerFactory)

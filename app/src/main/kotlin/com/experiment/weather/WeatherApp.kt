@@ -30,7 +30,7 @@ import kotlinx.coroutines.FlowPreview
 @ExperimentalAnimationApi
 @Composable
 fun WeatherApp(
-    hasInternet: Boolean,
+//    hasInternet: Boolean,
     isDatabaseEmpty: Boolean,
 ) {
     WeatherTheme {

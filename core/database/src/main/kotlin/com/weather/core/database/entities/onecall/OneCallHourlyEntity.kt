@@ -29,8 +29,6 @@ data class OneCallHourlyEntity(
     val temp: Double,
     val uvi: Double,
     val visibility: Int,
-//    @Embedded(prefix = "weather_")
-//    val weather: Weather,
     @ColumnInfo(name = "weather_id")
     val id: Int,
     @ColumnInfo(name = "weather_main")

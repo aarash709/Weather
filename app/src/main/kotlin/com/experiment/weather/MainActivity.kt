@@ -77,7 +77,7 @@ class MainActivity : ComponentActivity() {
                 )
             }
             WeatherApp(
-                hasInternet = hasInternet,
+//                hasInternet = hasInternet,
                 isDatabaseEmpty = isDatabaseEmpty
             )
         }

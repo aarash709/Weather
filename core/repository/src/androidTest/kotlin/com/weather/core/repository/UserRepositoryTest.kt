@@ -48,7 +48,7 @@ class UserRepositoryTest {
         localPreferences = LocalUserPreferences(dataStore)
         userRepo = UserRepositoryImpl(
             userPreferences = localPreferences,
-            IODispatcher = testDispatcher)
+            dispatcher = testDispatcher)
     }
 
     @Test

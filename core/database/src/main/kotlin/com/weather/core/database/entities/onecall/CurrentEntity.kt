@@ -32,14 +32,7 @@ data class CurrentEntity(
     val uvi: Double,
     val visibility: Int,
     val wind_deg: Int,
-//    val wind_gust: Double,
     val wind_speed: Double,
-//    /**
-//     * parent Id
-//     */
-//    val oneCallCityName: String? = null,
-//    @PrimaryKey
-//    val currentId: Int? = null
 ) {
     fun asDomainModel(weather: List<Weather>): Current {
         return Current(
@@ -55,7 +48,6 @@ data class CurrentEntity(
             uvi = uvi,
             visibility = visibility,
             wind_deg = wind_deg,
-//            wind_gust = wind_gust,
             wind_speed = wind_speed,
             weather = weather,
         )

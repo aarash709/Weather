@@ -15,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CustomIndicator(
     modifier: Modifier = Modifier,

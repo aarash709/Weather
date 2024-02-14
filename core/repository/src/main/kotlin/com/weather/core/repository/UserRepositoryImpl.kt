@@ -1,7 +1,7 @@
 package com.weather.core.repository
 
-import com.experiment.weather.core.common.extentions.Dispachers
-import com.experiment.weather.core.common.extentions.WeatherDidpatchers
+import com.experiment.weather.core.common.extentions.WeatherCoroutineDispatchers
+import com.experiment.weather.core.common.extentions.WeatherDispatchers
 import com.weather.core.datastore.LocalUserPreferences
 import com.weather.model.TemperatureUnits
 import com.weather.model.WindSpeedUnits
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
     private val userPreferences: LocalUserPreferences,
-    @Dispachers(WeatherDidpatchers.IO) private val IODispatcher: CoroutineDispatcher
+    @WeatherCoroutineDispatchers(WeatherDispatchers.IO) private val dispatcher: CoroutineDispatcher
 ) : UserRepository {
     override fun getFavoriteCityCoordinate(): Flow<String?> {
         return userPreferences.getFavoriteCity()
@@ -42,20 +42,20 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override suspend fun setFavoriteCityCoordinate(value: String) {
-        withContext(IODispatcher) {
+        withContext(dispatcher) {
             userPreferences.setFavoriteCity(value)
         }
     }
 
     override suspend fun setTemperatureUnitSetting(tempUnit: TemperatureUnits) {
-        withContext(IODispatcher) {
+        withContext(dispatcher) {
             val stringTempUnit = Json.encodeToString(tempUnit)
             userPreferences.setTemperatureUnit(stringTempUnit)
         }
     }
 
     override suspend fun setWindSpeedUnitSetting(windSpeedUnit: WindSpeedUnits) {
-        withContext(IODispatcher) {
+        withContext(dispatcher) {
             val stringWindSpeedUnit = Json.encodeToString(windSpeedUnit)
             userPreferences.setWindSpeedUnit(stringWindSpeedUnit)
         }

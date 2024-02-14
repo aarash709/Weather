@@ -106,7 +106,7 @@ private fun ForecastTitle(
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO)
 @Composable
 private fun Topbar() {
-    WeatherTheme() {
+    WeatherTheme {
         ForecastTopBar(
             cityName = "cityName",
             showPlaceholder = true,

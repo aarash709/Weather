@@ -14,34 +14,6 @@ fun NetworkOneCall.toEntity(cityName: String): OneCallEntity {
     )
 }
 
-fun NetworkMinutely.toMinutelyEntity(cityName: String): OneCallMinutelyEntity {
-    return OneCallMinutelyEntity(
-        dt = dt,
-        precipitation = precipitation,
-        cityName = cityName
-    )
-}
-
-fun NetworkCurrent.toCurrentEntity(cityName: String): CurrentEntity {
-    return CurrentEntity(
-        clouds = clouds,
-        icon = weather.first().icon,
-        dew_point = dew_point,
-        dt = dt,
-        feels_like = feels_like,
-        humidity = humidity,
-        pressure = pressure,
-        sunrise = sunrise,
-        sunset = sunset,
-        temp = temp,
-        uvi = uvi,
-        visibility = visibility,
-        wind_deg = wind_deg,
-        wind_speed = wind_speed,
-        cityName = cityName
-    )
-}
-
 fun NetworkWeather.toEntity(cityName: String): CurrentWeatherEntity {
     return CurrentWeatherEntity(
         cityName = cityName,

@@ -4,8 +4,8 @@ import javax.inject.Qualifier
 
 @Qualifier
 @Retention(AnnotationRetention.RUNTIME)
-annotation class Dispachers(val dispatcher : WeatherDidpatchers)
+annotation class WeatherCoroutineDispatchers(val dispatcher : WeatherDispatchers)
 
-enum class WeatherDidpatchers {
+enum class WeatherDispatchers {
     IO,
 }

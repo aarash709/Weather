@@ -150,9 +150,9 @@ fun SearchScreenContent(
         AnimatedContent(
             targetState = searchInputText.text.isEmpty(),
             label = "search content"
-        ) { isTextSesrchEmpty ->
+        ) { isTextSearchEmpty ->
             Column {
-                if (isTextSesrchEmpty) {
+                if (isTextSearchEmpty) {
                     Text(
                         text = "Popular Cities",
                         modifier = Modifier.padding(top = 24.dp),
@@ -170,8 +170,8 @@ fun SearchScreenContent(
                     SearchList(
                         searchList = searchUIState.geoSearchItems,
                         showPlaceholder = searchUIState.showPlaceholder,
-                        onSearchItemSelected = { SearchItem ->
-                            selectedSearchItem(SearchItem)
+                        onSearchItemSelected = { searchItem ->
+                            selectedSearchItem(searchItem)
                             //fetch and store weather based on selection
                             //maybe navigate to main page after successful IO
                         })
