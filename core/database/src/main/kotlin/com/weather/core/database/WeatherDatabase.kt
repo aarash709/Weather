@@ -23,7 +23,4 @@ abstract class WeatherDatabase : RoomDatabase() {
 
     abstract val dao: WeatherDao
 
-     companion object {
-
-     }
 }

@@ -1,7 +1,7 @@
 package com.weather.core.network
 
-import com.experiment.weather.core.common.extentions.Dispachers
-import com.experiment.weather.core.common.extentions.WeatherDidpatchers
+import com.experiment.weather.core.common.extentions.WeatherCoroutineDispatchers
+import com.experiment.weather.core.common.extentions.WeatherDispatchers
 import com.weather.core.network.model.weather.NetworkCurrent
 import com.weather.core.network.model.weather.NetworkOneCall
 import com.weather.model.Resource
@@ -10,7 +10,7 @@ import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
 class FakeWeatherRemoteDataSource(
-    @Dispachers(WeatherDidpatchers.IO) val dispatcher : CoroutineContext
+    @WeatherCoroutineDispatchers(WeatherDispatchers.IO) val dispatcher : CoroutineContext
 ) {
 
     suspend fun getRemoteData(): Resource<NetworkOneCall> {

@@ -1,7 +1,7 @@
 package com.experiment.weather.core.common.extentions.di
 
-import com.experiment.weather.core.common.extentions.Dispachers
-import com.experiment.weather.core.common.extentions.WeatherDidpatchers
+import com.experiment.weather.core.common.extentions.WeatherCoroutineDispatchers
+import com.experiment.weather.core.common.extentions.WeatherDispatchers
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,7 +14,7 @@ import kotlinx.coroutines.Dispatchers
 object DispatchersModule {
 
     @Provides
-    @Dispachers(WeatherDidpatchers.IO)
+    @WeatherCoroutineDispatchers(WeatherDispatchers.IO)
     fun provideIODispatcher(): CoroutineDispatcher = Dispatchers.IO
 }
 

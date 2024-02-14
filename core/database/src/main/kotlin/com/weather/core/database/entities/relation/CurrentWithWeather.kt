@@ -13,10 +13,4 @@ data class CurrentWithWeather(
         entityColumn = "cityName"
     )
     val weather : List<CurrentWeatherEntity>
-){
-//    fun asDomainModel(): List<Weather>{
-//        return listOf(
-//
-//        )
-//    }
-}
+)

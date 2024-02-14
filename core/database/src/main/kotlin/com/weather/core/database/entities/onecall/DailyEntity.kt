@@ -25,8 +25,6 @@ data class DailyEntity(
     val clouds: Int,
     val dew_point: Double,
     val dt: Long,
-//    @Embedded(prefix = "feels_")
-//    val feels_like: FeelsLike,
     val humidity: Int,
     val moon_phase: Double,
     val moonrise: Int,
@@ -37,8 +35,6 @@ data class DailyEntity(
     val sunset: Int,
     val dayTemp: Double,
     val nightTemp: Double,
-//    @Embedded(prefix ="weather_")
-//    val weather: Weather,
     @ColumnInfo(name = "weather_id")
     val id: Int,
     @ColumnInfo(name = "weather_main")
@@ -51,8 +47,6 @@ data class DailyEntity(
     val wind_deg: Int,
     val wind_gust: Double,
     val wind_speed: Double,
-//    @PrimaryKey(true)
-//    val dailyId: Int = 0,
 ) {
     fun asDomainModel(): Daily {
         return Daily(
