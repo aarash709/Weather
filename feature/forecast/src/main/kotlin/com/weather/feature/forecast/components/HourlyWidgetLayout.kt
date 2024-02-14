@@ -4,7 +4,6 @@ import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.LayoutScopeMarker
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,15 +17,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.ParentDataModifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,10 +29,6 @@ import coil.compose.AsyncImage
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
 import com.weather.model.Hourly
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.temporal.ChronoUnit
-import kotlin.math.roundToInt
 
 @Composable
 fun HourlyWidgetWithGraph(
@@ -107,11 +98,11 @@ fun HourlyGraphLayout(
     modifier: Modifier = Modifier,
     itemCount: Int,
     graphHeight: Dp,
-    hourlyGraph: @Composable HourlyGraphScope.() -> Unit,
+    hourlyGraph: @Composable () -> Unit,
     hourlyTimeStamps: @Composable (index: Int) -> Unit,
 ) {
     val timeStamps = @Composable { repeat(itemCount) { hourlyTimeStamps(it) } }
-    val tempGraph = @Composable { HourlyGraphScope.hourlyGraph() }
+    val tempGraph = @Composable { hourlyGraph() }
     Layout(
         contents = listOf(tempGraph, timeStamps),
         modifier = modifier
@@ -119,12 +110,11 @@ fun HourlyGraphLayout(
             (tempGraphMeasurable, timestampsMeasurable),
             constraints,
         ->
-        val topOffset = 16.dp.toPx().roundToInt()
         var totalWidth = 0
         var graphStartXOffset = 0 //x axis start offset placing
         var firstTimeStampHalfWidth = 0
         var lastTimeStampHalfWidth = 0
-        val timestampPlaceable = timestampsMeasurable.mapIndexed() { index, measurable ->
+        val timestampPlaceable = timestampsMeasurable.mapIndexed { index, measurable ->
             val timePlaceable = measurable.measure(constraints)
             if (index == 0) {
                 firstTimeStampHalfWidth = timePlaceable.width / 2
@@ -170,36 +160,36 @@ fun HourlyGraphLayout(
 
 
 //pass required data to the parent modifier to calculate graphs and drawScope
-@LayoutScopeMarker
-@Immutable
-object HourlyGraphScope {
-    @Stable
-    fun Modifier.timeGraphBar(
-        start: LocalDateTime,
-        end: LocalDateTime,
-        hours: List<Int>,
-    ): Modifier {
-        val earliestTime = LocalTime.of(hours.first(), 0)
-        val durationInHours = ChronoUnit.MINUTES.between(start, end) / 60f
-        val durationFromEarliestToStartInHours =
-            ChronoUnit.MINUTES.between(earliestTime, start.toLocalTime()) / 60f
-        // we add extra half of an hour as hour label text is visually centered in its slot
-        val offsetInHours = durationFromEarliestToStartInHours + 0.5f
-        return then(
-            HourlyGraphParentData(
-                duration = durationInHours / hours.size,
-                offset = offsetInHours / hours.size
-            )
-        )
-    }
-}
-
-class HourlyGraphParentData(
-    val duration: Float,
-    val offset: Float,
-) : ParentDataModifier {
-    override fun Density.modifyParentData(parentData: Any?) = this@HourlyGraphParentData
-}
+//@LayoutScopeMarker
+//@Immutable
+//object HourlyGraphScope {
+//    @Stable
+//    fun Modifier.timeGraphBar(
+//        start: LocalDateTime,
+//        end: LocalDateTime,
+//        hours: List<Int>,
+//    ): Modifier {
+//        val earliestTime = LocalTime.of(hours.first(), 0)
+//        val durationInHours = ChronoUnit.MINUTES.between(start, end) / 60f
+//        val durationFromEarliestToStartInHours =
+//            ChronoUnit.MINUTES.between(earliestTime, start.toLocalTime()) / 60f
+//        // we add extra half of an hour as hour label text is visually centered in its slot
+//        val offsetInHours = durationFromEarliestToStartInHours + 0.5f
+//        return then(
+//            HourlyGraphParentData(
+//                duration = durationInHours / hours.size,
+//                offset = offsetInHours / hours.size
+//            )
+//        )
+//    }
+//}
+//
+//class HourlyGraphParentData(
+//    val duration: Float,
+//    val offset: Float,
+//) : ParentDataModifier {
+//    override fun Density.modifyParentData(parentData: Any?) = this@HourlyGraphParentData
+//}
 //
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
@@ -207,7 +197,6 @@ class HourlyGraphParentData(
 private fun HourlyWidgetPreview() {
     WeatherTheme {
 //        preview wont size correctly when using 'Asyncimage' composable
-        val scrollState = rememberScrollState()
         HourlyWidgetWithGraph(
             modifier = Modifier,
             HourlyStaticData,
@@ -220,7 +209,6 @@ private fun HourlyWidgetPreview() {
 @Composable
 private fun HourlyCustomLayoutPreview() {
     WeatherTheme {
-        val scrollState = rememberScrollState()
         HourlyGraphLayout(
             modifier = Modifier
 //                .fillMaxWidth()

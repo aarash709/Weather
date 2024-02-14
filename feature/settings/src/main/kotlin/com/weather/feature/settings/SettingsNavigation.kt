@@ -12,7 +12,6 @@ fun NavController.toSettings(navOptions: NavOptions? = null) {
     navigate(SETTINGS_ROUTE, navOptions)
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.settingsScreen(onBackPress: () -> Unit) {
     composable(
         SETTINGS_ROUTE,

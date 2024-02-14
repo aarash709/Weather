@@ -48,10 +48,10 @@ class ForecastViewModel @Inject constructor(
     private val syncStatus: SyncManager,
     private val weatherRepository: WeatherRepository,
     private val userRepository: UserRepository,
-    savedStateHandle: SavedStateHandle,
+//    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val cityName = savedStateHandle.get<String>("cityName").orEmpty()
+//    private val cityName = savedStateHandle.get<String>("cityName").orEmpty()
     private val _timeOfDay = MutableStateFlow(TimeOfDay.Day)
     val timeOfDay = _timeOfDay
     internal var isSyncing = syncStatus.isSyncing
@@ -68,7 +68,6 @@ class ForecastViewModel @Inject constructor(
     private fun getWeatherData(): Flow<SavableForecastData> {
         return weatherRepository.getAllForecastWeatherData()
             .combine(getFavoriteCityCoordinate()) { allWeather, favoriteCityName ->
-                Timber.e("cityName: $favoriteCityName")
                 if (favoriteCityName.isNullOrBlank() ||
                     allWeather.all { it.coordinates.name != favoriteCityName }
                 )
@@ -115,8 +114,7 @@ class ForecastViewModel @Inject constructor(
             }
             .retry(2)
             .catch {
-                Timber.e("data state:${it.message}")
-                Timber.e("data state:${it.cause}")
+                Timber.e("data error:${it.message}")
             }
     }
 

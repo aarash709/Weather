@@ -171,7 +171,7 @@ fun WeatherForecastScreen(
         })
     Column(
         modifier = Modifier
-            .pullRefresh(refreshState)
+            .pullRefresh(refreshState) then modifier
     )
     {
         CompositionLocalProvider(LocalContentColor provides Color.White) {

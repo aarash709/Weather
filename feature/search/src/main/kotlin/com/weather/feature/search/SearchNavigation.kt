@@ -19,7 +19,6 @@ fun NavController.toSearchScreen(navOptions: NavOptions? = null) {
     navigate(searchRoute, navOptions)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalCoroutinesApi
 @ExperimentalAnimationApi
 @FlowPreview

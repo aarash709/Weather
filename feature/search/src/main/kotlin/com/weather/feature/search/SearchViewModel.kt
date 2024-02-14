@@ -28,7 +28,7 @@ class SearchViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _weatherPreview = MutableSharedFlow<WeatherData>()
-    val weatherPreview: SharedFlow<WeatherData> = _weatherPreview.asSharedFlow()
+    val weatherPreview: SharedFlow<WeatherData> = _weatherPreview.asSharedFlow() // use to show a preview to the user while searching
 
     private val _searchQuery = MutableStateFlow("")
     private val searchQuery = _searchQuery.asStateFlow()
@@ -79,10 +79,4 @@ class SearchViewModel @Inject constructor(
             syncStatus.syncWithCoordinate(coordinate)
         }
     }
-}
-
-sealed interface SearchUIState {
-    data class Success(val data: List<GeoSearchItem>) : SearchUIState
-    object Error : SearchUIState
-    object Loading : SearchUIState
 }

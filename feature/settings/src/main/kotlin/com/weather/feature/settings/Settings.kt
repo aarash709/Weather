@@ -168,7 +168,7 @@ private fun About(modifier: Modifier = Modifier) {
 @Composable
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 private fun SettingsPreview() {
-    WeatherTheme() {
+    WeatherTheme {
         val temp = TemperatureUnits.F
         val wind = WindSpeedUnits.KM
         Surface(color = MaterialTheme.colorScheme.background) {

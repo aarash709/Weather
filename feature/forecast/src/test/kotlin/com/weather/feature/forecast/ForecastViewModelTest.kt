@@ -41,9 +41,9 @@ class ForecastViewModelTest {
             syncStatus = fakeSyncManager,
             weatherRepository = fakeWeatherRepository,
             userRepository = fakeUserRepository,
-            savedStateHandle = SavedStateHandle().apply {
-                set("cityKey", "Tehran")
-            }
+//            savedStateHandle = SavedStateHandle().apply {
+//                set("cityKey", "Tehran")
+//            }
         )
     }
 

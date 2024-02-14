@@ -137,7 +137,7 @@ fun ManageLocations(
     var isAllSelected by rememberSaveable {
         mutableStateOf(false)
     }
-    var itemsToDelete by remember() {
+    var itemsToDelete by remember {
         mutableStateOf(listOf<String>())
     }
     var showSearchSheet by remember {
@@ -320,9 +320,9 @@ fun ManageLocations(
                                     data = locationData,
                                     inSelectionMode = inSelectionMode,
                                     selected = selected,
-                                    onItemSelected = { coordinate ->
-                                        onItemSelected(coordinate)
-                                    }
+//                                    onItemSelected = { coordinate ->
+//                                        onItemSelected(coordinate)
+//                                    }
                                 )
                             }
                         }
@@ -389,7 +389,7 @@ fun SavedLocationItem(
     data: ManageLocationsData,
     inSelectionMode: Boolean,
     selected: Boolean,
-    onItemSelected: (Coordinate) -> Unit,
+//    onItemSelected: (Coordinate) -> Unit,
 ) {
     val transition = updateTransition(targetState = inSelectionMode, label = "selection mode")
     val itemHorizontalPadding by transition.animateDp(label = "item padding") { inEditMode ->
@@ -555,7 +555,6 @@ fun CityItemPreview() {
                 humidity = "46",
                 feelsLike = "1"
             ),
-            onItemSelected = {},
             inSelectionMode = true,
             selected = false
         )
