@@ -13,9 +13,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -86,6 +88,7 @@ fun Settings(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SettingsContent(
     modifier: Modifier = Modifier,
@@ -96,6 +99,7 @@ internal fun SettingsContent(
     setTemperature: (TemperatureUnits) -> Unit,
     setWindSpeed: (WindSpeedUnits) -> Unit,
 ) {
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     AnimatedContent(
         targetState = settingsState,
         transitionSpec = { fadeIn() togetherWith fadeOut() },
@@ -111,6 +115,7 @@ internal fun SettingsContent(
                     CustomTopBar(
                         modifier = Modifier,
                         text = "Settings",
+                        scrollBehavior = scrollBehavior,
                         onBackPressed = { onBackPressed() })
                     SettingGroup(
                         modifier = Modifier.padding(16.dp),
