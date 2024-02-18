@@ -50,6 +50,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -145,6 +146,7 @@ fun ManageLocations(
     }
     val searchSheetSate = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     LaunchedEffect(key1 = isAllSelected) {
         if (isAllSelected) {
             selectedCities += locationsList.map { it.locationName }
@@ -202,7 +204,8 @@ fun ManageLocations(
                             contentDescription = "Select all button"
                         )
                     }
-                }
+                },
+                scrollBehavior = scrollBehavior
             )
         },
         bottomBar = {
@@ -411,7 +414,7 @@ fun SavedLocationItem(
             AnimatedVisibility(
                 visible = inSelectionMode,
                 modifier = Modifier,
-                enter = fadeIn(animationSpec = tween(25))+ expandHorizontally(),
+                enter = fadeIn(animationSpec = tween(25)) + expandHorizontally(),
                 exit = fadeOut(animationSpec = tween(25)) + shrinkHorizontally(),
                 label = "selection button"
             ) {
@@ -426,62 +429,62 @@ fun SavedLocationItem(
                         MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
                 )
             }
-                Column(
-                    modifier = Modifier.weight(1f) ,
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = data.locationName,
-                            fontSize = 18.sp
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        if (isFavorite) {
-                            Icon(
-                                imageVector = Icons.Default.Star,
-                                modifier = Modifier.size(20.dp),
-                                tint = Color.Yellow,
-                                contentDescription = "selected icon star"
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.Start
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = data.locationName,
+                        fontSize = 18.sp
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    if (isFavorite) {
                         Icon(
-                            modifier = Modifier.size(14.dp),
-                            imageVector = Icons.Outlined.WaterDrop,
-                            contentDescription = "Humidity Icon"
-                        )
-                        Text(
-                            text = "${data.humidity}%",
-                            fontSize = 12.sp
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Text(
-                            text = "Real Feel: ${
-                                data.feelsLike
-                            }°",
-                            fontSize = 12.sp
+                            imageVector = Icons.Default.Star,
+                            modifier = Modifier.size(20.dp),
+                            tint = Color.Yellow,
+                            contentDescription = "selected icon star"
                         )
                     }
                 }
-                Row(
-                    modifier = Modifier.padding(horizontal = itemHorizontalPadding),
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    AsyncImage(
-                        model = "https://openweathermap.org/img/wn/${data.weatherIcon}@2x.png",
-                        modifier = Modifier,
-                        contentDescription = "weather icon"
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        modifier = Modifier.size(14.dp),
+                        imageVector = Icons.Outlined.WaterDrop,
+                        contentDescription = "Humidity Icon"
                     )
                     Text(
-                        text = "${data.currentTemp}°",
-                        modifier = Modifier.width(60.dp),
-                        textAlign = TextAlign.End,
-                        fontSize = 28.sp
+                        text = "${data.humidity}%",
+                        fontSize = 12.sp
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Text(
+                        text = "Real Feel: ${
+                            data.feelsLike
+                        }°",
+                        fontSize = 12.sp
                     )
                 }
+            }
+            Row(
+                modifier = Modifier.padding(horizontal = itemHorizontalPadding),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AsyncImage(
+                    model = "https://openweathermap.org/img/wn/${data.weatherIcon}@2x.png",
+                    modifier = Modifier,
+                    contentDescription = "weather icon"
+                )
+                Text(
+                    text = "${data.currentTemp}°",
+                    modifier = Modifier.width(60.dp),
+                    textAlign = TextAlign.End,
+                    fontSize = 28.sp
+                )
+            }
         }
     }
 }
@@ -522,14 +525,6 @@ fun ManageLocationsPreview() {
                 onDeleteItem = {},
                 onSetFavoriteItem = {})
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TopBarPreview() {
-    WeatherTheme {
-        CustomTopBar(text = "text", onBackPressed = {})
     }
 }
 

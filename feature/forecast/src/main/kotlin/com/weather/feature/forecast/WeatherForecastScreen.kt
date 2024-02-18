@@ -176,8 +176,6 @@ fun WeatherForecastScreen(
     {
         CompositionLocalProvider(LocalContentColor provides Color.White) {
             ForecastTopBar(
-                cityName = weatherUIState.weather.coordinates.name,
-                showPlaceholder = weatherUIState.showPlaceHolder,
                 onNavigateToManageLocations = { onNavigateToManageLocations() },
                 onNavigateToSettings = { onNavigateToSettings() })
             Box(
