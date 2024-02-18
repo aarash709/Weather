@@ -51,14 +51,14 @@ fun ForecastTopBar(
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = "Search Icon",
-                    tint = Color.LightGray
+                    tint = Color.White
                 )
             }
             IconButton(onClick = { onNavigateToSettings() }) {
                 Icon(
                     imageVector = Icons.Default.Segment,
                     contentDescription = "Location Pick Icon",
-                    tint = Color.LightGray
+                    tint = Color.White
                 )
             }
         },
