@@ -4,9 +4,11 @@ import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Segment
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -31,33 +33,32 @@ import com.weather.core.design.theme.WeatherTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ForecastTopBar(
-    cityName: String,
-    showPlaceholder: Boolean,
     onNavigateToManageLocations: () -> Unit,
     onNavigateToSettings: () -> Unit,
 ) {
     CenterAlignedTopAppBar(
         title = {
-            ForecastTitle(
-                cityName = cityName,
-                showPlaceholder = showPlaceholder
-            )
+//            ForecastTitle(
+//                cityName = cityName,
+//                showPlaceholder = showPlaceholder
+//            )
         },
         navigationIcon = {
+//
+        },
+        actions = {
             IconButton(onClick = { onNavigateToManageLocations() }) {
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = "Search Icon",
-                    tint = Color.White
+                    tint = Color.LightGray
                 )
             }
-        },
-        actions = {
             IconButton(onClick = { onNavigateToSettings() }) {
                 Icon(
-                    imageVector = Icons.Default.Settings,
+                    imageVector = Icons.Default.Segment,
                     contentDescription = "Location Pick Icon",
-                    tint = Color.White
+                    tint = Color.LightGray
                 )
             }
         },
@@ -108,8 +109,6 @@ private fun ForecastTitle(
 private fun Topbar() {
     WeatherTheme {
         ForecastTopBar(
-            cityName = "cityName",
-            showPlaceholder = true,
             onNavigateToManageLocations = { },
             onNavigateToSettings = { }
         )
