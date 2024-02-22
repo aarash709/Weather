@@ -1,12 +1,14 @@
 # Weather Sample
 
-Work in progress [🚧] sample android weather app written entirely in Kotlin and jetpack compose. The app is fully functional and following offline first best practices. This is not a production ready app[⚠️]. Contributions are welcomed🫡.
+Work in progress [🚧] sample android weather app written entirely in Kotlin and jetpack compose. The app is fully functional and following offline first best practices. This is not and will not be a production ready app[⚠️]. Contributions are welcomed🫡.
 
 ## Roadmap
 
-* [x] Redesign Forecast page
-* [x] Add background to Forecast page
+* [ ] Add animated shader for weather conditions(similar to miUI and hyperOS app)
+* [ ] Polish design inspired by hyperOS weather app
 * [ ] Data Sync strategy
+* [ ] Remove search bottom sheet
+* [x] Add background to Forecast page
 * [x] Test module
 * [x] Add testing for core layer and feature modules
 
