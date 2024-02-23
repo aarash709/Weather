@@ -47,7 +47,7 @@ fun WeatherNavHost(
             onBackPressed = {
                 navController.popBackStack()
             },
-            onItemSelected = { cityName ->
+            onItemSelected = { _ ->
                 navController.navigate(
                     route = forecastRoute,
                     navOptions = navOptions {
@@ -59,7 +59,8 @@ fun WeatherNavHost(
                             }
                         )
                     })
-            }
+            },
+            onNavigateToSearch = { navController.toSearchScreen() }
         )
         searchScreen(onSearchItemSelected = {
             navController.toManageLocations(navOptions = navOptions {
