@@ -39,7 +39,7 @@ fun Current.convertToUserSettings(
     return copy {
         Current.dew_point transform { it.convertToUserTemperature(temperature) }
         Current.feels_like transform { it.convertToUserTemperature(temperature) }
-        Current.temp transform { it.convertToUserTemperature(temperature) }
+        Current.currentTemp transform { it.convertToUserTemperature(temperature) }
         Current.wind_speed transform { it.convertToUserSpeed(windSpeed) }
     }
 
