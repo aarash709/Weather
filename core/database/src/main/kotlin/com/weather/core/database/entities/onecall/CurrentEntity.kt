@@ -44,7 +44,7 @@ data class CurrentEntity(
             pressure = pressure,
             sunrise = sunrise,
             sunset = sunset,
-            temp = temp,
+            currentTemp = temp,
             uvi = uvi,
             visibility = visibility,
             wind_deg = wind_deg,

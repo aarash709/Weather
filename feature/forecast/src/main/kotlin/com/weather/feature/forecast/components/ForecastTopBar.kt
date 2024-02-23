@@ -6,10 +6,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Segment
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.sharp.Add
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -22,8 +25,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.weather.core.design.components.PlaceholderHighlight
 import com.weather.core.design.components.shimmer
@@ -49,14 +54,14 @@ fun ForecastTopBar(
         actions = {
             IconButton(onClick = { onNavigateToManageLocations() }) {
                 Icon(
-                    imageVector = Icons.Default.Search,
+                    imageVector = Icons.Sharp.Add,
                     contentDescription = "Search Icon",
                     tint = Color.White
                 )
             }
             IconButton(onClick = { onNavigateToSettings() }) {
                 Icon(
-                    imageVector = Icons.Default.Segment,
+                    imageVector = Icons.Default.MoreVert,
                     contentDescription = "Location Pick Icon",
                     tint = Color.White
                 )

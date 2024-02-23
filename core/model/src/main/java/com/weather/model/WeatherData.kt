@@ -33,7 +33,7 @@ data class Current(
     val pressure: Int,
     val sunrise: Int,
     val sunset: Int,
-    val temp: Double,
+    val currentTemp: Double,
     val uvi: Double,
     val visibility: Int,
     val wind_deg: Int,

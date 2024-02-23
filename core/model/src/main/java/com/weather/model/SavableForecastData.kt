@@ -20,7 +20,7 @@ data class SavableForecastData(
                     pressure = 0,
                     sunrise = 0,
                     sunset = 0,
-                    temp = 0.0,
+                    currentTemp = 0.0,
                     uvi = 0.0,
                     visibility = 0,
                     wind_deg = 0,
