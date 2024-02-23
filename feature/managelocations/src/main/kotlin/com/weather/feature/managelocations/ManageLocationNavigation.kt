@@ -25,6 +25,7 @@ fun NavController.toManageLocations(navOptions: NavOptions? = null) {
 fun NavGraphBuilder.manageLocationsScreen(
     onBackPressed: () -> Unit,
     onItemSelected: (String) -> Unit,
+    onNavigateToSearch: () -> Unit,
 ) {
     composable(
         route = manageLocationsRoute,
@@ -49,7 +50,8 @@ fun NavGraphBuilder.manageLocationsScreen(
     ) {
         ManageLocations(
             onBackPressed = { onBackPressed() },
-            onItemSelected = { onItemSelected(it) }
+            onItemSelected = { onItemSelected(it) },
+            onNavigateToSearch = { onNavigateToSearch() }
         )
     }
 }

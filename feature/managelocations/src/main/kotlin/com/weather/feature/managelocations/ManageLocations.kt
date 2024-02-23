@@ -46,19 +46,16 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -78,12 +75,8 @@ import com.weather.core.design.components.CustomTopBar
 import com.weather.core.design.components.ShowLoadingText
 import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
-import com.weather.feature.search.SearchScreen
 import com.weather.model.Coordinate
 import com.weather.model.ManageLocationsData
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.launch
 
 @ExperimentalFoundationApi
 @Composable
@@ -91,6 +84,7 @@ fun ManageLocations(
     viewModel: ManageLocationsViewModel = hiltViewModel(),
     onBackPressed: () -> Unit,
     onItemSelected: (String) -> Unit,
+    onNavigateToSearch: () -> Unit,
 ) {
     //stateful
     val dataState by viewModel.locationsState.collectAsStateWithLifecycle()
@@ -107,14 +101,13 @@ fun ManageLocations(
             },
             onSetFavoriteItem = { favoriteCity ->
                 viewModel.saveFavoriteCityCoordinate(cityName = favoriteCity, context = context)
-            }
+            },
+            onNavigateToSearch = { onNavigateToSearch() }
         )
     }
 }
 
 @OptIn(
-    ExperimentalCoroutinesApi::class,
-    FlowPreview::class,
     ExperimentalFoundationApi::class,
     ExperimentalMaterial3Api::class
 )
@@ -125,6 +118,7 @@ fun ManageLocations(
     onItemSelected: (Coordinate) -> Unit,
     onDeleteItem: (List<String>) -> Unit,
     onSetFavoriteItem: (String) -> Unit,
+    onNavigateToSearch: () -> Unit,
 ) {
     var selectedCities by rememberSaveable {
         mutableStateOf(emptySet<String>())
@@ -141,11 +135,6 @@ fun ManageLocations(
     var itemsToDelete by remember {
         mutableStateOf(listOf<String>())
     }
-    var showSearchSheet by remember {
-        mutableStateOf(false)
-    }
-    val searchSheetSate = rememberModalBottomSheetState()
-    val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     LaunchedEffect(key1 = isAllSelected) {
         if (isAllSelected) {
@@ -242,19 +231,6 @@ fun ManageLocations(
             }
         }
     ) { padding ->
-
-        if (showSearchSheet) {
-            ModalBottomSheet(
-                onDismissRequest = { showSearchSheet = false },
-                sheetState = searchSheetSate,
-                tonalElevation = 0.dp
-            ) {
-                SearchScreen(shouldRequestFocus = searchSheetSate.hasExpandedState) {
-                    scope.launch { searchSheetSate.hide() }
-                        .invokeOnCompletion { showSearchSheet = false }
-                }
-            }
-        }
         when (dataState) {
             is LocationsUIState.Loading -> ShowLoadingText()
             is LocationsUIState.Success -> {
@@ -269,7 +245,7 @@ fun ManageLocations(
                 ) {
                     Spacer(modifier = Modifier.height(16.dp))
                     SearchBarCard(onClick = {
-                        showSearchSheet = true
+                        onNavigateToSearch()
                     })
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -523,7 +499,8 @@ fun ManageLocationsPreview() {
                 onBackPressed = {},
                 onItemSelected = {},
                 onDeleteItem = {},
-                onSetFavoriteItem = {})
+                onSetFavoriteItem = {},
+                onNavigateToSearch = {})
         }
     }
 }
