@@ -57,15 +57,13 @@ fun HourlyWidgetWithGraph(
                     val windSpeed = hourly[it].wind_speed.toString()
                     Column(
                         modifier = Modifier
-                            .width(80.dp)
-                            .padding(horizontal = 0.dp),
+                            .width(80.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         AsyncImage(
                             model = "https://openweathermap.org/img/wn/${icon}@2x.png",
                             contentDescription = ""
                         )
-                        Spacer(modifier = Modifier.height(16.dp))
                         if (hourly[it].sunriseSunset.isNotEmpty()) {
                             Text(
                                 text = hourly[it].sunriseSunset,
@@ -75,16 +73,14 @@ fun HourlyWidgetWithGraph(
                         } else {
                             Text(
                                 text = "$windSpeed$speedUnit",
-                                fontSize = 10.sp,
-                                color = Color.White.copy(alpha = 0.5f)
+                                fontSize = 12.sp,
+                                color = Color.White.copy(alpha = 0.7f)
                             )
                         }
-
-                        Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = time,
-                            fontSize = 10.sp,
-                            color = Color.White.copy(alpha = 0.5f)
+                            fontSize = 12.sp,
+                            color = Color.White.copy(alpha = 0.7f)
                         )
                     }
                 })
