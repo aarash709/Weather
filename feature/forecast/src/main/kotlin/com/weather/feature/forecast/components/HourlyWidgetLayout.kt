@@ -3,15 +3,19 @@ package com.weather.feature.forecast.components
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -19,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,6 +48,33 @@ fun HourlyWidgetWithGraph(
         color = surfaceColor,
     ) {
         Column(modifier = Modifier.padding(vertical = 16.dp)) {
+            Row(
+                modifier = Modifier
+                    .padding(start = 16.dp, bottom = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .size(15.dp)
+                        .background(Color.White.copy(alpha = 0.5f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.AccessTime,
+                        modifier = Modifier.padding(3.dp),
+                        tint = Color.Blue.copy(alpha = 0.4f),
+                        contentDescription = null
+                    )
+                }
+                Text(
+                    text = "Hourly forecast",
+                    modifier = Modifier,
+                    fontSize = 14.sp,
+                    color = Color.White.copy(alpha = 0.5f)
+                )
+            }
             HourlyGraphLayout(
                 modifier = Modifier
                     .horizontalScroll(rememberScrollState()),
@@ -57,33 +89,29 @@ fun HourlyWidgetWithGraph(
                     val windSpeed = hourly[it].wind_speed.toString()
                     Column(
                         modifier = Modifier
-                            .width(80.dp)
-                            .padding(horizontal = 0.dp),
+                            .width(80.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         AsyncImage(
                             model = "https://openweathermap.org/img/wn/${icon}@2x.png",
                             contentDescription = ""
                         )
-                        Spacer(modifier = Modifier.height(16.dp))
                         if (hourly[it].sunriseSunset.isNotEmpty()) {
                             Text(
                                 text = hourly[it].sunriseSunset,
-                                fontSize = 10.sp,
+                                fontSize = 12.sp,
                                 color = Color.White
                             )
                         } else {
                             Text(
                                 text = "$windSpeed$speedUnit",
-                                fontSize = 10.sp,
+                                fontSize = 12.sp,
                                 color = Color.White.copy(alpha = 0.5f)
                             )
                         }
-
-                        Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = time,
-                            fontSize = 10.sp,
+                            fontSize = 12.sp,
                             color = Color.White.copy(alpha = 0.5f)
                         )
                     }
