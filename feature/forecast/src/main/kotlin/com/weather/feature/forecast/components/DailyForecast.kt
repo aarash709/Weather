@@ -2,18 +2,33 @@ package com.weather.feature.forecast.components
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowRight
+import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,14 +51,72 @@ fun Daily(
         color = surfaceColor,
     ) {
         Column(
-            modifier = Modifier.padding(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            dailyList.forEach { daily ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(18.dp)
+                            .background(Color.White.copy(alpha = 0.5f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.CalendarMonth,
+                            modifier = Modifier.padding(3.dp),
+                            tint = Color.Blue.copy(alpha = 0.4f),
+                            contentDescription = null
+                        )
+                    }
+                    Text(
+                        text = "5-Day forecast",
+                        fontSize = 14.sp,
+                        color = Color.White.copy(alpha = 0.5f)
+                    )
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "More details",
+                        fontSize = 14.sp,
+                        color = Color.White.copy(alpha = 0.5f)
+                    )
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.ArrowRight,
+                        modifier = Modifier.padding(3.dp),
+                        tint = Color.White.copy(alpha = 0.5f),
+                        contentDescription = null
+                    )
+                }
+            }
+            dailyList.forEachIndexed { index, daily ->
                 DailyItem(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp), daily
+                )
+                if (index != dailyList.lastIndex) {
+                    HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
+                }
+            }
+            Button(
+                onClick = { /*TODO navigate to 5 day forecast*/ },
+                colors = ButtonDefaults
+                    .buttonColors(containerColor = Color.White.copy(alpha = 0.1f))
+            ) {
+                Text(
+                    text = "5-day forecast",
+                    modifier = Modifier
+                        .padding(horizontal = 32.dp)
                 )
             }
         }
@@ -58,8 +131,8 @@ fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview) {
     ) {
         Text(
             text = daily.time, modifier = Modifier
-                .align(Alignment.CenterVertically)
                 .weight(1f)
+                .align(Alignment.CenterVertically)
         )
         AsyncImage(
             model = "https://openweathermap.org/img/wn/${daily.icon}@2x.png",
@@ -68,21 +141,41 @@ fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview) {
         )
         Row(
             modifier = Modifier
-                .weight(1.5f),
+                .padding(start = 16.dp)
+                .weight(1f),
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = "${daily.tempDay.toFloat().roundToInt()}",
+                modifier = Modifier.weight(1.0f),
+                textAlign = TextAlign.Center,
                 fontSize = 14.sp,
             )
-            Text(
-                text = " / ",
-                fontSize = 14.sp,
-                color = Color.White.copy(alpha = 0.25f)
-            )
+//            Text(
+//                text = " / ",
+//                fontSize = 14.sp,
+//                color = Color.White.copy(alpha = 0.25f)
+//            )
+            //experimental temp bars for daily views
+            Box(
+                modifier = Modifier
+                    .width(50.dp)
+                    .height(6.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color.Black.copy(alpha = 0.2f)),
+            ) {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(color = Color.Red)
+                )
+            }
             Text(
                 text = "${daily.tempNight.toFloat().roundToInt()}°",
+                modifier = Modifier.weight(1.0f),
+                textAlign = TextAlign.Right,
                 fontSize = 14.sp,
             )
         }
