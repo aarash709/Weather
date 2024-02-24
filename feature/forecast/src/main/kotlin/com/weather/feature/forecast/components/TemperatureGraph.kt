@@ -16,10 +16,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
 import com.weather.model.Hourly
 import kotlin.math.roundToInt
@@ -54,11 +56,20 @@ fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
                     val xPerIndex = x * index
                     val controlPoints1 = Offset(xPerIndex.minus(x / 2), previousTemp)
                     val controlPoints2 = Offset(xPerIndex.minus(x / 2), y)
-                    drawText(
-                        textMeasurer.measure("${temp.roundToInt()}°"),
-                        color = textColor,
-                        topLeft = Offset(xPerIndex - 15, y - 70)
+                    val textLayoutResult = textMeasurer.measure(
+                        "${temp.roundToInt()}°",
+                        style = TextStyle(fontSize = 14.sp)
                     )
+                    val textYOffset = 5.dp.toPx()
+                    drawText(
+                        textLayoutResult = textLayoutResult,
+                        color = textColor,
+                        topLeft = Offset(
+                            x = xPerIndex - textLayoutResult.size.width/2f,
+                            y = (y - textLayoutResult.size.height).minus(textYOffset)
+                        ),
+
+                        )
                     drawLine(
                         color = Color.Red.copy(alpha = 0.5f),
                         start = Offset(x = xPerIndex, y),
@@ -122,8 +133,7 @@ private fun HourlyGraphPreview() {
         modifier = Modifier
             .background(MaterialTheme.colorScheme.surface)
             .padding(16.dp)
-            .aspectRatio(16 / 9f)
-        ,
+            .aspectRatio(16 / 9f),
         data = HourlyStaticData
     )
 }
