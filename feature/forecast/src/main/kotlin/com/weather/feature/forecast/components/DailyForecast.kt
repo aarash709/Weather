@@ -51,7 +51,7 @@ fun Daily(
         color = surfaceColor,
     ) {
         Column(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -67,7 +67,7 @@ fun Daily(
                     Box(
                         modifier = Modifier
                             .clip(CircleShape)
-                            .size(18.dp)
+                            .size(15.dp)
                             .background(Color.White.copy(alpha = 0.5f)),
                         contentAlignment = Alignment.Center
                     ) {
@@ -101,22 +101,21 @@ fun Daily(
             dailyList.forEachIndexed { index, daily ->
                 DailyItem(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp), daily
+                        .fillMaxWidth(),
+                    daily = daily
                 )
                 if (index != dailyList.lastIndex) {
                     HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
                 }
             }
-            Button(
-                onClick = { /*TODO navigate to 5 day forecast*/ },
-                colors = ButtonDefaults
-                    .buttonColors(containerColor = Color.White.copy(alpha = 0.1f))
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = Color.White.copy(alpha = 0.1f)
             ) {
                 Text(
                     text = "5-day forecast",
                     modifier = Modifier
-                        .padding(horizontal = 32.dp)
+                        .padding(horizontal = 64.dp, vertical = 6.dp)
                 )
             }
         }
@@ -147,12 +146,12 @@ fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "${daily.tempDay.toFloat().roundToInt()}",
+                text = "${daily.tempNight.toFloat().roundToInt()}°",
                 modifier = Modifier.weight(1.0f),
                 textAlign = TextAlign.Center,
                 fontSize = 14.sp,
             )
-//            Text(
+            //            Text(
 //                text = " / ",
 //                fontSize = 14.sp,
 //                color = Color.White.copy(alpha = 0.25f)
@@ -173,7 +172,7 @@ fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview) {
                 )
             }
             Text(
-                text = "${daily.tempNight.toFloat().roundToInt()}°",
+                text = "${daily.tempDay.toFloat().roundToInt()}",
                 modifier = Modifier.weight(1.0f),
                 textAlign = TextAlign.Right,
                 fontSize = 14.sp,
