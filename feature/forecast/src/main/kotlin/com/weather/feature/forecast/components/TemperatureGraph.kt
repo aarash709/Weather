@@ -29,7 +29,7 @@ import kotlin.math.roundToInt
 @Composable
 fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
     val textColor = LocalContentColor.current
-    val verticalLineColor = MaterialTheme.colorScheme.primary
+    val verticalLineColor = Color.White.copy(alpha = 0.5f)
     val textMeasurer = rememberTextMeasurer()
 
     Spacer(modifier = modifier then Modifier
@@ -65,7 +65,7 @@ fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
                         textLayoutResult = textLayoutResult,
                         color = textColor,
                         topLeft = Offset(
-                            x = xPerIndex - textLayoutResult.size.width/2f,
+                            x = xPerIndex - textLayoutResult.size.width / 2f,
                             y = (y - textLayoutResult.size.height).minus(textYOffset)
                         ),
 
@@ -89,12 +89,17 @@ fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
                         drawLine(
                             color = verticalLineColor,
                             start = Offset(x = 0f, y),
-                            end = Offset(x = 0f, y = y + (height - y)),
+                            end = Offset(x = 0f, y = y + (height - y).plus(15f)),
                             strokeWidth = 3f,
                             pathEffect = PathEffect.dashPathEffect(
-                                floatArrayOf(10f, 10f),
+                                floatArrayOf(6f, 7f),
                                 phase = 0f
                             ),
+                        )
+                        drawCircle(
+                            color = Color.White,
+                            radius = 10f,
+                            center = Offset(0f, y)
                         )
                     } else {
                         previousTemp = y
