@@ -2,6 +2,7 @@ package com.weather.feature.forecast.components
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,8 +18,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowRight
 import androidx.compose.material.icons.outlined.CalendarMonth
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -26,8 +25,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
+import com.weather.core.design.theme.Yellow
 import com.weather.model.Daily
 import com.weather.model.DailyPreview
 import kotlin.math.roundToInt
@@ -98,32 +104,43 @@ fun Daily(
                     )
                 }
             }
+            HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
             dailyList.forEachIndexed { index, daily ->
+                val minTemp = dailyList.minOf { it.tempNight.toFloat().roundToInt() }
+                val maxTemp = dailyList.minOf { it.tempDay.toFloat().roundToInt() }
+                val currentLow = daily.tempNight.toFloat().roundToInt()
+                val currentHigh = daily.tempDay.toFloat().roundToInt()
                 DailyItem(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    daily = daily
+                    daily = daily,
+                    tempData = TempData(
+                        minTemp = minTemp,
+                        maxTemp = maxTemp,
+                        low = currentLow,
+                        high = currentHigh
+                    )
                 )
                 if (index != dailyList.lastIndex) {
                     HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
                 }
             }
-            Surface(
-                shape = RoundedCornerShape(16.dp),
-                color = Color.White.copy(alpha = 0.1f)
-            ) {
-                Text(
-                    text = "5-day forecast",
-                    modifier = Modifier
-                        .padding(horizontal = 64.dp, vertical = 6.dp)
-                )
-            }
+//            Surface(
+//                shape = RoundedCornerShape(16.dp),
+//                color = Color.White.copy(alpha = 0.1f)
+//            ) {
+//                Text(
+//                    text = "5-day forecast",
+//                    modifier = Modifier
+//                        .padding(horizontal = 64.dp, vertical = 6.dp)
+//                )
+//            }
         }
     }
 }
 
 @Composable
-fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview) {
+fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview, tempData: TempData) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -157,18 +174,29 @@ fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview) {
 //                color = Color.White.copy(alpha = 0.25f)
 //            )
             //experimental temp bars for daily views
-            Box(
-                modifier = Modifier
-                    .width(50.dp)
-                    .height(6.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(Color.Black.copy(alpha = 0.2f)),
-            ) {
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(color = Color.Red)
+            val gradient = Brush.horizontalGradient(listOf(Color.Green,Color.Yellow, Color.Red))
+            Canvas(modifier = Modifier.size(width = 50.dp, height = 5.dp)) {
+                val width = size.width
+                val height = size.height
+                val backgroundColor = Color.DarkGray
+                val leftOffsetFloat = 20f
+                val rightOffsetFloat = 100f
+                val strokeWidth = 8.dp.toPx()
+                // background
+                drawLine(
+                    color = backgroundColor,
+                    start = Offset(0f, height/2),
+                    end = Offset(width, height/2),
+                    cap = StrokeCap.Round,
+                    strokeWidth = strokeWidth
+                )
+                //temp bar
+                drawLine(
+                    brush = gradient,
+                    start = Offset(leftOffsetFloat, height/2),
+                    end = Offset(rightOffsetFloat, height/2),
+                    cap = StrokeCap.Round,
+                    strokeWidth = strokeWidth
                 )
             }
             Text(
@@ -178,6 +206,17 @@ fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview) {
                 fontSize = 14.sp,
             )
         }
+    }
+}
+
+data class TempData(val minTemp: Int, val maxTemp: Int, val low: Int, val high: Int)
+
+fun Modifier.calculateSize(minTemp: Int, maxTemp: Int, low: Int, high: Int) = composed {
+    val width = 10
+    if (minTemp == low && maxTemp == high) {
+        size(50.dp)
+    } else {
+        clip(CircleShape)
     }
 }
 
@@ -205,7 +244,15 @@ private fun DailyListPreview() {
 @Composable
 private fun DailyItemPreview() {
     WeatherTheme {
-        DailyItem(daily = DailyPreviewStaticData[0])
+        DailyItem(
+            daily = DailyPreviewStaticData[0],
+            tempData = TempData(
+                minTemp = 0,
+                maxTemp = 0,
+                low = 0,
+                high = 0
+            )
+        )
     }
 }
 
