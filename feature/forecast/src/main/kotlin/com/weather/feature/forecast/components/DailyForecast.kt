@@ -2,7 +2,6 @@ package com.weather.feature.forecast.components
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,10 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,7 +31,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
-import com.weather.model.Daily
+import com.weather.feature.forecast.components.hourlydata.DailyPreviewStaticData
 import com.weather.model.DailyPreview
 import kotlin.math.roundToInt
 
@@ -53,7 +49,7 @@ fun DailyWidget(
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
@@ -144,59 +140,21 @@ fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview, tempData: Temp
         )
         Row(
             modifier = Modifier
-                .padding(start = 16.dp)
-                .weight(1f),
+                .padding(start = 8.dp)
+                .weight(1.5f),
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = "${daily.tempNight.toFloat().roundToInt()}°",
                 modifier = Modifier.weight(1.0f),
-                textAlign = TextAlign.Center,
+                textAlign = TextAlign.Start,
                 fontSize = 14.sp,
             )
-            //experimental temp bars for daily views
-            val gradient = Brush.horizontalGradient(listOf(Color.Green, Color.Yellow, Color.Red))
-            Canvas(modifier = Modifier.size(width = 50.dp, height = 5.dp)) {
-                val width = size.width
-                val height = size.height
-                val backgroundColor = Color.Black.copy(alpha = 0.15f)
-                val tempRange = tempData.maxTemp - tempData.minTemp
-                val stepsInPixels = width / tempRange
-                val leftIndent = (tempData.minTemp - tempData.currentLow).times(stepsInPixels)
-                val rightIndent =
-                    width - (tempData.maxTemp - tempData.currentHigh).times(stepsInPixels)
-                val currentTempCirclePosition = Offset(
-                    x = tempData.currentTemp.times(stepsInPixels).plus(stepsInPixels),
-                    y = height / 2
-                )
-                val strokeWidth = 5.dp.toPx()
-                // background
-                drawLine(
-                    color = backgroundColor,
-                    start = Offset(0f, height / 2),
-                    end = Offset(width, height / 2),
-                    cap = StrokeCap.Round,
-                    strokeWidth = strokeWidth
-                )
-                //temp bar
-                drawLine(
-                    brush = gradient,
-                    start = Offset(leftIndent, height / 2),
-                    end = Offset(rightIndent, height / 2),
-                    cap = StrokeCap.Round,
-                    strokeWidth = strokeWidth
-                )
-                if (tempData.shouldShowCurrentTemp) {
-                    drawCircle(
-                        color = Color.White,
-                        radius = 2.dp.toPx(),
-                        center = currentTempCirclePosition,
-                    )
-                }
-            }
+
+            TempBar(tempData = tempData)
             Text(
-                text = "${daily.tempDay.toFloat().roundToInt()}",
+                text = "${daily.tempDay.toFloat().roundToInt()}°",
                 modifier = Modifier.weight(1.0f),
                 textAlign = TextAlign.Right,
                 fontSize = 14.sp,
@@ -252,136 +210,3 @@ private fun DailyItemPreview() {
         )
     }
 }
-
-
-val DailyStaticData = listOf(
-    Daily(
-        0,
-        0.0,
-        "Tomorrow",
-        0,
-        0.0,
-        0,
-        0,
-        0.0,
-        0,
-        0,
-        0,
-        0.0,
-        0.0,
-        0.0,
-        0,
-        "Cloudy",
-        "",
-        "",
-        0,
-        0.0,
-        0.0
-    ),
-    Daily(
-        0,
-        0.0,
-        "Friday",
-        0,
-        0.0,
-        0,
-        0,
-        0.0,
-        0,
-        0,
-        0,
-        0.0,
-        0.0,
-        0.0,
-        0,
-        "Rain",
-        "",
-        "",
-        0,
-        0.0,
-        0.0
-    ),
-    Daily(
-        0,
-        0.0,
-        "Saturday",
-        0,
-        0.0,
-        0,
-        0,
-        0.0,
-        0,
-        0,
-        0,
-        0.0,
-        0.0,
-        0.0,
-        0,
-        "Cloudy",
-        "",
-        "",
-        0,
-        0.0,
-        0.0
-    ),
-    Daily(
-        0,
-        0.0,
-        "Sunday",
-        0,
-        0.0,
-        0,
-        0,
-        0.0,
-        0,
-        0,
-        0,
-        0.0,
-        0.0,
-        0.0,
-        0,
-        "Sunny",
-        "",
-        "",
-        0,
-        0.0,
-        0.0
-    )
-)
-val DailyPreviewStaticData = listOf(
-    DailyPreview(
-        tempDay = "283",
-        tempNight = "275",
-        time = "Tomorrow",
-        icon = "",
-        condition = "Clouds"
-    ),
-    DailyPreview(
-        tempDay = "280",
-        tempNight = "274",
-        time = "Wed",
-        icon = "",
-        condition = "Snow"
-    ),
-    DailyPreview(
-        tempDay = "284",
-        tempNight = "276",
-        time = "Thur",
-        icon = "",
-        condition = "Clouds"
-    ),
-    DailyPreview(
-        tempDay = "278",
-        tempNight = "270",
-        time = "Friday",
-        icon = "",
-        condition = "Rain"
-    ),
-    DailyPreview(
-        tempDay = "281",
-        tempNight = "269",
-        time = "Saturday",
-        icon = "",
-        condition = "Snow"
-    )
-)
