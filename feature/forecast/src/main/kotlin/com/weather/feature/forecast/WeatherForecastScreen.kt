@@ -59,11 +59,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.weather.core.design.components.weatherPlaceholder
 import com.weather.core.design.theme.WeatherTheme
-import com.weather.feature.forecast.components.Daily
-import com.weather.feature.forecast.components.DailyStaticData
+import com.weather.feature.forecast.components.DailyWidget
 import com.weather.feature.forecast.components.ForecastTopBar
 import com.weather.feature.forecast.components.HourlyWidgetWithGraph
 import com.weather.feature.forecast.components.WindDetails
+import com.weather.feature.forecast.components.hourlydata.DailyStaticData
 import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
 import com.weather.model.Coordinate
 import com.weather.model.Current
@@ -227,13 +227,14 @@ fun ConditionAndDetails(
             weatherData = weatherData.current,
             speedUnit = speedUnit,
         )
-        Daily(
+        DailyWidget(
             modifier = Modifier
                 .fillMaxWidth()
                 .weatherPlaceholder(
                     visible = showPlaceholder,
                 ),
-            dailyList = weatherData.daily.map { it.toDailyPreview() })
+            dailyList = weatherData.daily.map { it.toDailyPreview() },
+            currentTemp = weatherData.current.currentTemp)
         HourlyWidgetWithGraph(
             modifier = Modifier.weatherPlaceholder(
                 visible = showPlaceholder
