@@ -2,7 +2,6 @@ package com.weather.feature.forecast.components
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import android.util.Half.toFloat
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -42,9 +40,10 @@ import com.weather.model.DailyPreview
 import kotlin.math.roundToInt
 
 @Composable
-fun Daily(
+fun DailyWidget(
     modifier: Modifier = Modifier,
     dailyList: List<DailyPreview>,
+    currentTemp: Double,
     surfaceColor: Color = Color.White.copy(alpha = 0.15f),
 ) {
     Surface(
@@ -114,7 +113,9 @@ fun Daily(
                         minTemp = minTemp,
                         maxTemp = maxTemp,
                         currentLow = currentLow,
-                        currentHigh = currentHigh
+                        currentHigh = currentHigh,
+                        shouldShowCurrentTemp = index == 0,
+                        currentTemp = currentTemp.roundToInt()
                     )
                 )
                 if (index != dailyList.lastIndex) {
@@ -155,32 +156,44 @@ fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview, tempData: Temp
                 fontSize = 14.sp,
             )
             //experimental temp bars for daily views
-            val gradient = Brush.horizontalGradient(listOf(Color.Green,Color.Yellow, Color.Red))
+            val gradient = Brush.horizontalGradient(listOf(Color.Green, Color.Yellow, Color.Red))
             Canvas(modifier = Modifier.size(width = 50.dp, height = 5.dp)) {
                 val width = size.width
                 val height = size.height
-                val backgroundColor = Color.DarkGray
+                val backgroundColor = Color.Black.copy(alpha = 0.15f)
                 val tempRange = tempData.maxTemp - tempData.minTemp
                 val stepsInPixels = width / tempRange
                 val leftIndent = (tempData.minTemp - tempData.currentLow).times(stepsInPixels)
-                val rightIndent = width - (tempData.maxTemp - tempData.currentHigh).times(stepsInPixels)
-                val strokeWidth = 8.dp.toPx()
+                val rightIndent =
+                    width - (tempData.maxTemp - tempData.currentHigh).times(stepsInPixels)
+                val currentTempCirclePosition = Offset(
+                    x = tempData.currentTemp.times(stepsInPixels).plus(stepsInPixels),
+                    y = height / 2
+                )
+                val strokeWidth = 5.dp.toPx()
                 // background
                 drawLine(
                     color = backgroundColor,
-                    start = Offset(0f, height/2),
-                    end = Offset(width, height/2),
+                    start = Offset(0f, height / 2),
+                    end = Offset(width, height / 2),
                     cap = StrokeCap.Round,
                     strokeWidth = strokeWidth
                 )
                 //temp bar
                 drawLine(
                     brush = gradient,
-                    start = Offset(leftIndent, height/2),
-                    end = Offset(rightIndent, height/2),
+                    start = Offset(leftIndent, height / 2),
+                    end = Offset(rightIndent, height / 2),
                     cap = StrokeCap.Round,
                     strokeWidth = strokeWidth
                 )
+                if (tempData.shouldShowCurrentTemp) {
+                    drawCircle(
+                        color = Color.White,
+                        radius = 2.dp.toPx(),
+                        center = currentTempCirclePosition,
+                    )
+                }
             }
             Text(
                 text = "${daily.tempDay.toFloat().roundToInt()}",
@@ -192,7 +205,14 @@ fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview, tempData: Temp
     }
 }
 
-data class TempData(val minTemp: Int, val maxTemp: Int, val currentLow: Int, val currentHigh: Int)
+data class TempData(
+    val minTemp: Int,
+    val maxTemp: Int,
+    val currentLow: Int,
+    val currentHigh: Int,
+    val shouldShowCurrentTemp: Boolean = false,
+    val currentTemp: Int,
+)
 
 @Preview(
     name = "night", showBackground = true, uiMode = UI_MODE_NIGHT_YES,
@@ -205,11 +225,12 @@ data class TempData(val minTemp: Int, val maxTemp: Int, val currentLow: Int, val
 @Composable
 private fun DailyListPreview() {
     WeatherTheme {
-        Daily(
+        DailyWidget(
             dailyList = DailyPreviewStaticData,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(16.dp),
+            currentTemp = 0.0
         )
     }
 }
@@ -224,7 +245,9 @@ private fun DailyItemPreview() {
                 minTemp = 0,
                 maxTemp = 0,
                 currentLow = 0,
-                currentHigh = 0
+                currentHigh = 0,
+                shouldShowCurrentTemp = false,
+                currentTemp = 0
             )
         )
     }
