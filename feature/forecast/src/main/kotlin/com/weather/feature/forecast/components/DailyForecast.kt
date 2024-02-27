@@ -163,15 +163,6 @@ fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview, tempData: Temp
     }
 }
 
-data class TempData(
-    val minTemp: Int,
-    val maxTemp: Int,
-    val currentLow: Int,
-    val currentHigh: Int,
-    val shouldShowCurrentTemp: Boolean = false,
-    val currentTemp: Int,
-)
-
 @Preview(
     name = "night", showBackground = true, uiMode = UI_MODE_NIGHT_YES,
     backgroundColor = 0xFF5366C5
