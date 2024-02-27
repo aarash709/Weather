@@ -6,7 +6,6 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOutCubic
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,7 +18,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -142,7 +140,6 @@ fun WeatherForecastScreen(
     onNavigateToSettings: () -> Unit,
     onRefresh: (Coordinate) -> Unit,
 ) {
-    val lazyListState = rememberLazyListState()
     // stateless
     val speedUnit by remember(weatherUIState) {
         val state = when (weatherUIState.userSettings.windSpeedUnits) {
@@ -182,7 +179,6 @@ fun WeatherForecastScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .navigationBarsPadding(),
-                    scrollState = scrollState,
                     weatherData = weatherUIState.weather,
                     showPlaceholder = weatherUIState.showPlaceHolder,
                     speedUnit = speedUnit,
@@ -195,7 +191,6 @@ fun WeatherForecastScreen(
 @Composable
 fun ConditionAndDetails(
     modifier: Modifier = Modifier,
-    scrollState: ScrollState,
     weatherData: WeatherData,
     showPlaceholder: Boolean,
     speedUnit: String,
@@ -492,9 +487,9 @@ fun MainPagePreview() {
         ) {
             WeatherForecastScreen(weatherUIState = data,
                 isSyncing = false,
+                onRefresh = {},
                 onNavigateToManageLocations = {},
-                onNavigateToSettings = {},
-                onRefresh = {})
+                onNavigateToSettings = {})
         }
     }
 }
