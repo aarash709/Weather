@@ -76,6 +76,7 @@ import com.weather.core.design.components.CustomTopBar
 import com.weather.core.design.components.ShowLoadingText
 import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
+import com.weather.feature.managelocations.components.LocationsBottombar
 import com.weather.feature.managelocations.components.LocationsTopbar
 import com.weather.model.Coordinate
 import com.weather.model.ManageLocationsData
@@ -165,37 +166,13 @@ fun ManageLocations(
             )
         },
         bottomBar = {
-            AnimatedVisibility(
-                visible = isInEditMode,
-                enter = fadeIn() + slideInVertically(initialOffsetY = { it }),
-                exit = fadeOut() + slideOutVertically(targetOffsetY = { it }),
-                label = "bottom bar content"
-            ) {
-                BottomAppBar(
-                    tonalElevation = 0.dp
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        BottomBarItem(
-                            buttonName = "Delete",
-                            imageVector = Icons.Default.DeleteOutline,
-                            onClick = {
-                                onDeleteItem(itemsToDelete)
-                                selectedCities = emptySet()
-                            })
-                        AnimatedVisibility(selectedCities.size < 2) {
-                            BottomBarItem(
-                                buttonName = "Favorite",
-                                imageVector = Icons.Default.StarBorder,
-                                onClick = {
-                                    onSetFavoriteItem(selectedCities.first())
-                                })
-                        }
-                    }
-                }
-            }
+            LocationsBottombar(
+                isInEditMode = isInEditMode,
+                selectedCitySize = selectedCities.size,
+                onDeleteItem = { onDeleteItem(itemsToDelete) },
+                onEmptyCitySelection = { selectedCities = emptySet() },
+                onSetFavoriteItem = { onSetFavoriteItem(selectedCities.first())
+                })
         }
     ) { padding ->
         when (dataState) {
