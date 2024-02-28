@@ -17,7 +17,7 @@ import com.weather.core.design.theme.WeatherTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ForecastTopBar(
+internal fun ForecastTopBar(
     onNavigateToManageLocations: () -> Unit,
     onNavigateToSettings: () -> Unit,
 ) {

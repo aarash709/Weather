@@ -2,6 +2,7 @@ package com.weather.feature.managelocations
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.activity.compose.BackHandler
+import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.tween
@@ -245,7 +246,7 @@ fun ManageLocations(
 }
 
 @Composable
-fun BottomBarItem(
+internal fun BottomBarItem(
     modifier: Modifier = Modifier,
     buttonName: String,
     imageVector: ImageVector,
@@ -267,7 +268,7 @@ fun BottomBarItem(
 }
 
 @Composable
-fun SearchBarCard(onClick: () -> Unit) {
+internal fun SearchBarCard(onClick: () -> Unit) {
     Surface(
         onClick = onClick,
         shape = RoundedCornerShape(32.dp),
@@ -294,7 +295,7 @@ fun SearchBarCard(onClick: () -> Unit) {
 }
 
 @Composable
-fun SavedLocationItem(
+internal fun SavedLocationItem(
     modifier: Modifier = Modifier,
     data: ManageLocationsData,
     inSelectionMode: Boolean,
@@ -399,7 +400,7 @@ fun SavedLocationItem(
 @ExperimentalFoundationApi
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
-fun ManageLocationsPreview() {
+internal fun ManageLocationsPreview() {
     val data = LocationsUIState.Success(
         listOf(
             ManageLocationsData(
@@ -437,7 +438,7 @@ fun ManageLocationsPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun SearchCardPreview() {
+internal fun SearchCardPreview() {
     WeatherTheme {
         SearchBarCard(onClick = {})
     }
@@ -445,7 +446,7 @@ fun SearchCardPreview() {
 
 @Preview(showBackground = false)
 @Composable
-fun CityItemPreview() {
+internal fun CityItemPreview() {
     WeatherTheme {
         SavedLocationItem(
             data = ManageLocationsData(

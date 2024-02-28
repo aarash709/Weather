@@ -36,7 +36,7 @@ import com.weather.model.DailyPreview
 import kotlin.math.roundToInt
 
 @Composable
-fun DailyWidget(
+internal fun DailyWidget(
     modifier: Modifier = Modifier,
     dailyList: List<DailyPreview>,
     currentTemp: Double,
@@ -123,7 +123,7 @@ fun DailyWidget(
 }
 
 @Composable
-fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview, tempData: TempData) {
+internal fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview, tempData: TempData) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically

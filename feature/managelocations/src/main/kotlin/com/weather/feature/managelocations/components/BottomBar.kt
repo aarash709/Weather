@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.weather.feature.managelocations.BottomBarItem
 
 @Composable
-fun LocationsBottombar(
+internal fun LocationsBottombar(
     isInEditMode: Boolean,
     selectedCitySize: Int,
     onDeleteItem: () -> Unit,

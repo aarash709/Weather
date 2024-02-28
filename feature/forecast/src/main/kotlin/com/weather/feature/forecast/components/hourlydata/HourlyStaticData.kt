@@ -2,7 +2,7 @@ package com.weather.feature.forecast.components.hourlydata
 
 import com.weather.model.Hourly
 
-val HourlyStaticData = listOf(
+internal val HourlyStaticData = listOf(
     Hourly(
         clouds = 0,
         dew_point = 0.0,

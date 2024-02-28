@@ -5,7 +5,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -38,6 +37,6 @@ fun NavGraphBuilder.searchScreen(onSearchItemSelected: () -> Unit) {
                 )
         }
     ) {
-        SearchScreen(onSelectSearchItem = onSearchItemSelected)
+        SearchRoute(onSelectSearchItem = onSearchItemSelected)
     }
 }

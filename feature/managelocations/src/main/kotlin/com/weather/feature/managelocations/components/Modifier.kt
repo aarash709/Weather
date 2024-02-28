@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 
 
 @OptIn(ExperimentalFoundationApi::class)
-fun Modifier.locationsClickable(
+internal fun Modifier.locationsClickable(
     inSelectionMode: Boolean,
     onSelectionMode: () -> Unit,
     onItemSelected: () -> Unit,

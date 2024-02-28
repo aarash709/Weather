@@ -36,7 +36,7 @@ import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
 import com.weather.model.Hourly
 
 @Composable
-fun HourlyWidgetWithGraph(
+internal fun HourlyWidgetWithGraph(
     modifier: Modifier = Modifier,
     hourly: List<Hourly>,
     speedUnit: String,
@@ -122,7 +122,7 @@ fun HourlyWidgetWithGraph(
 
 
 @Composable
-fun HourlyGraphLayout(
+internal fun HourlyGraphLayout(
     modifier: Modifier = Modifier,
     itemCount: Int,
     graphHeight: Dp,

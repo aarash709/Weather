@@ -189,7 +189,7 @@ fun WeatherForecastScreen(
 }
 
 @Composable
-fun ConditionAndDetails(
+internal fun ConditionAndDetails(
     modifier: Modifier = Modifier,
     weatherData: WeatherData,
     showPlaceholder: Boolean,
@@ -291,7 +291,7 @@ private fun CurrentWeather(
 }
 
 @Composable
-fun CurrentWeatherDetails(
+private fun CurrentWeatherDetails(
     modifier: Modifier = Modifier,
     weatherData: Current,
     speedUnit: String,
@@ -339,17 +339,16 @@ fun CurrentWeatherDetails(
             WinDirectionDetail(
                 image = Icons.Outlined.North,
                 value = weatherData.wind_deg,
-                itemName = "Wind Direction"
             )
         }
     }
 }
 
 @Composable
-fun WinDirectionDetail(
+private fun WinDirectionDetail(
     image: ImageVector,
     value: Int,
-    itemName: String,
+    itemName: String = "Wind Direction",
 ) {
     Column(
         modifier = Modifier,
@@ -411,7 +410,7 @@ private fun WeatherDetailItem(
 
 
 @Composable
-fun SunMoonPosition() {
+private fun SunMoonPosition() {
     Card(
         modifier = Modifier,
         shape = RoundedCornerShape(8.dp)
@@ -431,7 +430,7 @@ fun SunMoonPosition() {
 @Preview(name = "night", showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Preview(name = "day", showBackground = true, uiMode = UI_MODE_NIGHT_NO)
 @Composable
-fun MainPagePreview() {
+private fun MainPagePreview() {
     var placeholder by remember {
         mutableStateOf(false)
     }

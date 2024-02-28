@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
 
-data class TempData(
+internal data class TempData(
     val minTemp: Int,
     val maxTemp: Int,
     val currentLow: Int,
@@ -23,7 +23,7 @@ data class TempData(
  * Calculated colors for temperature range in temp bar for daily
  * Support for °C only for now
  **/
-fun tempColor(temp: Int): Color {
+internal fun tempColor(temp: Int): Color {
     return when {
         temp <= 0 -> Color(25, 165, 221, 255)
         temp in 1..15 -> Color(25, 205, 221, 255)
@@ -37,7 +37,7 @@ fun tempColor(temp: Int): Color {
 }
 
 @Composable
-fun TempBar(tempData: TempData) {
+internal fun TempBar(tempData: TempData) {
     Canvas(modifier = Modifier.size(width = 80.dp, height = 5.dp)) {
         val gradient = Brush.horizontalGradient(
             listOf(

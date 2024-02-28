@@ -17,7 +17,7 @@ import com.weather.core.design.components.CustomTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LocationsTopbar(
+internal fun LocationsTopbar(
     isInEditMode: Boolean,
     selectedCitySize: Int,
     scrollBehavior: TopAppBarScrollBehavior,
