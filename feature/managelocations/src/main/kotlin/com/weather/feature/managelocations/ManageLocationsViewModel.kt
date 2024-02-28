@@ -8,12 +8,16 @@ import com.experiment.weather.core.common.extentions.convertTotoUserSettings
 import com.weather.core.repository.UserRepository
 import com.weather.core.repository.WeatherRepository
 import com.weather.model.ManageLocationsData
-import com.weather.model.TemperatureUnits
-import com.weather.model.TemperatureUnits.*
+import com.weather.model.TemperatureUnits.C
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -29,11 +33,11 @@ class ManageLocationsViewModel @Inject constructor(
         weatherRepository.getAllWeatherLocations(),
         getFavoriteCityCoordinate(),
         userRepository.getTemperatureUnitSetting()
-    )
-    {
+    ) {
             weatherList,
             favoriteCityName,
-            temperatureSetting ->
+            temperatureSetting,
+        ->
         val tempUnit = temperatureSetting ?: C
         val locationData = weatherList.convertTotoUserSettings(
             tempUnit = tempUnit,
@@ -72,22 +76,11 @@ class ManageLocationsViewModel @Inject constructor(
             hapticFeedback.cancel()
             hapticFeedback.vibrate(60)
         }
-
     }
-
-    internal fun Double.convertToUserTemperature(
-        userTempUnit: TemperatureUnits,
-    ): Double {
-        return when (userTempUnit) {
-            C -> this.minus(273.15)
-            F -> this.minus(273.15).times(1.8f).plus(32)
-        }
-    }
-
 }
 
 sealed interface LocationsUIState {
-    object Loading : LocationsUIState
+    data object Loading : LocationsUIState
     data class Success(val data: List<ManageLocationsData>) : LocationsUIState
 }
 

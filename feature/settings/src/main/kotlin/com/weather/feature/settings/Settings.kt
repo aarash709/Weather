@@ -12,8 +12,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -38,7 +38,7 @@ import com.weather.model.TemperatureUnits
 import com.weather.model.WindSpeedUnits
 
 @Composable
-fun Settings(
+fun SettingsRoute(
     viewModel: SettingsViewModel = hiltViewModel(),
     onBackPressed: () -> Unit,
 ) {
@@ -90,7 +90,7 @@ fun Settings(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun SettingsContent(
+fun SettingsContent(
     modifier: Modifier = Modifier,
     settingsState: SettingsUIState,
     tempUnit: String,
@@ -147,7 +147,7 @@ internal fun SettingsContent(
 
 @Composable
 fun SettingsHorizontalDivider() {
-    Divider(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f))
+    HorizontalDivider(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f))
 }
 
 @Composable

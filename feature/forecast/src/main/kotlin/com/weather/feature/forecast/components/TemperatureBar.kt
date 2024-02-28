@@ -10,11 +10,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
 
+internal data class TempData(
+    val minTemp: Int,
+    val maxTemp: Int,
+    val currentLow: Int,
+    val currentHigh: Int,
+    val shouldShowCurrentTemp: Boolean = false,
+    val currentTemp: Int,
+)
+
 /**
  * Calculated colors for temperature range in temp bar for daily
  * Support for °C only for now
  **/
-fun tempColor(temp: Int): Color {
+internal fun tempColor(temp: Int): Color {
     return when {
         temp <= 0 -> Color(25, 165, 221, 255)
         temp in 1..15 -> Color(25, 205, 221, 255)
@@ -28,7 +37,7 @@ fun tempColor(temp: Int): Color {
 }
 
 @Composable
-fun TempBar(tempData: TempData) {
+internal fun TempBar(tempData: TempData) {
     Canvas(modifier = Modifier.size(width = 80.dp, height = 5.dp)) {
         val gradient = Brush.horizontalGradient(
             listOf(
@@ -41,9 +50,8 @@ fun TempBar(tempData: TempData) {
         val backgroundColor = Color.Black.copy(alpha = 0.15f)
         val tempRange = tempData.maxTemp - tempData.minTemp
         val stepsInPixels = width / tempRange
-        val leftIndent = (tempData.minTemp - tempData.currentLow).times(stepsInPixels)
-        val rightIndent =
-            width - (tempData.maxTemp - tempData.currentHigh).times(stepsInPixels)
+        val leftIndent = (tempData.minTemp - tempData.currentLow).times(stepsInPixels).div(width)
+        val rightIndent = width - (tempData.maxTemp - tempData.currentHigh).times(stepsInPixels)
         val currentTempCirclePosition = Offset(
             x = tempData.currentTemp.times(stepsInPixels).plus(stepsInPixels),
             y = height / 2
@@ -75,6 +83,3 @@ fun TempBar(tempData: TempData) {
         }
     }
 }
-
-
-

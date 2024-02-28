@@ -33,7 +33,7 @@ import com.weather.core.design.theme.Yellow
 @ExperimentalFoundationApi
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun CustomSwipeDismiss(
+internal fun CustomSwipeDismiss(
     modifier: Modifier = Modifier,
     dismissThreshold: Float,
     onDeleteItem: () -> Unit,
@@ -108,11 +108,10 @@ fun CustomSwipeDismiss(
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalAnimationApi::class)
 @Composable
-fun DismissBackground(
+private fun DismissBackground(
     state: DismissState,
     dismissDirection: DismissDirection?,
-) = BoxWithConstraints(modifier = Modifier) {
-
+) = Box(modifier = Modifier) {
     val dismissTransition =
         updateTransition(targetState = dismissDirection != null, label = "Dismiss Transition")
     val iconTargetScale by dismissTransition.animateFloat(
@@ -137,7 +136,7 @@ fun DismissBackground(
             -> Black
 
             null -> Transparent
-        }
+        }, label = ""
     )
     val backGroundColor by animateColorAsState(
         targetValue = when (dismissDirection) {
@@ -145,7 +144,7 @@ fun DismissBackground(
             DismissDirection.EndToStart -> Red
             null -> MaterialTheme.colors.surface
         },
-        animationSpec = tween(200)
+        animationSpec = tween(200), label = ""
     )
     AnimatedContent(
         targetState = Pair(state.dismissDirection, dismissDirection != null),
@@ -155,7 +154,7 @@ fun DismissBackground(
             ) with fadeOut(
                 tween(0)
             )
-        }
+        }, label = ""
     ) { (direction, allowedDismiss) ->
         Box(
             modifier = Modifier

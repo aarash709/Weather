@@ -26,7 +26,7 @@ fun NavGraphBuilder.settingsScreen(onBackPress: () -> Unit) {
             )
         }
     ) {
-        Settings {
+        SettingsRoute {
             onBackPress()
         }
     }

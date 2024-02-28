@@ -4,9 +4,9 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
+import com.experiment.weather.WeatherAppState
 import com.weather.feature.managelocations.manageLocationsRoute
 import com.weather.feature.managelocations.manageLocationsScreen
 import com.weather.feature.managelocations.toManageLocations
@@ -25,16 +25,17 @@ import kotlinx.coroutines.FlowPreview
 @Composable
 fun WeatherNavHost(
     modifier: Modifier = Modifier,
-    navController: NavHostController,
+    appState: WeatherAppState,
     isDatabaseEmpty: Boolean,
 ) {
-    val startDestination = if (isDatabaseEmpty) searchRoute else forecastRoute
+    val startDestination = if (isDatabaseEmpty) searchRoute else FORECAST_ROUTE
+    val navController = appState.navController
     NavHost(
         navController = navController,
         startDestination = startDestination,
         modifier = modifier
     ) {
-        homeNavGraph(
+        forecastRoute(
             navigateToManageLocations = {
                 navController.toManageLocations(navOptions {
                 })
@@ -49,7 +50,7 @@ fun WeatherNavHost(
             },
             onItemSelected = { _ ->
                 navController.navigate(
-                    route = forecastRoute,
+                    route = FORECAST_ROUTE,
                     navOptions = navOptions {
                         launchSingleTop = true
                         popUpTo(

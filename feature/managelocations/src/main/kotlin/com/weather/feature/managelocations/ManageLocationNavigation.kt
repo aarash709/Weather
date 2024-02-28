@@ -48,7 +48,7 @@ fun NavGraphBuilder.manageLocationsScreen(
             }
         }
     ) {
-        ManageLocations(
+        ManageLocationsRoute(
             onBackPressed = { onBackPressed() },
             onItemSelected = { onItemSelected(it) },
             onNavigateToSearch = { onNavigateToSearch() }

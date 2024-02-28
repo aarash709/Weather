@@ -27,7 +27,7 @@ import com.weather.model.Hourly
 import kotlin.math.roundToInt
 
 @Composable
-fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
+internal fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
     val textColor = LocalContentColor.current
     val verticalLineColor = Color.White.copy(alpha = 0.5f)
     val textMeasurer = rememberTextMeasurer()

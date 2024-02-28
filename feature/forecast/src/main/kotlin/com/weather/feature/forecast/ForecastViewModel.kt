@@ -53,13 +53,13 @@ class ForecastViewModel @Inject constructor(
 
 //    private val cityName = savedStateHandle.get<String>("cityName").orEmpty()
     private val _timeOfDay = MutableStateFlow(TimeOfDay.Day)
-    val timeOfDay = _timeOfDay
+    internal val timeOfDay = _timeOfDay
     internal var isSyncing = syncStatus.isSyncing
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), false)
 
 
     @ExperimentalCoroutinesApi
-    val weatherUIState = getWeatherData().stateIn(
+    internal val weatherUIState = getWeatherData().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(1000),
         initialValue = SavableForecastData.placeholderDefault
@@ -122,7 +122,7 @@ class ForecastViewModel @Inject constructor(
         return userRepository.getFavoriteCityCoordinate()
     }
 
-    fun sync(savedCityCoordinate: Coordinate) {
+    internal fun sync(savedCityCoordinate: Coordinate) {
         viewModelScope.launch {
             val coordinate = Coordinate(
                 cityName = savedCityCoordinate.cityName,

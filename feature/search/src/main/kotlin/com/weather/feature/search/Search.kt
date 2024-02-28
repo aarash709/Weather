@@ -28,10 +28,8 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -66,7 +64,7 @@ import kotlinx.coroutines.FlowPreview
 @ExperimentalCoroutinesApi
 @FlowPreview
 @Composable
-fun SearchScreen(
+fun SearchRoute(
     searchViewModel: SearchViewModel = hiltViewModel(),
     shouldRequestFocus: Boolean = true,
     onSelectSearchItem: () -> Unit,
@@ -413,7 +411,7 @@ private fun PopularCityPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun SearchItemPreview() {
+private fun SearchItemPreview() {
     WeatherTheme {
         val item = GeoSearchItem("Iran", name = "Tehran")
         SearchItem(Modifier, item)
@@ -448,7 +446,7 @@ val cityList = listOf(
     "Berlin",
 )
 
-val items = listOf(
+internal val items = listOf(
     GeoSearchItem("Iran", name = "Tehran"),
     GeoSearchItem("Iran2", name = "Tehran2"),
     GeoSearchItem("Iran3", name = "Tehran3"),

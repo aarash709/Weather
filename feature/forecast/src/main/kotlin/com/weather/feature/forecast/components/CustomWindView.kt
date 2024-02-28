@@ -35,7 +35,7 @@ import com.weather.core.design.theme.WeatherTheme
 import com.weather.core.design.theme.White
 
 @Composable
-fun WindDetails(
+internal fun WindDetails(
     modifier: Modifier = Modifier,
     windDirection: Float,
     windSpeed: Float,
@@ -79,7 +79,7 @@ fun WindDetails(
 }
 
 @Composable
-fun BoxedWindIndicator(modifier: Modifier = Modifier, windDirection: Float) {
+internal fun BoxedWindIndicator(modifier: Modifier = Modifier, windDirection: Float) {
     Box(
         modifier = modifier
             .aspectRatio(1f)
@@ -109,9 +109,8 @@ fun BoxedWindIndicator(modifier: Modifier = Modifier, windDirection: Float) {
     }
 }
 
-@OptIn(ExperimentalTextApi::class)
 @Composable
-fun WindDirectionIndicator(
+internal fun WindDirectionIndicator(
     modifier: Modifier = Modifier,
     animatedDegree: Float,
 ) {

@@ -2,7 +2,7 @@ package com.weather.feature.managelocations
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedContent
+import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.tween
@@ -11,12 +11,8 @@ import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,15 +29,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.ChecklistRtl
-import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.StarBorder
-import androidx.compose.material.icons.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.WaterDrop
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -63,6 +53,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -71,16 +62,18 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.weather.core.design.components.CustomTopBar
 import com.weather.core.design.components.ShowLoadingText
 import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
+import com.weather.feature.managelocations.components.LocationsBottombar
+import com.weather.feature.managelocations.components.LocationsTopbar
+import com.weather.feature.managelocations.components.locationsClickable
 import com.weather.model.Coordinate
 import com.weather.model.ManageLocationsData
 
 @ExperimentalFoundationApi
 @Composable
-fun ManageLocations(
+fun ManageLocationsRoute(
     viewModel: ManageLocationsViewModel = hiltViewModel(),
     onBackPressed: () -> Unit,
     onItemSelected: (String) -> Unit,
@@ -108,7 +101,6 @@ fun ManageLocations(
 }
 
 @OptIn(
-    ExperimentalFoundationApi::class,
     ExperimentalMaterial3Api::class
 )
 @Composable
@@ -153,82 +145,24 @@ fun ManageLocations(
     Scaffold(
         modifier = Modifier,
         topBar = {
-            CustomTopBar(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                text = if (isInEditMode) {
-                    "Selected Items ${selectedCities.size}"
-                } else {
-                    "Manage Locations"
-                },
+            LocationsTopbar(
+                isInEditMode = isInEditMode,
+                selectedCitySize = selectedCities.size,
+                scrollBehavior = scrollBehavior,
                 onBackPressed = { onBackPressed() },
-                navigationIcon = {
-                    AnimatedContent(
-                        targetState = isInEditMode,
-                        label = "Top bar Icon"
-                    ) { isInEditMode ->
-                        if (isInEditMode) {
-                            IconButton(onClick = { selectedCities = emptySet() }) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Close,
-                                    tint = MaterialTheme.colorScheme.onBackground,
-                                    contentDescription = "Clear selection Button"
-                                )
-                            }
-                        } else {
-                            IconButton(onClick = { onBackPressed() }) {
-                                Icon(
-                                    imageVector = Icons.Outlined.ArrowBack,
-                                    tint = MaterialTheme.colorScheme.onBackground,
-                                    contentDescription = "back icon"
-                                )
-                            }
-                        }
-                    }
-                },
-                actions = {
-                    if (isInEditMode) IconButton(onClick = { isAllSelected = !isAllSelected }) {
-                        Icon(
-                            imageVector = Icons.Default.ChecklistRtl,
-                            contentDescription = "Select all button"
-                        )
-                    }
-                },
-                scrollBehavior = scrollBehavior
+                onIsAllSelected = { isAllSelected = !isAllSelected },
+                onEmptyCitySelection = { selectedCities = emptySet() }
             )
         },
         bottomBar = {
-            AnimatedVisibility(
-                visible = isInEditMode,
-                enter = fadeIn() + slideInVertically(initialOffsetY = { it }),
-                exit = fadeOut() + slideOutVertically(targetOffsetY = { it }),
-                label = "bottom bar content"
-            ) {
-                BottomAppBar(
-                    tonalElevation = 0.dp
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        BottomBarItem(
-                            buttonName = "Delete",
-                            imageVector = Icons.Default.DeleteOutline,
-                            onClick = {
-                                onDeleteItem(itemsToDelete)
-                                selectedCities = emptySet()
-                            })
-                        AnimatedVisibility(selectedCities.size < 2) {
-                            BottomBarItem(
-                                buttonName = "Favorite",
-                                imageVector = Icons.Default.StarBorder,
-                                onClick = {
-                                    onSetFavoriteItem(selectedCities.first())
-                                })
-                        }
-                    }
-                }
-            }
+            LocationsBottombar(
+                isInEditMode = isInEditMode,
+                selectedCitySize = selectedCities.size,
+                onDeleteItem = { onDeleteItem(itemsToDelete) },
+                onEmptyCitySelection = { selectedCities = emptySet() },
+                onSetFavoriteItem = {
+                    onSetFavoriteItem(selectedCities.first())
+                })
         }
     ) { padding ->
         when (dataState) {
@@ -236,9 +170,13 @@ fun ManageLocations(
             is LocationsUIState.Success -> {
                 LaunchedEffect(key1 = dataState) {
                     locationsList = dataState.data
+                    if (locationsList.size == 1) {
+                        onSetFavoriteItem(locationsList.first().locationName)
+                    }
                 }
                 Column(
                     modifier = Modifier
+                        .nestedScroll(scrollBehavior.nestedScrollConnection)
                         .padding(padding)
                         .padding(horizontal = 16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -272,36 +210,30 @@ fun ManageLocations(
                                     derivedStateOf { locationData.locationName in selectedCities }
                                 }
                                 SavedLocationItem(
-                                    modifier = Modifier.bouncyTapEffect() then
-                                            if (inSelectionMode) {
-                                                Modifier.clickable {
-                                                    if (selected)
-                                                        selectedCities -= locationData.locationName
-                                                    else
-                                                        selectedCities += locationData.locationName
-                                                }
-                                            } else {
-                                                Modifier.combinedClickable(
-                                                    onClick = {
-                                                        onItemSelected(
-                                                            Coordinate(
-                                                                locationData.locationName,
-                                                                locationData.latitude,
-                                                                locationData.longitude
-                                                            )
-                                                        )
-                                                    },
-                                                    onLongClick = {
-                                                        selectedCities += locationData.locationName
-                                                    }
+                                    modifier = Modifier
+                                        .bouncyTapEffect()
+                                        .locationsClickable(
+                                            inSelectionMode = inSelectionMode,
+                                            onSelectionMode = {
+                                                if (selected)
+                                                    selectedCities -= locationData.locationName
+                                                else
+                                                    selectedCities += locationData.locationName
+                                            },
+                                            onItemSelected = {
+                                                onItemSelected(
+                                                    Coordinate(
+                                                        locationData.locationName,
+                                                        locationData.latitude,
+                                                        locationData.longitude
+                                                    )
                                                 )
                                             },
+                                            onLongClick = { selectedCities += locationData.locationName }
+                                        ),
                                     data = locationData,
                                     inSelectionMode = inSelectionMode,
-                                    selected = selected,
-//                                    onItemSelected = { coordinate ->
-//                                        onItemSelected(coordinate)
-//                                    }
+                                    selected = selected
                                 )
                             }
                         }
@@ -314,7 +246,7 @@ fun ManageLocations(
 }
 
 @Composable
-fun BottomBarItem(
+internal fun BottomBarItem(
     modifier: Modifier = Modifier,
     buttonName: String,
     imageVector: ImageVector,
@@ -336,7 +268,7 @@ fun BottomBarItem(
 }
 
 @Composable
-fun SearchBarCard(onClick: () -> Unit) {
+internal fun SearchBarCard(onClick: () -> Unit) {
     Surface(
         onClick = onClick,
         shape = RoundedCornerShape(32.dp),
@@ -363,12 +295,11 @@ fun SearchBarCard(onClick: () -> Unit) {
 }
 
 @Composable
-fun SavedLocationItem(
+internal fun SavedLocationItem(
     modifier: Modifier = Modifier,
     data: ManageLocationsData,
     inSelectionMode: Boolean,
     selected: Boolean,
-//    onItemSelected: (Coordinate) -> Unit,
 ) {
     val transition = updateTransition(targetState = inSelectionMode, label = "selection mode")
     val itemHorizontalPadding by transition.animateDp(label = "item padding") { inEditMode ->
@@ -469,7 +400,7 @@ fun SavedLocationItem(
 @ExperimentalFoundationApi
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
-fun ManageLocationsPreview() {
+internal fun ManageLocationsPreview() {
     val data = LocationsUIState.Success(
         listOf(
             ManageLocationsData(
@@ -507,7 +438,7 @@ fun ManageLocationsPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun SearchCardPreview() {
+internal fun SearchCardPreview() {
     WeatherTheme {
         SearchBarCard(onClick = {})
     }
@@ -515,7 +446,7 @@ fun SearchCardPreview() {
 
 @Preview(showBackground = false)
 @Composable
-fun CityItemPreview() {
+internal fun CityItemPreview() {
     WeatherTheme {
         SavedLocationItem(
             data = ManageLocationsData(

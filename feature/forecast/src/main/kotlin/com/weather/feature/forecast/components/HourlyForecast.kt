@@ -27,7 +27,7 @@ import kotlin.math.roundToInt
 
 
 @Composable
-fun HourlyForecast(
+internal fun HourlyForecast(
     modifier: Modifier = Modifier,
     data: List<Hourly>,
     surfaceColor: Color = Color.White.copy(alpha = 0.15f),
@@ -59,7 +59,7 @@ fun HourlyForecast(
 }
 
 @Composable
-fun HourlyItem(
+internal fun HourlyItem(
     modifier: Modifier = Modifier,
     item: Hourly,
 ) {
@@ -89,7 +89,7 @@ fun HourlyItem(
 @Preview(showBackground = false, uiMode = UI_MODE_NIGHT_YES)
 @Preview(showBackground = false, uiMode = UI_MODE_NIGHT_NO)
 @Composable
-fun HourlyPreview() {
+private fun HourlyPreview() {
     WeatherTheme {
         HourlyForecast(data = HourlyStaticData)
     }
@@ -98,7 +98,7 @@ fun HourlyPreview() {
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO)
 @Composable
-fun HourlyItemPreview() {
+private fun HourlyItemPreview() {
     WeatherTheme {
         Surface {
 //            HourlyItem(item = HourlyStaticData[0])

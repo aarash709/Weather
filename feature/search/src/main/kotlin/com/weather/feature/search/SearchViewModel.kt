@@ -56,11 +56,11 @@ class SearchViewModel @Inject constructor(
             initialValue = SavableSearchState.empty
         )
 
-    fun setSearchQuery(cityName: String) {
+    internal fun setSearchQuery(cityName: String) {
         _searchQuery.value = cityName
     }
 
-    fun syncWeather(searchItem: GeoSearchItem) {
+    internal fun syncWeather(searchItem: GeoSearchItem) {
         viewModelScope.launch {
             val coordinate = Coordinate(
                 cityName = searchItem.name,

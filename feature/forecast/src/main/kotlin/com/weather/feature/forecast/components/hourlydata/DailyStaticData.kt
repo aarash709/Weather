@@ -4,7 +4,7 @@ import com.weather.model.Daily
 import com.weather.model.DailyPreview
 
 
-val DailyStaticData = listOf(
+internal val DailyStaticData = listOf(
     Daily(
         0,
         0.0,
