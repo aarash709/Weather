@@ -2,7 +2,6 @@ package com.weather.feature.managelocations
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.tween
@@ -11,12 +10,8 @@ import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,15 +28,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.ChecklistRtl
-import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.StarBorder
-import androidx.compose.material.icons.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.WaterDrop
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -72,12 +61,12 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.weather.core.design.components.CustomTopBar
 import com.weather.core.design.components.ShowLoadingText
 import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.feature.managelocations.components.LocationsBottombar
 import com.weather.feature.managelocations.components.LocationsTopbar
+import com.weather.feature.managelocations.components.locationsClickable
 import com.weather.model.Coordinate
 import com.weather.model.ManageLocationsData
 
@@ -111,7 +100,6 @@ fun ManageLocationsRoute(
 }
 
 @OptIn(
-    ExperimentalFoundationApi::class,
     ExperimentalMaterial3Api::class
 )
 @Composable
@@ -171,7 +159,8 @@ fun ManageLocations(
                 selectedCitySize = selectedCities.size,
                 onDeleteItem = { onDeleteItem(itemsToDelete) },
                 onEmptyCitySelection = { selectedCities = emptySet() },
-                onSetFavoriteItem = { onSetFavoriteItem(selectedCities.first())
+                onSetFavoriteItem = {
+                    onSetFavoriteItem(selectedCities.first())
                 })
         }
     ) { padding ->
@@ -217,36 +206,29 @@ fun ManageLocations(
                                     derivedStateOf { locationData.locationName in selectedCities }
                                 }
                                 SavedLocationItem(
-                                    modifier = Modifier.bouncyTapEffect() then
-                                            if (inSelectionMode) {
-                                                Modifier.clickable {
-                                                    if (selected)
-                                                        selectedCities -= locationData.locationName
-                                                    else
-                                                        selectedCities += locationData.locationName
-                                                }
-                                            } else {
-                                                Modifier.combinedClickable(
-                                                    onClick = {
-                                                        onItemSelected(
-                                                            Coordinate(
-                                                                locationData.locationName,
-                                                                locationData.latitude,
-                                                                locationData.longitude
-                                                            )
-                                                        )
-                                                    },
-                                                    onLongClick = {
-                                                        selectedCities += locationData.locationName
-                                                    }
-                                                )
+                                    modifier = Modifier
+                                        .bouncyTapEffect()
+                                        .locationsClickable(
+                                            inSelectionMode = inSelectionMode,
+                                            onSelectionMode = {
+                                                if (selected)
+                                                    selectedCities -= locationData.locationName
+                                                else
+                                                    selectedCities += locationData.locationName
                                             },
+                                            onItemSelected = {
+                                                onItemSelected(
+                                                Coordinate(
+                                                    locationData.locationName,
+                                                    locationData.latitude,
+                                                    locationData.longitude
+                                                )
+                                            )},
+                                            onLongClick = {  selectedCities += locationData.locationName }
+                                        ),
                                     data = locationData,
                                     inSelectionMode = inSelectionMode,
-                                    selected = selected,
-//                                    onItemSelected = { coordinate ->
-//                                        onItemSelected(coordinate)
-//                                    }
+                                    selected = selected
                                 )
                             }
                         }
@@ -313,7 +295,6 @@ fun SavedLocationItem(
     data: ManageLocationsData,
     inSelectionMode: Boolean,
     selected: Boolean,
-//    onItemSelected: (Coordinate) -> Unit,
 ) {
     val transition = updateTransition(targetState = inSelectionMode, label = "selection mode")
     val itemHorizontalPadding by transition.animateDp(label = "item padding") { inEditMode ->
