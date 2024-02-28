@@ -48,7 +48,7 @@ class SettingsViewModel @Inject constructor(private val repository: UserReposito
     }
 }
 
-internal sealed class SettingsUIState {
+sealed class SettingsUIState {
     data class Success(val settingsData: SettingsData) : SettingsUIState()
     object Loading : SettingsUIState()
 }
