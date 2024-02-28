@@ -169,6 +169,9 @@ fun ManageLocations(
             is LocationsUIState.Success -> {
                 LaunchedEffect(key1 = dataState) {
                     locationsList = dataState.data
+                    if (locationsList.size == 1) {
+                        onSetFavoriteItem(locationsList.first().locationName)
+                    }
                 }
                 Column(
                     modifier = Modifier
@@ -218,13 +221,14 @@ fun ManageLocations(
                                             },
                                             onItemSelected = {
                                                 onItemSelected(
-                                                Coordinate(
-                                                    locationData.locationName,
-                                                    locationData.latitude,
-                                                    locationData.longitude
+                                                    Coordinate(
+                                                        locationData.locationName,
+                                                        locationData.latitude,
+                                                        locationData.longitude
+                                                    )
                                                 )
-                                            )},
-                                            onLongClick = {  selectedCities += locationData.locationName }
+                                            },
+                                            onLongClick = { selectedCities += locationData.locationName }
                                         ),
                                     data = locationData,
                                     inSelectionMode = inSelectionMode,
