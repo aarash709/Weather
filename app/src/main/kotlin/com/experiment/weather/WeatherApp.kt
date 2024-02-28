@@ -32,7 +32,7 @@ fun WeatherApp(
 
     WeatherTheme {
         val snackbarHostState = remember { SnackbarHostState() }
-        val topDestination = appState.currentTopLevelDestination
+        val currentDestinationRoute = appState.currentTopLevelDestination
         Scaffold(
             modifier = Modifier,
             topBar = { },

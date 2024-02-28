@@ -75,12 +75,13 @@ import com.weather.core.design.components.CustomTopBar
 import com.weather.core.design.components.ShowLoadingText
 import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
+import com.weather.feature.managelocations.components.LocationsTopbar
 import com.weather.model.Coordinate
 import com.weather.model.ManageLocationsData
 
 @ExperimentalFoundationApi
 @Composable
-fun ManageLocations(
+fun ManageLocationsRoute(
     viewModel: ManageLocationsViewModel = hiltViewModel(),
     onBackPressed: () -> Unit,
     onItemSelected: (String) -> Unit,
@@ -153,48 +154,13 @@ fun ManageLocations(
     Scaffold(
         modifier = Modifier,
         topBar = {
-            CustomTopBar(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                text = if (isInEditMode) {
-                    "Selected Items ${selectedCities.size}"
-                } else {
-                    "Manage Locations"
-                },
+            LocationsTopbar(
+                isInEditMode = isInEditMode,
+                selectedCitySize = selectedCities.size,
+                scrollBehavior = scrollBehavior,
                 onBackPressed = { onBackPressed() },
-                navigationIcon = {
-                    AnimatedContent(
-                        targetState = isInEditMode,
-                        label = "Top bar Icon"
-                    ) { isInEditMode ->
-                        if (isInEditMode) {
-                            IconButton(onClick = { selectedCities = emptySet() }) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Close,
-                                    tint = MaterialTheme.colorScheme.onBackground,
-                                    contentDescription = "Clear selection Button"
-                                )
-                            }
-                        } else {
-                            IconButton(onClick = { onBackPressed() }) {
-                                Icon(
-                                    imageVector = Icons.Outlined.ArrowBack,
-                                    tint = MaterialTheme.colorScheme.onBackground,
-                                    contentDescription = "back icon"
-                                )
-                            }
-                        }
-                    }
-                },
-                actions = {
-                    if (isInEditMode) IconButton(onClick = { isAllSelected = !isAllSelected }) {
-                        Icon(
-                            imageVector = Icons.Default.ChecklistRtl,
-                            contentDescription = "Select all button"
-                        )
-                    }
-                },
-                scrollBehavior = scrollBehavior
+                onIsAllSelected = { isAllSelected = !isAllSelected },
+                onEmptyCitySelection = { selectedCities = emptySet() }
             )
         },
         bottomBar = {

@@ -79,7 +79,7 @@ import kotlin.math.roundToInt
 
 @ExperimentalCoroutinesApi
 @Composable
-fun WeatherForecastScreen(
+fun WeatherForecastRoute(
     viewModel: ForecastViewModel = hiltViewModel(),
     onNavigateToManageLocations: () -> Unit,
     onNavigateToSettings: () -> Unit,

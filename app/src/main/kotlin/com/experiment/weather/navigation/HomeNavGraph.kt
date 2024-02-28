@@ -7,7 +7,7 @@ import androidx.compose.animation.fadeOut
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.weather.feature.forecast.WeatherForecastScreen
+import com.weather.feature.forecast.WeatherForecastRoute
 import com.weather.feature.managelocations.manageLocationsRoute
 import com.weather.feature.settings.SETTINGS_ROUTE
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -65,7 +65,7 @@ fun NavGraphBuilder.forecastRoute(
         },
         arguments = listOf(navArgument(name = "cityName") { nullable = true })
     ) {
-        WeatherForecastScreen(
+        WeatherForecastRoute(
             onNavigateToManageLocations = {
                 navigateToManageLocations()
             },
