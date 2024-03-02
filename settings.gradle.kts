@@ -13,7 +13,7 @@ pluginManagement{
         mavenCentral()
     }
 }
-rootProject.name = "Weather"
+rootProject.name = "weather"
 include(":app")
 include(":core:database")
 include(":feature:forecast")
