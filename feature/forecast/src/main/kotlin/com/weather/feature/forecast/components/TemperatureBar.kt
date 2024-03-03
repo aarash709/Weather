@@ -53,7 +53,7 @@ internal fun TempBar(tempData: TempData) {
         val leftIndent = (tempData.minTemp - tempData.currentLow).times(stepsInPixels).div(width)
         val rightIndent = width - (tempData.maxTemp - tempData.currentHigh).times(stepsInPixels)
         val currentTempCirclePosition = Offset(
-            x = tempData.currentTemp.times(stepsInPixels).plus(stepsInPixels),
+            x = width - (tempData.maxTemp - tempData.currentTemp).times(stepsInPixels),
             y = height / 2
         )
         val strokeWidth = 5.dp.toPx()
@@ -77,7 +77,7 @@ internal fun TempBar(tempData: TempData) {
         if (tempData.shouldShowCurrentTemp) {
             drawCircle(
                 color = Color.White,
-                radius = 2.dp.toPx(),
+                radius = 4.dp.toPx(),
                 center = currentTempCirclePosition,
             )
         }
