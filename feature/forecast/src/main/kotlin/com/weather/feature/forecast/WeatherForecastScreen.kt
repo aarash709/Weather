@@ -10,14 +10,18 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -63,6 +67,8 @@ import com.weather.feature.forecast.components.HourlyWidgetWithGraph
 import com.weather.feature.forecast.components.WindDetails
 import com.weather.feature.forecast.components.hourlydata.DailyStaticData
 import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
+import com.weather.feature.forecast.widgets.WindDirection
+import com.weather.feature.forecast.widgets.WindWidget
 import com.weather.model.Coordinate
 import com.weather.model.Current
 import com.weather.model.Daily
@@ -188,6 +194,7 @@ fun WeatherForecastScreen(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun ConditionAndDetails(
     modifier: Modifier = Modifier,
@@ -195,16 +202,18 @@ internal fun ConditionAndDetails(
     showPlaceholder: Boolean,
     speedUnit: String,
 ) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+    FlowRow(
+        modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        maxItemsInEachRow = 2
     ) {
         CurrentWeather(
             modifier = Modifier
                 .padding(top = 60.dp, bottom = 100.dp)
                 .graphicsLayer {
                     //can be enabled after implementing independent scrolling
-                   //alpha -= scrollState.value.toFloat().times(3f).div(scrollState.maxValue)
+                    //alpha -= scrollState.value.toFloat().times(3f).div(scrollState.maxValue)
                 },
             location = weatherData.coordinates.name,
             weatherData = weatherData.current,
@@ -229,14 +238,18 @@ internal fun ConditionAndDetails(
                     visible = showPlaceholder,
                 ),
             dailyList = weatherData.daily.map { it.toDailyPreview() },
-            currentTemp = weatherData.current.currentTemp)
+            currentTemp = weatherData.current.currentTemp
+        )
         HourlyWidgetWithGraph(
-            modifier = Modifier.weatherPlaceholder(
+            modifier = Modifier.fillMaxWidth().weatherPlaceholder(
                 visible = showPlaceholder
             ),
             hourly = weatherData.hourly,
             speedUnit = speedUnit
         )
+        //small widgets here
+        WindWidget(modifier = Modifier.weight(1f))
+        WindWidget(modifier = Modifier.weight(1f))
     }
 }
 
