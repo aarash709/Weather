@@ -1,6 +1,7 @@
 package com.weather.model
 
 import arrow.optics.optics
+import kotlin.math.roundToInt
 
 @optics
 data class WeatherData(
@@ -97,8 +98,8 @@ data class Daily(
 
     fun toDailyPreview(): DailyPreview {
         return DailyPreview(
-            tempDay = dayTemp.toString(),
-            tempNight = nightTemp.toString(),
+            tempDay = dayTemp.roundToInt(),
+            tempNight = nightTemp.roundToInt(),
             time = dt,
             icon = icon,
             condition = main

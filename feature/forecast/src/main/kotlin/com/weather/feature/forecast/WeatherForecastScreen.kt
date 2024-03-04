@@ -5,11 +5,12 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOutCubic
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,23 +18,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Air
-import androidx.compose.material.icons.outlined.North
-import androidx.compose.material.icons.outlined.Visibility
-import androidx.compose.material.icons.outlined.WaterDrop
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -44,12 +35,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -63,6 +51,12 @@ import com.weather.feature.forecast.components.HourlyWidgetWithGraph
 import com.weather.feature.forecast.components.WindDetails
 import com.weather.feature.forecast.components.hourlydata.DailyStaticData
 import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
+import com.weather.feature.forecast.widgets.HumidityWidget
+import com.weather.feature.forecast.widgets.PressureWidget
+import com.weather.feature.forecast.widgets.RealFeelWidget
+import com.weather.feature.forecast.widgets.UVWidget
+import com.weather.feature.forecast.widgets.VisibilityWidget
+import com.weather.feature.forecast.widgets.WindWidget
 import com.weather.model.Coordinate
 import com.weather.model.Current
 import com.weather.model.Daily
@@ -188,6 +182,7 @@ fun WeatherForecastScreen(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun ConditionAndDetails(
     modifier: Modifier = Modifier,
@@ -195,16 +190,18 @@ internal fun ConditionAndDetails(
     showPlaceholder: Boolean,
     speedUnit: String,
 ) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+    FlowRow(
+        modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        maxItemsInEachRow = 2
     ) {
         CurrentWeather(
             modifier = Modifier
                 .padding(top = 60.dp, bottom = 100.dp)
                 .graphicsLayer {
                     //can be enabled after implementing independent scrolling
-                   //alpha -= scrollState.value.toFloat().times(3f).div(scrollState.maxValue)
+                    //alpha -= scrollState.value.toFloat().times(3f).div(scrollState.maxValue)
                 },
             location = weatherData.coordinates.name,
             weatherData = weatherData.current,
@@ -212,16 +209,8 @@ internal fun ConditionAndDetails(
             showPlaceholder = showPlaceholder,
         )
         Spacer(modifier = Modifier.height(65.dp))
-        CurrentWeatherDetails(
-            modifier = Modifier
-                .padding(horizontal = 1.dp)
-                .fillMaxWidth()
-                .weatherPlaceholder(
-                    visible = showPlaceholder,
-                ),
-            weatherData = weatherData.current,
-            speedUnit = speedUnit,
-        )
+        //widgets
+        // TODO: Weather alert goes here
         DailyWidget(
             modifier = Modifier
                 .fillMaxWidth()
@@ -229,14 +218,29 @@ internal fun ConditionAndDetails(
                     visible = showPlaceholder,
                 ),
             dailyList = weatherData.daily.map { it.toDailyPreview() },
-            currentTemp = weatherData.current.currentTemp)
+            currentTemp = weatherData.current.currentTemp.roundToInt()
+        )
         HourlyWidgetWithGraph(
-            modifier = Modifier.weatherPlaceholder(
-                visible = showPlaceholder
-            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .weatherPlaceholder(
+                    visible = showPlaceholder
+                ),
             hourly = weatherData.hourly,
             speedUnit = speedUnit
         )
+        RealFeelWidget(
+            modifier = Modifier.weight(1f),
+            realFeel = weatherData.current.feels_like.roundToInt()
+        )
+        WindWidget(modifier = Modifier.weight(1f))
+        HumidityWidget(modifier = Modifier.weight(1f), humidity = weatherData.current.humidity)
+        UVWidget(modifier = Modifier.weight(1f), uvIndex = weatherData.current.uvi.toInt())
+        VisibilityWidget(
+            modifier = Modifier.weight(1f),
+            visibility = weatherData.current.visibility
+        )
+        PressureWidget(modifier = Modifier.weight(1f), pressure = weatherData.current.pressure)
     }
 }
 
@@ -271,7 +275,6 @@ private fun CurrentWeather(
             )
             Text(
                 text = "${weatherData.currentTemp.roundToInt()}°",
-                fontWeight = FontWeight.Thin,
                 fontSize = 120.sp,
             )
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -289,143 +292,6 @@ private fun CurrentWeather(
         }
     }
 }
-
-@Composable
-private fun CurrentWeatherDetails(
-    modifier: Modifier = Modifier,
-    weatherData: Current,
-    speedUnit: String,
-) {
-    val visibility = when {
-        weatherData.visibility < 1000 -> {
-            "${weatherData.visibility}m"
-        }
-
-        weatherData.visibility > 1000 -> {
-            "${weatherData.visibility.div(1000)}km"
-        }
-
-        else -> {
-            "${weatherData.visibility}"
-        }
-    }
-    Surface(
-        modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
-        color = Color.White.copy(alpha = 0.15f)
-
-    ) {
-
-        Row(
-            modifier = Modifier.padding(8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            WeatherDetailItem(
-                image = Icons.Outlined.Air,
-                value = "${weatherData.wind_speed}$speedUnit",
-                itemName = "Wind Speed"
-            )
-            WeatherDetailItem(
-                image = Icons.Outlined.WaterDrop,
-                value = "${weatherData.humidity}%",
-                itemName = "Humidity"
-            )
-            WeatherDetailItem(
-                image = Icons.Outlined.Visibility,
-                value = visibility,
-                itemName = "Visibility"
-            )
-            WinDirectionDetail(
-                image = Icons.Outlined.North,
-                value = weatherData.wind_deg,
-            )
-        }
-    }
-}
-
-@Composable
-private fun WinDirectionDetail(
-    image: ImageVector,
-    value: Int,
-    itemName: String = "Wind Direction",
-) {
-    Column(
-        modifier = Modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Icon(
-                imageVector = image,
-                contentDescription = itemName,
-                modifier = Modifier
-                    .size(16.dp)
-                    .graphicsLayer {
-                        rotationZ = value.minus(180f)
-                    },
-            )
-        }
-        Text(
-            text = itemName,
-            fontSize = 10.sp,
-        )
-    }
-
-}
-
-@Composable
-private fun WeatherDetailItem(
-    image: ImageVector,
-    value: String,
-    itemName: String,
-) {
-    Column(
-        modifier = Modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Icon(
-                imageVector = image,
-                contentDescription = itemName,
-                modifier = Modifier
-                    .size(16.dp),
-            )
-            Text(
-                text = value,
-                fontSize = 10.sp,
-            )
-        }
-        Text(
-            text = itemName,
-            fontSize = 10.sp,
-        )
-    }
-}
-
-
-@Composable
-private fun SunMoonPosition() {
-    Card(
-        modifier = Modifier,
-        shape = RoundedCornerShape(8.dp)
-    ) {
-        Canvas(modifier = Modifier) {
-            drawRect(color = Color.Red)
-            drawArc(
-                brush = Brush.linearGradient(listOf(Color.Red, Color.Blue)),
-                startAngle = 40f, sweepAngle = 50f, useCenter = false, topLeft = Offset(80f, 20f)
-            )
-        }
-    }
-}
-
-
 @ExperimentalMaterialApi
 @Preview(name = "night", showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Preview(name = "day", showBackground = true, uiMode = UI_MODE_NIGHT_NO)
@@ -505,14 +371,5 @@ private fun WindPreview() {
             animateDegree.animateTo(113f, tween(1000, 100, easing = EaseOutCubic))
         }
         WindDetails(Modifier, animateDegree.value, 3.52f)
-    }
-}
-
-
-@Preview(showBackground = false, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-private fun SunPositionPreview() {
-    WeatherTheme {
-        SunMoonPosition()
     }
 }

@@ -8,6 +8,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 internal data class TempData(
@@ -53,7 +54,7 @@ internal fun TempBar(tempData: TempData) {
         val leftIndent = (tempData.minTemp - tempData.currentLow).times(stepsInPixels).div(width)
         val rightIndent = width - (tempData.maxTemp - tempData.currentHigh).times(stepsInPixels)
         val currentTempCirclePosition = Offset(
-            x = tempData.currentTemp.times(stepsInPixels).plus(stepsInPixels),
+            x = width - (tempData.maxTemp - tempData.currentTemp).times(stepsInPixels),
             y = height / 2
         )
         val strokeWidth = 5.dp.toPx()
@@ -77,9 +78,22 @@ internal fun TempBar(tempData: TempData) {
         if (tempData.shouldShowCurrentTemp) {
             drawCircle(
                 color = Color.White,
-                radius = 2.dp.toPx(),
+                radius = 4.dp.toPx(),
                 center = currentTempCirclePosition,
             )
         }
     }
+}
+
+@Preview
+@Composable
+private fun BarPreview() {
+    TempBar(tempData = TempData(
+        minTemp = -1,
+        maxTemp = 10,
+        currentLow = 1,
+        currentHigh = 8,
+        shouldShowCurrentTemp = true,
+        currentTemp = 3
+    ))
 }
