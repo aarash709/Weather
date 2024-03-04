@@ -67,6 +67,11 @@ import com.weather.feature.forecast.components.HourlyWidgetWithGraph
 import com.weather.feature.forecast.components.WindDetails
 import com.weather.feature.forecast.components.hourlydata.DailyStaticData
 import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
+import com.weather.feature.forecast.widgets.HumidityWidget
+import com.weather.feature.forecast.widgets.PressureWidget
+import com.weather.feature.forecast.widgets.RealFeelWidget
+import com.weather.feature.forecast.widgets.UVWidget
+import com.weather.feature.forecast.widgets.VisibilityWidget
 import com.weather.feature.forecast.widgets.WindDirection
 import com.weather.feature.forecast.widgets.WindWidget
 import com.weather.model.Coordinate
@@ -231,6 +236,7 @@ internal fun ConditionAndDetails(
             weatherData = weatherData.current,
             speedUnit = speedUnit,
         )
+        //widgets
         DailyWidget(
             modifier = Modifier
                 .fillMaxWidth()
@@ -241,15 +247,26 @@ internal fun ConditionAndDetails(
             currentTemp = weatherData.current.currentTemp
         )
         HourlyWidgetWithGraph(
-            modifier = Modifier.fillMaxWidth().weatherPlaceholder(
-                visible = showPlaceholder
-            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .weatherPlaceholder(
+                    visible = showPlaceholder
+                ),
             hourly = weatherData.hourly,
             speedUnit = speedUnit
         )
-        //small widgets here
+        RealFeelWidget(
+            modifier = Modifier.weight(1f),
+            realFeel = weatherData.current.feels_like.toFloat()
+        )
         WindWidget(modifier = Modifier.weight(1f))
-        WindWidget(modifier = Modifier.weight(1f))
+        HumidityWidget(modifier = Modifier.weight(1f), humidity = weatherData.current.humidity)
+        UVWidget(modifier = Modifier.weight(1f), uvIndex = weatherData.current.uvi.toInt())
+        VisibilityWidget(
+            modifier = Modifier.weight(1f),
+            visibility = weatherData.current.visibility
+        )
+        PressureWidget(modifier = Modifier.weight(1f), pressure = weatherData.current.pressure)
     }
 }
 

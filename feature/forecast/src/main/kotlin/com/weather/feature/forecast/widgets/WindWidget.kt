@@ -29,43 +29,14 @@ import androidx.compose.ui.unit.sp
 @Composable
 internal fun WindWidget(
     modifier: Modifier = Modifier,
-    surfaceColor: Color = Color.White.copy(alpha = 0.15f),
 ) {
-    Surface(
-        modifier = Modifier.aspectRatio(1f) then modifier,
-        shape = RoundedCornerShape(16.dp),
-        color = surfaceColor
-    ) {
-        Column(Modifier.padding(16.dp)) {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-//                Box(
-//                    modifier = Modifier
-//                        .clip(CircleShape)
-//                        .size(15.dp)
-//                        .background(Color.White.copy(alpha = 0.5f)),
-//                    contentAlignment = Alignment.Center
-//                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Air,
-                        modifier = Modifier.padding(3.dp),
-                        tint = Color.Blue.copy(alpha = 0.4f),
-                        contentDescription = null
-                    )
-//                }
-                Text(
-                    text = "Wind",
-                    fontSize = 14.sp,
-                    color = Color.White.copy(alpha = 0.5f)
-                )
-            }
-//            Text(text = "test", fontSize = 32.sp)
-            WindDirection(modifier = Modifier.padding(32.dp), windDirection = 90)
-        }
+    WeatherSquareWidget(modifier, icon = Icons.Outlined.Air, title = "Wind") {
+        WindDirection(modifier = Modifier.padding(32.dp), windDirection = 90)
     }
 }
 
 @Composable
-fun WindDirection(modifier: Modifier = Modifier, windDirection: Int) {
+internal fun WindDirection(modifier: Modifier = Modifier, windDirection: Int) {
     Box(modifier = modifier) {
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawCircle(
