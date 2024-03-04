@@ -1,6 +1,5 @@
 package com.weather.feature.forecast.widgets
 
-import android.graphics.drawable.Icon
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons

@@ -39,7 +39,7 @@ import kotlin.math.roundToInt
 internal fun DailyWidget(
     modifier: Modifier = Modifier,
     dailyList: List<DailyPreview>,
-    currentTemp: Double,
+    currentTemp: Int,
     surfaceColor: Color = Color.White.copy(alpha = 0.15f),
 ) {
     Surface(
@@ -97,10 +97,10 @@ internal fun DailyWidget(
             }
             HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
             dailyList.forEachIndexed { index, daily ->
-                val minTemp = dailyList.minOf { it.tempNight.toFloat().roundToInt() }
-                val maxTemp = dailyList.maxOf { it.tempDay.toFloat().roundToInt() }
-                val currentLow = daily.tempNight.toFloat().roundToInt()
-                val currentHigh = daily.tempDay.toFloat().roundToInt()
+                val minTemp = dailyList.minOf { it.tempNight }
+                val maxTemp = dailyList.maxOf { it.tempDay }
+                val currentLow = daily.tempNight
+                val currentHigh = daily.tempDay
                 DailyItem(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -111,7 +111,7 @@ internal fun DailyWidget(
                         currentLow = currentLow,
                         currentHigh = currentHigh,
                         shouldShowCurrentTemp = index == 0,
-                        currentTemp = currentTemp.roundToInt()
+                        currentTemp = currentTemp
                     )
                 )
                 if (index != dailyList.lastIndex) {
@@ -179,7 +179,7 @@ private fun DailyListPreview() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            currentTemp = 0.0
+            currentTemp = 0
         )
     }
 }

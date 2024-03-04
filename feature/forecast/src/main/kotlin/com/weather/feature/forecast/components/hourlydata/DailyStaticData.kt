@@ -100,36 +100,36 @@ internal val DailyStaticData = listOf(
 )
 val DailyPreviewStaticData = listOf(
     DailyPreview(
-        tempDay = "283",
-        tempNight = "275",
+        tempDay = 283,
+        tempNight = 275,
         time = "Tomorrow",
         icon = "",
         condition = "Clouds"
     ),
     DailyPreview(
-        tempDay = "280",
-        tempNight = "274",
+        tempDay = 280,
+        tempNight = 274,
         time = "Wed",
         icon = "",
         condition = "Snow"
     ),
     DailyPreview(
-        tempDay = "284",
-        tempNight = "276",
+        tempDay = 284,
+        tempNight = 276,
         time = "Thur",
         icon = "",
         condition = "Clouds"
     ),
     DailyPreview(
-        tempDay = "278",
-        tempNight = "270",
+        tempDay = 278,
+        tempNight = 270,
         time = "Friday",
         icon = "",
         condition = "Rain"
     ),
     DailyPreview(
-        tempDay = "281",
-        tempNight = "269",
+        tempDay = 281,
+        tempNight = 269,
         time = "Saturday",
         icon = "",
         condition = "Snow"

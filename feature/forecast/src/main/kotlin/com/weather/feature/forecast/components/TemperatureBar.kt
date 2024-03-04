@@ -8,6 +8,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 internal data class TempData(
@@ -82,4 +83,17 @@ internal fun TempBar(tempData: TempData) {
             )
         }
     }
+}
+
+@Preview
+@Composable
+private fun BarPreview() {
+    TempBar(tempData = TempData(
+        minTemp = -1,
+        maxTemp = 10,
+        currentLow = 1,
+        currentHigh = 8,
+        shouldShowCurrentTemp = true,
+        currentTemp = 3
+    ))
 }
