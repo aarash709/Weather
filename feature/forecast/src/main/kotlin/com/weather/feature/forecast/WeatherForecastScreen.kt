@@ -226,17 +226,8 @@ internal fun ConditionAndDetails(
             showPlaceholder = showPlaceholder,
         )
         Spacer(modifier = Modifier.height(65.dp))
-        CurrentWeatherDetails(
-            modifier = Modifier
-                .padding(horizontal = 1.dp)
-                .fillMaxWidth()
-                .weatherPlaceholder(
-                    visible = showPlaceholder,
-                ),
-            weatherData = weatherData.current,
-            speedUnit = speedUnit,
-        )
         //widgets
+        // TODO: Weather alert goes here
         DailyWidget(
             modifier = Modifier
                 .fillMaxWidth()
@@ -319,125 +310,6 @@ private fun CurrentWeather(
         }
     }
 }
-
-@Composable
-private fun CurrentWeatherDetails(
-    modifier: Modifier = Modifier,
-    weatherData: Current,
-    speedUnit: String,
-) {
-    val visibility = when {
-        weatherData.visibility < 1000 -> {
-            "${weatherData.visibility}m"
-        }
-
-        weatherData.visibility > 1000 -> {
-            "${weatherData.visibility.div(1000)}km"
-        }
-
-        else -> {
-            "${weatherData.visibility}"
-        }
-    }
-    Surface(
-        modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
-        color = Color.White.copy(alpha = 0.15f)
-
-    ) {
-
-        Row(
-            modifier = Modifier.padding(8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            WeatherDetailItem(
-                image = Icons.Outlined.Air,
-                value = "${weatherData.wind_speed}$speedUnit",
-                itemName = "Wind Speed"
-            )
-            WeatherDetailItem(
-                image = Icons.Outlined.WaterDrop,
-                value = "${weatherData.humidity}%",
-                itemName = "Humidity"
-            )
-            WeatherDetailItem(
-                image = Icons.Outlined.Visibility,
-                value = visibility,
-                itemName = "Visibility"
-            )
-            WinDirectionDetail(
-                image = Icons.Outlined.North,
-                value = weatherData.wind_deg,
-            )
-        }
-    }
-}
-
-@Composable
-private fun WinDirectionDetail(
-    image: ImageVector,
-    value: Int,
-    itemName: String = "Wind Direction",
-) {
-    Column(
-        modifier = Modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Icon(
-                imageVector = image,
-                contentDescription = itemName,
-                modifier = Modifier
-                    .size(16.dp)
-                    .graphicsLayer {
-                        rotationZ = value.minus(180f)
-                    },
-            )
-        }
-        Text(
-            text = itemName,
-            fontSize = 10.sp,
-        )
-    }
-
-}
-
-@Composable
-private fun WeatherDetailItem(
-    image: ImageVector,
-    value: String,
-    itemName: String,
-) {
-    Column(
-        modifier = Modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Icon(
-                imageVector = image,
-                contentDescription = itemName,
-                modifier = Modifier
-                    .size(16.dp),
-            )
-            Text(
-                text = value,
-                fontSize = 10.sp,
-            )
-        }
-        Text(
-            text = itemName,
-            fontSize = 10.sp,
-        )
-    }
-}
-
 
 @Composable
 private fun SunMoonPosition() {
