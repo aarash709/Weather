@@ -6,12 +6,12 @@ import org.gradle.api.Project
 
 
 internal fun Project.configureAndroid(
-    extension: CommonExtension<*,*,*,*,*>
-){
+    extension: CommonExtension<*, *, *, *, *, *>,
+) {
     extension.apply {
         compileSdk = 34
 
-        defaultConfig{
+        defaultConfig {
             minSdk = 26
         }
         compileOptions {
