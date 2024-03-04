@@ -3,12 +3,10 @@ package com.experiment.buildlogic.conventionplugins
 import com.android.build.api.dsl.CommonExtension
 import getLibs
 import org.gradle.api.Project
-import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.getByType
 
 internal fun Project.composeBuildConfiguration(
-    commonExtension: CommonExtension<*, *, *, *, *>,
+    commonExtension: CommonExtension<*, *, *, *, *, *>,
 ) {
     commonExtension.apply {
         buildFeatures{
