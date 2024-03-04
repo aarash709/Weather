@@ -8,14 +8,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 
+
 @Composable
 fun VisibilityWidget(visibility: Int, modifier: Modifier = Modifier) {
+    val visibilityValue = when {
+        visibility < 1000 -> {
+            "${visibility}m"
+        }
+
+        visibility >= 1000 -> {
+            "${visibility.div(1000)}km"
+        }
+
+        else -> {
+            "$visibility"
+        }
+    }
+
     WeatherSquareWidget(
         modifier = modifier,
         icon = Icons.Outlined.RemoveRedEye,
         title = "Visibility"
     ) {
-        Text(text = "$visibility", fontSize = 32.sp)
+        Text(text = visibilityValue, fontSize = 32.sp)
     }
 }
 

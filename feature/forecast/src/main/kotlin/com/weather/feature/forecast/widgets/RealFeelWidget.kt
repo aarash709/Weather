@@ -14,11 +14,11 @@ import com.weather.core.design.theme.WeatherTheme
 
 @Composable
 internal fun RealFeelWidget(
-    realFeel: Float,
+    realFeel: Int,
     modifier: Modifier = Modifier,
 ) {
     WeatherSquareWidget(modifier, icon = Icons.Outlined.Thermostat, title = "Real Feel") {
-        Text(text = "$realFeel°", modifier = Modifier.padding(32.dp), fontSize = 32.sp)
+        Text(text = "${realFeel}°", modifier = Modifier.padding(32.dp), fontSize = 32.sp)
     }
 }
 
@@ -27,6 +27,6 @@ internal fun RealFeelWidget(
 @Composable
 private fun RealFeelPrev() {
     WeatherTheme {
-        RealFeelWidget(19f)
+        RealFeelWidget(19)
     }
 }

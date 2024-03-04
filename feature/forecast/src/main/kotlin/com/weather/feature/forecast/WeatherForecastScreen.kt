@@ -257,7 +257,7 @@ internal fun ConditionAndDetails(
         )
         RealFeelWidget(
             modifier = Modifier.weight(1f),
-            realFeel = weatherData.current.feels_like.toFloat()
+            realFeel = weatherData.current.feels_like.roundToInt()
         )
         WindWidget(modifier = Modifier.weight(1f))
         HumidityWidget(modifier = Modifier.weight(1f), humidity = weatherData.current.humidity)
