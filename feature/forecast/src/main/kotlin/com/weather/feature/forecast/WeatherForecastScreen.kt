@@ -292,7 +292,6 @@ private fun CurrentWeather(
             )
             Text(
                 text = "${weatherData.currentTemp.roundToInt()}°",
-                fontWeight = FontWeight.Thin,
                 fontSize = 120.sp,
             )
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -310,24 +309,6 @@ private fun CurrentWeather(
         }
     }
 }
-
-@Composable
-private fun SunMoonPosition() {
-    Card(
-        modifier = Modifier,
-        shape = RoundedCornerShape(8.dp)
-    ) {
-        Canvas(modifier = Modifier) {
-            drawRect(color = Color.Red)
-            drawArc(
-                brush = Brush.linearGradient(listOf(Color.Red, Color.Blue)),
-                startAngle = 40f, sweepAngle = 50f, useCenter = false, topLeft = Offset(80f, 20f)
-            )
-        }
-    }
-}
-
-
 @ExperimentalMaterialApi
 @Preview(name = "night", showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Preview(name = "day", showBackground = true, uiMode = UI_MODE_NIGHT_NO)
@@ -407,14 +388,5 @@ private fun WindPreview() {
             animateDegree.animateTo(113f, tween(1000, 100, easing = EaseOutCubic))
         }
         WindDetails(Modifier, animateDegree.value, 3.52f)
-    }
-}
-
-
-@Preview(showBackground = false, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-private fun SunPositionPreview() {
-    WeatherTheme {
-        SunMoonPosition()
     }
 }
