@@ -2,6 +2,7 @@ package com.weather.feature.forecast.widgets
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -31,7 +32,7 @@ fun WeatherSquareWidget(
     icon: ImageVector,
     title: String,
     surfaceColor: Color = Color.White.copy(alpha = 0.15f),
-    content: @Composable () -> Unit,
+    content: @Composable BoxScope.() -> Unit,
 ) {
     Surface(
         modifier = Modifier.aspectRatio(1f) then modifier,
