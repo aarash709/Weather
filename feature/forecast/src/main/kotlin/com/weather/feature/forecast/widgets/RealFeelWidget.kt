@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.weather.core.design.theme.WeatherTheme
+import kotlin.math.absoluteValue
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -40,7 +41,7 @@ private fun RealFeel(realFeel: Int) {
     ) {
         val circleSize = 7.dp.toPx()
         val archThickness = 6.dp.toPx()
-        val progress = realFeel.coerceIn(minimumValue = -10, maximumValue = 40).toDouble().div(40)
+        val progress = realFeel.coerceIn(minimumValue = 0, maximumValue = 40).toDouble().div(40)
         val radius = size.width / 2
         val angle = (progress * 270) + 45
         val x = -(radius * sin(Math.toRadians(angle)).toFloat()) + size.width / 2
@@ -90,6 +91,6 @@ private fun RealFeel(realFeel: Int) {
 @Composable
 private fun RealFeelPrev() {
     WeatherTheme {
-        RealFeelWidget(5)
+        RealFeelWidget(-10)
     }
 }
