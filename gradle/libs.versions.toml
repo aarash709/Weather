@@ -2,7 +2,7 @@
 kotlin = "1.9.22"
 kotlinxSerialization = "1.6.3"
 kotlinxCoroutines = "1.8.0"
-kotlinxKsp = "1.9.22-1.0.17"
+kotlinxKsp = "1.9.22-1.0.18"
 androidGradlePlugin = "8.3.0"
 androidxComposeBom = "2024.02.01"
 androidxCompose = "1.5.0"
