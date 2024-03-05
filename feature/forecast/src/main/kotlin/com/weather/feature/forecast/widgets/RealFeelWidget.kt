@@ -33,9 +33,11 @@ internal fun RealFeelWidget(
 
 @Composable
 private fun RealFeel(realFeel: Int) {
-    Canvas(modifier = Modifier
-        .aspectRatio(1f)
-        .padding(16.dp)) {
+    Canvas(
+        modifier = Modifier
+            .aspectRatio(1f)
+            .padding(16.dp)
+    ) {
         val circleSize = 7.dp.toPx()
         val archThickness = 6.dp.toPx()
         val progress = realFeel.coerceIn(minimumValue = -10, maximumValue = 40).toDouble().div(40)
@@ -78,7 +80,7 @@ private fun RealFeel(realFeel: Int) {
             Color.Black,
             radius = circleSize,
             center = Offset(x = x, y = y),
-            style = Stroke(archThickness/5)
+            style = Stroke(archThickness / 5)
         )
     }
 }
@@ -88,6 +90,6 @@ private fun RealFeel(realFeel: Int) {
 @Composable
 private fun RealFeelPrev() {
     WeatherTheme {
-        RealFeelWidget(15)
+        RealFeelWidget(5)
     }
 }

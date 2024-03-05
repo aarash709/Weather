@@ -92,7 +92,7 @@ fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
             Color.Black,
             radius = circleSize,
             center = Offset(x = x, y = y),
-            style = Stroke(archThickness/5)
+            style = Stroke(archThickness / 5)
         )
     }
 }
