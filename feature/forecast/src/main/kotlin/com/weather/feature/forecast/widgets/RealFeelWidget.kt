@@ -10,13 +10,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.weather.core.design.components.WeatherSquareWidget
 import com.weather.core.design.theme.WeatherTheme
-import kotlin.math.absoluteValue
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -27,13 +26,13 @@ internal fun RealFeelWidget(
     modifier: Modifier = Modifier,
 ) {
     WeatherSquareWidget(modifier, icon = Icons.Outlined.Thermostat, title = "Real Feel") {
-        RealFeel(realFeel)
+        RealFeelGraph(realFeel)
         Text(text = "${realFeel}°", modifier = Modifier.padding(32.dp), fontSize = 32.sp)
     }
 }
 
 @Composable
-private fun RealFeel(realFeel: Int) {
+private fun RealFeelGraph(realFeel: Int) {
     Canvas(
         modifier = Modifier
             .aspectRatio(1f)

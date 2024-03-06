@@ -1,4 +1,4 @@
-package com.weather.feature.forecast.widgets
+package com.weather.core.design.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
