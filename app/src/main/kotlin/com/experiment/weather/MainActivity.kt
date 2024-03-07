@@ -14,12 +14,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -29,7 +31,7 @@ class MainActivity : ComponentActivity() {
 
     private val mainViewModel: MainViewModel by viewModels()
     private var hasInternet by mutableStateOf(false)
-    private var isDatabaseEmpty by mutableStateOf(false)
+    private var isDatabaseEmpty by mutableStateOf(true)
 
     @FlowPreview
     @ExperimentalAnimationApi
@@ -51,7 +53,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        installSplashScreen()
+        val splashScreen = installSplashScreen()
+        splashScreen.setKeepOnScreenCondition {
+                isDatabaseEmpty
+            }
+
         enableEdgeToEdge()
 
         setContent {
