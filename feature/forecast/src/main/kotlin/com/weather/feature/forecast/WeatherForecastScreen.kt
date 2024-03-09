@@ -233,7 +233,11 @@ internal fun ConditionAndDetails(
             modifier = Modifier.weight(1f),
             realFeel = weatherData.current.feels_like.roundToInt()
         )
-        WindWidget(modifier = Modifier.weight(1f))
+        WindWidget(
+            modifier = Modifier.weight(1f),
+            windDirection = weatherData.current.wind_deg,
+            windSpeed = weatherData.current.wind_speed.roundToInt()
+        )
         HumidityWidget(modifier = Modifier.weight(1f), humidity = weatherData.current.humidity)
         UVWidget(modifier = Modifier.weight(1f), uvIndex = weatherData.current.uvi.toInt())
         VisibilityWidget(
