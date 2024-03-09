@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,7 +45,7 @@ fun HumidityGraph(humidity: Int) {
             sweepAngle = 270f,
             useCenter = false,
             topLeft = Offset(0f, 0f),
-            style = Stroke(width = archThickness),
+            style = Stroke(width = archThickness, cap = StrokeCap.Round),
         )
         drawArc(
             color = Color.Blue.copy(green = 0.5f),
@@ -52,7 +53,7 @@ fun HumidityGraph(humidity: Int) {
             sweepAngle = humidity.times(270).div(100).toFloat(),
             useCenter = false,
             topLeft = Offset(0f, 0f),
-            style = Stroke(width = archThickness),
+            style = Stroke(width = archThickness, cap = StrokeCap.Round),
         )
     }
 

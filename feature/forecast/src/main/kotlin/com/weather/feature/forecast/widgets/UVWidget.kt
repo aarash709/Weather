@@ -58,8 +58,8 @@ fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
             .aspectRatio(1f)
             .padding(16.dp)
     ) {
-        val circleSize = 7.dp.toPx()
-        val archThickness = 6.dp.toPx()
+        val circleSize = 8.dp.toPx()
+        val archThickness = 7.dp.toPx()
         val progress = uvIndex.coerceAtMost(11).toDouble().div(11)
         val radius = size.width / 2
         val angle = (progress * 270) + 45
@@ -77,7 +77,7 @@ fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
             style = Stroke(width = archThickness, cap = StrokeCap.Round),
         )
         drawCircle(
-            Color.White,
+            Color.Blue.copy(green = 0.4f),
             radius = circleSize,
             center = Offset(x = x, y = y)
         )
@@ -85,7 +85,7 @@ fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
             Color.Black,
             radius = circleSize,
             center = Offset(x = x, y = y),
-            style = Stroke(archThickness / 5)
+            style = Stroke(circleSize / 3)
         )
     }
 }
