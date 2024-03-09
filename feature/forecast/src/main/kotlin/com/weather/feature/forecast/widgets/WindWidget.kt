@@ -1,16 +1,22 @@
 package com.weather.feature.forecast.widgets
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Air
 import androidx.compose.material.icons.outlined.ArrowDropUp
+import androidx.compose.material.icons.outlined.Circle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.center
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -22,8 +28,10 @@ import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.weather.core.design.components.WeatherSquareWidget
 import kotlin.math.cos
 import kotlin.math.sin
@@ -33,16 +41,27 @@ internal fun WindWidget(
     modifier: Modifier = Modifier,
     windDirection: Int,
     windSpeed: Int,
+    speedUnits: String,
 ) {
     WeatherSquareWidget(modifier, icon = Icons.Outlined.Air, title = "Wind") {
-        WindDirectionGraph(windDirection = windDirection, windSpeed = windSpeed)
+        WindDirectionGraph(
+            windDirection = windDirection,
+            windSpeed = windSpeed,
+            speedUnits = speedUnits
+        )
     }
 }
 
 @Composable
-internal fun WindDirectionGraph(modifier: Modifier = Modifier, windDirection: Int, windSpeed: Int) {
+internal fun WindDirectionGraph(
+    modifier: Modifier = Modifier,
+    windDirection: Int,
+    windSpeed: Int,
+    speedUnits: String,
+) {
     val textMeasurer = rememberTextMeasurer()
-    val painter = rememberVectorPainter(image = Icons.Outlined.ArrowDropUp)
+    val arrowPainter = rememberVectorPainter(image = Icons.Outlined.ArrowDropUp)
+    val circlePainter = rememberVectorPainter(image = Icons.Outlined.Circle)
     Canvas(
         modifier = modifier
             .aspectRatio(1f)
@@ -51,18 +70,34 @@ internal fun WindDirectionGraph(modifier: Modifier = Modifier, windDirection: In
         val width = size.width
         val height = size.height
         val halfWidth = size.center.x
-        val innerRadius = halfWidth.times(0.85f)
+        val innerRadius = halfWidth.times(0.9f)
         val outerRadius = halfWidth.times(1.0f)
         val letters = listOf("E", "N", "W", "S")
-        drawInfoText(halfWidth, textMeasurer, windSpeed)
-        drawArrow(windDirection, halfWidth, painter)
+        drawInfoText(halfWidth, textMeasurer, windSpeed, speedUnits)
+        drawCircle(
+            brush = Brush.radialGradient(
+                colors = listOf(
+                    Color.White.copy(alpha = 0.05f),
+                    Color.White.copy(alpha = 0.02f),
+                )
+            ), radius = halfWidth / 2
+        )
+        drawArrow(windDirection, halfWidth, arrowPainter, circlePainter)
         drawLines(innerRadius, outerRadius, width)
         drawLetters(letters, textMeasurer, innerRadius, width)
     }
 }
 
-private fun DrawScope.drawInfoText(halfWidth: Float, textMeasurer: TextMeasurer, windSpeed: Int) {
-    val infoText = textMeasurer.measure("$windSpeed km/h")
+private fun DrawScope.drawInfoText(
+    halfWidth: Float,
+    textMeasurer: TextMeasurer,
+    windSpeed: Int,
+    speedUnits: String,
+) {
+    val infoText = textMeasurer.measure(
+        text = "$windSpeed\n $speedUnits",
+        style = TextStyle(fontSize = 12.sp, textAlign = TextAlign.Center)
+    )
     drawText(
         textLayoutResult = infoText,
         topLeft = Offset(
@@ -76,21 +111,33 @@ private fun DrawScope.drawInfoText(halfWidth: Float, textMeasurer: TextMeasurer,
 private fun DrawScope.drawArrow(
     windDirection: Int,
     halfWidth: Float,
-    painter: VectorPainter,
+    arrow: VectorPainter,
+    circle: VectorPainter,
 ) {
     rotate((windDirection - 180f), pivot = size.center) {
-        with(painter) {
-            translate(left = halfWidth - intrinsicSize.width / 2) {
+        with(arrow) {
+            translate(
+                left = halfWidth - intrinsicSize.width / 2,
+                top = -intrinsicSize.height / 1.5f
+            ) {
                 draw(
-                    Size(intrinsicSize.width, intrinsicSize.height),
+                    Size(intrinsicSize.width, intrinsicSize.height * 1.5f),
                     colorFilter = ColorFilter.tint(Color.White)
                 )
             }
         }
         drawLine(
             color = Color.White,
-            start = Offset(halfWidth, 30f),
-            end = Offset(halfWidth, halfWidth.div(1.5f)),
+            start = Offset(halfWidth, 0f),
+            end = Offset(halfWidth, halfWidth.div(2.1f)),
+            strokeWidth = 3.dp.toPx()
+        )
+    }
+    rotate(windDirection.toFloat(), pivot = size.center) {
+        drawLine(
+            color = Color.White,
+            start = Offset(halfWidth, 0f),
+            end = Offset(halfWidth, halfWidth.div(2.1f)),
             strokeWidth = 3.dp.toPx()
         )
     }
@@ -140,7 +187,7 @@ private fun DrawScope.drawLetters(
 
         val textLayoutResult = textMeasurer.measure(
             text = letter,
-            style = TextStyle(fontSize = halfWidth.times(0.25f).toSp())
+            style = TextStyle(fontSize = 10.sp)
         )
 
         val textX = when (letter) {
@@ -168,8 +215,18 @@ private fun DrawScope.drawLetters(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Preview(backgroundColor = 0xFF255BFF, showBackground = false)
 @Composable
 private fun WidPreview() {
-    WindWidget(windDirection = 0, windSpeed = 12)
+    FlowRow(
+        Modifier
+            .background(Color.Blue.copy(green = 0.35f)),
+        maxItemsInEachRow = 2,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        WindWidget(Modifier.weight(1f), windDirection = 0, windSpeed = 12, "km/h")
+        WindWidget(Modifier.weight(1f), windDirection = 0, windSpeed = 12, "mph")
+    }
 }
