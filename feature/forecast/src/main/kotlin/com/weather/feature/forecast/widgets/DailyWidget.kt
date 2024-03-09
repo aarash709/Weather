@@ -1,4 +1,4 @@
-package com.weather.feature.forecast.components
+package com.weather.feature.forecast.widgets
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
@@ -31,6 +31,8 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
+import com.weather.feature.forecast.components.TempBar
+import com.weather.feature.forecast.components.TempData
 import com.weather.feature.forecast.components.hourlydata.DailyPreviewStaticData
 import com.weather.model.DailyPreview
 import kotlin.math.roundToInt
@@ -40,7 +42,7 @@ internal fun DailyWidget(
     modifier: Modifier = Modifier,
     dailyList: List<DailyPreview>,
     currentTemp: Int,
-    surfaceColor: Color = Color.White.copy(alpha = 0.15f),
+    surfaceColor: Color = Color.Black.copy(alpha = 0.10f),
 ) {
     Surface(
         modifier = Modifier.bouncyTapEffect() then modifier,
