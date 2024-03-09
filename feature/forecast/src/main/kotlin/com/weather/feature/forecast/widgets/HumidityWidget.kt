@@ -26,7 +26,7 @@ internal fun HumidityWidget(
         icon = Icons.Outlined.WaterDrop, title = "Humidity"
     ) {
         HumidityGraph(humidity = humidity)
-        Text(text = "$humidity%", fontSize = 32.sp)
+        Text(text = "$humidity%", fontSize = 24.sp)
     }
 }
 

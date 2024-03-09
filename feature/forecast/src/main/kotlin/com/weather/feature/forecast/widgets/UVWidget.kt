@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,8 +46,7 @@ fun UVWidget(uvIndex: Int, modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(text = "$uvIndex", fontSize = 24.sp)
-            Text(text = uvLevel, fontSize = 24.sp)
+            Text(text = "$uvIndex\n$uvLevel", fontSize = 24.sp, textAlign = TextAlign.Center)
         }
     }
 }

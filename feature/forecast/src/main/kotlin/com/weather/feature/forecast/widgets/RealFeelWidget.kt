@@ -27,7 +27,7 @@ internal fun RealFeelWidget(
 ) {
     WeatherSquareWidget(modifier, icon = Icons.Outlined.Thermostat, title = "Real Feel") {
         RealFeelGraph(realFeel)
-        Text(text = "${realFeel}°", modifier = Modifier.padding(32.dp), fontSize = 32.sp)
+        Text(text = "${realFeel}°", modifier = Modifier.padding(32.dp), fontSize = 24.sp)
     }
 }
 
