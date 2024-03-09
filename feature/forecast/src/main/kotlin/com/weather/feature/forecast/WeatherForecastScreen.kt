@@ -45,9 +45,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.weather.core.design.components.weatherPlaceholder
 import com.weather.core.design.theme.WeatherTheme
-import com.weather.feature.forecast.components.DailyWidget
+import com.weather.feature.forecast.widgets.DailyWidget
 import com.weather.feature.forecast.components.ForecastTopBar
-import com.weather.feature.forecast.components.HourlyWidgetWithGraph
+import com.weather.feature.forecast.widgets.HourlyWidget
 import com.weather.feature.forecast.components.WindDetails
 import com.weather.feature.forecast.components.hourlydata.DailyStaticData
 import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
@@ -220,7 +220,7 @@ internal fun ConditionAndDetails(
             dailyList = weatherData.daily.map { it.toDailyPreview() },
             currentTemp = weatherData.current.currentTemp.roundToInt()
         )
-        HourlyWidgetWithGraph(
+        HourlyWidget(
             modifier = Modifier
                 .fillMaxWidth()
                 .weatherPlaceholder(
@@ -233,7 +233,12 @@ internal fun ConditionAndDetails(
             modifier = Modifier.weight(1f),
             realFeel = weatherData.current.feels_like.roundToInt()
         )
-        WindWidget(modifier = Modifier.weight(1f))
+        WindWidget(
+            modifier = Modifier.weight(1f),
+            windDirection = weatherData.current.wind_deg,
+            windSpeed = weatherData.current.wind_speed.roundToInt(),
+            speedUnits = speedUnit
+        )
         HumidityWidget(modifier = Modifier.weight(1f), humidity = weatherData.current.humidity)
         UVWidget(modifier = Modifier.weight(1f), uvIndex = weatherData.current.uvi.toInt())
         VisibilityWidget(

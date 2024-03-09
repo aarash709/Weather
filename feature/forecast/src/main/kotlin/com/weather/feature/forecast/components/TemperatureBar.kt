@@ -48,7 +48,7 @@ internal fun TempBar(tempData: TempData) {
         )
         val width = size.width
         val height = size.height
-        val backgroundColor = Color.Black.copy(alpha = 0.15f)
+        val backgroundColor = Color.Black.copy(alpha = 0.2f)
         val tempRange = tempData.maxTemp - tempData.minTemp
         val stepsInPixels = width / tempRange
         val leftIndent = (tempData.minTemp - tempData.currentLow).times(stepsInPixels).div(width)

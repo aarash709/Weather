@@ -1,4 +1,4 @@
-package com.weather.feature.forecast.components
+package com.weather.feature.forecast.widgets
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
@@ -32,15 +32,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.weather.core.design.theme.WeatherTheme
+import com.weather.feature.forecast.components.HourlyTemperatureGraph
 import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
 import com.weather.model.Hourly
 
 @Composable
-internal fun HourlyWidgetWithGraph(
+internal fun HourlyWidget(
     modifier: Modifier = Modifier,
     hourly: List<Hourly>,
     speedUnit: String,
-    surfaceColor: Color = Color.White.copy(alpha = 0.15f),
+    surfaceColor: Color = Color.Black.copy(alpha = 0.10f),
 ) {
     Surface(
         modifier = modifier,
@@ -225,7 +226,7 @@ internal fun HourlyGraphLayout(
 private fun HourlyWidgetPreview() {
     WeatherTheme {
 //        preview wont size correctly when using 'Asyncimage' composable
-        HourlyWidgetWithGraph(
+        HourlyWidget(
             modifier = Modifier,
             HourlyStaticData,
             "km/h"

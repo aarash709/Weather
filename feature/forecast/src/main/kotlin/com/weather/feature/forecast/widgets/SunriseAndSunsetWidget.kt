@@ -12,19 +12,20 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.weather.core.design.components.WeatherSquareWidget
 
 @Composable
 fun SunriseAndSunsetWidget(modifier: Modifier = Modifier) {
     //changes based on time
     val sunriseOrSunset = "Sunrise"
     WeatherSquareWidget(modifier = modifier,icon = Icons.Outlined.BrightnessHigh, title = sunriseOrSunset) {
-        SunMoonPosition()
+        SunPositionGraph()
     }
 }
 
 
 @Composable
-private fun SunMoonPosition() {
+private fun SunPositionGraph() {
     Card(
         modifier = Modifier,
         shape = RoundedCornerShape(8.dp)
