@@ -1,6 +1,6 @@
 package com.weather.feature.forecast.widgets
 
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -8,6 +8,7 @@ import androidx.compose.material.icons.outlined.WaterDrop
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
@@ -33,30 +34,37 @@ internal fun HumidityWidget(
 
 @Composable
 fun HumidityGraph(humidity: Int) {
-    Canvas(
+    Spacer(
         modifier = Modifier
             .aspectRatio(1f)
             .padding(16.dp)
-    ) {
-        val archThickness = 6.dp.toPx()
-        drawArc(
-            color = Color.Black.copy(alpha = 0.2f),
-            startAngle = 135f,
-            sweepAngle = 270f,
-            useCenter = false,
-            topLeft = Offset(0f, 0f),
-            style = Stroke(width = archThickness, cap = StrokeCap.Round),
-        )
-        drawArc(
-            color = Color.Blue.copy(green = 0.5f),
-            startAngle = 135f,
-            sweepAngle = humidity.times(270).div(100).toFloat(),
-            useCenter = false,
-            topLeft = Offset(0f, 0f),
-            style = Stroke(width = archThickness, cap = StrokeCap.Round),
-        )
-    }
+            .drawWithCache {
+                val archThickness = 6.dp.toPx()
+                val progress = humidity
+                    .times(270)
+                    .div(100)
+                    .toFloat()
+                onDrawBehind {
+                    drawArc(
+                        color = Color.Black.copy(alpha = 0.2f),
+                        startAngle = 135f,
+                        sweepAngle = 270f,
+                        useCenter = false,
+                        topLeft = Offset(0f, 0f),
+                        style = Stroke(width = archThickness, cap = StrokeCap.Round),
+                    )
+                    drawArc(
+                        color = Color.Blue.copy(green = 0.5f),
+                        startAngle = 135f,
+                        sweepAngle = progress,
+                        useCenter = false,
+                        topLeft = Offset(0f, 0f),
+                        style = Stroke(width = archThickness, cap = StrokeCap.Round),
+                    )
 
+                }
+            }
+    )
 }
 
 @Preview

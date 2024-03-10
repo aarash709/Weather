@@ -20,6 +20,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,6 +38,7 @@ import com.weather.feature.forecast.components.TempBar
 import com.weather.feature.forecast.components.TempData
 import com.weather.feature.forecast.components.hourlydata.DailyPreviewStaticData
 import com.weather.model.DailyPreview
+import timber.log.Timber
 import kotlin.math.roundToInt
 
 @Composable
@@ -98,9 +102,13 @@ internal fun DailyWidget(
                 }
             }
             HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
+            val minTemp by remember(dailyList) {
+                mutableIntStateOf(dailyList.minOf { it.tempNight })
+            }
+            val maxTemp by remember(dailyList) {
+                mutableIntStateOf(dailyList.maxOf { it.tempDay })
+            }
             dailyList.forEachIndexed { index, daily ->
-                val minTemp = dailyList.minOf { it.tempNight }
-                val maxTemp = dailyList.maxOf { it.tempDay }
                 val currentLow = daily.tempNight
                 val currentHigh = daily.tempDay
                 DailyItem(
@@ -153,7 +161,6 @@ internal fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview, tempD
                 textAlign = TextAlign.Start,
                 fontSize = 14.sp,
             )
-
             TempBar(tempData = tempData)
             Text(
                 text = "${daily.tempDay.toFloat().roundToInt()}°",

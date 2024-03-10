@@ -3,6 +3,7 @@ package com.weather.feature.forecast.widgets
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -14,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -53,41 +55,48 @@ fun UVWidget(uvIndex: Int, modifier: Modifier = Modifier) {
 
 @Composable
 fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
-    Canvas(
+    Spacer(
         modifier = modifier
             .aspectRatio(1f)
             .padding(16.dp)
-    ) {
-        val circleSize = 8.dp.toPx()
-        val archThickness = 7.dp.toPx()
-        val progress = uvIndex.coerceAtMost(11).toDouble().div(11)
-        val radius = size.width / 2
-        val angle = (progress * 270) + 45
-        val x = -(radius * sin(Math.toRadians(angle)).toFloat()) + size.width / 2
-        val y = (radius * cos(Math.toRadians(angle)).toFloat()) + size.height / 2
-        val colors = Brush.linearGradient(
-            listOf(Color.Green, Color.Yellow, Color.Red, Color.Blue),
-        )
-        drawArc(
-            brush = colors,
-            startAngle = 135f,
-            sweepAngle = 270f,
-            useCenter = false,
-            topLeft = Offset(0f, 0f),
-            style = Stroke(width = archThickness, cap = StrokeCap.Round),
-        )
-        drawCircle(
-            Color.Blue.copy(green = 0.4f),
-            radius = circleSize,
-            center = Offset(x = x, y = y)
-        )
-        drawCircle(
-            Color.Black,
-            radius = circleSize,
-            center = Offset(x = x, y = y),
-            style = Stroke(circleSize / 3)
-        )
-    }
+            .drawWithCache {
+                val circleSize = 8.dp.toPx()
+                val archThickness = 7.dp.toPx()
+                val progress = uvIndex
+                    .coerceAtMost(11)
+                    .toDouble()
+                    .div(11)
+                val radius = size.width / 2
+                val angle = (progress * 270) + 45
+                val x = -(radius * sin(Math.toRadians(angle)).toFloat()) + size.width / 2
+                val y = (radius * cos(Math.toRadians(angle)).toFloat()) + size.height / 2
+                val colors = Brush.linearGradient(
+                    listOf(Color.Green, Color.Yellow, Color.Red, Color.Blue),
+                )
+                onDrawBehind {
+                    drawArc(
+                        brush = colors,
+                        startAngle = 135f,
+                        sweepAngle = 270f,
+                        useCenter = false,
+                        topLeft = Offset(0f, 0f),
+                        style = Stroke(width = archThickness, cap = StrokeCap.Round),
+                    )
+                    drawCircle(
+                        Color.Blue.copy(green = 0.4f),
+                        radius = circleSize,
+                        center = Offset(x = x, y = y)
+                    )
+                    drawCircle(
+                        Color.Black,
+                        radius = circleSize,
+                        center = Offset(x = x, y = y),
+                        style = Stroke(circleSize / 3)
+                    )
+
+                }
+            }
+    )
 }
 
 @Preview
