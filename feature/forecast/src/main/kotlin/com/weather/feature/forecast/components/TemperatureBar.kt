@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlin.math.absoluteValue
 
 internal data class TempData(
     val minTemp: Int,
@@ -51,10 +52,10 @@ internal fun TempBar(tempData: TempData) {
         val backgroundColor = Color.Black.copy(alpha = 0.2f)
         val tempRange = tempData.maxTemp - tempData.minTemp
         val stepsInPixels = width / tempRange
-        val leftIndent = (tempData.minTemp - tempData.currentLow).times(stepsInPixels).div(width)
-        val rightIndent = width - (tempData.maxTemp - tempData.currentHigh).times(stepsInPixels)
+        val leftIndent = (tempData.currentLow - tempData.minTemp).times(stepsInPixels)
+        val rightIndent = width - (tempData.currentHigh - tempData.maxTemp).times(stepsInPixels).absoluteValue
         val currentTempCirclePosition = Offset(
-            x = width - (tempData.maxTemp - tempData.currentTemp).times(stepsInPixels),
+            x = width - (tempData.currentTemp - tempData.maxTemp).times(stepsInPixels).absoluteValue,
             y = height / 2
         )
         val strokeWidth = 5.dp.toPx()
@@ -91,7 +92,7 @@ private fun BarPreview() {
     TempBar(tempData = TempData(
         minTemp = -1,
         maxTemp = 10,
-        currentLow = 1,
+        currentLow = 0,
         currentHigh = 8,
         shouldShowCurrentTemp = true,
         currentTemp = 3

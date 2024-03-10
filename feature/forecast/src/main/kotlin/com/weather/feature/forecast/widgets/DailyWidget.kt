@@ -20,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -98,9 +99,13 @@ internal fun DailyWidget(
                 }
             }
             HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
+            val minTemp = remember {
+                dailyList.minOf { it.tempNight }
+            }
+            val maxTemp = remember {
+                dailyList.maxOf { it.tempDay }
+            }
             dailyList.forEachIndexed { index, daily ->
-                val minTemp = dailyList.minOf { it.tempNight }
-                val maxTemp = dailyList.maxOf { it.tempDay }
                 val currentLow = daily.tempNight
                 val currentHigh = daily.tempDay
                 DailyItem(
