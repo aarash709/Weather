@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -13,6 +14,7 @@ import androidx.compose.material.icons.outlined.ArrowDropUp
 import androidx.compose.material.icons.outlined.Circle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.center
@@ -61,31 +63,33 @@ internal fun WindDirectionGraph(
 ) {
     val textMeasurer = rememberTextMeasurer()
     val arrowPainter = rememberVectorPainter(image = Icons.Outlined.ArrowDropUp)
-    val circlePainter = rememberVectorPainter(image = Icons.Outlined.Circle)
-    Canvas(
+    Spacer(
         modifier = modifier
             .aspectRatio(1f)
             .padding(16.dp)
-    ) {
-        val width = size.width
-        val height = size.height
-        val halfWidth = size.center.x
-        val innerRadius = halfWidth.times(0.9f)
-        val outerRadius = halfWidth.times(1.0f)
-        val letters = listOf("E", "N", "W", "S")
-        drawInfoText(halfWidth, textMeasurer, windSpeed, speedUnits)
-        drawCircle(
-            brush = Brush.radialGradient(
-                colors = listOf(
-                    Color.White.copy(alpha = 0.05f),
-                    Color.White.copy(alpha = 0.02f),
-                )
-            ), radius = halfWidth / 2
-        )
-        drawArrow(windDirection, halfWidth, arrowPainter, circlePainter)
-        drawLines(innerRadius, outerRadius, width)
-        drawLetters(letters, textMeasurer, innerRadius, width)
-    }
+            .drawWithCache {
+                val width = size.width
+                val halfWidth = size.center.x
+                val innerRadius = halfWidth.times(0.9f)
+                val outerRadius = halfWidth.times(1.0f)
+                val letters = listOf("E", "N", "W", "S")
+                onDrawBehind {
+                    drawInfoText(halfWidth, textMeasurer, windSpeed, speedUnits)
+                    drawCircle(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                Color.White.copy(alpha = 0.05f),
+                                Color.White.copy(alpha = 0.02f),
+                            )
+                        ), radius = halfWidth / 2
+                    )
+                    drawArrow(windDirection, halfWidth, arrowPainter)
+                    drawLines(innerRadius, outerRadius, width)
+                    drawLetters(letters, textMeasurer, innerRadius, width)
+
+                }
+            }
+    )
 }
 
 private fun DrawScope.drawInfoText(
@@ -112,7 +116,6 @@ private fun DrawScope.drawArrow(
     windDirection: Int,
     halfWidth: Float,
     arrow: VectorPainter,
-    circle: VectorPainter,
 ) {
     rotate((windDirection - 180f), pivot = size.center) {
         with(arrow) {

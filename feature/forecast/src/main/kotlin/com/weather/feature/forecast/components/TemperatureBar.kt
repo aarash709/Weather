@@ -1,17 +1,22 @@
 package com.weather.feature.forecast.components
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import timber.log.Timber
 import kotlin.math.absoluteValue
 
+@Stable
 internal data class TempData(
     val minTemp: Int,
     val maxTemp: Int,
@@ -40,61 +45,68 @@ internal fun tempColor(temp: Int): Color {
 
 @Composable
 internal fun TempBar(tempData: TempData) {
-    Canvas(modifier = Modifier.size(width = 80.dp, height = 5.dp)) {
-        val gradient = Brush.horizontalGradient(
-            listOf(
-                tempColor(tempData.currentLow),
-                tempColor(tempData.currentHigh)
-            )
-        )
-        val width = size.width
-        val height = size.height
-        val backgroundColor = Color.Black.copy(alpha = 0.2f)
-        val tempRange = tempData.maxTemp - tempData.minTemp
-        val stepsInPixels = width / tempRange
-        val leftIndent = (tempData.currentLow - tempData.minTemp).times(stepsInPixels)
-        val rightIndent = width - (tempData.currentHigh - tempData.maxTemp).times(stepsInPixels).absoluteValue
-        val currentTempCirclePosition = Offset(
-            x = width - (tempData.currentTemp - tempData.maxTemp).times(stepsInPixels).absoluteValue,
-            y = height / 2
-        )
-        val strokeWidth = 5.dp.toPx()
-        // background
-        drawLine(
-            color = backgroundColor,
-            start = Offset(0f, height / 2),
-            end = Offset(width, height / 2),
-            cap = StrokeCap.Round,
-            strokeWidth = strokeWidth
-        )
-        //temp bar
-        drawLine(
-            brush = gradient,
-            start = Offset(leftIndent, height / 2),
-            end = Offset(rightIndent, height / 2),
-            cap = StrokeCap.Round,
-            strokeWidth = strokeWidth
-        )
-        //current temp indicator on first item
-        if (tempData.shouldShowCurrentTemp) {
-            drawCircle(
-                color = Color.White,
-                radius = 4.dp.toPx(),
-                center = currentTempCirclePosition,
-            )
-        }
-    }
+    Spacer(modifier = Modifier
+        .size(width = 80.dp, height = 5.dp)
+        .drawWithCache {
+            onDrawBehind {
+                val gradient = Brush.horizontalGradient(
+                    listOf(
+                        tempColor(tempData.currentLow),
+                        tempColor(tempData.currentHigh)
+                    )
+                )
+                val width = size.width
+                val height = size.height
+                val backgroundColor = Color.Black.copy(alpha = 0.2f)
+                val tempRange = tempData.maxTemp - tempData.minTemp
+                val stepsInPixels = width / tempRange
+                val leftIndent = (tempData.currentLow - tempData.minTemp).times(stepsInPixels)
+                val rightIndent =
+                    width - (tempData.currentHigh - tempData.maxTemp).times(stepsInPixels).absoluteValue
+                val currentTempCirclePosition = Offset(
+                    x = width - (tempData.currentTemp - tempData.maxTemp).times(stepsInPixels).absoluteValue,
+                    y = height / 2
+                )
+                val strokeWidth = 5.dp.toPx()
+                // background
+                drawLine(
+                    color = backgroundColor,
+                    start = Offset(0f, height / 2),
+                    end = Offset(width, height / 2),
+                    cap = StrokeCap.Round,
+                    strokeWidth = strokeWidth
+                )
+                //temp bar
+                drawLine(
+                    brush = gradient,
+                    start = Offset(leftIndent, height / 2),
+                    end = Offset(rightIndent, height / 2),
+                    cap = StrokeCap.Round,
+                    strokeWidth = strokeWidth
+                )
+                //current temp indicator on first item
+                if (tempData.shouldShowCurrentTemp) {
+                    drawCircle(
+                        color = Color.White,
+                        radius = 4.dp.toPx(),
+                        center = currentTempCirclePosition,
+                    )
+                }
+            }
+        })
 }
 
 @Preview
 @Composable
 private fun BarPreview() {
-    TempBar(tempData = TempData(
-        minTemp = -1,
-        maxTemp = 10,
-        currentLow = 0,
-        currentHigh = 8,
-        shouldShowCurrentTemp = true,
-        currentTemp = 3
-    ))
+    TempBar(
+        tempData = TempData(
+            minTemp = -1,
+            maxTemp = 10,
+            currentLow = 0,
+            currentHigh = 8,
+            shouldShowCurrentTemp = true,
+            currentTemp = 3
+        )
+    )
 }
