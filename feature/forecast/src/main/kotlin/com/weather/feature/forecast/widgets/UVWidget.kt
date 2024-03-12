@@ -32,7 +32,7 @@ import kotlin.math.sin
 
 @Composable
 fun UVWidget(uvIndex: Int, modifier: Modifier = Modifier) {
-    val uvLevel by remember {
+    val uvLevel by remember(uvIndex) {
         val value = when (uvIndex) {
             in 0..2 -> "Low"
             in 3..5 -> "Moderate"
