@@ -32,6 +32,7 @@ class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels()
     private var hasInternet by mutableStateOf(false)
     private var isDatabaseEmpty by mutableStateOf(true)
+    private var isDataLoaded by mutableStateOf(false)
 
     @FlowPreview
     @ExperimentalAnimationApi
@@ -47,6 +48,14 @@ class MainActivity : ComponentActivity() {
         }
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                mainViewModel.isDataLoaded.collect {
+                    isDataLoaded = it
+                }
+
+            }
+        }
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 mainViewModel.dataBaseIsEmpty.collect {
                     Timber.e("database is empty?:$it")
                     isDatabaseEmpty = it
@@ -55,8 +64,8 @@ class MainActivity : ComponentActivity() {
         }
         val splashScreen = installSplashScreen()
         splashScreen.setKeepOnScreenCondition {
-                isDatabaseEmpty
-            }
+            !isDatabaseEmpty && isDataLoaded
+        }
 
         enableEdgeToEdge()
 
