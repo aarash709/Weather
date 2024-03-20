@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.center
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -96,6 +97,7 @@ private fun PressureGraph(
                         end = Offset(endLinesX, endLinesY),
                         strokeWidth = 30f,
                         cap = StrokeCap.Round,
+                        blendMode = BlendMode.Clear
                     )
                     drawLine(
                         color = color.copy(green = 0.4f),

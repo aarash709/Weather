@@ -8,6 +8,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
@@ -57,6 +58,7 @@ internal fun TempBar(tempData: TempData) {
                 )
                 val width = size.width
                 val height = size.height
+                val indicatorSize = 4.dp.toPx()
                 val backgroundColor = Color.Black.copy(alpha = 0.2f)
                 val tempRange = tempData.maxTemp - tempData.minTemp
                 val stepsInPixels = width / tempRange
@@ -74,7 +76,7 @@ internal fun TempBar(tempData: TempData) {
                     start = Offset(0f, height / 2),
                     end = Offset(width, height / 2),
                     cap = StrokeCap.Round,
-                    strokeWidth = strokeWidth
+                    strokeWidth = strokeWidth,
                 )
                 //temp bar
                 drawLine(
@@ -87,8 +89,14 @@ internal fun TempBar(tempData: TempData) {
                 //current temp indicator on first item
                 if (tempData.shouldShowCurrentTemp) {
                     drawCircle(
+                        color = Color.Black,
+                        radius = indicatorSize,
+                        center = currentTempCirclePosition,
+                        blendMode = BlendMode.Clear
+                    )
+                    drawCircle(
                         color = Color.White,
-                        radius = 4.dp.toPx(),
+                        radius = indicatorSize * 0.7f,
                         center = currentTempCirclePosition,
                     )
                 }
