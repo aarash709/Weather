@@ -2,6 +2,7 @@ package com.experiment.weather
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -52,5 +53,17 @@ fun WeatherApp(
                     )
                 }
             })
+    }
+}
+
+@Composable
+fun WeatherBackground(
+    modifier: Modifier = Modifier,
+    background: @Composable () -> Unit,
+    content: @Composable () -> Unit,
+) {
+    Box(modifier = modifier) {
+        content()
+        background()
     }
 }
