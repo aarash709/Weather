@@ -16,7 +16,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.drawscope.DrawStyle
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.TextStyle
@@ -35,7 +34,7 @@ internal fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Ho
     val verticalLineColor = Color.White.copy(alpha = 0.5f)
     val textMeasurer = rememberTextMeasurer()
 
-    Spacer(modifier = modifier then Modifier
+    Spacer(modifier = Modifier
         .padding(start = 0.dp, bottom = 0.dp)
         .fillMaxWidth()
         .drawWithCache {
@@ -142,7 +141,7 @@ internal fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Ho
                     blendMode = BlendMode.Clear
                 )
             }
-        })
+        } then modifier)
 }
 
 @Preview

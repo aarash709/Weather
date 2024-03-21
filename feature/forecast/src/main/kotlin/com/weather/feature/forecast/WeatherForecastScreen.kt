@@ -166,22 +166,6 @@ fun WeatherForecastScreen(
             ForecastTopBar(
                 onNavigateToManageLocations = { onNavigateToManageLocations() },
                 onNavigateToSettings = { onNavigateToSettings() })
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                color = Color.Black.copy(alpha = 0.25f)
-            ) {
-                Box(modifier = Modifier.drawBehind {
-                    drawCircle(
-                        Color.Black,
-                        radius = 20f,
-                        blendMode = BlendMode.Clear
-                    )
-                }) {
-
-                }
-            }
             Box(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
