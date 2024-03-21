@@ -80,17 +80,18 @@ private fun RealFeelGraph(realFeel: Int) {
                         topLeft = Offset(0f, 0f),
                         style = Stroke(width = archThickness, cap = StrokeCap.Round),
                     )
+                    //indicator
                     drawCircle(
                         Color.Blue.copy(green = 0.4f),
                         radius = circleSize,
                         center = Offset(x = x, y = y)
                     )
+                    //border
                     drawCircle(
                         Color.Black,
                         radius = circleSize,
                         center = Offset(x = x, y = y),
                         style = Stroke(circleSize / 3),
-                        blendMode = BlendMode.Clear
                     )
                 }
             }

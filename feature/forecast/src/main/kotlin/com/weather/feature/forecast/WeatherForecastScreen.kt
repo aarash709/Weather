@@ -25,6 +25,7 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -35,8 +36,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -113,6 +117,12 @@ fun WeatherForecastRoute(
         modifier = Modifier
             .fillMaxSize()
             .background(dynamicBackground)
+            .graphicsLayer {
+            // should be set to `CompositingStrategy.Offscreen` when
+            // using blend modes for transparency in indicators
+            //otherwise transparency with BlendMode.Clear will render black color
+            compositingStrategy = CompositingStrategy.Offscreen
+        }
     ) {
         WeatherForecastScreen(
             weatherUIState = weatherUIState,
@@ -162,6 +172,22 @@ fun WeatherForecastScreen(
             ForecastTopBar(
                 onNavigateToManageLocations = { onNavigateToManageLocations() },
                 onNavigateToSettings = { onNavigateToSettings() })
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                color = Color.Black.copy(alpha = 0.25f)
+            ) {
+                Box(modifier = Modifier.drawBehind {
+                    drawCircle(
+                        Color.Black,
+                        radius = 20f,
+                        blendMode = BlendMode.Clear
+                    )
+                }) {
+
+                }
+            }
             Box(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
@@ -297,6 +323,7 @@ private fun CurrentWeather(
         }
     }
 }
+
 @ExperimentalMaterialApi
 @Preview(name = "night", showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Preview(name = "day", showBackground = true, uiMode = UI_MODE_NIGHT_NO)

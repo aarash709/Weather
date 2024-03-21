@@ -97,7 +97,6 @@ private fun PressureGraph(
                         end = Offset(endLinesX, endLinesY),
                         strokeWidth = 30f,
                         cap = StrokeCap.Round,
-                        blendMode = BlendMode.Clear
                     )
                     drawLine(
                         color = color.copy(green = 0.4f),

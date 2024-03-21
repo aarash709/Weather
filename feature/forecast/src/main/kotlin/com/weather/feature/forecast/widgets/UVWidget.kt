@@ -93,7 +93,6 @@ fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
                         radius = circleSize,
                         center = Offset(x = x, y = y),
                         style = Stroke(circleSize / 3),
-                        blendMode = BlendMode.Clear
 
                     )
 

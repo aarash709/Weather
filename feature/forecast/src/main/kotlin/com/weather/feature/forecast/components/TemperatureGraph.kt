@@ -126,7 +126,7 @@ internal fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Ho
                             Color.Green,
                         )
                     ),
-                    style = Stroke(width = 5f)
+                    style = Stroke(width = 5f),
                 )
                 drawCircle(
                     color = Color.White,
