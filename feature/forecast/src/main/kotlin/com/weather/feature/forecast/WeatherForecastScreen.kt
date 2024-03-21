@@ -117,12 +117,6 @@ fun WeatherForecastRoute(
         modifier = Modifier
             .fillMaxSize()
             .background(dynamicBackground)
-            .graphicsLayer {
-            // should be set to `CompositingStrategy.Offscreen` when
-            // using blend modes for transparency in indicators
-            //otherwise transparency with BlendMode.Clear will render black color
-            compositingStrategy = CompositingStrategy.Offscreen
-        }
     ) {
         WeatherForecastScreen(
             weatherUIState = weatherUIState,
