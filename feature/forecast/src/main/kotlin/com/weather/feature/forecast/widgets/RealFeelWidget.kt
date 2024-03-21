@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -79,16 +80,18 @@ private fun RealFeelGraph(realFeel: Int) {
                         topLeft = Offset(0f, 0f),
                         style = Stroke(width = archThickness, cap = StrokeCap.Round),
                     )
+                    //indicator
                     drawCircle(
                         Color.Blue.copy(green = 0.4f),
                         radius = circleSize,
                         center = Offset(x = x, y = y)
                     )
+                    //border
                     drawCircle(
                         Color.Black,
                         radius = circleSize,
                         center = Offset(x = x, y = y),
-                        style = Stroke(circleSize / 3)
+                        style = Stroke(circleSize / 3),
                     )
                 }
             }

@@ -11,10 +11,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -32,7 +34,7 @@ internal fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Ho
     val verticalLineColor = Color.White.copy(alpha = 0.5f)
     val textMeasurer = rememberTextMeasurer()
 
-    Spacer(modifier = modifier then Modifier
+    Spacer(modifier = Modifier
         .padding(start = 0.dp, bottom = 0.dp)
         .fillMaxWidth()
         .drawWithCache {
@@ -47,6 +49,7 @@ internal fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Ho
 
             onDrawBehind {
                 var previousTemp = height
+                var firstIndexOffset = Offset.Zero
                 data.forEachIndexed { index, hourly ->
                     val temp = hourly.temp.toFloat()
                     val y = height - ((temp - minTemp) / tempRange)
@@ -61,6 +64,7 @@ internal fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Ho
                         style = TextStyle(fontSize = 14.sp)
                     )
                     val textYOffset = 5.dp.toPx()
+
                     drawText(
                         textLayoutResult = textLayoutResult,
                         color = textColor,
@@ -96,11 +100,7 @@ internal fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Ho
                                 phase = 0f
                             ),
                         )
-                        drawCircle(
-                            color = Color.White,
-                            radius = 10f,
-                            center = Offset(0f, y)
-                        )
+                        firstIndexOffset = Offset(0f, y)
                     } else {
                         previousTemp = y
                         path.cubicTo(
@@ -125,10 +125,23 @@ internal fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Ho
                             Color.Green,
                         )
                     ),
-                    style = Stroke(width = 5f)
+                    style = Stroke(width = 5f),
+                )
+                drawCircle(
+                    color = Color.White,
+                    radius = 10f,
+                    center = firstIndexOffset,
+                    style = Stroke(width = 8f)
+                )
+                drawCircle(
+                    color = Color.Black,
+                    radius = 10f,
+                    center = firstIndexOffset,
+                    style = Fill,
+                    blendMode = BlendMode.Clear
                 )
             }
-        })
+        } then modifier)
 }
 
 @Preview
