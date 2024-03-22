@@ -37,6 +37,8 @@ appcompat = "1.6.1"
 arrow = "1.2.3"
 detekt = "1.23.5"
 kotlinter = "4.2.0"
+lottie = "2.8.0"
+rive = "8.7.0"
 
 
 
@@ -105,6 +107,8 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 arrow-stack = { module = "io.arrow-kt:arrow-stack", version.ref = "arrow" }
 arrow_optics = { module = "io.arrow-kt:arrow-optics" }
 arrow_optics_ksp = { module = "io.arrow-kt:arrow-optics-ksp-plugin", version.ref = "arrow" }
+lottie = { module = "com.airbnb.android:lottie", version.ref = "lottie" }
+rive = { module = "app.rive:rive-android", version.ref = "rive" }
 
 #build-logic dependecies
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
