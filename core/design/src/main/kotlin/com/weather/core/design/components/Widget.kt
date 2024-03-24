@@ -34,7 +34,7 @@ fun WeatherSquareWidget(
     icon: ImageVector,
     title: String,
     surfaceColor: Color = Color.Black.copy(alpha = 0.10f),
-    infoText: String,
+    infoText: String = "",
     content: @Composable BoxScope.() -> Unit,
 ) {
     Surface(
