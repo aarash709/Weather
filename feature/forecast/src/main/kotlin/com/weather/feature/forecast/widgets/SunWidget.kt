@@ -19,19 +19,22 @@ import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.weather.core.design.components.WeatherSquareWidget
-import com.weather.core.design.theme.White
-import com.weather.core.design.theme.Yellow
 import kotlin.math.cos
 import kotlin.math.sin
 
 @Composable
 fun SunWidget(sunrise: Int, sunset: Int, currentTime: Int, modifier: Modifier = Modifier) {
-    WeatherSquareWidget(modifier = modifier, icon = Icons.Outlined.WbSunny, title = "Sunrise") {
+    WeatherSquareWidget(
+        modifier = modifier.graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen),
+        icon = Icons.Outlined.WbSunny,
+        title = "Sunrise"
+    ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
@@ -55,72 +58,101 @@ private fun SunGraph(
 ) {
     Spacer(modifier = modifier
         .aspectRatio(1f)
-        .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
         .padding(16.dp)
         .drawWithCache {
+            val width = size.width
+            val height = size.height
             val circleSize = 8.dp.toPx()
             val sunsetColor = Red.copy(green = 0.3f)
-            val dayColors = Brush.horizontalGradient(
+            val darkBlue = Color(5, 20, 50)
+            val daylightColor = Color(244, 250, 127)
+            val daylightBrush = Brush.horizontalGradient(
                 0.0f to sunsetColor,
-                0.1f to Yellow,
-                0.9f to Yellow,
+                0.05f to daylightColor,
+                0.95f to daylightColor,
                 1.0f to sunsetColor
             )
+            val nightColor = Brush.horizontalGradient(listOf(darkBlue, darkBlue))
             val archThickness = 6.dp.toPx()
             val timeRange = sunset.minus(sunrise)
             val progress = currentTime
                 .minus(sunrise)
-                .times(180)
                 .toFloat()
                 .div(timeRange)
+                .times(180)
             val radius = size.width / 2
             val angle = (progress) + 180.0
             val x = (radius * cos(Math.toRadians(angle)).toFloat()) + size.width / 2
             val y = (radius * sin(Math.toRadians(angle)).toFloat()) + size.height / 2
             onDrawBehind {
-                drawArc(
-                    color = Color.White.copy(alpha = 0.7f),
-                    topLeft = Offset.Zero,
-                    startAngle = 0f,
-                    sweepAngle = 180f,
-                    useCenter = false,
-                    style = Stroke(
-                        width = archThickness,
-                        cap = StrokeCap.Butt,
-                        pathEffect = PathEffect.dashPathEffect(
-                            intervals = floatArrayOf(5f, 30f),
-                            phase = 20f
-                        )
-                    )
+                drawLine(
+                    Color.White.copy(alpha = 0.5f),
+                    start = Offset(
+                        width - (width.times(1.25f)),
+                        height / 2
+                    ),
+                    end = Offset(width.times(1.25f), height / 2)
                 )
-                drawArc(
-                    brush = dayColors,
-                    topLeft = Offset.Zero,
-                    startAngle = 180f,
-                    sweepAngle = 180f,
-                    useCenter = false,
-                    style = Stroke(width = archThickness, cap = StrokeCap.Round),
-                )
-                drawCircle(
-                    brush = dayColors,
-                    radius = circleSize.times(1.3f),
-                    center = Offset(x, y),
-                    blendMode = BlendMode.Clear
-
-                )
-
-                val nightColor = Brush.horizontalGradient(listOf(White,White))
-                drawCircle(
+                drawSundial(dayBrush = daylightBrush, archThickness = archThickness)
+                drawCircleIndicator(
                     brush = if (currentTime > sunset)
                         nightColor
-                    else dayColors,
-                    radius = circleSize,
-                    center = Offset(x, y)
+                    else daylightBrush,
+                    circleSize = circleSize,
+                    position = Offset(x = x, y = y),
+                    shouldShowBorder = true
                 )
             }
         })
 }
 
+private fun DrawScope.drawSundial(dayBrush: Brush, archThickness: Float) {
+    drawArc(
+        color = Color.White.copy(alpha = 0.5f),
+        topLeft = Offset.Zero,
+        startAngle = 0f,
+        sweepAngle = 180f,
+        useCenter = false,
+        style = Stroke(
+            width = archThickness,
+            cap = StrokeCap.Butt,
+            pathEffect = PathEffect.dashPathEffect(
+                intervals = floatArrayOf(5f, 20f),
+                phase = 15f
+            )
+        )
+    )
+    drawArc(
+        brush = dayBrush,
+        topLeft = Offset.Zero,
+        startAngle = 180f,
+        sweepAngle = 180f,
+        useCenter = false,
+        style = Stroke(width = archThickness),
+    )
+}
+
+private fun DrawScope.drawCircleIndicator(
+    brush: Brush,
+    circleSize: Float,
+    position: Offset = Offset.Zero,
+    shouldShowBorder: Boolean = true,
+) {
+    if (shouldShowBorder) {
+        drawCircle(
+            color = Color.Black,
+            radius = circleSize.times(1.3f),
+            center = position,
+            blendMode = BlendMode.Clear
+
+        )
+    }
+    drawCircle(
+        brush = brush,
+        radius = circleSize,
+        center = position
+    )
+}
 
 @Preview
 @Composable
