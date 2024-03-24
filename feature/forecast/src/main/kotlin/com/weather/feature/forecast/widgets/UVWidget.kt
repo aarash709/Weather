@@ -1,27 +1,24 @@
 package com.weather.feature.forecast.widgets
 
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.WbSunny
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -52,20 +49,17 @@ fun UVWidget(uvIndex: Int, modifier: Modifier = Modifier) {
         title = "UV Index",
         infoText = uvLevel
     ) {
-        UVGraph(modifier = Modifier, uvIndex = uvIndex, uvLevel = uvLevel)
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-        }
+        UVGraph(modifier = Modifier, uvIndex = uvIndex)
     }
 }
 
 @Composable
-fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int, uvLevel: String) {
+fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
     val textMeasurer = rememberTextMeasurer()
     Spacer(
         modifier = modifier
+            .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+            .padding(4.dp)
             .aspectRatio(1f)
 //            .padding(16.dp)
             .drawWithCache {
@@ -103,6 +97,7 @@ fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int, uvLevel: String) {
                         radius = circleSize,
                         center = Offset(x = x, y = y),
                         style = Stroke(circleSize / 3),
+                        blendMode = BlendMode.Clear
 
                         )
                     val textLayoutResult = textMeasurer.measure(

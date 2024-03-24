@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Air
 import androidx.compose.material.icons.outlined.ArrowDropUp
@@ -68,7 +69,7 @@ internal fun WindDirectionGraph(
     Spacer(
         modifier = modifier
             .aspectRatio(1f)
-//            .padding(16.dp)
+            .padding(4.dp)
             .drawWithCache {
                 val width = size.width
                 val halfWidth = size.center.x

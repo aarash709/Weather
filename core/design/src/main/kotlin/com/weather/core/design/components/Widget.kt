@@ -7,16 +7,12 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrightnessLow
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,8 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontVariation.weight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -56,38 +50,20 @@ fun WeatherSquareWidget(
                 Modifier
                     .weight(1f)
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    verticalAlignment = Alignment.Top,
-                ) {
-                    Icon(
-                        imageVector = icon,
-                        modifier = Modifier.size(16.dp),
-                        tint = Color.White.copy(alpha = 0.5f),
-                        contentDescription = null
-                    )
-                    Text(
-                        text = title,
-                        fontSize = 16.sp,
-                        color = Color.White.copy(alpha = 0.5f)
-                    )
-                }
-                Text(text = infoText, fontSize = 26.sp)
+                Text(
+                    text = title,
+                    fontSize = 16.sp,
+                    color = Color.White.copy(alpha = 0.5f)
+                )
+                Text(text = infoText, fontSize = 22.sp, color = Color.White)
             }
-            Column(
+            Box(
                 modifier = Modifier
-                    .weight(1f)
+                    .fillMaxSize()
+                    .weight(1.5f),
+                contentAlignment = Alignment.CenterEnd
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
-                    contentAlignment = Alignment.CenterEnd
-                ) {
-                    content()
-                }
+                content()
             }
         }
     }
