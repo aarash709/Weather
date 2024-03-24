@@ -11,6 +11,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Air
 import androidx.compose.material.icons.outlined.ArrowDropUp
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
@@ -43,11 +46,26 @@ internal fun WindWidget(
     windSpeed: Int,
     speedUnits: String,
 ) {
+    val direction by remember(windDirection){
+        val value = when(windDirection){
+           in 341..360 -> "North"
+           in 0..20 -> "North"
+            in 21..70 -> "NorthEast"
+            in 71..110 -> "East"
+            in 111..160 -> "SouthEast"
+            in 161..200 -> "South"
+            in 201..240 -> "SouthWest"
+            in 241..290 -> "West"
+            in 291..340 -> "NorthWest"
+            else-> "Unknown"
+        }
+        mutableStateOf(value)
+    }
     WeatherSquareWidget(
         modifier,
         icon = Icons.Outlined.Air,
-        title = "Wind",
-        infoText = "$windSpeed"
+        title = "Wind from",
+        infoText = direction
     ) {
         WindDirectionGraph(
             windDirection = windDirection,
