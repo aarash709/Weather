@@ -1,14 +1,11 @@
 package com.weather.feature.forecast.widgets
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.WbSunny
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
@@ -25,6 +22,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.weather.core.design.components.WeatherSquareWidget
+import timber.log.Timber
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -35,17 +33,12 @@ fun SunWidget(sunrise: Int, sunset: Int, currentTime: Int, modifier: Modifier = 
         icon = Icons.Outlined.WbSunny,
         title = "Sunrise"
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            SunGraph(
-                modifier = Modifier,
-                sunrise = sunrise,
-                sunset = sunset,
-                currentTime = currentTime
-            )
-        }
+        SunGraph(
+            modifier = Modifier,
+            sunrise = sunrise,
+            sunset = sunset,
+            currentTime = currentTime
+        )
     }
 }
 
@@ -94,12 +87,20 @@ private fun SunGraph(
                     end = Offset(width.times(1.25f), height / 2)
                 )
                 drawSundial(dayBrush = daylightBrush, archThickness = archThickness)
+                val position = if (x
+                        .isNaN()
+                        .not() && y
+                        .isNaN()
+                        .not()
+                ) {
+                    Offset(x = x, y = y)
+                } else Offset.Zero
                 drawCircleIndicator(
                     brush = if (currentTime > sunset)
                         nightColor
                     else daylightBrush,
                     circleSize = circleSize,
-                    position = Offset(x = x, y = y),
+                    position = position,
                     shouldShowBorder = true
                 )
             }
