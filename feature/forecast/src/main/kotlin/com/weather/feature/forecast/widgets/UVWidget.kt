@@ -61,7 +61,6 @@ fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
             .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
             .padding(4.dp)
             .aspectRatio(1f)
-//            .padding(16.dp)
             .drawWithCache {
                 val width = size.width
                 val height = size.height
@@ -88,7 +87,7 @@ fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
                         style = Stroke(width = archThickness, cap = StrokeCap.Round),
                     )
                     drawCircle(
-                        Color.Blue.copy(green = 0.4f),
+                        brush = colors,
                         radius = circleSize,
                         center = Offset(x = x, y = y)
                     )
