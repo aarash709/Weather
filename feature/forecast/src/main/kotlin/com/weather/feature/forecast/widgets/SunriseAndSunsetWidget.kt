@@ -18,7 +18,12 @@ import com.weather.core.design.components.WeatherSquareWidget
 fun SunriseAndSunsetWidget(modifier: Modifier = Modifier) {
     //changes based on time
     val sunriseOrSunset = "Sunrise"
-    WeatherSquareWidget(modifier = modifier,icon = Icons.Outlined.BrightnessHigh, title = sunriseOrSunset) {
+    WeatherSquareWidget(
+        modifier = modifier,
+        icon = Icons.Outlined.BrightnessHigh,
+        title = sunriseOrSunset,
+        infoText = sunriseOrSunset
+    ) {
         SunPositionGraph()
     }
 }

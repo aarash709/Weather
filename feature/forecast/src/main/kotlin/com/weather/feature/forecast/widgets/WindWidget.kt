@@ -1,6 +1,5 @@
 package com.weather.feature.forecast.widgets
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -11,8 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Air
 import androidx.compose.material.icons.outlined.ArrowDropUp
-import androidx.compose.material.icons.outlined.Circle
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
@@ -45,7 +46,27 @@ internal fun WindWidget(
     windSpeed: Int,
     speedUnits: String,
 ) {
-    WeatherSquareWidget(modifier, icon = Icons.Outlined.Air, title = "Wind") {
+    val direction by remember(windDirection){
+        val value = when(windDirection){
+           in 341..360 -> "North"
+           in 0..20 -> "North"
+            in 21..70 -> "NorthEast"
+            in 71..110 -> "East"
+            in 111..160 -> "SouthEast"
+            in 161..200 -> "South"
+            in 201..240 -> "SouthWest"
+            in 241..290 -> "West"
+            in 291..340 -> "NorthWest"
+            else-> "Unknown"
+        }
+        mutableStateOf(value)
+    }
+    WeatherSquareWidget(
+        modifier,
+        icon = Icons.Outlined.Air,
+        title = "Wind from",
+        infoText = direction
+    ) {
         WindDirectionGraph(
             windDirection = windDirection,
             windSpeed = windSpeed,
@@ -66,7 +87,7 @@ internal fun WindDirectionGraph(
     Spacer(
         modifier = modifier
             .aspectRatio(1f)
-            .padding(16.dp)
+            .padding(4.dp)
             .drawWithCache {
                 val width = size.width
                 val halfWidth = size.center.x

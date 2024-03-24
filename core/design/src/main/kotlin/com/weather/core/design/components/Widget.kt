@@ -7,15 +7,12 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrightnessLow
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,6 +34,7 @@ fun WeatherSquareWidget(
     icon: ImageVector,
     title: String,
     surfaceColor: Color = Color.Black.copy(alpha = 0.10f),
+    infoText: String = "",
     content: @Composable BoxScope.() -> Unit,
 ) {
     Surface(
@@ -44,25 +42,27 @@ fun WeatherSquareWidget(
         shape = RoundedCornerShape(16.dp),
         color = surfaceColor
     ) {
-        Column(Modifier.padding(16.dp)) {
-            Row(
-                modifier = Modifier,
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically,
+        Column(
+            Modifier
+                .padding(16.dp)
+        ) {
+            Column(
+                Modifier
+                    .weight(1f)
             ) {
-                Icon(
-                    imageVector = icon,
-                    modifier = Modifier.size(16.dp),
-                    tint = Color.White.copy(alpha = 0.5f),
-                    contentDescription = null
-                )
                 Text(
                     text = title,
-                    fontSize = 14.sp,
+                    fontSize = 16.sp,
                     color = Color.White.copy(alpha = 0.5f)
                 )
+                Text(text = infoText, fontSize = 22.sp, color = Color.White)
             }
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1.5f),
+                contentAlignment = Alignment.CenterEnd
+            ) {
                 content()
             }
         }
@@ -81,10 +81,20 @@ private fun WidgetPrev() {
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            WeatherSquareWidget(modifier = Modifier.weight(1f),icon = Icons.Default.BrightnessLow, title = "Title") {
+            WeatherSquareWidget(
+                modifier = Modifier.weight(1f),
+                icon = Icons.Default.BrightnessLow,
+                title = "Title",
+                infoText = "info"
+            ) {
                 Text(text = "Content", fontSize = 32.sp)
             }
-            WeatherSquareWidget(modifier = Modifier.weight(1f),icon = Icons.Default.BrightnessLow, title = "Title") {
+            WeatherSquareWidget(
+                modifier = Modifier.weight(1f),
+                icon = Icons.Default.BrightnessLow,
+                title = "Title",
+                infoText = "info"
+            ) {
                 Text(text = "Content", fontSize = 32.sp)
             }
         }

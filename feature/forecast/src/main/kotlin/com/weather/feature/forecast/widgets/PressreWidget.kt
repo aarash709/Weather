@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDownward
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
@@ -16,8 +15,16 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.center
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,10 +39,12 @@ fun PressureWidget(modifier: Modifier = Modifier, pressure: Int) {
     WeatherSquareWidget(
         modifier = modifier,
         icon = Icons.Outlined.ArrowDownward,
-        title = "Pressure"
+        title = "Pressure",
+        infoText = "$pressure"
     ) {
-        PressureGraph(pressure = pressure)
-        Text(text = "$pressure\n mb", fontSize = 24.sp, textAlign = TextAlign.Center)
+        PressureGraph(
+            pressure = pressure
+        )
     }
 }
 
@@ -43,14 +52,20 @@ fun PressureWidget(modifier: Modifier = Modifier, pressure: Int) {
 private fun PressureGraph(
     modifier: Modifier = Modifier,
     pressure: Int,
+    pressureUnit: String = "mbar",
     minPressure: Int = 870,
     maxPressure: Int = 1080,
 ) {
+    val textMeasurer = rememberTextMeasurer()
+    val painter = rememberVectorPainter(image = Icons.Outlined.ArrowDownward)
     Spacer(
         modifier = modifier
+            .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+            .padding(4.dp)
             .aspectRatio(1f)
-            .padding(16.dp)
             .drawWithCache {
+                val width = size.width
+                val height = size.height
                 val halfWidth = size.center.x
                 val archThickness = 7.dp.toPx()
                 val range = maxPressure
@@ -81,10 +96,10 @@ private fun PressureGraph(
                     .plus(halfWidth)
                     .toFloat()
 
-                val color = Color.Blue.copy(green = 0.5f)
+                val blueColor = Color.Blue.copy(green = 0.6f)
                 onDrawBehind {
                     drawArc(
-                        color = color,
+                        color = blueColor,
                         startAngle = 135f,
                         sweepAngle = 270f,
                         useCenter = false,
@@ -97,15 +112,40 @@ private fun PressureGraph(
                         end = Offset(endLinesX, endLinesY),
                         strokeWidth = 30f,
                         cap = StrokeCap.Round,
+                        blendMode = BlendMode.Clear
                     )
                     drawLine(
-                        color = color.copy(green = 0.4f),
+                        color = blueColor,
                         start = Offset(startLinesX, startLinesY),
                         end = Offset(endLinesX, endLinesY),
                         strokeWidth = 15f,
                         cap = StrokeCap.Round,
                     )
+                    val textLayoutResult = textMeasurer.measure(
+                        text = pressureUnit,
+                        maxLines = 1,
+                        style = TextStyle(fontSize = 14.sp, textAlign = TextAlign.Center)
+                    )
+                    drawText(
+                        textLayoutResult,
+                        color = Color.White,
+                        topLeft = Offset(
+                            x = (width / 2).minus(textLayoutResult.size.width.div(2)),
+                            y = (height / 1.2f).minus(textLayoutResult.size.height.div(2))
 
+                        ),
+                    )
+                    translate(
+                        left = (width / 2) - painter.intrinsicSize.width / 2,
+                        top = (height / 2) - painter.intrinsicSize.height / 2
+                    ) {
+                        with(painter) {
+                            draw(
+                                size = painter.intrinsicSize,
+                                colorFilter = ColorFilter.tint(blueColor)
+                                )
+                        }
+                    }
                 }
             }
     )

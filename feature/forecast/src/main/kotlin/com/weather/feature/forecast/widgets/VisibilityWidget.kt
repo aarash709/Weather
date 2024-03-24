@@ -29,7 +29,8 @@ fun VisibilityWidget(visibility: Int, modifier: Modifier = Modifier) {
     WeatherSquareWidget(
         modifier = modifier,
         icon = Icons.Outlined.RemoveRedEye,
-        title = "Visibility"
+        title = "Visibility",
+        infoText = "$visibility"
     ) {
         Text(text = visibilityValue, fontSize = 32.sp)
     }
