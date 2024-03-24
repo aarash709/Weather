@@ -13,6 +13,10 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -25,20 +29,21 @@ internal fun HumidityWidget(
 ) {
     WeatherSquareWidget(
         modifier = modifier,
-        icon = Icons.Outlined.WaterDrop, title = "Humidity"
+        icon = Icons.Outlined.WaterDrop, title = "Humidity" , infoText = "$humidity%"
     ) {
         HumidityGraph(humidity = humidity)
-        Text(text = "$humidity%", fontSize = 24.sp)
     }
 }
 
 @Composable
 fun HumidityGraph(humidity: Int) {
+    val textMeasurer = rememberTextMeasurer()
     Spacer(
         modifier = Modifier
             .aspectRatio(1f)
-            .padding(16.dp)
             .drawWithCache {
+                val width = size.width
+                val height = size.height
                 val archThickness = 6.dp.toPx()
                 val progress = humidity
                     .times(270)
@@ -61,7 +66,20 @@ fun HumidityGraph(humidity: Int) {
                         topLeft = Offset(0f, 0f),
                         style = Stroke(width = archThickness, cap = StrokeCap.Round),
                     )
+                    val textLayoutResult = textMeasurer.measure(
+                        text = "$humidity%",
+                        maxLines = 1,
+                        style = TextStyle(fontSize = 24.sp, textAlign = TextAlign.Center)
+                    )
+                    drawText(
+                        textLayoutResult,
+                        color = Color.White,
+                        topLeft = Offset(
+                            x = (width / 2).minus(textLayoutResult.size.width.div(2)),
+                            y = (height / 2).minus(textLayoutResult.size.height.div(2))
 
+                        ),
+                    )
                 }
             }
     )

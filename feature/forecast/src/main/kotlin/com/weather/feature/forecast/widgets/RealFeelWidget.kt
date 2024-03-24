@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Thermostat
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
@@ -15,7 +16,14 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.weather.core.design.components.WeatherSquareWidget
@@ -29,9 +37,13 @@ internal fun RealFeelWidget(
     realFeel: Int,
     modifier: Modifier = Modifier,
 ) {
-    WeatherSquareWidget(modifier, icon = Icons.Outlined.Thermostat, title = "Real Feel") {
+    WeatherSquareWidget(
+        modifier,
+        icon = Icons.Outlined.Thermostat,
+        title = "Real Feel",
+        infoText = "$realFeel°",
+    ) {
         RealFeelGraph(realFeel)
-        Text(text = "${realFeel}°", modifier = Modifier.padding(32.dp), fontSize = 24.sp)
     }
 }
 
@@ -40,8 +52,9 @@ private fun RealFeelGraph(realFeel: Int) {
     Spacer(
         modifier = Modifier
             .aspectRatio(1f)
-            .padding(16.dp)
             .drawWithCache {
+                val width = size.width
+                val height = size.height
                 val circleSize = 8.dp.toPx()
                 val archThickness = 7.dp.toPx()
                 val progress =

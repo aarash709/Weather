@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,6 +24,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontVariation.weight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,6 +40,7 @@ fun WeatherSquareWidget(
     icon: ImageVector,
     title: String,
     surfaceColor: Color = Color.Black.copy(alpha = 0.10f),
+    infoText: String,
     content: @Composable BoxScope.() -> Unit,
 ) {
     Surface(
@@ -44,26 +48,46 @@ fun WeatherSquareWidget(
         shape = RoundedCornerShape(16.dp),
         color = surfaceColor
     ) {
-        Column(Modifier.padding(16.dp)) {
-            Row(
-                modifier = Modifier,
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically,
+        Column(
+            Modifier
+                .padding(16.dp)
+        ) {
+            Column(
+                Modifier
+                    .weight(1f)
             ) {
-                Icon(
-                    imageVector = icon,
-                    modifier = Modifier.size(16.dp),
-                    tint = Color.White.copy(alpha = 0.5f),
-                    contentDescription = null
-                )
-                Text(
-                    text = title,
-                    fontSize = 14.sp,
-                    color = Color.White.copy(alpha = 0.5f)
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.Top,
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        modifier = Modifier.size(16.dp),
+                        tint = Color.White.copy(alpha = 0.5f),
+                        contentDescription = null
+                    )
+                    Text(
+                        text = title,
+                        fontSize = 16.sp,
+                        color = Color.White.copy(alpha = 0.5f)
+                    )
+                }
+                Text(text = infoText, fontSize = 26.sp)
             }
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                content()
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    content()
+                }
             }
         }
     }
@@ -81,10 +105,20 @@ private fun WidgetPrev() {
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            WeatherSquareWidget(modifier = Modifier.weight(1f),icon = Icons.Default.BrightnessLow, title = "Title") {
+            WeatherSquareWidget(
+                modifier = Modifier.weight(1f),
+                icon = Icons.Default.BrightnessLow,
+                title = "Title",
+                infoText = "info"
+            ) {
                 Text(text = "Content", fontSize = 32.sp)
             }
-            WeatherSquareWidget(modifier = Modifier.weight(1f),icon = Icons.Default.BrightnessLow, title = "Title") {
+            WeatherSquareWidget(
+                modifier = Modifier.weight(1f),
+                icon = Icons.Default.BrightnessLow,
+                title = "Title",
+                infoText = "info"
+            ) {
                 Text(text = "Content", fontSize = 32.sp)
             }
         }

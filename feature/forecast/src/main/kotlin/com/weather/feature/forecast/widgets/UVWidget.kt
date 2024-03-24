@@ -22,6 +22,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -43,24 +46,31 @@ fun UVWidget(uvIndex: Int, modifier: Modifier = Modifier) {
         }
         mutableStateOf(value)
     }
-    WeatherSquareWidget(modifier = modifier, icon = Icons.Outlined.WbSunny, title = "UV Index") {
-        UVGraph(Modifier, uvIndex)
+    WeatherSquareWidget(
+        modifier = modifier,
+        icon = Icons.Outlined.WbSunny,
+        title = "UV Index",
+        infoText = uvLevel
+    ) {
+        UVGraph(modifier = Modifier, uvIndex = uvIndex, uvLevel = uvLevel)
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(text = "$uvIndex\n$uvLevel", fontSize = 24.sp, textAlign = TextAlign.Center)
         }
     }
 }
 
 @Composable
-fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
+fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int, uvLevel: String) {
+    val textMeasurer = rememberTextMeasurer()
     Spacer(
         modifier = modifier
             .aspectRatio(1f)
-            .padding(16.dp)
+//            .padding(16.dp)
             .drawWithCache {
+                val width = size.width
+                val height = size.height
                 val circleSize = 8.dp.toPx()
                 val archThickness = 7.dp.toPx()
                 val progress = uvIndex
@@ -94,8 +104,21 @@ fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
                         center = Offset(x = x, y = y),
                         style = Stroke(circleSize / 3),
 
+                        )
+                    val textLayoutResult = textMeasurer.measure(
+                        text = "$uvIndex",
+                        maxLines = 2,
+                        style = TextStyle(fontSize = 24.sp, textAlign = TextAlign.Center)
                     )
+                    drawText(
+                        textLayoutResult,
+                        color = Color.White,
+                        topLeft = Offset(
+                            x = (width / 2).minus(textLayoutResult.size.width.div(2)),
+                            y = (height / 2).minus(textLayoutResult.size.height.div(2))
 
+                        ),
+                    )
                 }
             }
     )

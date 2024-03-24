@@ -1,17 +1,14 @@
 package com.weather.feature.forecast.widgets
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Air
 import androidx.compose.material.icons.outlined.ArrowDropUp
-import androidx.compose.material.icons.outlined.Circle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
@@ -45,7 +42,12 @@ internal fun WindWidget(
     windSpeed: Int,
     speedUnits: String,
 ) {
-    WeatherSquareWidget(modifier, icon = Icons.Outlined.Air, title = "Wind") {
+    WeatherSquareWidget(
+        modifier,
+        icon = Icons.Outlined.Air,
+        title = "Wind",
+        infoText = "$windSpeed"
+    ) {
         WindDirectionGraph(
             windDirection = windDirection,
             windSpeed = windSpeed,
@@ -66,7 +68,7 @@ internal fun WindDirectionGraph(
     Spacer(
         modifier = modifier
             .aspectRatio(1f)
-            .padding(16.dp)
+//            .padding(16.dp)
             .drawWithCache {
                 val width = size.width
                 val halfWidth = size.center.x
