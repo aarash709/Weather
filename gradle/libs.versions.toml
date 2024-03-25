@@ -36,7 +36,7 @@ junit = "4.13.2"
 appcompat = "1.6.1"
 arrow = "1.2.3"
 detekt = "1.23.5"
-kotlinter = "4.2.0"
+kotlinter = "4.3.0"
 
 
 
