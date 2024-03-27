@@ -1,10 +1,5 @@
 package com.experiment.weather
 
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.ConnectivityManager.*
-import android.net.NetworkCapabilities.*
-import android.os.Build
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.weather.core.network.util.NetworkManager
@@ -14,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -33,6 +29,15 @@ class MainViewModel @Inject constructor(
     private val _dataBaseIsEmpty = MutableStateFlow(false)
     val dataBaseIsEmpty = _dataBaseIsEmpty.asStateFlow()
 
+    val isDataLoaded = weatherRepository.getAllForecastWeatherData()
+        .map {
+            it.isNotEmpty()
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(1_000),
+            initialValue = false
+        )
+
     init {
         checkDatabaseIsEmpty()
     }
@@ -43,37 +48,5 @@ class MainViewModel @Inject constructor(
             _dataBaseIsEmpty.value = isEmpty
         }
     }
-
-//    private fun hasNetworkConnection(context: Context): Boolean {
-//        val connectivityManager = context.applicationContext
-//            .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            val activeNetwork = connectivityManager.activeNetwork ?: return false
-//            val capabilities =
-//                connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
-//            return when {
-//                capabilities.hasTransport(TRANSPORT_WIFI) ||
-//                        capabilities.hasTransport(TRANSPORT_WIFI_AWARE) ||
-//                        capabilities.hasTransport(TRANSPORT_CELLULAR) ||
-//                        capabilities.hasTransport(TRANSPORT_ETHERNET) ||
-//                        capabilities.hasTransport(TRANSPORT_VPN) -> true
-//
-//                else -> false
-//            }
-//        } else {
-//            connectivityManager.activeNetworkInfo?.run {
-//                return when (type) {
-//                    TYPE_WIFI,
-//                    TYPE_MOBILE,
-//                    TYPE_ETHERNET,
-//                    TYPE_VPN,
-//                    -> true
-//
-//                    else -> false
-//                }
-//            }
-//        }
-//        return false
-//    }
 }
 
