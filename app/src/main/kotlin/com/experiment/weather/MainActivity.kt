@@ -14,14 +14,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -68,13 +66,13 @@ class MainActivity : ComponentActivity() {
         }
 
         val splashScreen = installSplashScreen()
+
+        //keep splash screen on-screen until we have loaded our data and
         splashScreen.setKeepOnScreenCondition {
-            //keep splash screen on-screen until we have loaded our data and
-            !isDataLoaded
+            if (!isDatabaseEmpty) !isDataLoaded else false
         }
 
         enableEdgeToEdge()
-
         setContent {
             val isDarkTheme = isSystemInDarkTheme()
             LaunchedEffect(isDarkTheme) {
@@ -92,7 +90,6 @@ class MainActivity : ComponentActivity() {
                 )
             }
             WeatherApp(
-//                hasInternet = hasInternet,
                 isDatabaseEmpty = isDatabaseEmpty
             )
         }
