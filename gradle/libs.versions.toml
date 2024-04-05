@@ -23,6 +23,8 @@ androidxDatastorePreferences = "1.0.0"
 androidxTestCore = "1.5.0"
 androidxTestJunit = "1.1.5"
 androidxEspresso = "3.5.1"
+androidxMacroBenchmark = "1.2.3"
+androidxTestuiautomator = "2.2.0"
 material = "1.11.0"
 accompanist = "0.34.0"
 hiltAndroid = "2.51"
@@ -59,6 +61,7 @@ compose-material-iconsExtended = { group = "androidx.compose.material", name = "
 androidx-coreKtx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
 androidx-splashScreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidxSplashScreen" }
 androidx-Window = { group = "androidx.window", name = "window", version.ref = "androidxWindow" }
+androidx-benchmark-macro = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "androidxMacroBenchmark" }
 androidx-work = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "androidxWork" }
 androidx-work-testing = { group = "androidx.work", name = "work-testing", version = "2.9.0" }
 androidx-NavigationCompose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxNavigation" }
@@ -79,6 +82,7 @@ androidx-roomRuntime = { group = "androidx.room", name = "room-runtime", version
 androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidxTestCore" }
 androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestJunit" }
 androidx-test-espressoCore = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidxEspresso" }
+androidx-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "androidxTestuiautomator" }
 kotlix-Serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 kotlix-CoroutinesCore = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 kotlix-CoroutinesTest = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
@@ -147,3 +151,4 @@ weather-android-application = { id = "weather.android.application", version = "u
 weather-android-library = { id = "weather.android.library", version = "unspecified" }
 weather-android-compose-application = { id = "weather.compose.application", version = "unspecified" }
 weather-android-compose-library = { id = "weather.compose.library", version = "unspecified" }
+androidTest = { id = "com.android.test", version.ref = "androidGradlePlugin" }

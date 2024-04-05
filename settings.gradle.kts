@@ -15,17 +15,21 @@ pluginManagement{
 }
 rootProject.name = "weather"
 include(":app")
+include(":benchmark")
+
 include(":core:database")
-include(":feature:forecast")
 include(":core:model")
 include(":core:network")
 include(":core:repository")
 include(":core:design")
 include(":feature:search")
-include(":sync:work")
-include(":feature:settings")
-include(":feature:managelocations")
 include(":core:datastore")
-include(":feature:settings")
 include(":core:common")
 include(":core:testing")
+
+include(":sync:work")
+
+include(":feature:forecast")
+include(":feature:settings")
+include(":feature:managelocations")
+include(":feature:settings")
