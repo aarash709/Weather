@@ -140,6 +140,7 @@ secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugi
 andoirdGradle = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlinGradle = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+androidTest = { id = "com.android.test", version.ref = "androidGradlePlugin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
 com-android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 kotlinx-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlinxKsp" }
@@ -151,4 +152,3 @@ weather-android-application = { id = "weather.android.application", version = "u
 weather-android-library = { id = "weather.android.library", version = "unspecified" }
 weather-android-compose-application = { id = "weather.compose.application", version = "unspecified" }
 weather-android-compose-library = { id = "weather.compose.library", version = "unspecified" }
-androidTest = { id = "com.android.test", version.ref = "androidGradlePlugin" }
