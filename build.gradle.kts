@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.kotlinx.ksp) apply false
     alias(libs.plugins.detekt) apply false
     alias(libs.plugins.kotlinter) apply false
+    alias(libs.plugins.androidTest) apply false
 }
 
 buildscript {
