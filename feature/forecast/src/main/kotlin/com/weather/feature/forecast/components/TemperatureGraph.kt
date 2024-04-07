@@ -28,6 +28,19 @@ import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
 import com.weather.model.Hourly
 import kotlin.math.roundToInt
 
+private fun calculateGraphColor(temp: Int): Color {
+    return when {
+        temp <= 0 -> Color(25, 165, 221, 255)
+        temp in 1..15 -> Color(25, 205, 221, 255)
+        temp in 16..19 -> Color(67, 221, 25, 255)
+        temp in 20..24 -> Color(218, 215, 19, 255)
+        temp in 25..29 -> Color(255, 150, 21, 255) //Orange
+        temp in 30..70 -> Color(238, 68, 26, 255)
+        else -> Color.White
+
+    }
+}
+
 @Composable
 internal fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
     val textColor = LocalContentColor.current
@@ -116,14 +129,11 @@ internal fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Ho
                         path.lineTo(xPerIndex + 130, y = y) //continue the path line at the end
                     }
                 }
+
                 drawPath(
                     path = path,
                     brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Red,
-                            Color.Yellow,
-                            Color.Green,
-                        )
+                        colors = listOf() // TODO: calculate a brush for each point in time
                     ),
                     style = Stroke(width = 5f),
                 )
