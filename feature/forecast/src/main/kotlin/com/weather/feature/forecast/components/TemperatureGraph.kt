@@ -41,10 +41,13 @@ private fun calculateTempColor(temp: Int): Color {
     }
 }
 
-private fun calculateGraphBrush(minTemp: Int, maxTemp: Int): Brush {
+private fun calculateGraphBrush(minTemp: Int, maxTemp: Int, startYOffset: Float = 0f): Brush {
     val minTempColor = calculateTempColor(minTemp)
     val maxTempColor = calculateTempColor(maxTemp)
-    return Brush.verticalGradient(colors = listOf(maxTempColor, minTempColor))
+    return Brush.verticalGradient(
+        colors = listOf(maxTempColor, minTempColor),
+        startY = startYOffset
+    )
 }
 
 @Composable
@@ -54,7 +57,6 @@ internal fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Ho
     val textMeasurer = rememberTextMeasurer()
 
     Spacer(modifier = Modifier
-        .padding(start = 0.dp, bottom = 0.dp)
         .fillMaxWidth()
         .drawWithCache {
             val width = size.width
@@ -71,6 +73,9 @@ internal fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Ho
                 var firstIndexOffset = Offset.Zero
                 data.forEachIndexed { index, hourly ->
                     val temp = hourly.temp.toFloat()
+
+                    //normalize temp then calculate the height and subtract the offset
+                    //for text elements
                     val y = height - ((temp - minTemp) / tempRange)
                         .times(height.minus(topOffset))
                         .toFloat()
@@ -78,21 +83,22 @@ internal fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Ho
                     val xPerIndex = x * index
                     val controlPoints1 = Offset(xPerIndex.minus(x / 2), previousTemp)
                     val controlPoints2 = Offset(xPerIndex.minus(x / 2), y)
+
+                    //temp text
                     val textLayoutResult = textMeasurer.measure(
                         "${temp.roundToInt()}°",
                         style = TextStyle(fontSize = 14.sp)
                     )
                     val textYOffset = 5.dp.toPx()
-                    //temp text
                     drawText(
                         textLayoutResult = textLayoutResult,
                         color = textColor,
                         topLeft = Offset(
                             x = xPerIndex - textLayoutResult.size.width / 2f,
                             y = (y - textLayoutResult.size.height).minus(textYOffset)
-                        ),
-
                         )
+                    )
+
                     //first temp vertical dashed white line
                     drawLine(
                         color = Color.Red.copy(alpha = 0.5f),
@@ -136,15 +142,21 @@ internal fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Ho
                         path.lineTo(xPerIndex + 130, y = y) //continue the path line at the end
                     }
                 }
-
+                val graphBrush = calculateGraphBrush(
+                    minTemp = data
+                        .minOf { it.temp }
+                        .toInt(),
+                    maxTemp = data
+                        .maxOf { it.temp }
+                        .toInt(),
+                    startYOffset = topOffset
+                )
                 drawPath(
                     path = path,
-                    brush = calculateGraphBrush(
-                        data.minOf { it.temp }.toInt(),
-                        data.maxOf { it.temp }.toInt()
-                    ),
+                    brush = graphBrush,
                     style = Stroke(width = 5f),
                 )
+                //first index circle
                 drawCircle(
                     color = Color.White,
                     radius = 10f,
