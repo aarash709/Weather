@@ -28,7 +28,7 @@ import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
 import com.weather.model.Hourly
 import kotlin.math.roundToInt
 
-private fun calculateGraphColor(temp: Int): Color {
+private fun calculateTempColor(temp: Int): Color {
     return when {
         temp <= 0 -> Color(25, 165, 221, 255)
         temp in 1..15 -> Color(25, 205, 221, 255)
@@ -39,6 +39,12 @@ private fun calculateGraphColor(temp: Int): Color {
         else -> Color.White
 
     }
+}
+
+private fun calculateGraphBrush(minTemp: Int, maxTemp: Int): Brush {
+    val minTempColor = calculateTempColor(minTemp)
+    val maxTempColor = calculateTempColor(maxTemp)
+    return Brush.verticalGradient(colors = listOf(maxTempColor, minTempColor))
 }
 
 @Composable
@@ -77,7 +83,7 @@ internal fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Ho
                         style = TextStyle(fontSize = 14.sp)
                     )
                     val textYOffset = 5.dp.toPx()
-
+                    //temp text
                     drawText(
                         textLayoutResult = textLayoutResult,
                         color = textColor,
@@ -87,6 +93,7 @@ internal fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Ho
                         ),
 
                         )
+                    //first temp vertical dashed white line
                     drawLine(
                         color = Color.Red.copy(alpha = 0.5f),
                         start = Offset(x = xPerIndex, y),
@@ -132,8 +139,9 @@ internal fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Ho
 
                 drawPath(
                     path = path,
-                    brush = Brush.verticalGradient(
-                        colors = listOf() // TODO: calculate a brush for each point in time
+                    brush = calculateGraphBrush(
+                        data.minOf { it.temp }.toInt(),
+                        data.maxOf { it.temp }.toInt()
                     ),
                     style = Stroke(width = 5f),
                 )
