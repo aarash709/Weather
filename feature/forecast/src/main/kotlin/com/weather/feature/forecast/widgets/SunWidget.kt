@@ -95,34 +95,57 @@ private fun SunGraph(
                     ),
                     end = Offset(width.times(1.25f), height / 2)
                 )
-                drawSundial(dayBrush = daylightBrush, archThickness = archThickness)
-                val circlePosition = if (x
-                        .isNaN()
-                        .not() && y
-                        .isNaN()
-                        .not()
-                ) {
-                    Offset(x = x, y = y)
-                } else Offset.Zero
-                drawCircleIndicator(
-                    brush = if (currentTime > sunset)
-                        nightColor
-                    else daylightBrush,
-                    circleSize = circleSize,
-                    position = circlePosition,
-                    shouldShowBorder = true
-                )
+//                drawSundial(dayBrush = daylightBrush, archThickness = archThickness)
+//                val circlePosition = if (x
+//                        .isNaN()
+//                        .not() && y
+//                        .isNaN()
+//                        .not()
+//                ) {
+//                    Offset(x = x, y = y)
+//                } else Offset.Zero
+//                drawCircleIndicator(
+//                    brush = if (currentTime > sunset)
+//                        nightColor
+//                    else daylightBrush,
+//                    circleSize = circleSize,
+//                    position = circlePosition,
+//                    shouldShowBorder = true
+//                )
                 //test
                 val path = Path().apply {
-                    moveTo(0.0f, centerY)
-                    quadraticBezierTo(x1 = centerX + 0, y1 = -centerY, x2 = width, y2 = centerY)
+                    moveTo(-50.0f, centerY + 100f)
+                    //start
+                    quadraticBezierTo(
+                        x1 = 10f,
+                        y1 = centerY + 100f,
+                        x2 = 50.0f,
+                        y2 = centerY
+                    )
+                    //center
+                    quadraticBezierTo(
+                        x1 = centerX,
+                        y1 = -centerY,
+                        x2 = width - 50f,
+                        y2 = centerY
+                    )
+                    //end
+                    quadraticBezierTo(
+                        x1 = width - 10,
+                        y1 = centerY + 100f,
+                        x2 = width + 50f,
+                        y2 = centerY + 100f
+                    )
                 }
-                testPath(path)
                 val position = FloatArray(2)
                 val tan = FloatArray(2)
                 val measure = android.graphics.PathMeasure(path.asAndroidPath(), false)
                 val length = measure.length
                 measure.getPosTan(length * progress, position, tan)
+                testPath(
+                    path = path,
+                    brush = if (progress > .15f && progress < .85f) daylightBrush else nightColor
+                )
                 drawCircle(
                     Color.Black,
                     radius = 20f,
@@ -130,7 +153,7 @@ private fun SunGraph(
                     blendMode = BlendMode.Clear
                 )
                 drawCircle(
-                    Color.Yellow,
+                    brush = if (progress > .15f && progress < .85f) daylightBrush else nightColor,
                     radius = 15f,
                     center = Offset(position[0], position[1])
                 )
@@ -148,21 +171,15 @@ private fun SunGraph(
         })
 }
 
-private fun DrawScope.testPath(path: Path) {
+private fun DrawScope.testPath(path: Path, brush: Brush) {
     val width = size.width
     val height = size.height
-    val position = FloatArray(2)
-    val tan = FloatArray(2)
-    val progress = 0.60f
-
     fun calculate(x: Float) = (height - (height - x.pow(2))).times(
         exp(
             -height / 2 * x.pow(2)
         )
     )
-    drawPath(path, Color.Red, style = Stroke(10f))
-
-
+    drawPath(path, brush, style = Stroke(10f, cap = StrokeCap.Round))
 }
 
 private fun DrawScope.drawSundial(dayBrush: Brush, archThickness: Float) {
@@ -216,5 +233,5 @@ private fun DrawScope.drawCircleIndicator(
 @Preview
 @Composable
 private fun UVPreview() {
-    SunWidget(sunrise = 0, sunset = 100, currentTime = 120)
+    SunWidget(sunrise = 0, sunset = 100, currentTime = 16)
 }
