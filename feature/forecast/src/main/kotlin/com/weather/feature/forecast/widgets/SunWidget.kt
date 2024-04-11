@@ -12,18 +12,20 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.asAndroidPath
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.weather.core.design.components.WeatherSquareWidget
-import timber.log.Timber
 import kotlin.math.cos
+import kotlin.math.exp
+import kotlin.math.pow
 import kotlin.math.sin
 
 @Composable
@@ -55,8 +57,12 @@ private fun SunGraph(
         .drawWithCache {
             val width = size.width
             val height = size.height
+            val centerX = width / 2
+            val centerY = height / 2
+
             val circleSize = 8.dp.toPx()
-            val sunsetColor = Red.copy(green = 0.3f)
+
+            val sunsetColor = Color.Red.copy(green = 0.3f)
             val darkBlue = Color(5, 20, 50)
             val daylightColor = Color(244, 250, 127)
             val daylightBrush = Brush.horizontalGradient(
@@ -66,15 +72,18 @@ private fun SunGraph(
                 1.0f to sunsetColor
             )
             val nightColor = Brush.horizontalGradient(listOf(darkBlue, darkBlue))
+
             val archThickness = 6.dp.toPx()
             val timeRange = sunset.minus(sunrise)
+
             val progress = currentTime
                 .minus(sunrise)
                 .toFloat()
                 .div(timeRange)
-                .times(180)
             val radius = size.width / 2
-            val angle = (progress) + 180.0
+            //added 180 offset as starting point if progress is 0.0f
+            val angle = (progress.times(180)) + 180.0
+
             val x = (radius * cos(Math.toRadians(angle)).toFloat()) + size.width / 2
             val y = (radius * sin(Math.toRadians(angle)).toFloat()) + size.height / 2
             onDrawBehind {
@@ -87,7 +96,7 @@ private fun SunGraph(
                     end = Offset(width.times(1.25f), height / 2)
                 )
                 drawSundial(dayBrush = daylightBrush, archThickness = archThickness)
-                val position = if (x
+                val circlePosition = if (x
                         .isNaN()
                         .not() && y
                         .isNaN()
@@ -100,11 +109,60 @@ private fun SunGraph(
                         nightColor
                     else daylightBrush,
                     circleSize = circleSize,
-                    position = position,
+                    position = circlePosition,
                     shouldShowBorder = true
+                )
+                //test
+                val path = Path().apply {
+                    moveTo(0.0f, centerY)
+                    quadraticBezierTo(x1 = centerX + 0, y1 = -centerY, x2 = width, y2 = centerY)
+                }
+                testPath(path)
+                val position = FloatArray(2)
+                val tan = FloatArray(2)
+                val measure = android.graphics.PathMeasure(path.asAndroidPath(), false)
+                val length = measure.length
+                measure.getPosTan(length * progress, position, tan)
+                drawCircle(
+                    Color.Black,
+                    radius = 20f,
+                    center = Offset(position[0], position[1]),
+                    blendMode = BlendMode.Clear
+                )
+                drawCircle(
+                    Color.Yellow,
+                    radius = 15f,
+                    center = Offset(position[0], position[1])
+                )
+                drawLine(
+                    Color.Cyan,
+                    strokeWidth = 10f,
+                    start = Offset(x = position[0], y = position[1]),
+                    end = Offset(
+                        x = position[0] + tan[0] * 50f,
+                        y = position[1] + tan[1] * 50f
+                    ),
+                    cap = StrokeCap.Round
                 )
             }
         })
+}
+
+private fun DrawScope.testPath(path: Path) {
+    val width = size.width
+    val height = size.height
+    val position = FloatArray(2)
+    val tan = FloatArray(2)
+    val progress = 0.60f
+
+    fun calculate(x: Float) = (height - (height - x.pow(2))).times(
+        exp(
+            -height / 2 * x.pow(2)
+        )
+    )
+    drawPath(path, Color.Red, style = Stroke(10f))
+
+
 }
 
 private fun DrawScope.drawSundial(dayBrush: Brush, archThickness: Float) {
