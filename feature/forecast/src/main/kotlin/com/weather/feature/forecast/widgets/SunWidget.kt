@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.asAndroidPath
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -142,9 +143,20 @@ private fun SunGraph(
                 val measure = android.graphics.PathMeasure(path.asAndroidPath(), false)
                 val length = measure.length
                 measure.getPosTan(length * progress, position, tan)
+                clipRect {
+
+                }
+                val brush = Brush.horizontalGradient(
+                    0.05f to darkBlue,
+                    0.15f to sunsetColor,
+                    0.2f to daylightColor,
+                    0.8f to daylightColor,
+                    0.85f to sunsetColor,
+                    0.95f to darkBlue
+                )
                 testPath(
                     path = path,
-                    brush = if (progress > .15f && progress < .85f) daylightBrush else nightColor
+                    brush = brush
                 )
                 drawCircle(
                     Color.Black,
@@ -153,7 +165,7 @@ private fun SunGraph(
                     blendMode = BlendMode.Clear
                 )
                 drawCircle(
-                    brush = if (progress > .15f && progress < .85f) daylightBrush else nightColor,
+                    brush = brush,
                     radius = 15f,
                     center = Offset(position[0], position[1])
                 )
@@ -233,5 +245,5 @@ private fun DrawScope.drawCircleIndicator(
 @Preview
 @Composable
 private fun UVPreview() {
-    SunWidget(sunrise = 0, sunset = 100, currentTime = 16)
+    SunWidget(sunrise = 0, sunset = 100, currentTime = 25)
 }
