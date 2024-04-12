@@ -1,5 +1,8 @@
 package com.weather.feature.forecast.widgets
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
@@ -14,8 +17,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.asAndroidPath
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -25,8 +28,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.weather.core.design.components.WeatherSquareWidget
 import kotlin.math.cos
-import kotlin.math.exp
-import kotlin.math.pow
 import kotlin.math.sin
 
 @Composable
@@ -58,10 +59,7 @@ private fun SunGraph(
         .drawWithCache {
             val width = size.width
             val height = size.height
-            val centerX = width / 2
-            val centerY = height / 2
-
-            val circleSize = 8.dp.toPx()
+            val circleSize = 5.dp.toPx()
 
             val sunsetColor = Color.Red.copy(green = 0.3f)
             val darkBlue = Color(5, 20, 50)
@@ -74,19 +72,13 @@ private fun SunGraph(
             )
             val nightColor = Brush.horizontalGradient(listOf(darkBlue, darkBlue))
 
-            val archThickness = 6.dp.toPx()
             val timeRange = sunset.minus(sunrise)
 
             val progress = currentTime
                 .minus(sunrise)
                 .toFloat()
                 .div(timeRange)
-            val radius = size.width / 2
-            //added 180 offset as starting point if progress is 0.0f
-            val angle = (progress.times(180)) + 180.0
 
-            val x = (radius * cos(Math.toRadians(angle)).toFloat()) + size.width / 2
-            val y = (radius * sin(Math.toRadians(angle)).toFloat()) + size.height / 2
             onDrawBehind {
                 drawLine(
                     Color.White.copy(alpha = 0.5f),
@@ -96,56 +88,12 @@ private fun SunGraph(
                     ),
                     end = Offset(width.times(1.25f), height / 2)
                 )
-//                drawSundial(dayBrush = daylightBrush, archThickness = archThickness)
-//                val circlePosition = if (x
-//                        .isNaN()
-//                        .not() && y
-//                        .isNaN()
-//                        .not()
-//                ) {
-//                    Offset(x = x, y = y)
-//                } else Offset.Zero
-//                drawCircleIndicator(
-//                    brush = if (currentTime > sunset)
-//                        nightColor
-//                    else daylightBrush,
-//                    circleSize = circleSize,
-//                    position = circlePosition,
-//                    shouldShowBorder = true
-//                )
-                //test
-                val path = Path().apply {
-                    moveTo(-50.0f, centerY + 100f)
-                    //start
-                    quadraticBezierTo(
-                        x1 = 10f,
-                        y1 = centerY + 100f,
-                        x2 = 50.0f,
-                        y2 = centerY
-                    )
-                    //center
-                    quadraticBezierTo(
-                        x1 = centerX,
-                        y1 = -centerY,
-                        x2 = width - 50f,
-                        y2 = centerY
-                    )
-                    //end
-                    quadraticBezierTo(
-                        x1 = width - 10,
-                        y1 = centerY + 100f,
-                        x2 = width + 50f,
-                        y2 = centerY + 100f
-                    )
-                }
-                val position = FloatArray(2)
-                val tan = FloatArray(2)
+                val path = calculatePath()
+                val pathPosition = FloatArray(2)
+                val pathTangent = FloatArray(2)
                 val measure = android.graphics.PathMeasure(path.asAndroidPath(), false)
                 val length = measure.length
-                measure.getPosTan(length * progress, position, tan)
-                clipRect {
-
-                }
+                measure.getPosTan(length * progress, pathPosition, pathTangent)
                 val brush = Brush.horizontalGradient(
                     0.05f to darkBlue,
                     0.15f to sunsetColor,
@@ -154,96 +102,88 @@ private fun SunGraph(
                     0.85f to sunsetColor,
                     0.95f to darkBlue
                 )
-                testPath(
+                val indicatorBoarderOffset = circleSize / 32
+                drawSundial(
                     path = path,
                     brush = brush
                 )
-                drawCircle(
-                    Color.Black,
-                    radius = 20f,
-                    center = Offset(position[0], position[1]),
-                    blendMode = BlendMode.Clear
-                )
-                drawCircle(
-                    brush = brush,
-                    radius = 15f,
-                    center = Offset(position[0], position[1])
-                )
-                drawLine(
-                    Color.Cyan,
-                    strokeWidth = 10f,
-                    start = Offset(x = position[0], y = position[1]),
-                    end = Offset(
-                        x = position[0] + tan[0] * 50f,
-                        y = position[1] + tan[1] * 50f
-                    ),
-                    cap = StrokeCap.Round
+                drawCircleIndicator(
+                    brush = if (currentTime > sunset)
+                        nightColor
+                    else daylightBrush,
+                    radius = circleSize,
+                    boarderRadius = circleSize * indicatorBoarderOffset,
+                    position = pathPosition,
+                    shouldShowBorder = true
                 )
             }
         })
 }
 
-private fun DrawScope.testPath(path: Path, brush: Brush) {
+fun DrawScope.calculatePath(): Path {
     val width = size.width
-    val height = size.height
-    fun calculate(x: Float) = (height - (height - x.pow(2))).times(
-        exp(
-            -height / 2 * x.pow(2)
+    val centerX = size.width / 2
+    val centerY = size.height / 2
+    return Path().apply {
+        moveTo(-16.dp.toPx(), centerY + 32.dp.toPx())
+        //start
+        quadraticBezierTo(
+            x1 = width / 32,
+            y1 = centerY + 24.dp.toPx(),
+            x2 = 12.dp.toPx(),
+            y2 = centerY
         )
-    )
+        //center
+        quadraticBezierTo(
+            x1 = centerX,
+            y1 = -centerY,
+            x2 = width - 12.dp.toPx(),
+            y2 = centerY
+        )
+        //end
+        quadraticBezierTo(
+            x1 = width - width / 32,
+            y1 = centerY + 24.dp.toPx(),
+            x2 = width + 16.dp.toPx(),
+            y2 = centerY + 32.dp.toPx()
+        )
+    }
+}
+
+private fun DrawScope.drawSundial(path: Path, brush: Brush) {
     drawPath(path, brush, style = Stroke(10f, cap = StrokeCap.Round))
 }
 
-private fun DrawScope.drawSundial(dayBrush: Brush, archThickness: Float) {
-    drawArc(
-        color = Color.White.copy(alpha = 0.5f),
-        topLeft = Offset.Zero,
-        startAngle = 0f,
-        sweepAngle = 180f,
-        useCenter = false,
-        style = Stroke(
-            width = archThickness,
-            cap = StrokeCap.Butt,
-            pathEffect = PathEffect.dashPathEffect(
-                intervals = floatArrayOf(5f, 20f),
-                phase = 15f
-            )
-        )
-    )
-    drawArc(
-        brush = dayBrush,
-        topLeft = Offset.Zero,
-        startAngle = 180f,
-        sweepAngle = 180f,
-        useCenter = false,
-        style = Stroke(width = archThickness),
-    )
-}
 
 private fun DrawScope.drawCircleIndicator(
     brush: Brush,
-    circleSize: Float,
-    position: Offset = Offset.Zero,
+    radius: Float,
+    boarderRadius: Float,
+    position: FloatArray = floatArrayOf(0f, 0f),
     shouldShowBorder: Boolean = true,
 ) {
     if (shouldShowBorder) {
         drawCircle(
-            color = Color.Black,
-            radius = circleSize.times(1.3f),
-            center = position,
+            Color.Black,
+            radius = radius + boarderRadius,
+            center = Offset(position[0], position[1]),
             blendMode = BlendMode.Clear
-
         )
     }
     drawCircle(
         brush = brush,
-        radius = circleSize,
-        center = position
+        radius = radius,
+        center = Offset(position[0], position[1])
     )
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Preview
 @Composable
 private fun UVPreview() {
-    SunWidget(sunrise = 0, sunset = 100, currentTime = 25)
+    val position = 50
+    FlowRow(maxItemsInEachRow = 2, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        SunWidget(modifier = Modifier.weight(1f), sunrise = 0, sunset = 100, currentTime = position)
+        SunWidget(modifier = Modifier.weight(1f), sunrise = 0, sunset = 100, currentTime = position)
+    }
 }
