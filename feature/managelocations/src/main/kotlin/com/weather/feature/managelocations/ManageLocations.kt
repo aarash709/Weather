@@ -2,7 +2,6 @@ package com.weather.feature.managelocations
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.activity.compose.BackHandler
-import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.tween
@@ -55,6 +54,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -62,6 +62,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.experiment.weather.core.common.R
 import com.weather.core.design.components.ShowLoadingText
 import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
@@ -192,7 +193,7 @@ fun ManageLocations(
                     }
                     if (dataState.data.isEmpty()) {
                         Text(
-                            text = "Search and add a location",
+                            text = stringResource(id = R.string.search_and_add_a_location),
                             color = MaterialTheme.colorScheme.onBackground.copy(alpha = .75f),
                             fontSize = 12.sp
                         )
@@ -287,7 +288,7 @@ internal fun SearchBarCard(onClick: () -> Unit) {
             )
             Spacer(modifier = Modifier.width(16.dp))
             Text(
-                text = "Search",
+                text = stringResource(id = R.string.search),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
             )
         }
@@ -368,7 +369,7 @@ internal fun SavedLocationItem(
                     )
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
-                        text = "Real Feel: ${
+                        text = "${stringResource(id = R.string.real_feel)}: ${
                             data.feelsLike
                         }°",
                         fontSize = 12.sp

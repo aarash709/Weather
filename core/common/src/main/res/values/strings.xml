@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+<!--    manage locations strings -->
+    <string name="search_and_add_a_location">Search and add a location</string>
+    <string name="search">Search</string>
+    <string name="real_feel">Real Feel</string>
 <!--  settings strings  -->
     <string name="celsius_symbol">°C</string>
     <string name="fahrenheit_symbol">°F</string>
