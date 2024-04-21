@@ -38,6 +38,7 @@ import com.weather.core.design.theme.WeatherTheme
 import com.weather.model.SettingsData
 import com.weather.model.TemperatureUnits
 import com.weather.model.WindSpeedUnits
+import com.experiment.weather.core.common.R
 
 @Composable
 fun SettingsRoute(

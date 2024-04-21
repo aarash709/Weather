@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.weather.model.TemperatureUnits
 import com.weather.model.WindSpeedUnits
+import com.experiment.weather.core.common.R
 
 @Composable
 fun SettingGroup(
