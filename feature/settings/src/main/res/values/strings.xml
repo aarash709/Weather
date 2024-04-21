@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="celsius_symbol">°C</string>
+    <string name="fahrenheit_symbol">°F</string>
+    <string name="kilometer_per_hour">Kilometer per hour</string>
+    <string name="meters_per_second">Meters per second</string>
+    <string name="miles_per_hour">Miles per hour</string>
+    <string name="kilometer_per_hour_symbol">km/h</string>
+    <string name="meters_per_second_symbol">m/s</string>
+    <string name="miles_per_hour_symbol">mph</string>
+
+    <string name="settings">Settings</string>
+    <string name="units">Units</string>
+    <string name="Temperature">Temperature</string>
+    <string name="wind_speed">Wind Speed</string>
+
+    <string name="about">About</string>
+
+    <string name="about_description">A work in progress 🚧 Weather sample app.</string>
+    <string name="about_data_source">Weather Data from Openweathermap.org</string>
+</resources>
