@@ -46,7 +46,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.weather.core.design.components.weatherPlaceholder
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.feature.forecast.components.ForecastTopBar
-import com.weather.feature.forecast.components.WindDetails
 import com.weather.feature.forecast.components.hourlydata.DailyStaticData
 import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
 import com.weather.feature.forecast.widgets.DailyWidget
@@ -378,6 +377,5 @@ private fun WindPreview() {
         LaunchedEffect(key1 = Unit) {
             animateDegree.animateTo(113f, tween(1000, 100, easing = EaseOutCubic))
         }
-        WindDetails(Modifier, animateDegree.value, 3.52f)
     }
 }

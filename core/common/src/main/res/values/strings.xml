@@ -1,5 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+<!--    forecast strings-->
+    <string name="wind_from">Wind from</string>
+    <string name="visibility">Visibility</string>
+    <string name="today">Today</string>
+    <string name="uv_index">UV Index</string>
+    <string name="sunrise">Sunrise</string>
+    <string name="temperature">Temperature</string>
+    <string name="humidity">Humidity</string>
+    <string name="pressure">Pressure</string>
+    <string name="pressure_symbol">mbar</string>
+    <string name="wind_direction">Wind Direction</string>
+    <string name="five_day_forecast">5-Day forecast</string>
+    <string name="more_details">More details</string>
+    <string name="hourly_forecast">Hourly forecast</string>
+    <string-array name="uv_intensity">
+        <item>Low</item>
+        <item>Moderate</item>
+        <item>High</item>
+        <item>Very High</item>
+        <item>Extreme</item>
+    </string-array>
+    <string-array name="wind_directions">
+        <item>North</item>
+        <item>Northeast</item>
+        <item>East</item>
+        <item>Southeast</item>
+        <item>South</item>
+        <item>Southwest</item>
+        <item>West</item>
+        <item>Northwest</item>
+        <item>Unknown</item>
+    </string-array>
 <!--    manage locations strings -->
     <string name="search_and_add_a_location">Search and add a location</string>
     <string name="search">Search</string>

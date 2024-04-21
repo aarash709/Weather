@@ -28,12 +28,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.experiment.weather.core.common.R.*
 import com.weather.core.design.theme.WeatherTheme
+import com.weather.feature.forecast.R
 import com.weather.feature.forecast.components.HourlyTemperatureGraph
 import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
 import com.weather.model.Hourly
@@ -72,7 +75,7 @@ internal fun HourlyWidget(
                     )
                 }
                 Text(
-                    text = "Hourly forecast",
+                    text = stringResource(id = string.hourly_forecast),
                     modifier = Modifier,
                     fontSize = 14.sp,
                     color = Color.White.copy(alpha = 0.5f)
@@ -80,7 +83,7 @@ internal fun HourlyWidget(
             }
             HourlyGraphLayout(
                 modifier = Modifier
-                    .graphicsLayer (compositingStrategy = CompositingStrategy.Offscreen)
+                    .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
                     .horizontalScroll(rememberScrollState()),
                 itemCount = hourly.size,
                 graphHeight = 50.dp,

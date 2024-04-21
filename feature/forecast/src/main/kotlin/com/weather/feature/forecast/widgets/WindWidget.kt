@@ -27,6 +27,8 @@ import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -35,7 +37,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.experiment.weather.core.common.R.*
 import com.weather.core.design.components.WeatherSquareWidget
+import com.weather.feature.forecast.R
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -46,25 +50,27 @@ internal fun WindWidget(
     windSpeed: Int,
     speedUnits: String,
 ) {
+    val context = LocalContext.current
     val direction by remember(windDirection){
+        val directions = context.resources.getStringArray(array.wind_directions)
         val value = when(windDirection){
-           in 341..360 -> "North"
-           in 0..20 -> "North"
-            in 21..70 -> "NorthEast"
-            in 71..110 -> "East"
-            in 111..160 -> "SouthEast"
-            in 161..200 -> "South"
-            in 201..240 -> "SouthWest"
-            in 241..290 -> "West"
-            in 291..340 -> "NorthWest"
-            else-> "Unknown"
+           in 341..360 -> directions[0]
+           in 0..20 -> directions[0]
+            in 21..70 -> directions[1]
+            in 71..110 -> directions[2]
+            in 111..160 -> directions[3]
+            in 161..200 -> directions[4]
+            in 201..240 -> directions[5]
+            in 241..290 -> directions[6]
+            in 291..340 -> directions[7]
+            else-> directions[8]
         }
         mutableStateOf(value)
     }
     WeatherSquareWidget(
         modifier,
         icon = Icons.Outlined.Air,
-        title = "Wind from",
+        title = stringResource(id = string.wind_from),
         infoText = direction
     ) {
         WindDirectionGraph(

@@ -12,10 +12,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.experiment.weather.core.common.R.*
 import com.weather.core.design.components.WeatherSquareWidget
 import com.weather.core.design.theme.WeatherTheme
+import com.weather.feature.forecast.R
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -28,7 +31,7 @@ internal fun RealFeelWidget(
     WeatherSquareWidget(
         modifier,
         icon = Icons.Outlined.Thermostat,
-        title = "Real Feel",
+        title = stringResource(id = string.real_feel),
         infoText = "$realFeel°",
     ) {
         RealFeelGraph(realFeel)
@@ -95,7 +98,7 @@ private fun RealFeelGraph(realFeel: Int) {
                     drawLine(
                         color = Color.White,
                         start = Offset(x, y),
-                        end = Offset(xEnd,yEnd),
+                        end = Offset(xEnd, yEnd),
                         strokeWidth = indicatorStrokeWidth,
                         cap = StrokeCap.Round
 
