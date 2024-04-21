@@ -16,9 +16,11 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.experiment.weather.core.common.R.string
 import com.weather.core.design.components.WeatherSquareWidget
 
 @Composable
@@ -28,7 +30,9 @@ internal fun HumidityWidget(
 ) {
     WeatherSquareWidget(
         modifier = modifier,
-        icon = Icons.Outlined.WaterDrop, title = "Humidity", infoText = "$humidity%"
+        icon = Icons.Outlined.WaterDrop,
+        title = stringResource(id = string.humidity),
+        infoText = "$humidity%"
     ) {
         HumidityGraph(humidity = humidity)
     }
@@ -67,14 +71,17 @@ fun HumidityGraph(humidity: Int) {
                         topLeft = Offset(0f, 0f),
                         style = Stroke(width = archThickness, cap = StrokeCap.Round),
                     )
-                   translate(left = (width/2) - painter.intrinsicSize.width/2, top = (height/2)- painter.intrinsicSize.height/2) {
-                       with(painter) {
-                           draw(
-                               size = painter.intrinsicSize,
-                               colorFilter = ColorFilter.tint(Color.Blue.copy(green = 0.6f))
-                           )
-                       }
-                   }
+                    translate(
+                        left = (width / 2) - painter.intrinsicSize.width / 2,
+                        top = (height / 2) - painter.intrinsicSize.height / 2
+                    ) {
+                        with(painter) {
+                            draw(
+                                size = painter.intrinsicSize,
+                                colorFilter = ColorFilter.tint(Color.Blue.copy(green = 0.6f))
+                            )
+                        }
+                    }
                 }
             }
     )

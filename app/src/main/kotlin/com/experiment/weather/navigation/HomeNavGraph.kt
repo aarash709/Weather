@@ -12,7 +12,7 @@ import com.weather.feature.managelocations.manageLocationsRoute
 import com.weather.feature.settings.SETTINGS_ROUTE
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-const val FORECAST_ROUTE = "forecastRoute"
+const val FORECAST_ROUTE = "FORECAST_ROUTE"
 
 @ExperimentalCoroutinesApi
 fun NavGraphBuilder.forecastRoute(

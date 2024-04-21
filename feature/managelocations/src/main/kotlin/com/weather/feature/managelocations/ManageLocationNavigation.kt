@@ -13,7 +13,7 @@ import androidx.navigation.compose.composable
 import com.weather.feature.search.searchRoute
 import kotlinx.coroutines.FlowPreview
 
-const val manageLocationsRoute = "manageLocations"
+const val manageLocationsRoute = "MANAGE_LOCATIONS_ROUTE"
 
 fun NavController.toManageLocations(navOptions: NavOptions? = null) {
     navigate(manageLocationsRoute, navOptions)

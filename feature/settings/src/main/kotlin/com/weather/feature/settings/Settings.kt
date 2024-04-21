@@ -25,6 +25,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,6 +38,7 @@ import com.weather.core.design.theme.WeatherTheme
 import com.weather.model.SettingsData
 import com.weather.model.TemperatureUnits
 import com.weather.model.WindSpeedUnits
+import com.experiment.weather.core.common.R
 
 @Composable
 fun SettingsRoute(
@@ -46,6 +49,7 @@ fun SettingsRoute(
     var tempUnit by remember {
         mutableStateOf("")
     }
+    val context = LocalContext.current
     var windUnit by remember {
         mutableStateOf("")
     }
@@ -54,16 +58,16 @@ fun SettingsRoute(
             is SettingsUIState.Success -> {
                 tempUnit =
                     when ((settingsUIState as SettingsUIState.Success).settingsData.temperatureUnits) {
-                        TemperatureUnits.C -> "°C"
-                        TemperatureUnits.F -> "°F"
-                        else -> "null"
+                        TemperatureUnits.C -> context.getString(R.string.celsius_symbol)
+                        TemperatureUnits.F -> context.getString(R.string.fahrenheit_symbol)
+                        else -> ""
                     }
                 windUnit =
                     when ((settingsUIState as SettingsUIState.Success).settingsData.windSpeedUnits) {
-                        WindSpeedUnits.KM -> "Kilometer per hour"
-                        WindSpeedUnits.MS -> "Meters per second"
-                        WindSpeedUnits.MPH -> "Miles per hour"
-                        else -> "null"
+                        WindSpeedUnits.KM -> context.getString(R.string.kilometer_per_hour)
+                        WindSpeedUnits.MS -> context.getString(R.string.meters_per_second)
+                        WindSpeedUnits.MPH -> context.getString(R.string.miles_per_hour)
+                        else -> ""
                     }
             }
 
@@ -114,20 +118,20 @@ fun SettingsContent(
                 ) {
                     CustomTopBar(
                         modifier = Modifier,
-                        text = "Settings",
+                        text = stringResource(id = R.string.settings),
                         scrollBehavior = scrollBehavior,
                         onBackPressed = { onBackPressed() })
                     SettingGroup(
                         modifier = Modifier.padding(16.dp),
-                        groupName = "Units"
+                        groupName = stringResource(id = R.string.units)
                     ) {
                         TemperatureSection(
-                            title = "Temperature",
+                            title = stringResource(id = R.string.Temperature),
                             tempUnitName = tempUnit,
                             setTemperature = setTemperature
                         )
                         WindSpeedSection(
-                            title = "Wind Speed",
+                            title = stringResource(id = R.string.wind_speed),
                             windSpeedUnitName = windUnit,
                             setWindSpeed = setWindSpeed
                         )
@@ -135,7 +139,7 @@ fun SettingsContent(
                     SettingsHorizontalDivider()
                     SettingGroup(
                         modifier = Modifier.padding(16.dp),
-                        groupName = "About"
+                        groupName = stringResource(id = R.string.about)
                     ) {
                         About()
                     }
@@ -157,12 +161,12 @@ private fun About(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
-            text = "A work in progress 🚧 Weather sample app.",
+            text = stringResource(id = R.string.about_description),
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = .5f),
             fontSize = 14.sp,
         )
         Text(
-            text = "Weather Data from Openweathermap.org",
+            text = stringResource(id = R.string.about_data_source),
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = .5f),
             fontSize = 14.sp,
         )

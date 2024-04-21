@@ -46,6 +46,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -53,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.experiment.weather.core.common.R
 import com.weather.core.design.components.weatherPlaceholder
 import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
@@ -71,6 +75,7 @@ fun SearchRoute(
 ) {
     //stateful
     val searchUIState by searchViewModel.searchUIState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
     var inputText by remember {
         mutableStateOf(TextFieldValue(""))
     }
@@ -95,9 +100,9 @@ fun SearchRoute(
                 searchUIState = searchUIState,
                 shouldRequestFocus = shouldRequestFocus,
                 searchInputText = inputText,
-                popularCities = cityList,
-                popularCityIndex = {
-                    val value = cityList[it]
+                popularCities = stringArrayResource(id = R.array.popular_cities).toList(),
+                popularCityIndex = { cityIndex ->
+                    val value = context.resources.getStringArray(R.array.popular_cities)[cityIndex]
                     inputText = TextFieldValue(
                         text = value,
                         selection = TextRange(value.length)
@@ -108,12 +113,11 @@ fun SearchRoute(
                 },
                 onClearSearch = {
                     inputText = TextFieldValue(text = "")
-                },
-                selectedSearchItem = { searchItem ->
-                    searchViewModel.syncWeather(searchItem)
-                    onSelectSearchItem()
                 }
-            )
+            ) { searchItem ->
+                searchViewModel.syncWeather(searchItem)
+                onSelectSearchItem()
+            }
         }
     }
 }
@@ -152,7 +156,7 @@ fun SearchScreenContent(
             Column {
                 if (isTextSearchEmpty) {
                     Text(
-                        text = "Popular Cities",
+                        text = stringResource(id = R.string.popular_cities),
                         modifier = Modifier.padding(top = 24.dp),
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                         fontSize = 14.sp
@@ -375,7 +379,7 @@ private fun SearchPreview() {
                 searchUIState = SavableSearchState(GeoSearchItem.empty, true),
                 searchInputText = inputText,
                 shouldRequestFocus = false,
-                popularCities = cityList,
+                popularCities = popularCities,
                 popularCityIndex = {},
                 onClearSearch = {},
                 onSearchTextChange = { inputText = it },
@@ -403,7 +407,7 @@ private fun TopSearchBarPreview() {
 private fun PopularCityPreview() {
     WeatherTheme {
         PopularCities(
-            popularCities = cityList,
+            popularCities = popularCities,
             popularCityIndex = {}
         )
     }
@@ -425,12 +429,11 @@ private fun SearchCityWeatherPreview() {
     }
 }
 
-val cityList = listOf(
+val popularCities = listOf(
     "Tehran",
     "Beijing",
     "Hong Kong",
     "Rome",
-    "Shang Hai",
     "Shang Hai",
     "Moscow",
     "Los Angeles",
@@ -446,10 +449,10 @@ val cityList = listOf(
     "Berlin",
 )
 
-internal val items = listOf(
-    GeoSearchItem("Iran", name = "Tehran"),
-    GeoSearchItem("Iran2", name = "Tehran2"),
-    GeoSearchItem("Iran3", name = "Tehran3"),
-    GeoSearchItem("Iran4", name = "Tehran4"),
-    GeoSearchItem("Iran5", name = "Tehran5"),
-)
+//internal val items = listOf(
+//    GeoSearchItem("Iran", name = "Tehran"),
+//    GeoSearchItem("Iran2", name = "Tehran2"),
+//    GeoSearchItem("Iran3", name = "Tehran3"),
+//    GeoSearchItem("Iran4", name = "Tehran4"),
+//    GeoSearchItem("Iran5", name = "Tehran5"),
+//)

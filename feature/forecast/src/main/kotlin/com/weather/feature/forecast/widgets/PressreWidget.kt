@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -29,8 +30,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.experiment.weather.core.common.R.*
 import com.weather.core.design.components.WeatherSquareWidget
 import com.weather.core.design.theme.WeatherTheme
+import com.weather.feature.forecast.R
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -39,11 +42,12 @@ fun PressureWidget(modifier: Modifier = Modifier, pressure: Int) {
     WeatherSquareWidget(
         modifier = modifier,
         icon = Icons.Outlined.ArrowDownward,
-        title = "Pressure",
+        title = stringResource(id = string.pressure),
         infoText = "$pressure"
     ) {
         PressureGraph(
-            pressure = pressure
+            pressure = pressure,
+            pressureUnit = stringResource(id = string.pressure_symbol)
         )
     }
 }
@@ -52,7 +56,7 @@ fun PressureWidget(modifier: Modifier = Modifier, pressure: Int) {
 private fun PressureGraph(
     modifier: Modifier = Modifier,
     pressure: Int,
-    pressureUnit: String = "mbar",
+    pressureUnit: String,
     minPressure: Int = 870,
     maxPressure: Int = 1080,
 ) {
@@ -143,7 +147,7 @@ private fun PressureGraph(
                             draw(
                                 size = painter.intrinsicSize,
                                 colorFilter = ColorFilter.tint(blueColor)
-                                )
+                            )
                         }
                     }
                 }

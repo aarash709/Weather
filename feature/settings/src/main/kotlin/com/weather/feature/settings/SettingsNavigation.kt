@@ -7,7 +7,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 
-const val SETTINGS_ROUTE = "settings"
+const val SETTINGS_ROUTE = "SETTINGS_ROUTE"
 fun NavController.toSettings(navOptions: NavOptions? = null) {
     navigate(SETTINGS_ROUTE, navOptions)
 }

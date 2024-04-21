@@ -27,13 +27,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.experiment.weather.core.common.R.*
 import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
+import com.weather.feature.forecast.R
 import com.weather.feature.forecast.components.TempBar
 import com.weather.feature.forecast.components.TempData
 import com.weather.feature.forecast.components.hourlydata.DailyPreviewStaticData
@@ -82,14 +85,14 @@ internal fun DailyWidget(
                         )
                     }
                     Text(
-                        text = "5-Day forecast",
+                        text = stringResource(id = string.five_day_forecast),
                         fontSize = 14.sp,
                         color = Color.White.copy(alpha = 0.5f)
                     )
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = "More details",
+                        text = stringResource(id = string.more_details),
                         fontSize = 14.sp,
                         color = Color.White.copy(alpha = 0.5f)
                     )

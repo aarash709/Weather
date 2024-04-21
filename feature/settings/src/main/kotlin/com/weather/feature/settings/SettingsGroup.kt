@@ -21,10 +21,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.weather.model.TemperatureUnits
 import com.weather.model.WindSpeedUnits
+import com.experiment.weather.core.common.R
 
 @Composable
 fun SettingGroup(
@@ -124,21 +126,21 @@ private fun WindSpeedMenu(
             }
         ) {
             DialogItem(
-                itemName = "km/h",
+                itemName = stringResource(id = R.string.kilometer_per_hour_symbol),
                 onClick = {
                     setWindSpeed(WindSpeedUnits.KM)
                     setExpanded(false)
                 }
             )
             DialogItem(
-                itemName = "m/s",
+                itemName = stringResource(id = R.string.meters_per_second_symbol),
                 onClick = {
                     setWindSpeed(WindSpeedUnits.MS)
                     setExpanded(false)
                 }
             )
             DialogItem(
-                itemName = "mph",
+                itemName = stringResource(id = R.string.miles_per_hour_symbol),
                 onClick = {
                     setWindSpeed(WindSpeedUnits.MPH)
                     setExpanded(false)
