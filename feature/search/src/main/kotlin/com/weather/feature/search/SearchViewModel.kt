@@ -79,4 +79,9 @@ class SearchViewModel @Inject constructor(
             syncStatus.syncWithCoordinate(coordinate)
         }
     }
+
+    fun getFiveDayPreview(name: String?) {
+        viewModelScope.launch {
+        }
+    }
 }

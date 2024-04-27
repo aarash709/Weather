@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -56,10 +56,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.experiment.weather.core.common.R
 import com.weather.core.design.components.weatherPlaceholder
 import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
+import com.weather.model.DailyPreview
 import com.weather.model.geocode.GeoSearchItem
 import com.weather.model.geocode.SavableSearchState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -81,6 +83,9 @@ fun SearchRoute(
     }
     LaunchedEffect(key1 = inputText) {
         searchViewModel.setSearchQuery(cityName = inputText.text.trim())
+    }
+    LaunchedEffect(key1 = searchUIState) {
+        searchViewModel.getFiveDayPreview(searchUIState.geoSearchItems[0].name)
     }
     Box(
         modifier = Modifier
@@ -172,6 +177,7 @@ fun SearchScreenContent(
                     SearchList(
                         searchList = searchUIState.geoSearchItems,
                         showPlaceholder = searchUIState.showPlaceholder,
+                        dailySearch = dailyDummyData,
                         onSearchItemSelected = { searchItem ->
                             selectedSearchItem(searchItem)
                             //fetch and store weather based on selection
@@ -180,8 +186,6 @@ fun SearchScreenContent(
                 }
             }
         }
-
-
     }
 }
 
@@ -262,12 +266,18 @@ private fun TopSearchBar(
 @Composable
 private fun SearchList(
     searchList: List<GeoSearchItem>,
+    dailySearch: List<DailyPreview>?,
     showPlaceholder: Boolean,
     onSearchItemSelected: (GeoSearchItem) -> Unit,
 ) {
     //max 5 item per search list
     LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        items(searchList) { searchItemItem ->
+        itemsIndexed(searchList) { index,searchItemItem ->
+            dailySearch?.let {
+                if (index == 1){
+                    FiveDaySearchPreview(dailyPreview = it)
+                }
+            }
             SearchItem(
                 modifier = Modifier
                     .bouncyTapEffect()
