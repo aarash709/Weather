@@ -33,6 +33,8 @@ dependencies {
 
     implementation(libs.accompanist.flowLayout)
 
+    implementation(libs.coilCompose)
+
     implementation(libs.androidx.lifecycleRuntimeKtx)
     implementation(libs.androidx.lifecycleComposeRuntime)
     implementation(libs.androidx.lifecycleViewModelCompose)

@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -60,6 +61,7 @@ import com.experiment.weather.core.common.R
 import com.weather.core.design.components.weatherPlaceholder
 import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
+import com.weather.model.DailyPreview
 import com.weather.model.geocode.GeoSearchItem
 import com.weather.model.geocode.SavableSearchState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -75,12 +77,18 @@ fun SearchRoute(
 ) {
     //stateful
     val searchUIState by searchViewModel.searchUIState.collectAsStateWithLifecycle()
+    val weatherPreview by searchViewModel.weatherPreview.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var inputText by remember {
         mutableStateOf(TextFieldValue(""))
     }
     LaunchedEffect(key1 = inputText) {
         searchViewModel.setSearchQuery(cityName = inputText.text.trim())
+    }
+    LaunchedEffect(key1 = searchUIState) {
+        searchUIState.geoSearchItems[0].name?.let {
+            searchViewModel.getFiveDayPreview(searchUIState.geoSearchItems[0])
+        }
     }
     Box(
         modifier = Modifier
@@ -98,6 +106,7 @@ fun SearchRoute(
             SearchScreenContent(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 searchUIState = searchUIState,
+                weatherPreview = weatherPreview,
                 shouldRequestFocus = shouldRequestFocus,
                 searchInputText = inputText,
                 popularCities = stringArrayResource(id = R.array.popular_cities).toList(),
@@ -126,6 +135,7 @@ fun SearchRoute(
 fun SearchScreenContent(
     modifier: Modifier = Modifier,
     searchUIState: SavableSearchState,
+    weatherPreview: List<DailyPreview>,
     shouldRequestFocus: Boolean = true,
     searchInputText: TextFieldValue,
     popularCities: List<String>,
@@ -172,6 +182,7 @@ fun SearchScreenContent(
                     SearchList(
                         searchList = searchUIState.geoSearchItems,
                         showPlaceholder = searchUIState.showPlaceholder,
+                        weatherPreview = weatherPreview,
                         onSearchItemSelected = { searchItem ->
                             selectedSearchItem(searchItem)
                             //fetch and store weather based on selection
@@ -180,8 +191,6 @@ fun SearchScreenContent(
                 }
             }
         }
-
-
     }
 }
 
@@ -262,12 +271,25 @@ private fun TopSearchBar(
 @Composable
 private fun SearchList(
     searchList: List<GeoSearchItem>,
+    weatherPreview: List<DailyPreview>?,
     showPlaceholder: Boolean,
     onSearchItemSelected: (GeoSearchItem) -> Unit,
 ) {
     //max 5 item per search list
     LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        items(searchList) { searchItemItem ->
+        itemsIndexed(searchList) { index, searchItemItem ->
+            if(!weatherPreview.isNullOrEmpty()) {
+                if (index == 1) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        FiveDaySearchPreview(weatherPreview = weatherPreview)
+                        HorizontalDivider(
+                            modifier = Modifier
+                                .padding(bottom = 16.dp)
+                                .fillMaxWidth(0.9f)
+                        )
+                    }
+                }
+            }
             SearchItem(
                 modifier = Modifier
                     .bouncyTapEffect()
@@ -290,7 +312,7 @@ private fun SearchItem(
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.background
         ),
     ) {
         Row(
@@ -377,6 +399,7 @@ private fun SearchPreview() {
         Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
             SearchScreenContent(
                 searchUIState = SavableSearchState(GeoSearchItem.empty, true),
+                weatherPreview = dailyDummyData,
                 searchInputText = inputText,
                 shouldRequestFocus = false,
                 popularCities = popularCities,
