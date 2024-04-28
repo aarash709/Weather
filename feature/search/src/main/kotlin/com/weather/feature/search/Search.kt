@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -279,7 +280,14 @@ private fun SearchList(
         itemsIndexed(searchList) { index, searchItemItem ->
             if(!weatherPreview.isNullOrEmpty()) {
                 if (index == 1) {
-                    FiveDaySearchPreview(weatherPreview = weatherPreview)
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        FiveDaySearchPreview(weatherPreview = weatherPreview)
+                        HorizontalDivider(
+                            modifier = Modifier
+                                .padding(bottom = 16.dp)
+                                .fillMaxWidth(0.9f)
+                        )
+                    }
                 }
             }
             SearchItem(
@@ -304,7 +312,7 @@ private fun SearchItem(
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.background
         ),
     ) {
         Row(
