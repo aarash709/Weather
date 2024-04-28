@@ -7,9 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.WbSunny
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -18,20 +15,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.model.DailyPreview
 
 @Composable
-fun FiveDaySearchPreview(dailyPreview: List<DailyPreview>) {
+fun FiveDaySearchPreview(weatherPreview: List<DailyPreview>) {
     Surface(color = MaterialTheme.colorScheme.background) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 24.dp),
+                .padding(bottom = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            dailyPreview.forEach {
-                SearchDailyItem(daily = it)
+            weatherPreview.forEach {
+                SearchDailyItem(daily = it,Modifier.weight(1f))
             }
         }
 
@@ -39,17 +38,20 @@ fun FiveDaySearchPreview(dailyPreview: List<DailyPreview>) {
 }
 
 @Composable
-private fun SearchDailyItem(daily: DailyPreview) {
+private fun SearchDailyItem(daily: DailyPreview,modifier: Modifier= Modifier) {
     Column(
-        modifier = Modifier.padding(vertical = 0.dp),
+        modifier = Modifier.padding(vertical = 0.dp) then modifier,
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = daily.time)
-        Icon(imageVector = Icons.Outlined.WbSunny, contentDescription = "Condition Icon")
+        Text(text = daily.time, fontSize = 14.sp)
+        AsyncImage(
+            model = "https://openweathermap.org/img/wn/${daily.icon}@2x.png",
+            contentDescription = "Weather Icon"
+        )
         Spacer(modifier = Modifier.height(2.dp))
-        Text(text = "${daily.tempDay}")
-        Text(text = "${daily.tempNight}")
+        Text(text = "${daily.tempDay}°",fontSize = 16.sp)
+        Text(text = "${daily.tempNight}°",fontSize = 16.sp)
     }
 }
 

@@ -56,7 +56,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.experiment.weather.core.common.R
 import com.weather.core.design.components.weatherPlaceholder
 import com.weather.core.design.modifiers.bouncyTapEffect
@@ -77,6 +76,7 @@ fun SearchRoute(
 ) {
     //stateful
     val searchUIState by searchViewModel.searchUIState.collectAsStateWithLifecycle()
+    val weatherPreview by searchViewModel.weatherPreview.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var inputText by remember {
         mutableStateOf(TextFieldValue(""))
@@ -85,7 +85,9 @@ fun SearchRoute(
         searchViewModel.setSearchQuery(cityName = inputText.text.trim())
     }
     LaunchedEffect(key1 = searchUIState) {
-        searchViewModel.getFiveDayPreview(searchUIState.geoSearchItems[0].name)
+        searchUIState.geoSearchItems[0].name?.let {
+            searchViewModel.getFiveDayPreview(searchUIState.geoSearchItems[0])
+        }
     }
     Box(
         modifier = Modifier
@@ -103,6 +105,7 @@ fun SearchRoute(
             SearchScreenContent(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 searchUIState = searchUIState,
+                weatherPreview = weatherPreview,
                 shouldRequestFocus = shouldRequestFocus,
                 searchInputText = inputText,
                 popularCities = stringArrayResource(id = R.array.popular_cities).toList(),
@@ -131,6 +134,7 @@ fun SearchRoute(
 fun SearchScreenContent(
     modifier: Modifier = Modifier,
     searchUIState: SavableSearchState,
+    weatherPreview: List<DailyPreview>,
     shouldRequestFocus: Boolean = true,
     searchInputText: TextFieldValue,
     popularCities: List<String>,
@@ -177,7 +181,7 @@ fun SearchScreenContent(
                     SearchList(
                         searchList = searchUIState.geoSearchItems,
                         showPlaceholder = searchUIState.showPlaceholder,
-                        dailySearch = dailyDummyData,
+                        weatherPreview = weatherPreview,
                         onSearchItemSelected = { searchItem ->
                             selectedSearchItem(searchItem)
                             //fetch and store weather based on selection
@@ -266,16 +270,16 @@ private fun TopSearchBar(
 @Composable
 private fun SearchList(
     searchList: List<GeoSearchItem>,
-    dailySearch: List<DailyPreview>?,
+    weatherPreview: List<DailyPreview>?,
     showPlaceholder: Boolean,
     onSearchItemSelected: (GeoSearchItem) -> Unit,
 ) {
     //max 5 item per search list
     LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        itemsIndexed(searchList) { index,searchItemItem ->
-            dailySearch?.let {
-                if (index == 1){
-                    FiveDaySearchPreview(dailyPreview = it)
+        itemsIndexed(searchList) { index, searchItemItem ->
+            if(!weatherPreview.isNullOrEmpty()) {
+                if (index == 1) {
+                    FiveDaySearchPreview(weatherPreview = weatherPreview)
                 }
             }
             SearchItem(
@@ -387,6 +391,7 @@ private fun SearchPreview() {
         Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
             SearchScreenContent(
                 searchUIState = SavableSearchState(GeoSearchItem.empty, true),
+                weatherPreview = dailyDummyData,
                 searchInputText = inputText,
                 shouldRequestFocus = false,
                 popularCities = popularCities,

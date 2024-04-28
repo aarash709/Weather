@@ -2,10 +2,11 @@ package com.weather.feature.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.experiment.weather.core.common.extentions.convertTimeAndTemperature
 import com.weather.core.repository.UserRepository
 import com.weather.core.repository.WeatherRepository
 import com.weather.model.Coordinate
-import com.weather.model.WeatherData
+import com.weather.model.DailyPreview
 import com.weather.model.geocode.GeoSearchItem
 import com.weather.model.geocode.SavableSearchState
 import com.weather.sync.work.utils.SyncManager
@@ -13,7 +14,16 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filterNot
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -27,8 +37,8 @@ class SearchViewModel @Inject constructor(
     private val userRepository: UserRepository,
 ) : ViewModel() {
 
-    private val _weatherPreview = MutableSharedFlow<WeatherData>()
-    val weatherPreview: SharedFlow<WeatherData> = _weatherPreview.asSharedFlow() // use to show a preview to the user while searching
+    private val _weatherPreview = MutableStateFlow<List<DailyPreview>>(listOf())
+    val weatherPreview: StateFlow<List<DailyPreview>> = _weatherPreview.asStateFlow() // use to show a preview to the user while searching
 
     private val _searchQuery = MutableStateFlow("")
     private val searchQuery = _searchQuery.asStateFlow()
@@ -44,7 +54,7 @@ class SearchViewModel @Inject constructor(
             weatherRepository.searchLocation(cityName = cityName)
         }
         .flowOn(Dispatchers.IO)
-        .map { geoItemList->
+        .map { geoItemList ->
             SavableSearchState(
                 geoSearchItems = geoItemList,
                 showPlaceholder = false
@@ -80,8 +90,16 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    fun getFiveDayPreview(name: String?) {
+    fun getFiveDayPreview(geoSearchItem: GeoSearchItem) {
         viewModelScope.launch {
+            val data = weatherRepository.getFiveDay(
+                coordinate = Coordinate(
+                    geoSearchItem.name,
+                    geoSearchItem.lat.toString(),
+                    geoSearchItem.lon.toString()
+                )
+            ).convertTimeAndTemperature()
+            _weatherPreview.tryEmit(data)
         }
     }
 }

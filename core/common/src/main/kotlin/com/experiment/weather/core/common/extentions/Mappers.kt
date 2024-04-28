@@ -3,6 +3,7 @@ package com.experiment.weather.core.common.extentions
 import arrow.optics.copy
 import com.weather.model.Current
 import com.weather.model.Daily
+import com.weather.model.DailyPreview
 import com.weather.model.Hourly
 import com.weather.model.ManageLocationsData
 import com.weather.model.SettingsData
@@ -116,6 +117,16 @@ fun List<ManageLocationsData>.convertTotoUserSettings(
     }
 }
 
+fun List<DailyPreview>.convertTimeAndTemperature(): List<DailyPreview> {
+    return map { dailyPreview ->
+        dailyPreview.copy(
+            time = calculateUIDailyTime(dailyPreview.time.toLong()),
+            tempDay = dailyPreview.tempDay.minus(273.15).roundToInt(),
+            tempNight = dailyPreview.tempNight.minus(273.15).roundToInt()
+        )
+    }
+}
+
 private fun unixMillisToHumanDate(unixTimeStamp: Long, pattern: String): String {
     val formatter = SimpleDateFormat(pattern, Locale.getDefault())
     val date = Date(unixTimeStamp * 1000) //to millisecond
@@ -138,6 +149,6 @@ private fun calculateUIDailyTime(hourlyTimeSeconds: Long): String {
     return when (dayOfWeekOfDailyData.uppercase()) {
         localToday -> TODAY
         localTomorrow -> TOMORROW
-        else -> dayOfWeekOfDailyData
+        else -> dayOfWeekOfDailyData.slice(0..2)
     }
 }
