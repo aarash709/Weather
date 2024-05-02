@@ -72,7 +72,7 @@ internal fun TempBar(tempData: TempData) {
                 )
                 val width = size.width
                 val height = size.height
-                val indicatorSize = height *.6f
+                val indicatorSize = height *.7f
                 val tempRange = tempData.maxTemp - tempData.minTemp
                 val stepsInPixels = width / tempRange
                 val leftIndent = (tempData.currentLow - tempData.minTemp).times(stepsInPixels)
