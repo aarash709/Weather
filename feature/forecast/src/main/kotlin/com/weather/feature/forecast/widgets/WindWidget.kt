@@ -93,7 +93,7 @@ internal fun WindDirectionGraph(
     Spacer(
         modifier = modifier
             .aspectRatio(1f)
-            .padding(4.dp)
+            .padding(16.dp)
             .drawWithCache {
                 val width = size.width
                 val halfWidth = size.center.x

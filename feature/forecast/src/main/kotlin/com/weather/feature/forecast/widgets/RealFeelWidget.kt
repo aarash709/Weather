@@ -43,7 +43,7 @@ private fun RealFeelGraph(realFeel: Int) {
     Spacer(
         modifier = Modifier
             .aspectRatio(1f)
-            .padding(4.dp)
+            .padding(16.dp)
             .drawWithCache {
                 val width = size.width
                 val height = size.height

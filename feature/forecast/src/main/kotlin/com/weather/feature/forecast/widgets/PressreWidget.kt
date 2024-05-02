@@ -65,7 +65,7 @@ private fun PressureGraph(
     Spacer(
         modifier = modifier
             .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
-            .padding(4.dp)
+            .padding(16.dp)
             .aspectRatio(1f)
             .drawWithCache {
                 val width = size.width

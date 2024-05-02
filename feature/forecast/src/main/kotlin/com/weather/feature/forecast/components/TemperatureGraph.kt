@@ -161,14 +161,6 @@ internal fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Ho
                     color = Color.White,
                     radius = 10f,
                     center = firstIndexOffset,
-                    style = Stroke(width = 8f)
-                )
-                drawCircle(
-                    color = Color.Black,
-                    radius = 10f,
-                    center = firstIndexOffset,
-                    style = Fill,
-                    blendMode = BlendMode.Clear
                 )
             }
         } then modifier)
