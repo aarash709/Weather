@@ -72,7 +72,7 @@ internal fun TempBar(tempData: TempData) {
                 )
                 val width = size.width
                 val height = size.height
-                val indicatorSize = 5.dp.toPx()
+                val indicatorSize = height *.6f
                 val tempRange = tempData.maxTemp - tempData.minTemp
                 val stepsInPixels = width / tempRange
                 val leftIndent = (tempData.currentLow - tempData.minTemp).times(stepsInPixels)
@@ -101,7 +101,7 @@ internal fun TempBar(tempData: TempData) {
                     )
                     drawCircle(
                         color = Color.White,
-                        radius = indicatorSize * 0.7f,
+                        radius = indicatorSize * 0.6f,
                         center = currentTempCirclePosition,
                     )
                 }
