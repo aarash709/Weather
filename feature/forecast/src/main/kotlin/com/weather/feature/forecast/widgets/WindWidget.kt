@@ -23,13 +23,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.DrawStyle
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.input.key.Key.Companion.D
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextMeasurer
@@ -39,10 +36,9 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.experiment.weather.core.common.R.*
+import com.experiment.weather.core.common.R.array
+import com.experiment.weather.core.common.R.string
 import com.weather.core.design.components.WeatherSquareWidget
-import com.weather.feature.forecast.R
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -54,11 +50,11 @@ internal fun WindWidget(
     speedUnits: String,
 ) {
     val context = LocalContext.current
-    val direction by remember(windDirection){
+    val direction by remember(windDirection) {
         val directions = context.resources.getStringArray(array.wind_directions)
-        val value = when(windDirection){
-           in 341..360 -> directions[0]
-           in 0..20 -> directions[0]
+        val value = when (windDirection) {
+            in 341..360 -> directions[0]
+            in 0..20 -> directions[0]
             in 21..70 -> directions[1]
             in 71..110 -> directions[2]
             in 111..160 -> directions[3]
@@ -66,7 +62,7 @@ internal fun WindWidget(
             in 201..240 -> directions[5]
             in 241..290 -> directions[6]
             in 291..340 -> directions[7]
-            else-> directions[8]
+            else -> directions[8]
         }
         mutableStateOf(value)
     }
@@ -128,9 +124,10 @@ private fun DrawScope.drawInfoText(
     windSpeed: Int,
     speedUnits: String,
 ) {
+    val textSize = (size.width * 0.14f).toSp()
     val infoText = textMeasurer.measure(
         text = "$windSpeed\n $speedUnits",
-        style = TextStyle(fontSize = 10.sp, textAlign = TextAlign.Center)
+        style = TextStyle(fontSize = textSize, textAlign = TextAlign.Center)
     )
     drawText(
         textLayoutResult = infoText,
@@ -185,7 +182,7 @@ private fun DrawScope.drawLines(
     offsetDeg: Int = 5,
 ) {
     val halfWidth = width / 2
-    val strokeWidth = 1.dp.toPx()
+    val strokeWidth = (width * 0.01f)
     (0..<lineCount).forEach { index ->
         val rad = (index.toDouble() * offsetDeg)
         val lineRad = Math.toRadians(rad)
@@ -219,10 +216,10 @@ private fun DrawScope.drawLetters(
 
         val startX = (inderRadius * cos(rad)).plus(halfWidth).toFloat()
         val startY = (inderRadius * -sin(rad)).plus(halfWidth).toFloat()
-
+        val textSize = (width * 0.12f).toSp()
         val textLayoutResult = textMeasurer.measure(
             text = letter,
-            style = TextStyle(fontSize = 8.sp)
+            style = TextStyle(fontSize = textSize)
         )
 
         val textX = when (letter) {
