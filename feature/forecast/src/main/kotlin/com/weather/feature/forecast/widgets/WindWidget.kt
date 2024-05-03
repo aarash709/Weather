@@ -23,10 +23,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.DrawStyle
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.input.key.Key.Companion.D
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextMeasurer
@@ -127,7 +130,7 @@ private fun DrawScope.drawInfoText(
 ) {
     val infoText = textMeasurer.measure(
         text = "$windSpeed\n $speedUnits",
-        style = TextStyle(fontSize = 12.sp, textAlign = TextAlign.Center)
+        style = TextStyle(fontSize = 10.sp, textAlign = TextAlign.Center)
     )
     drawText(
         textLayoutResult = infoText,
@@ -144,6 +147,7 @@ private fun DrawScope.drawArrow(
     halfWidth: Float,
     arrow: VectorPainter,
 ) {
+    val lineStroke = 2.dp.toPx()
     rotate((windDirection - 180f), pivot = size.center) {
         with(arrow) {
             translate(
@@ -160,7 +164,7 @@ private fun DrawScope.drawArrow(
             color = Color.White,
             start = Offset(halfWidth, 0f),
             end = Offset(halfWidth, halfWidth.div(2.1f)),
-            strokeWidth = 3.dp.toPx()
+            strokeWidth = lineStroke
         )
     }
     rotate(windDirection.toFloat(), pivot = size.center) {
@@ -168,7 +172,7 @@ private fun DrawScope.drawArrow(
             color = Color.White,
             start = Offset(halfWidth, 0f),
             end = Offset(halfWidth, halfWidth.div(2.1f)),
-            strokeWidth = 3.dp.toPx()
+            strokeWidth = lineStroke
         )
     }
 }
@@ -181,6 +185,7 @@ private fun DrawScope.drawLines(
     offsetDeg: Int = 5,
 ) {
     val halfWidth = width / 2
+    val strokeWidth = 1.dp.toPx()
     (0..<lineCount).forEach { index ->
         val rad = (index.toDouble() * offsetDeg)
         val lineRad = Math.toRadians(rad)
@@ -195,7 +200,7 @@ private fun DrawScope.drawLines(
             color = lineColor,
             start = Offset(startLinesX, startLinesY),
             end = Offset(endLinesX, endLinesY),
-            strokeWidth = 5f
+            strokeWidth = strokeWidth
         )
     }
 }
@@ -217,7 +222,7 @@ private fun DrawScope.drawLetters(
 
         val textLayoutResult = textMeasurer.measure(
             text = letter,
-            style = TextStyle(fontSize = 10.sp)
+            style = TextStyle(fontSize = 8.sp)
         )
 
         val textX = when (letter) {
