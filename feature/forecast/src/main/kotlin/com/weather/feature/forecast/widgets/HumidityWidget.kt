@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.StrokeCap
@@ -17,7 +18,6 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.experiment.weather.core.common.R.string
@@ -40,7 +40,6 @@ internal fun HumidityWidget(
 
 @Composable
 fun HumidityGraph(humidity: Int) {
-    val textMeasurer = rememberTextMeasurer()
     val painter = rememberVectorPainter(image = Icons.Filled.WaterDrop)
     Spacer(
         modifier = Modifier
@@ -49,7 +48,7 @@ fun HumidityGraph(humidity: Int) {
             .drawWithCache {
                 val width = size.width
                 val height = size.height
-                val archThickness = 6.dp.toPx()
+                val archThickness = (width / 15f)
                 val progress = humidity
                     .times(270)
                     .div(100)
@@ -71,13 +70,14 @@ fun HumidityGraph(humidity: Int) {
                         topLeft = Offset(0f, 0f),
                         style = Stroke(width = archThickness, cap = StrokeCap.Round),
                     )
+                    val size = Size(width/3, height/3)
                     translate(
-                        left = (width / 2) - painter.intrinsicSize.width / 2,
-                        top = (height / 2) - painter.intrinsicSize.height / 2
+                        left = (width / 2) - size.width / 2,
+                        top = (height / 2) - size.height / 2
                     ) {
                         with(painter) {
                             draw(
-                                size = painter.intrinsicSize,
+                                size = size,
                                 colorFilter = ColorFilter.tint(Color.Blue.copy(green = 0.6f))
                             )
                         }

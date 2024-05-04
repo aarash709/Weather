@@ -47,9 +47,9 @@ private fun RealFeelGraph(realFeel: Int) {
             .drawWithCache {
                 val width = size.width
                 val height = size.height
-                val circleSize = 8.dp.toPx()
-                val indicatorStrokeWidth = 3.dp.toPx()
-                val archThickness = 7.dp.toPx()
+                val circleSize = (width * 0.05f)
+                val indicatorStrokeWidth = (width * 0.02f)
+                val archThickness = (width / 15f)
                 val progress =
                     realFeel
                         .coerceIn(minimumValue = 0, maximumValue = 40)
@@ -109,7 +109,7 @@ private fun RealFeelGraph(realFeel: Int) {
 }
 
 
-@Preview
+@Preview(backgroundColor = 0xFF255BFF, showBackground = false)
 @Composable
 private fun RealFeelPrev() {
     WeatherTheme {

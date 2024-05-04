@@ -36,10 +36,9 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.experiment.weather.core.common.R.*
+import com.experiment.weather.core.common.R.array
+import com.experiment.weather.core.common.R.string
 import com.weather.core.design.components.WeatherSquareWidget
-import com.weather.feature.forecast.R
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -51,11 +50,11 @@ internal fun WindWidget(
     speedUnits: String,
 ) {
     val context = LocalContext.current
-    val direction by remember(windDirection){
+    val direction by remember(windDirection) {
         val directions = context.resources.getStringArray(array.wind_directions)
-        val value = when(windDirection){
-           in 341..360 -> directions[0]
-           in 0..20 -> directions[0]
+        val value = when (windDirection) {
+            in 341..360 -> directions[0]
+            in 0..20 -> directions[0]
             in 21..70 -> directions[1]
             in 71..110 -> directions[2]
             in 111..160 -> directions[3]
@@ -63,7 +62,7 @@ internal fun WindWidget(
             in 201..240 -> directions[5]
             in 241..290 -> directions[6]
             in 291..340 -> directions[7]
-            else-> directions[8]
+            else -> directions[8]
         }
         mutableStateOf(value)
     }
@@ -125,9 +124,10 @@ private fun DrawScope.drawInfoText(
     windSpeed: Int,
     speedUnits: String,
 ) {
+    val textSize = (size.width * 0.14f).toSp()
     val infoText = textMeasurer.measure(
         text = "$windSpeed\n $speedUnits",
-        style = TextStyle(fontSize = 12.sp, textAlign = TextAlign.Center)
+        style = TextStyle(fontSize = textSize, textAlign = TextAlign.Center)
     )
     drawText(
         textLayoutResult = infoText,
@@ -144,31 +144,33 @@ private fun DrawScope.drawArrow(
     halfWidth: Float,
     arrow: VectorPainter,
 ) {
+    val painterSize = Size(size.width / 3, size.height / 3)
+    val lineStroke = (size.width / 35f)
     rotate((windDirection - 180f), pivot = size.center) {
         with(arrow) {
             translate(
-                left = halfWidth - intrinsicSize.width / 2,
-                top = -intrinsicSize.height / 1.5f
+                left = halfWidth - painterSize.width / 2,
+                top = -painterSize.height / 2f
             ) {
                 draw(
-                    Size(intrinsicSize.width, intrinsicSize.height * 1.5f),
+                    Size(painterSize.width, painterSize.height * 1.5f),
                     colorFilter = ColorFilter.tint(Color.White)
                 )
             }
         }
         drawLine(
             color = Color.White,
-            start = Offset(halfWidth, 0f),
+            start = Offset(halfWidth, size.height / 10),
             end = Offset(halfWidth, halfWidth.div(2.1f)),
-            strokeWidth = 3.dp.toPx()
+            strokeWidth = lineStroke
         )
     }
     rotate(windDirection.toFloat(), pivot = size.center) {
         drawLine(
             color = Color.White,
-            start = Offset(halfWidth, 0f),
+            start = Offset(halfWidth, size.height / 25),
             end = Offset(halfWidth, halfWidth.div(2.1f)),
-            strokeWidth = 3.dp.toPx()
+            strokeWidth = lineStroke
         )
     }
 }
@@ -181,6 +183,7 @@ private fun DrawScope.drawLines(
     offsetDeg: Int = 5,
 ) {
     val halfWidth = width / 2
+    val strokeWidth = (width * 0.01f)
     (0..<lineCount).forEach { index ->
         val rad = (index.toDouble() * offsetDeg)
         val lineRad = Math.toRadians(rad)
@@ -195,7 +198,7 @@ private fun DrawScope.drawLines(
             color = lineColor,
             start = Offset(startLinesX, startLinesY),
             end = Offset(endLinesX, endLinesY),
-            strokeWidth = 5f
+            strokeWidth = strokeWidth
         )
     }
 }
@@ -214,10 +217,10 @@ private fun DrawScope.drawLetters(
 
         val startX = (inderRadius * cos(rad)).plus(halfWidth).toFloat()
         val startY = (inderRadius * -sin(rad)).plus(halfWidth).toFloat()
-
+        val textSize = (width * 0.12f).toSp()
         val textLayoutResult = textMeasurer.measure(
             text = letter,
-            style = TextStyle(fontSize = 10.sp)
+            style = TextStyle(fontSize = textSize)
         )
 
         val textX = when (letter) {
