@@ -27,10 +27,8 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.experiment.weather.core.common.R.*
 import com.weather.core.design.components.WeatherSquareWidget
-import com.weather.feature.forecast.R
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -70,8 +68,8 @@ fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
             .drawWithCache {
                 val width = size.width
                 val height = size.height
-                val circleSize = 8.dp.toPx()
-                val archThickness = 7.dp.toPx()
+                val indicatorRadius = (width / 15f)
+                val archThickness = (width / 15f)
                 val progress = uvIndex
                     .coerceAtMost(11)
                     .toDouble()
@@ -94,21 +92,22 @@ fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
                     )
                     drawCircle(
                         brush = colors,
-                        radius = circleSize,
+                        radius = indicatorRadius,
                         center = Offset(x = x, y = y)
                     )
                     drawCircle(
                         Color.Black,
-                        radius = circleSize,
+                        radius = indicatorRadius,
                         center = Offset(x = x, y = y),
-                        style = Stroke(circleSize / 3),
+                        style = Stroke(indicatorRadius / 2),
                         blendMode = BlendMode.Clear
 
                     )
+                    val textSize = (size.width * 0.25f).toSp()
                     val textLayoutResult = textMeasurer.measure(
                         text = "$uvIndex",
                         maxLines = 2,
-                        style = TextStyle(fontSize = 24.sp, textAlign = TextAlign.Center)
+                        style = TextStyle(fontSize = textSize, textAlign = TextAlign.Center)
                     )
                     drawText(
                         textLayoutResult,

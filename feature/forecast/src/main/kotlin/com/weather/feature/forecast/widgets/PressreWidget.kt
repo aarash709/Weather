@@ -71,7 +71,8 @@ private fun PressureGraph(
                 val width = size.width
                 val height = size.height
                 val halfWidth = size.center.x
-                val archThickness = 7.dp.toPx()
+                val archThickness = (width / 15f)
+                val indicatorThickness = (width / 30f)
                 val range = maxPressure
                     .minus(minPressure)
                     .toFloat()
@@ -114,7 +115,7 @@ private fun PressureGraph(
                         color = Color.Black,
                         start = Offset(startLinesX, startLinesY),
                         end = Offset(endLinesX, endLinesY),
-                        strokeWidth = 30f,
+                        strokeWidth = indicatorThickness * 3f,
                         cap = StrokeCap.Round,
                         blendMode = BlendMode.Clear
                     )
@@ -122,17 +123,17 @@ private fun PressureGraph(
                         color = blueColor,
                         start = Offset(startLinesX, startLinesY),
                         end = Offset(endLinesX, endLinesY),
-                        strokeWidth = 15f,
+                        strokeWidth = indicatorThickness,
                         cap = StrokeCap.Round,
                     )
                     val textLayoutResult = textMeasurer.measure(
                         text = pressureUnit,
                         maxLines = 1,
-                        style = TextStyle(fontSize = 14.sp, textAlign = TextAlign.Center)
+                        style = TextStyle(fontSize = (size.width * 0.16f).toSp(), textAlign = TextAlign.Center)
                     )
                     drawText(
                         textLayoutResult,
-                        color = Color.White,
+                        color = Color.LightGray,
                         topLeft = Offset(
                             x = (width / 2).minus(textLayoutResult.size.width.div(2)),
                             y = (height / 1.2f).minus(textLayoutResult.size.height.div(2))
