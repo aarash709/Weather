@@ -111,30 +111,31 @@ private fun SunGraph(
 
 fun DrawScope.calculatePath(): Path {
     val width = size.width
+    val height = size.height
     val centerX = size.width / 2
     val centerY = size.height / 2
     return Path().apply {
-        moveTo(-16.dp.toPx(), centerY + 32.dp.toPx())
+        moveTo(-width / 6, height)
         //start
         quadraticBezierTo(
             x1 = width / 32,
-            y1 = centerY + 24.dp.toPx(),
-            x2 = 12.dp.toPx(),
+            y1 = centerY * 2,
+            x2 = width / 6,
             y2 = centerY
         )
         //center
         quadraticBezierTo(
             x1 = centerX,
             y1 = -centerY,
-            x2 = width - 12.dp.toPx(),
+            x2 = width - width / 6,
             y2 = centerY
         )
         //end
         quadraticBezierTo(
             x1 = width - width / 32,
-            y1 = centerY + 24.dp.toPx(),
-            x2 = width + 16.dp.toPx(),
-            y2 = centerY + 32.dp.toPx()
+            y1 = centerY * 2,
+            x2 = width + width / 6,
+            y2 = height
         )
     }
 }
