@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.center
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
@@ -29,11 +30,9 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.experiment.weather.core.common.R.*
+import com.experiment.weather.core.common.R.string
 import com.weather.core.design.components.WeatherSquareWidget
 import com.weather.core.design.theme.WeatherTheme
-import com.weather.feature.forecast.R
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -129,7 +128,10 @@ private fun PressureGraph(
                     val textLayoutResult = textMeasurer.measure(
                         text = pressureUnit,
                         maxLines = 1,
-                        style = TextStyle(fontSize = (size.width * 0.16f).toSp(), textAlign = TextAlign.Center)
+                        style = TextStyle(
+                            fontSize = (size.width * 0.16f).toSp(),
+                            textAlign = TextAlign.Center
+                        )
                     )
                     drawText(
                         textLayoutResult,
@@ -140,13 +142,14 @@ private fun PressureGraph(
 
                         ),
                     )
+                    val size = Size(width / 3, height / 3)
                     translate(
-                        left = (width / 2) - painter.intrinsicSize.width / 2,
-                        top = (height / 2) - painter.intrinsicSize.height / 2
+                        left = (width / 2) - size.width / 2,
+                        top = (height / 2) - size.height / 2
                     ) {
                         with(painter) {
                             draw(
-                                size = painter.intrinsicSize,
+                                size = Size(width / 3, height / 3),
                                 colorFilter = ColorFilter.tint(blueColor)
                             )
                         }
