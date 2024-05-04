@@ -144,22 +144,23 @@ private fun DrawScope.drawArrow(
     halfWidth: Float,
     arrow: VectorPainter,
 ) {
-    val lineStroke = 2.dp.toPx()
+    val painterSize = Size(size.width / 3, size.height / 3)
+    val lineStroke = (size.width / 35f)
     rotate((windDirection - 180f), pivot = size.center) {
         with(arrow) {
             translate(
-                left = halfWidth - intrinsicSize.width / 2,
-                top = -intrinsicSize.height / 1.5f
+                left = halfWidth - painterSize.width / 2,
+                top = -painterSize.height / 2f
             ) {
                 draw(
-                    Size(intrinsicSize.width, intrinsicSize.height * 1.5f),
+                    Size(painterSize.width, painterSize.height * 1.5f),
                     colorFilter = ColorFilter.tint(Color.White)
                 )
             }
         }
         drawLine(
             color = Color.White,
-            start = Offset(halfWidth, 0f),
+            start = Offset(halfWidth, size.height / 10),
             end = Offset(halfWidth, halfWidth.div(2.1f)),
             strokeWidth = lineStroke
         )
@@ -167,7 +168,7 @@ private fun DrawScope.drawArrow(
     rotate(windDirection.toFloat(), pivot = size.center) {
         drawLine(
             color = Color.White,
-            start = Offset(halfWidth, 0f),
+            start = Offset(halfWidth, size.height / 25),
             end = Offset(halfWidth, halfWidth.div(2.1f)),
             strokeWidth = lineStroke
         )
