@@ -10,13 +10,13 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.weather.feature.search.searchRoute
+import com.weather.feature.search.SEARCH_ROUTE
 import kotlinx.coroutines.FlowPreview
 
-const val manageLocationsRoute = "MANAGE_LOCATIONS_ROUTE"
+const val LOCATIONS_ROUTE = "MANAGE_LOCATIONS_ROUTE"
 
 fun NavController.toManageLocations(navOptions: NavOptions? = null) {
-    navigate(manageLocationsRoute, navOptions)
+    navigate(LOCATIONS_ROUTE, navOptions)
 }
 
 @ExperimentalFoundationApi
@@ -28,22 +28,22 @@ fun NavGraphBuilder.manageLocationsScreen(
     onNavigateToSearch: () -> Unit,
 ) {
     composable(
-        route = manageLocationsRoute,
+        route = LOCATIONS_ROUTE,
         enterTransition = {
             when (initialState.destination.route) {
-                searchRoute -> fadeIn(tween(400))
+                SEARCH_ROUTE -> fadeIn(tween(350))
                 else -> slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Right,
-                    tween(400)
+                    AnimatedContentTransitionScope.SlideDirection.Left,
+                    tween(350)
                 )
             }
         },
         exitTransition = {
             when (targetState.destination.route) {
-                searchRoute -> fadeOut(tween(400))
+                SEARCH_ROUTE -> fadeOut(tween(350))
                 else -> slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Left,
-                    tween(400)
+                    AnimatedContentTransitionScope.SlideDirection.Right,
+                    tween(350)
                 )
             }
         }
