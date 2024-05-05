@@ -7,10 +7,10 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
 import com.experiment.weather.WeatherAppState
-import com.weather.feature.managelocations.manageLocationsRoute
+import com.weather.feature.managelocations.LOCATIONS_ROUTE
 import com.weather.feature.managelocations.manageLocationsScreen
 import com.weather.feature.managelocations.toManageLocations
-import com.weather.feature.search.searchRoute
+import com.weather.feature.search.SEARCH_ROUTE
 import com.weather.feature.search.searchScreen
 import com.weather.feature.search.toSearchScreen
 import com.weather.feature.settings.settingsScreen
@@ -28,7 +28,7 @@ fun WeatherNavHost(
     appState: WeatherAppState,
     isDatabaseEmpty: Boolean,
 ) {
-    val startDestination = if (isDatabaseEmpty) searchRoute else FORECAST_ROUTE
+    val startDestination = if (isDatabaseEmpty) SEARCH_ROUTE else FORECAST_ROUTE
     val navController = appState.navController
     NavHost(
         navController = navController,
@@ -54,7 +54,7 @@ fun WeatherNavHost(
                     navOptions = navOptions {
                         launchSingleTop = true
                         popUpTo(
-                            route = manageLocationsRoute,
+                            route = LOCATIONS_ROUTE,
                             popUpToBuilder = {
                                 inclusive = true
                             }
@@ -65,7 +65,7 @@ fun WeatherNavHost(
         )
         searchScreen(onSearchItemSelected = {
             navController.toManageLocations(navOptions = navOptions {
-                popUpTo(manageLocationsRoute) {
+                popUpTo(LOCATIONS_ROUTE) {
                     inclusive = true
                 }
             })

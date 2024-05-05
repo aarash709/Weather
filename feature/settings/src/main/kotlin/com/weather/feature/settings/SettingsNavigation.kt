@@ -17,12 +17,12 @@ fun NavGraphBuilder.settingsScreen(onBackPress: () -> Unit) {
         SETTINGS_ROUTE,
         enterTransition = {
             slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                animationSpec = tween(400)
+                animationSpec = tween(350)
             )
         },
         exitTransition = {
             slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                animationSpec = tween(400)
+                animationSpec = tween(350)
             )
         }
     ) {
