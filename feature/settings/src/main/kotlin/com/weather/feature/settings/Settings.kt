@@ -122,7 +122,7 @@ fun SettingsContent(
                         scrollBehavior = scrollBehavior,
                         onBackPressed = { onBackPressed() })
                     SettingGroup(
-                        modifier = Modifier.padding(16.dp),
+                        modifier = Modifier,
                         groupName = stringResource(id = R.string.units)
                     ) {
                         TemperatureSection(
@@ -138,10 +138,10 @@ fun SettingsContent(
                     }
                     SettingsHorizontalDivider()
                     SettingGroup(
-                        modifier = Modifier.padding(16.dp),
+                        modifier = Modifier.padding(vertical = 16.dp),
                         groupName = stringResource(id = R.string.about)
                     ) {
-                        About()
+                        About(modifier = Modifier.padding(horizontal = 16.dp))
                     }
                 }
             }

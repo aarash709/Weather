@@ -40,6 +40,7 @@ fun SettingGroup(
     ) {
         Text(
             text = groupName,
+            modifier = Modifier.padding(horizontal = 16.dp),
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = .75f),
             fontSize = 14.sp
         )
@@ -59,8 +60,7 @@ fun TemperatureSection(
     SettingItem(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { expanded = true }
-            .padding(vertical = 8.dp),
+            .clickable { expanded = true },
     ) {
         Row(
             modifier = Modifier
@@ -93,7 +93,6 @@ fun WindSpeedSection(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { expanded = true }
-            .padding(vertical = 8.dp)
     ) {
         Text(text = title, color = MaterialTheme.colorScheme.onBackground)
         WindSpeedMenu(
@@ -205,7 +204,8 @@ fun SettingItem(
     content: @Composable () -> Unit,
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier
+            .padding(vertical = 8.dp, horizontal = 16.dp),
         horizontalArrangement = horizontalArrangement,
         verticalAlignment = verticalAlignment
     ) {
