@@ -69,8 +69,8 @@ internal fun WindWidget(
     WeatherSquareWidget(
         modifier,
         icon = Icons.Outlined.Air,
-        title = stringResource(id = string.wind_from),
-        infoText = direction
+        title = direction,
+        infoText = "$windSpeed"
     ) {
         WindDirectionGraph(
             windDirection = windDirection,
@@ -92,7 +92,7 @@ internal fun WindDirectionGraph(
     Spacer(
         modifier = modifier
             .aspectRatio(1f)
-            .padding(16.dp)
+            .padding(12.dp)
             .drawWithCache {
                 val width = size.width
                 val halfWidth = size.center.x
@@ -126,7 +126,7 @@ private fun DrawScope.drawInfoText(
 ) {
     val textSize = (size.width * 0.14f).toSp()
     val infoText = textMeasurer.measure(
-        text = "$windSpeed\n $speedUnits",
+        text = speedUnits,
         style = TextStyle(fontSize = textSize, textAlign = TextAlign.Center)
     )
     drawText(

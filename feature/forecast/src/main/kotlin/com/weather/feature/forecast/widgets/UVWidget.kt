@@ -1,5 +1,7 @@
 package com.weather.feature.forecast.widgets
 
+import androidx.annotation.IntRange
+import androidx.annotation.IntegerRes
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
@@ -63,13 +65,13 @@ fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
     Spacer(
         modifier = modifier
             .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
-            .padding(16.dp)
+            .padding(12.dp)
             .aspectRatio(1f)
             .drawWithCache {
                 val width = size.width
                 val height = size.height
                 val indicatorRadius = (width / 15f)
-                val archThickness = (width / 15f)
+                val archThickness = (width / 12f)
                 val progress = uvIndex
                     .coerceAtMost(11)
                     .toDouble()
@@ -126,5 +128,5 @@ fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
 @Preview
 @Composable
 private fun UVPreview() {
-    UVWidget(uvIndex = 2)
+    UVWidget(uvIndex = 5)
 }
