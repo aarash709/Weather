@@ -1,6 +1,7 @@
 package com.weather.feature.forecast.widgets
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
@@ -64,13 +65,13 @@ private fun PressureGraph(
     Spacer(
         modifier = modifier
             .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
-            .padding(16.dp)
+            .padding(12.dp)
             .aspectRatio(1f)
             .drawWithCache {
                 val width = size.width
                 val height = size.height
                 val halfWidth = size.center.x
-                val archThickness = (width / 15f)
+                val archThickness = (width / 12f)
                 val indicatorThickness = (width / 30f)
                 val range = maxPressure
                     .minus(minPressure)
@@ -164,7 +165,7 @@ private fun PressureGraph(
 @Composable
 private fun PressurePreview() {
     WeatherTheme {
-        FlowRow(Modifier.background(Color.Blue.copy(green = 0.35f))) {
+        FlowRow(Modifier.background(Color.Blue.copy(green = 0.35f)), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             PressureWidget(Modifier.weight(1f), pressure = 890)
             PressureWidget(Modifier.weight(1f), pressure = 1080)
         }

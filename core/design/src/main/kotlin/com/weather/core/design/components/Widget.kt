@@ -38,7 +38,7 @@ fun WeatherSquareWidget(
     content: @Composable BoxScope.() -> Unit,
 ) {
     Surface(
-        modifier = Modifier.aspectRatio(1f) then modifier,
+        modifier = Modifier.aspectRatio(1.1f) then modifier,
         shape = RoundedCornerShape(16.dp),
         color = surfaceColor
     ) {
@@ -52,10 +52,10 @@ fun WeatherSquareWidget(
             ) {
                 Text(
                     text = title,
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                     color = Color.White.copy(alpha = 0.5f)
                 )
-                Text(text = infoText, fontSize = 22.sp, color = Color.White)
+                Text(text = infoText, fontSize = 20.sp, color = Color.White)
             }
             Box(
                 modifier = Modifier

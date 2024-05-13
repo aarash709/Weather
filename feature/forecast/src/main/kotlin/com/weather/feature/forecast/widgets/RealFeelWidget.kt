@@ -43,13 +43,13 @@ private fun RealFeelGraph(realFeel: Int) {
     Spacer(
         modifier = Modifier
             .aspectRatio(1f)
-            .padding(16.dp)
+            .padding(12.dp)
             .drawWithCache {
                 val width = size.width
                 val height = size.height
-                val circleSize = (width * 0.05f)
-                val indicatorStrokeWidth = (width * 0.02f)
-                val archThickness = (width / 15f)
+                val circleSize = (width * 0.06f)
+                val indicatorStrokeWidth = (width * 0.03f)
+                val archThickness = (width / 12f)
                 val progress =
                     realFeel
                         .coerceIn(minimumValue = 0, maximumValue = 40)
