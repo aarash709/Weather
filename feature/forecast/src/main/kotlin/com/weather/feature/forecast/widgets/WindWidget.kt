@@ -69,8 +69,8 @@ internal fun WindWidget(
     WeatherSquareWidget(
         modifier,
         icon = Icons.Outlined.Air,
-        title = stringResource(id = string.wind_from),
-        infoText = direction
+        title = direction,
+        infoText = "$windSpeed"
     ) {
         WindDirectionGraph(
             windDirection = windDirection,
@@ -92,11 +92,11 @@ internal fun WindDirectionGraph(
     Spacer(
         modifier = modifier
             .aspectRatio(1f)
-            .padding(16.dp)
+            .padding(12.dp)
             .drawWithCache {
                 val width = size.width
                 val halfWidth = size.center.x
-                val innerRadius = halfWidth.times(0.9f)
+                val innerRadius = halfWidth.times(0.85f)
                 val outerRadius = halfWidth.times(1.0f)
                 val letters = listOf("E", "N", "W", "S")
                 onDrawBehind {
@@ -126,7 +126,7 @@ private fun DrawScope.drawInfoText(
 ) {
     val textSize = (size.width * 0.14f).toSp()
     val infoText = textMeasurer.measure(
-        text = "$windSpeed\n $speedUnits",
+        text = speedUnits,
         style = TextStyle(fontSize = textSize, textAlign = TextAlign.Center)
     )
     drawText(
@@ -188,7 +188,7 @@ private fun DrawScope.drawLines(
         val rad = (index.toDouble() * offsetDeg)
         val lineRad = Math.toRadians(rad)
         val lineColor =
-            if (index % 18 == 0) Color.White.copy(alpha = 0.5f) else Color.White.copy(alpha = 0.1f)
+            if (index % 18 == 0) Color.White.copy(alpha = 1f) else Color.White.copy(alpha = 0.1f)
         val startLinesX = (innerRadius * cos(lineRad)).plus(halfWidth).toFloat()
         val endLinesX = (outerRadius * cos(lineRad)).plus(halfWidth).toFloat()
 

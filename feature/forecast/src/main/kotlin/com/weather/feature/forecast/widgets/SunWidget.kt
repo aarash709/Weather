@@ -141,7 +141,7 @@ fun DrawScope.calculatePath(): Path {
 }
 
 private fun DrawScope.drawSundial(path: Path, brush: Brush) {
-    drawPath(path, brush, style = Stroke(10f, cap = StrokeCap.Round))
+    drawPath(path, brush, style = Stroke(size.width / 12, cap = StrokeCap.Round))
 }
 
 
