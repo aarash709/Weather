@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.libsDirectory
-
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
     alias(libs.plugins.secrets) apply false
@@ -12,6 +10,7 @@ plugins {
     alias(libs.plugins.detekt) apply false
     alias(libs.plugins.kotlinter) apply false
     alias(libs.plugins.androidTest) apply false
+    alias(libs.plugins.compose) apply false
 }
 
 buildscript {
