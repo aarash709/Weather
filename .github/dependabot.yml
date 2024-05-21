@@ -8,6 +8,13 @@ updates:
   - package-ecosystem: "gradle" # See documentation for possible values
     directory: "/" # Location of package manifests
     labels: [ "version update" ]
+    groups:
+      kotlin:
+        patterns:
+          - "org.jetbrains.kotlin:*"
+      android-plugins:
+        patterns:
+          - "com.android.*"
     registries: "*"
     schedule:
       interval: "weekly"
