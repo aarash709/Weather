@@ -1,8 +1,8 @@
 [versions]
-kotlin = "1.9.24"
+kotlin = "2.0.0"
 kotlinxSerialization = "1.6.3"
 kotlinxCoroutines = "1.8.1"
-kotlinxKsp = "1.9.24-1.0.20"
+kotlinxKsp = "2.0.0-1.0.21"
 androidGradlePlugin = "8.4.0"
 androidxComposeBom = "2024.05.00"
 androidxCompose = "1.5.0"
@@ -113,6 +113,7 @@ arrow_optics_ksp = { module = "io.arrow-kt:arrow-optics-ksp-plugin", version.ref
 #build-logic dependecies
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+compose_gradleplugin = { group = "org.jetbrains.kotlin",name= "compose-compiler-gradle-plugin", version.ref = "kotlin" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 
 [bundles]
@@ -136,13 +137,14 @@ ktor = [
     "ktor-okhttpClient"
 ]
 [plugins]
-secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "gradleSecret" }
-andoirdGradle = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
+androidTest = { id = "com.android.test", version.ref = "androidGradlePlugin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlinGradle = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-androidTest = { id = "com.android.test", version.ref = "androidGradlePlugin" }
+compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "gradleSecret" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
-com-android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 kotlinx-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlinxKsp" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 kotlinter = { id = "org.jmailen.kotlinter", version.ref = "kotlinter" }
