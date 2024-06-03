@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,7 +69,11 @@ import com.weather.model.WeatherData
 import com.weather.model.WindSpeedUnits
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import timber.log.Timber
+import java.math.RoundingMode
+import kotlin.math.nextTowards
 import kotlin.math.roundToInt
+import kotlin.math.truncate
 
 @ExperimentalCoroutinesApi
 @Composable
@@ -152,6 +157,9 @@ fun WeatherForecastScreen(
             )
         })
     val scrollState = rememberScrollState()
+    val scrollProgress by remember {
+        derivedStateOf { (scrollState.value.toFloat() / scrollState.maxValue).times(100).roundToInt() }
+    }
     Column(
         modifier = Modifier
             .pullRefresh(refreshState) then modifier

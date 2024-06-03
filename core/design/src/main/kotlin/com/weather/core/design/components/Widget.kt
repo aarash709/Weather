@@ -73,10 +73,17 @@ fun WeatherSquareWidget(
 @Preview
 @Composable
 private fun WidgetPrev() {
+
     WeatherTheme {
+//        Color.Blue.copy(green = 0.5f)
+        val isDay = true
+        val darkBG = Color(0xFF11284D)
+        val lightBG = Color(0xFF4876BE)
+        val widgetSurfaceColor =
+            if (isDay) Color.Black.copy(alpha = 0.1f) else Color.White.copy(alpha = 0.1f)
         FlowRow(
             Modifier
-                .background(Color.Blue.copy(green = 0.5f)),
+                .background(if (isDay) lightBG else darkBG),
             maxItemsInEachRow = 2,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -84,6 +91,7 @@ private fun WidgetPrev() {
             WeatherSquareWidget(
                 modifier = Modifier.weight(1f),
                 icon = Icons.Default.BrightnessLow,
+                surfaceColor = widgetSurfaceColor,
                 title = "Title",
                 infoText = "info"
             ) {
@@ -92,6 +100,7 @@ private fun WidgetPrev() {
             WeatherSquareWidget(
                 modifier = Modifier.weight(1f),
                 icon = Icons.Default.BrightnessLow,
+                surfaceColor = widgetSurfaceColor,
                 title = "Title",
                 infoText = "info"
             ) {
