@@ -5,6 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
@@ -51,10 +53,11 @@ internal fun tempColor(temp: Int): Color {
 
 @Composable
 internal fun TempBar(tempData: TempData) {
+    val indicatorColor = LocalContentColor.current
     Spacer(modifier = Modifier
         .clip(RoundedCornerShape(16.dp))
         .background(Color.Black.copy(alpha = 0.2f))
-        .size(width = 80.dp, height = 5.dp)
+        .size(width = 80.dp, height = 6.dp)
         .graphicsLayer {
             // should be set to `CompositingStrategy.Offscreen` when
             // using blend modes for transparency in indicators
@@ -100,7 +103,7 @@ internal fun TempBar(tempData: TempData) {
                         blendMode = BlendMode.Clear
                     )
                     drawCircle(
-                        color = Color.White,
+                        color = indicatorColor,
                         radius = indicatorSize * 0.6f,
                         center = currentTempCirclePosition,
                     )
