@@ -11,16 +11,13 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BrightnessLow
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,7 +29,6 @@ import com.weather.core.design.theme.WeatherTheme
 @Composable
 fun WeatherSquareWidget(
     modifier: Modifier = Modifier,
-    icon: ImageVector,
     title: String,
     surfaceColor: Color,
     infoText: String = "",
@@ -43,6 +39,7 @@ fun WeatherSquareWidget(
         shape = RoundedCornerShape(16.dp),
         color = surfaceColor
     ) {
+        val paleOnSurfaceColor = LocalContentColor.current.copy(alpha = 0.6f)
         Column(
             Modifier
                 .padding(16.dp)
@@ -54,9 +51,9 @@ fun WeatherSquareWidget(
                 Text(
                     text = title,
                     fontSize = 14.sp,
-                    color = Color.White.copy(alpha = 0.5f)
+                    color = paleOnSurfaceColor
                 )
-                Text(text = infoText, fontSize = 20.sp, color = Color.White)
+                Text(text = infoText, fontSize = 20.sp)
             }
             Box(
                 modifier = Modifier
@@ -91,18 +88,16 @@ private fun WidgetPrev() {
         ) {
             WeatherSquareWidget(
                 modifier = Modifier.weight(1f),
-                icon = Icons.Default.BrightnessLow,
-                surfaceColor = widgetSurfaceColor,
                 title = "Title",
+                surfaceColor = widgetSurfaceColor,
                 infoText = "info"
             ) {
                 Text(text = "Content", fontSize = 32.sp)
             }
             WeatherSquareWidget(
                 modifier = Modifier.weight(1f),
-                icon = Icons.Default.BrightnessLow,
-                surfaceColor = widgetSurfaceColor,
                 title = "Title",
+                surfaceColor = widgetSurfaceColor,
                 infoText = "info"
             ) {
                 Text(text = "Content", fontSize = 32.sp)

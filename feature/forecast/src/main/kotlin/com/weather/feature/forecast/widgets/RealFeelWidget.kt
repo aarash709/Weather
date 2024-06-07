@@ -3,8 +3,6 @@ package com.weather.feature.forecast.widgets
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Thermostat
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -31,10 +29,9 @@ internal fun RealFeelWidget(
 ) {
     WeatherSquareWidget(
         modifier,
-        icon = Icons.Outlined.Thermostat,
         title = stringResource(id = string.real_feel),
-        infoText = "$realFeel°",
-        surfaceColor = surfaceColor
+        surfaceColor = surfaceColor,
+        infoText = "$realFeel°"
     ) {
         RealFeelGraph(realFeel)
     }

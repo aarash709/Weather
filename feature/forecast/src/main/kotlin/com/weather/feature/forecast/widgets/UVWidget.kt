@@ -1,12 +1,8 @@
 package com.weather.feature.forecast.widgets
 
-import androidx.annotation.IntRange
-import androidx.annotation.IntegerRes
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.WbSunny
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -53,10 +49,9 @@ fun UVWidget(uvIndex: Int, modifier: Modifier = Modifier, surfaceColor: Color) {
     }
     WeatherSquareWidget(
         modifier = modifier,
-        icon = Icons.Outlined.WbSunny,
         title = stringResource(id = string.uv_index),
-        infoText = uvLevel,
-        surfaceColor = surfaceColor
+        surfaceColor = surfaceColor,
+        infoText = uvLevel
     ) {
         UVGraph(modifier = Modifier, uvIndex = uvIndex)
     }

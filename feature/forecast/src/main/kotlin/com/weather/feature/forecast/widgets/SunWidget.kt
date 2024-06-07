@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.WbSunny
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -40,7 +38,6 @@ fun SunWidget(
 ) {
     WeatherSquareWidget(
         modifier = modifier.graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen),
-        icon = Icons.Outlined.WbSunny,
         title = stringResource(id = string.sunrise),
         surfaceColor = surfaceColor
     ) {

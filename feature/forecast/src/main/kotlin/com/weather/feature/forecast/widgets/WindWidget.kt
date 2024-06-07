@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Air
 import androidx.compose.material.icons.outlined.ArrowDropUp
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -29,7 +28,6 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -38,7 +36,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.experiment.weather.core.common.R.array
-import com.experiment.weather.core.common.R.string
 import com.weather.core.design.components.WeatherSquareWidget
 import kotlin.math.cos
 import kotlin.math.sin
@@ -70,10 +67,9 @@ internal fun WindWidget(
     }
     WeatherSquareWidget(
         modifier,
-        icon = Icons.Outlined.Air,
         title = direction,
-        infoText = "$windSpeed",
-        surfaceColor = surfaceColor
+        surfaceColor = surfaceColor,
+        infoText = "$windSpeed"
     ) {
         WindDirectionGraph(
             windDirection = windDirection,
@@ -92,6 +88,7 @@ internal fun WindDirectionGraph(
 ) {
     val textMeasurer = rememberTextMeasurer()
     val arrowPainter = rememberVectorPainter(image = Icons.Outlined.ArrowDropUp)
+    val textColor = Color.White
     Spacer(
         modifier = modifier
             .aspectRatio(1f)
@@ -103,12 +100,17 @@ internal fun WindDirectionGraph(
                 val outerRadius = halfWidth.times(1.0f)
                 val letters = listOf("E", "N", "W", "S")
                 onDrawBehind {
-                    drawInfoText(halfWidth, textMeasurer, windSpeed, speedUnits)
+                    drawWindSpeedUnit(
+                        halfWidth = halfWidth,
+                        textMeasurer = textMeasurer,
+                        textColor = textColor,
+                        speedUnits = speedUnits
+                    )
                     drawCircle(
                         brush = Brush.radialGradient(
                             colors = listOf(
-                                Color.White.copy(alpha = 0.05f),
-                                Color.White.copy(alpha = 0.02f),
+                                Color(0xFF0da9fe),
+                                Color(0xFF239af2),
                             )
                         ), radius = halfWidth / 2
                     )
@@ -121,10 +123,10 @@ internal fun WindDirectionGraph(
     )
 }
 
-private fun DrawScope.drawInfoText(
+private fun DrawScope.drawWindSpeedUnit(
     halfWidth: Float,
     textMeasurer: TextMeasurer,
-    windSpeed: Int,
+    textColor: Color,
     speedUnits: String,
 ) {
     val textSize = (size.width * 0.14f).toSp()
@@ -138,7 +140,7 @@ private fun DrawScope.drawInfoText(
             halfWidth - infoText.size.width.div(2),
             halfWidth - infoText.size.height.div(2)
         ),
-        color = Color.White
+        color = textColor
     )
 }
 

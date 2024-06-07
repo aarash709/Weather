@@ -42,10 +42,9 @@ import kotlin.math.sin
 fun PressureWidget(modifier: Modifier = Modifier, pressure: Int, surfaceColor: Color) {
     WeatherSquareWidget(
         modifier = modifier,
-        icon = Icons.Outlined.ArrowDownward,
         title = stringResource(id = string.pressure),
-        infoText = "$pressure",
-        surfaceColor = surfaceColor
+        surfaceColor = surfaceColor,
+        infoText = "$pressure"
 
     ) {
         PressureGraph(

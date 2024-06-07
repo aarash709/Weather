@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.WaterDrop
-import androidx.compose.material.icons.outlined.WaterDrop
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -32,10 +31,9 @@ internal fun HumidityWidget(
 ) {
     WeatherSquareWidget(
         modifier = modifier,
-        icon = Icons.Outlined.WaterDrop,
         title = stringResource(id = string.humidity),
-        infoText = "$humidity%",
-        surfaceColor = surfaceColor
+        surfaceColor = surfaceColor,
+        infoText = "$humidity%"
     ) {
         HumidityGraph(humidity = humidity)
     }
