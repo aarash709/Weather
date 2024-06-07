@@ -123,7 +123,7 @@ fun WeatherForecastRoute(
     ) {
         WeatherForecastScreen(
             weatherUIState = weatherUIState,
-            isDayTime = timeOfDay == TimeOfDay.Day,
+            isDayTime = timeOfDay != TimeOfDay.Night,
             isSyncing = syncing,
             onNavigateToManageLocations = { onNavigateToManageLocations() },
             onNavigateToSettings = { onNavigateToSettings() },
@@ -214,7 +214,7 @@ internal fun ConditionAndDetails(
     val nightTimePrimaryColor = Color.White.copy(
         alpha = 0.10f
     )
-    val primaryWidgetColor =
+    val primaryWidgetColor by
         animateColorAsState(
             targetValue = if (isDayTime) dayTimePrimaryColor else nightTimePrimaryColor,
             label = "primary widget background color"
@@ -222,10 +222,8 @@ internal fun ConditionAndDetails(
     val widgetColor by
     animateColorAsState(
         targetValue =
-        if (scrollProgress >= 15) MaterialTheme.colorScheme.background
-        else Color.Black.copy(
-            alpha = 0.10f
-        ),
+        if (scrollProgress >= 15 && isDayTime) MaterialTheme.colorScheme.background
+        else primaryWidgetColor,
         animationSpec = tween(durationMillis = 300),
         label = "scrolled widget background color"
     )
