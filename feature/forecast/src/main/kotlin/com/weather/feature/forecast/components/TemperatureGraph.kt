@@ -158,7 +158,7 @@ internal fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Ho
                 )
                 //first index circle
                 drawCircle(
-                    color = Color.White,
+                    color = textColor,
                     radius = 10f,
                     center = firstIndexOffset,
                 )

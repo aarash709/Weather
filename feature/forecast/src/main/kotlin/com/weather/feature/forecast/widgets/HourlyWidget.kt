@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -53,6 +54,7 @@ internal fun HourlyWidget(
         shape = RoundedCornerShape(16.dp),
         color = surfaceColor,
     ) {
+        val paleOnSurfaceColor = LocalContentColor.current.copy(alpha = 0.6f)
         Column(modifier = Modifier.padding(vertical = 16.dp)) {
             Row(
                 modifier = Modifier
@@ -64,13 +66,13 @@ internal fun HourlyWidget(
                     modifier = Modifier
                         .clip(CircleShape)
                         .size(15.dp)
-                        .background(Color.White.copy(alpha = 0.5f)),
+                        .background(paleOnSurfaceColor),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.AccessTime,
                         modifier = Modifier.padding(3.dp),
-                        tint = Color.Blue.copy(alpha = 0.4f),
+                        tint = paleOnSurfaceColor,
                         contentDescription = null
                     )
                 }
@@ -78,7 +80,7 @@ internal fun HourlyWidget(
                     text = stringResource(id = string.hourly_forecast),
                     modifier = Modifier,
                     fontSize = 14.sp,
-                    color = Color.White.copy(alpha = 0.5f)
+                    color = paleOnSurfaceColor
                 )
             }
             HourlyGraphLayout(
@@ -107,19 +109,18 @@ internal fun HourlyWidget(
                             Text(
                                 text = hourly[it].sunriseSunset,
                                 fontSize = 12.sp,
-                                color = Color.White
                             )
                         } else {
                             Text(
                                 text = "$windSpeed$speedUnit",
                                 fontSize = 12.sp,
-                                color = Color.White.copy(alpha = 0.5f)
+                                color = paleOnSurfaceColor
                             )
                         }
                         Text(
                             text = time,
                             fontSize = 12.sp,
-                            color = Color.White.copy(alpha = 0.5f)
+                            color = paleOnSurfaceColor
                         )
                     }
                 })
