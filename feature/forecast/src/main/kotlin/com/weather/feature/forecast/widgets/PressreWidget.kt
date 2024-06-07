@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDownward
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
@@ -38,12 +39,14 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 @Composable
-fun PressureWidget(modifier: Modifier = Modifier, pressure: Int) {
+fun PressureWidget(modifier: Modifier = Modifier, pressure: Int, surfaceColor: Color) {
     WeatherSquareWidget(
         modifier = modifier,
         icon = Icons.Outlined.ArrowDownward,
         title = stringResource(id = string.pressure),
-        infoText = "$pressure"
+        infoText = "$pressure",
+        surfaceColor = surfaceColor
+
     ) {
         PressureGraph(
             pressure = pressure,
@@ -165,9 +168,13 @@ private fun PressureGraph(
 @Composable
 private fun PressurePreview() {
     WeatherTheme {
-        FlowRow(Modifier.background(Color.Blue.copy(green = 0.35f)), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            PressureWidget(Modifier.weight(1f), pressure = 890)
-            PressureWidget(Modifier.weight(1f), pressure = 1080)
+        val color = MaterialTheme.colorScheme.background
+        FlowRow(
+            Modifier.background(Color.Blue.copy(green = 0.35f)),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            PressureWidget(Modifier.weight(1f), pressure = 890, surfaceColor = color)
+            PressureWidget(Modifier.weight(1f), pressure = 1080, surfaceColor = color)
         }
     }
 }

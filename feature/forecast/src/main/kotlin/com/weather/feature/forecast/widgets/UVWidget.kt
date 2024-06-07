@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.WbSunny
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,12 +32,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.experiment.weather.core.common.R.*
 import com.weather.core.design.components.WeatherSquareWidget
+import com.weather.core.design.theme.WeatherTheme
 import kotlin.math.cos
 import kotlin.math.sin
 
 
 @Composable
-fun UVWidget(uvIndex: Int, modifier: Modifier = Modifier) {
+fun UVWidget(uvIndex: Int, modifier: Modifier = Modifier, surfaceColor: Color) {
     val context = LocalContext.current
     val uvLevel by remember(uvIndex) {
         val uvIntensity = context.resources.getStringArray(array.uv_intensity)
@@ -53,7 +55,8 @@ fun UVWidget(uvIndex: Int, modifier: Modifier = Modifier) {
         modifier = modifier,
         icon = Icons.Outlined.WbSunny,
         title = stringResource(id = string.uv_index),
-        infoText = uvLevel
+        infoText = uvLevel,
+        surfaceColor = surfaceColor
     ) {
         UVGraph(modifier = Modifier, uvIndex = uvIndex)
     }
@@ -128,5 +131,9 @@ fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
 @Preview
 @Composable
 private fun UVPreview() {
-    UVWidget(uvIndex = 5)
+    WeatherTheme {
+        val color = MaterialTheme.colorScheme.background
+        UVWidget(uvIndex = 5, surfaceColor = color)
+    }
+
 }

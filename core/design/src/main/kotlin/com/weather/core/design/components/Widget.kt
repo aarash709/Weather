@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrightnessLow
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,7 +34,7 @@ fun WeatherSquareWidget(
     modifier: Modifier = Modifier,
     icon: ImageVector,
     title: String,
-    surfaceColor: Color = Color.Black.copy(alpha = 0.10f),
+    surfaceColor: Color,
     infoText: String = "",
     content: @Composable BoxScope.() -> Unit,
 ) {

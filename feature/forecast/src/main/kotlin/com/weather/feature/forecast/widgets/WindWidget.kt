@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Air
 import androidx.compose.material.icons.outlined.ArrowDropUp
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,6 +49,7 @@ internal fun WindWidget(
     windDirection: Int,
     windSpeed: Int,
     speedUnits: String,
+    surfaceColor: Color,
 ) {
     val context = LocalContext.current
     val direction by remember(windDirection) {
@@ -70,7 +72,8 @@ internal fun WindWidget(
         modifier,
         icon = Icons.Outlined.Air,
         title = direction,
-        infoText = "$windSpeed"
+        infoText = "$windSpeed",
+        surfaceColor = surfaceColor
     ) {
         WindDirectionGraph(
             windDirection = windDirection,
@@ -259,7 +262,20 @@ private fun WidPreview() {
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        WindWidget(Modifier.weight(1f), windDirection = 0, windSpeed = 12, "km/h")
-        WindWidget(Modifier.weight(1f), windDirection = 0, windSpeed = 12, "mph")
+        val color = MaterialTheme.colorScheme.background
+        WindWidget(
+            Modifier.weight(1f),
+            windDirection = 0,
+            windSpeed = 12,
+            "km/h",
+            surfaceColor = color
+        )
+        WindWidget(
+            Modifier.weight(1f),
+            windDirection = 0,
+            windSpeed = 12,
+            "mph",
+            surfaceColor = color
+        )
     }
 }

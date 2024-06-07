@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.WbSunny
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
@@ -27,13 +28,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.experiment.weather.core.common.R.string
 import com.weather.core.design.components.WeatherSquareWidget
+import com.weather.core.design.theme.WeatherTheme
 
 @Composable
-fun SunWidget(sunrise: Int, sunset: Int, currentTime: Int, modifier: Modifier = Modifier) {
+fun SunWidget(
+    sunrise: Int,
+    sunset: Int,
+    currentTime: Int,
+    modifier: Modifier = Modifier,
+    surfaceColor: Color,
+) {
     WeatherSquareWidget(
         modifier = modifier.graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen),
         icon = Icons.Outlined.WbSunny,
-        title = stringResource(id = string.sunrise)
+        title = stringResource(id = string.sunrise),
+        surfaceColor = surfaceColor
     ) {
         SunGraph(
             modifier = Modifier,
@@ -172,8 +181,23 @@ private fun DrawScope.drawCircleIndicator(
 @Composable
 private fun UVPreview() {
     val position = 55
-    FlowRow(maxItemsInEachRow = 2, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-        SunWidget(modifier = Modifier.weight(1f), sunrise = 20, sunset = 90, currentTime = position)
-        SunWidget(modifier = Modifier.weight(1f), sunrise = 20, sunset = 90, currentTime = position)
+    WeatherTheme {
+        val color = MaterialTheme.colorScheme.background
+        FlowRow(maxItemsInEachRow = 2, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            SunWidget(
+                modifier = Modifier.weight(1f),
+                sunrise = 20,
+                sunset = 90,
+                currentTime = position,
+                surfaceColor = color
+            )
+            SunWidget(
+                modifier = Modifier.weight(1f),
+                sunrise = 20,
+                sunset = 90,
+                currentTime = position,
+                surfaceColor = color
+            )
+        }
     }
 }

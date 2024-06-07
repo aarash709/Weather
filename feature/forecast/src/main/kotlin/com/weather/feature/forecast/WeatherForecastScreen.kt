@@ -2,8 +2,10 @@ package com.weather.feature.forecast
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOutCubic
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +27,7 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -86,7 +89,7 @@ fun WeatherForecastRoute(
     val weatherUIState by viewModel
         .weatherUIState.collectAsStateWithLifecycle()
     val syncing by viewModel.isSyncing.collectAsStateWithLifecycle()
-    val backgroundBrush = viewModel.timeOfDay.collectAsStateWithLifecycle()
+    val timeOfDay by viewModel.timeOfDay.collectAsStateWithLifecycle()
 
     val dayColors = Brush.verticalGradient(
         listOf(
@@ -108,7 +111,7 @@ fun WeatherForecastRoute(
     )
     //this should be calculated based on time of current and weather condition.
     //darker color for nights
-    val dynamicBackground = when (backgroundBrush.value) {
+    val dynamicBackground = when (timeOfDay) {
         TimeOfDay.Day -> dayColors
         TimeOfDay.Night -> nightColors
         TimeOfDay.Dawn -> dawnColors
@@ -120,6 +123,7 @@ fun WeatherForecastRoute(
     ) {
         WeatherForecastScreen(
             weatherUIState = weatherUIState,
+            isDayTime = timeOfDay == TimeOfDay.Day,
             isSyncing = syncing,
             onNavigateToManageLocations = { onNavigateToManageLocations() },
             onNavigateToSettings = { onNavigateToSettings() },
@@ -133,6 +137,7 @@ fun WeatherForecastRoute(
 fun WeatherForecastScreen(
     modifier: Modifier = Modifier,
     weatherUIState: SavableForecastData,
+    isDayTime: Boolean,
     isSyncing: Boolean,
     onNavigateToManageLocations: () -> Unit,
     onNavigateToSettings: () -> Unit,
@@ -158,7 +163,9 @@ fun WeatherForecastScreen(
         })
     val scrollState = rememberScrollState()
     val scrollProgress by remember {
-        derivedStateOf { (scrollState.value.toFloat() / scrollState.maxValue).times(100).roundToInt() }
+        derivedStateOf {
+            (scrollState.value.toFloat() / scrollState.maxValue).times(100).roundToInt()
+        }
     }
     Column(
         modifier = Modifier
@@ -181,8 +188,10 @@ fun WeatherForecastScreen(
                         .fillMaxSize()
                         .navigationBarsPadding(),
                     weatherData = weatherUIState.weather,
+                    isDayTime = isDayTime,
                     showPlaceholder = weatherUIState.showPlaceHolder,
                     speedUnit = speedUnit,
+                    scrollProgress = scrollProgress
                 )
             }
         }
@@ -194,9 +203,32 @@ fun WeatherForecastScreen(
 internal fun ConditionAndDetails(
     modifier: Modifier = Modifier,
     weatherData: WeatherData,
+    isDayTime: Boolean,
     showPlaceholder: Boolean,
     speedUnit: String,
+    scrollProgress: Int,
 ) {
+    val dayTimePrimaryColor = Color.Black.copy(
+        alpha = 0.10f
+    )
+    val nightTimePrimaryColor = Color.White.copy(
+        alpha = 0.10f
+    )
+    val primaryWidgetColor =
+        animateColorAsState(
+            targetValue = if (isDayTime) dayTimePrimaryColor else nightTimePrimaryColor,
+            label = "primary widget background color"
+        )
+    val widgetColor by
+    animateColorAsState(
+        targetValue =
+        if (scrollProgress >= 15) MaterialTheme.colorScheme.background
+        else Color.Black.copy(
+            alpha = 0.10f
+        ),
+        animationSpec = tween(durationMillis = 300),
+        label = "scrolled widget background color"
+    )
     FlowRow(
         modifier,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -225,7 +257,8 @@ internal fun ConditionAndDetails(
                     visible = showPlaceholder,
                 ),
             dailyList = weatherData.daily.map { it.toDailyPreview() },
-            currentTemp = weatherData.current.currentTemp.roundToInt()
+            currentTemp = weatherData.current.currentTemp.roundToInt(),
+            surfaceColor = widgetColor
         )
         HourlyWidget(
             modifier = Modifier
@@ -234,27 +267,43 @@ internal fun ConditionAndDetails(
                     visible = showPlaceholder
                 ),
             hourly = weatherData.hourly,
-            speedUnit = speedUnit
+            speedUnit = speedUnit,
+            surfaceColor = widgetColor
         )
         WindWidget(
             modifier = Modifier.weight(1f),
             windDirection = weatherData.current.wind_deg,
             windSpeed = weatherData.current.wind_speed.roundToInt(),
-            speedUnits = speedUnit
+            speedUnits = speedUnit,
+            surfaceColor = widgetColor
         )
         SunWidget(
             modifier = Modifier.weight(1f),
             sunrise = weatherData.current.sunrise,
             sunset = weatherData.current.sunset,
-            currentTime = weatherData.current.dt
+            currentTime = weatherData.current.dt,
+            surfaceColor = widgetColor
         )
         RealFeelWidget(
             modifier = Modifier.weight(1f),
-            realFeel = weatherData.current.feels_like.roundToInt()
+            realFeel = weatherData.current.feels_like.roundToInt(),
+            surfaceColor = widgetColor
         )
-        HumidityWidget(modifier = Modifier.weight(1f), humidity = weatherData.current.humidity)
-        UVWidget(modifier = Modifier.weight(1f), uvIndex = weatherData.current.uvi.toInt())
-        PressureWidget(modifier = Modifier.weight(1f), pressure = weatherData.current.pressure)
+        HumidityWidget(
+            modifier = Modifier.weight(1f),
+            humidity = weatherData.current.humidity,
+            surfaceColor = widgetColor
+        )
+        UVWidget(
+            modifier = Modifier.weight(1f),
+            uvIndex = weatherData.current.uvi.toInt(),
+            surfaceColor = widgetColor
+        )
+        PressureWidget(
+            modifier = Modifier.weight(1f),
+            pressure = weatherData.current.pressure,
+            surfaceColor = widgetColor
+        )
     }
 }
 
@@ -365,11 +414,14 @@ private fun MainPagePreview() {
                     )
                 )
         ) {
-            WeatherForecastScreen(weatherUIState = data,
+            WeatherForecastScreen(
+                weatherUIState = data,
                 isSyncing = false,
+                isDayTime = false,
                 onRefresh = {},
                 onNavigateToManageLocations = {},
-                onNavigateToSettings = {})
+                onNavigateToSettings = {}
+            )
         }
     }
 }

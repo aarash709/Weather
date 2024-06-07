@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material.icons.outlined.WaterDrop
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
@@ -27,12 +28,14 @@ import com.weather.core.design.components.WeatherSquareWidget
 internal fun HumidityWidget(
     humidity: Int,
     modifier: Modifier = Modifier,
+    surfaceColor: Color,
 ) {
     WeatherSquareWidget(
         modifier = modifier,
         icon = Icons.Outlined.WaterDrop,
         title = stringResource(id = string.humidity),
-        infoText = "$humidity%"
+        infoText = "$humidity%",
+        surfaceColor = surfaceColor
     ) {
         HumidityGraph(humidity = humidity)
     }
@@ -70,7 +73,7 @@ fun HumidityGraph(humidity: Int) {
                         topLeft = Offset(0f, 0f),
                         style = Stroke(width = archThickness, cap = StrokeCap.Round),
                     )
-                    val size = Size(width/3, height/3)
+                    val size = Size(width / 3, height / 3)
                     translate(
                         left = (width / 2) - size.width / 2,
                         top = (height / 2) - size.height / 2
@@ -90,5 +93,6 @@ fun HumidityGraph(humidity: Int) {
 @Preview
 @Composable
 private fun HumidityPreview() {
-    HumidityWidget(humidity = 50)
+    val color = MaterialTheme.colorScheme.background
+    HumidityWidget(humidity = 50, surfaceColor = color)
 }
