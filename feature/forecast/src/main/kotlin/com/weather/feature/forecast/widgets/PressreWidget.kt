@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDownward
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -33,6 +34,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import arrow.optics.copy
 import com.experiment.weather.core.common.R.string
 import com.weather.core.design.components.WeatherSquareWidget
 import com.weather.core.design.theme.WeatherTheme
@@ -65,7 +67,7 @@ private fun PressureGraph(
 ) {
     val textMeasurer = rememberTextMeasurer()
     val painter = rememberVectorPainter(image = Icons.Outlined.ArrowDownward)
-    val paleOnSurfaceColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+    val paleOnSurfaceColor = LocalContentColor.current.copy(alpha = 0.6f)
     Spacer(
         modifier = modifier
             .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)

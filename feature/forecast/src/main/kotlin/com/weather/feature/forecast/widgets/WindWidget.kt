@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDropUp
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -89,7 +90,7 @@ internal fun WindDirectionGraph(
     val textMeasurer = rememberTextMeasurer()
     val arrowPainter = rememberVectorPainter(image = Icons.Outlined.ArrowDropUp)
     val textColor = Color.White
-    val colorOnSurface = MaterialTheme.colorScheme.onSurface
+    val colorOnSurface = LocalContentColor.current
     Spacer(
         modifier = modifier
             .aspectRatio(1f)

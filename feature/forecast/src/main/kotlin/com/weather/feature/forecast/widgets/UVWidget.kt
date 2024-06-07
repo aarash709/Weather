@@ -3,6 +3,7 @@ package com.weather.feature.forecast.widgets
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -60,7 +61,7 @@ fun UVWidget(uvIndex: Int, modifier: Modifier = Modifier, surfaceColor: Color) {
 @Composable
 fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
     val textMeasurer = rememberTextMeasurer()
-    val textColor = MaterialTheme.colorScheme.onSurface
+    val textColor = LocalContentColor.current
     Spacer(
         modifier = modifier
             .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)

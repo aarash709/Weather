@@ -5,7 +5,6 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOutCubic
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -72,11 +71,7 @@ import com.weather.model.WeatherData
 import com.weather.model.WindSpeedUnits
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import timber.log.Timber
-import java.math.RoundingMode
-import kotlin.math.nextTowards
 import kotlin.math.roundToInt
-import kotlin.math.truncate
 
 @ExperimentalCoroutinesApi
 @Composable
@@ -224,7 +219,7 @@ internal fun ConditionAndDetails(
         targetValue =
         if (scrollProgress >= 15 && isDayTime) MaterialTheme.colorScheme.background
         else primaryWidgetColor,
-        animationSpec = tween(durationMillis = 300),
+        animationSpec = tween(durationMillis = 200),
         label = "scrolled widget background color"
     )
     FlowRow(
