@@ -60,6 +60,7 @@ fun UVWidget(uvIndex: Int, modifier: Modifier = Modifier, surfaceColor: Color) {
 @Composable
 fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
     val textMeasurer = rememberTextMeasurer()
+    val textColor = MaterialTheme.colorScheme.onSurface
     Spacer(
         modifier = modifier
             .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
@@ -103,7 +104,7 @@ fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
                         blendMode = BlendMode.Clear
 
                     )
-                    val textSize = (size.width * 0.25f).toSp()
+                    val textSize = (size.width * 0.30f).toSp()
                     val textLayoutResult = textMeasurer.measure(
                         text = "$uvIndex",
                         maxLines = 2,
@@ -111,7 +112,7 @@ fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
                     )
                     drawText(
                         textLayoutResult,
-                        color = Color.White,
+                        color = textColor,
                         topLeft = Offset(
                             x = (width / 2).minus(textLayoutResult.size.width.div(2)),
                             y = (height / 2).minus(textLayoutResult.size.height.div(2))

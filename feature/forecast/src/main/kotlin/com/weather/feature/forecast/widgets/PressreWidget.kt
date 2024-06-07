@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.draw
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -64,6 +65,7 @@ private fun PressureGraph(
 ) {
     val textMeasurer = rememberTextMeasurer()
     val painter = rememberVectorPainter(image = Icons.Outlined.ArrowDownward)
+    val paleOnSurfaceColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
     Spacer(
         modifier = modifier
             .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
@@ -138,7 +140,7 @@ private fun PressureGraph(
                     )
                     drawText(
                         textLayoutResult,
-                        color = Color.LightGray,
+                        color = paleOnSurfaceColor,
                         topLeft = Offset(
                             x = (width / 2).minus(textLayoutResult.size.width.div(2)),
                             y = (height / 1.2f).minus(textLayoutResult.size.height.div(2))

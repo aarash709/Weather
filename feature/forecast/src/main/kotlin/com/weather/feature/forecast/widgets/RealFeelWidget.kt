@@ -39,6 +39,7 @@ internal fun RealFeelWidget(
 
 @Composable
 private fun RealFeelGraph(realFeel: Int) {
+    val indicatorColor = MaterialTheme.colorScheme.onSurface
     Spacer(
         modifier = Modifier
             .aspectRatio(1f)
@@ -89,13 +90,13 @@ private fun RealFeelGraph(realFeel: Int) {
                     )
                     //indicator
                     drawCircle(
-                        color = Color.White,
+                        color = indicatorColor,
                         radius = circleSize,
                         center = Offset(x = width / 2, y = height / 2),
                         style = Stroke(width = indicatorStrokeWidth)
                     )
                     drawLine(
-                        color = Color.White,
+                        color = indicatorColor,
                         start = Offset(x, y),
                         end = Offset(xEnd, yEnd),
                         strokeWidth = indicatorStrokeWidth,
