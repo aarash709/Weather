@@ -1,12 +1,10 @@
 package com.weather.feature.forecast.widgets
 
-import androidx.annotation.IntRange
-import androidx.annotation.IntegerRes
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.WbSunny
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,12 +29,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.experiment.weather.core.common.R.*
 import com.weather.core.design.components.WeatherSquareWidget
+import com.weather.core.design.theme.WeatherTheme
 import kotlin.math.cos
 import kotlin.math.sin
 
 
 @Composable
-fun UVWidget(uvIndex: Int, modifier: Modifier = Modifier) {
+fun UVWidget(uvIndex: Int, modifier: Modifier = Modifier, surfaceColor: Color) {
     val context = LocalContext.current
     val uvLevel by remember(uvIndex) {
         val uvIntensity = context.resources.getStringArray(array.uv_intensity)
@@ -51,8 +50,8 @@ fun UVWidget(uvIndex: Int, modifier: Modifier = Modifier) {
     }
     WeatherSquareWidget(
         modifier = modifier,
-        icon = Icons.Outlined.WbSunny,
         title = stringResource(id = string.uv_index),
+        surfaceColor = surfaceColor,
         infoText = uvLevel
     ) {
         UVGraph(modifier = Modifier, uvIndex = uvIndex)
@@ -62,6 +61,7 @@ fun UVWidget(uvIndex: Int, modifier: Modifier = Modifier) {
 @Composable
 fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
     val textMeasurer = rememberTextMeasurer()
+    val textColor = LocalContentColor.current
     Spacer(
         modifier = modifier
             .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
@@ -105,7 +105,7 @@ fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
                         blendMode = BlendMode.Clear
 
                     )
-                    val textSize = (size.width * 0.25f).toSp()
+                    val textSize = (size.width * 0.30f).toSp()
                     val textLayoutResult = textMeasurer.measure(
                         text = "$uvIndex",
                         maxLines = 2,
@@ -113,7 +113,7 @@ fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
                     )
                     drawText(
                         textLayoutResult,
-                        color = Color.White,
+                        color = textColor,
                         topLeft = Offset(
                             x = (width / 2).minus(textLayoutResult.size.width.div(2)),
                             y = (height / 2).minus(textLayoutResult.size.height.div(2))
@@ -128,5 +128,9 @@ fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
 @Preview
 @Composable
 private fun UVPreview() {
-    UVWidget(uvIndex = 5)
+    WeatherTheme {
+        val color = MaterialTheme.colorScheme.background
+        UVWidget(uvIndex = 5, surfaceColor = color)
+    }
+
 }

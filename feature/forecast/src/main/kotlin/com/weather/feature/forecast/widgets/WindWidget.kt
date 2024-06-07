@@ -8,8 +8,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Air
 import androidx.compose.material.icons.outlined.ArrowDropUp
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,7 +29,6 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -37,7 +37,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.experiment.weather.core.common.R.array
-import com.experiment.weather.core.common.R.string
 import com.weather.core.design.components.WeatherSquareWidget
 import kotlin.math.cos
 import kotlin.math.sin
@@ -48,6 +47,7 @@ internal fun WindWidget(
     windDirection: Int,
     windSpeed: Int,
     speedUnits: String,
+    surfaceColor: Color,
 ) {
     val context = LocalContext.current
     val direction by remember(windDirection) {
@@ -68,8 +68,8 @@ internal fun WindWidget(
     }
     WeatherSquareWidget(
         modifier,
-        icon = Icons.Outlined.Air,
         title = direction,
+        surfaceColor = surfaceColor,
         infoText = "$windSpeed"
     ) {
         WindDirectionGraph(
@@ -89,6 +89,8 @@ internal fun WindDirectionGraph(
 ) {
     val textMeasurer = rememberTextMeasurer()
     val arrowPainter = rememberVectorPainter(image = Icons.Outlined.ArrowDropUp)
+    val textColor = Color.White
+    val colorOnSurface = LocalContentColor.current
     Spacer(
         modifier = modifier
             .aspectRatio(1f)
@@ -100,28 +102,49 @@ internal fun WindDirectionGraph(
                 val outerRadius = halfWidth.times(1.0f)
                 val letters = listOf("E", "N", "W", "S")
                 onDrawBehind {
-                    drawInfoText(halfWidth, textMeasurer, windSpeed, speedUnits)
                     drawCircle(
                         brush = Brush.radialGradient(
                             colors = listOf(
-                                Color.White.copy(alpha = 0.05f),
-                                Color.White.copy(alpha = 0.02f),
+                                Color(0xFF0da9fe),
+                                Color(0xFF239af2),
                             )
                         ), radius = halfWidth / 2
                     )
-                    drawArrow(windDirection, halfWidth, arrowPainter)
-                    drawLines(innerRadius, outerRadius, width)
-                    drawLetters(letters, textMeasurer, innerRadius, width)
+                    drawArrow(
+                        windDirection = windDirection,
+                        arrowColor = Color(0xFF239af2),
+                        halfWidth = halfWidth,
+                        arrow = arrowPainter
+                    )
+                    drawWindSpeedUnit(
+                        halfWidth = halfWidth,
+                        textMeasurer = textMeasurer,
+                        textColor = textColor,
+                        speedUnits = speedUnits
+                    )
+                    drawLines(
+                        innerRadius = innerRadius,
+                        outerRadius = outerRadius,
+                        lineColor = colorOnSurface,
+                        width = width
+                    )
+                    drawLetters(
+                        letters = letters,
+                        textColor = colorOnSurface,
+                        textMeasurer = textMeasurer,
+                        inderRadius = innerRadius,
+                        width = width
+                    )
 
                 }
             }
     )
 }
 
-private fun DrawScope.drawInfoText(
+private fun DrawScope.drawWindSpeedUnit(
     halfWidth: Float,
     textMeasurer: TextMeasurer,
-    windSpeed: Int,
+    textColor: Color,
     speedUnits: String,
 ) {
     val textSize = (size.width * 0.14f).toSp()
@@ -135,12 +158,13 @@ private fun DrawScope.drawInfoText(
             halfWidth - infoText.size.width.div(2),
             halfWidth - infoText.size.height.div(2)
         ),
-        color = Color.White
+        color = textColor
     )
 }
 
 private fun DrawScope.drawArrow(
     windDirection: Int,
+    arrowColor: Color,
     halfWidth: Float,
     arrow: VectorPainter,
 ) {
@@ -154,12 +178,12 @@ private fun DrawScope.drawArrow(
             ) {
                 draw(
                     Size(painterSize.width, painterSize.height * 1.5f),
-                    colorFilter = ColorFilter.tint(Color.White)
+                    colorFilter = ColorFilter.tint(arrowColor)
                 )
             }
         }
         drawLine(
-            color = Color.White,
+            color = arrowColor,
             start = Offset(halfWidth, size.height / 10),
             end = Offset(halfWidth, halfWidth.div(2.1f)),
             strokeWidth = lineStroke
@@ -167,7 +191,7 @@ private fun DrawScope.drawArrow(
     }
     rotate(windDirection.toFloat(), pivot = size.center) {
         drawLine(
-            color = Color.White,
+            color = arrowColor,
             start = Offset(halfWidth, size.height / 25),
             end = Offset(halfWidth, halfWidth.div(2.1f)),
             strokeWidth = lineStroke
@@ -178,6 +202,7 @@ private fun DrawScope.drawArrow(
 private fun DrawScope.drawLines(
     innerRadius: Float,
     outerRadius: Float,
+    lineColor: Color,
     width: Float,
     lineCount: Int = 72,
     offsetDeg: Int = 5,
@@ -187,15 +212,15 @@ private fun DrawScope.drawLines(
     (0..<lineCount).forEach { index ->
         val rad = (index.toDouble() * offsetDeg)
         val lineRad = Math.toRadians(rad)
-        val lineColor =
-            if (index % 18 == 0) Color.White.copy(alpha = 1f) else Color.White.copy(alpha = 0.1f)
+        val color =
+            if (index % 18 == 0) lineColor else lineColor.copy(alpha = 0.3f)
         val startLinesX = (innerRadius * cos(lineRad)).plus(halfWidth).toFloat()
         val endLinesX = (outerRadius * cos(lineRad)).plus(halfWidth).toFloat()
 
         val startLinesY = (innerRadius * -sin(lineRad)).plus(halfWidth).toFloat()
         val endLinesY = (outerRadius * -sin(lineRad)).plus(halfWidth).toFloat()
         drawLine(
-            color = lineColor,
+            color = color,
             start = Offset(startLinesX, startLinesY),
             end = Offset(endLinesX, endLinesY),
             strokeWidth = strokeWidth
@@ -205,11 +230,11 @@ private fun DrawScope.drawLines(
 
 private fun DrawScope.drawLetters(
     letters: List<String>,
+    textColor: Color,
     textMeasurer: TextMeasurer,
     inderRadius: Float,
     width: Float,
 ) {
-    val textColor = Color.White.copy(alpha = 0.5f)
     letters.forEachIndexed { index, letter ->
         val deg = index * 90.0
         val rad = Math.toRadians(deg)
@@ -259,7 +284,20 @@ private fun WidPreview() {
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        WindWidget(Modifier.weight(1f), windDirection = 0, windSpeed = 12, "km/h")
-        WindWidget(Modifier.weight(1f), windDirection = 0, windSpeed = 12, "mph")
+        val color = MaterialTheme.colorScheme.background
+        WindWidget(
+            Modifier.weight(1f),
+            windDirection = 0,
+            windSpeed = 12,
+            "km/h",
+            surfaceColor = color
+        )
+        WindWidget(
+            Modifier.weight(1f),
+            windDirection = 0,
+            windSpeed = 12,
+            "mph",
+            surfaceColor = color
+        )
     }
 }

@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDownward
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
@@ -21,6 +23,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.draw
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -31,6 +34,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import arrow.optics.copy
 import com.experiment.weather.core.common.R.string
 import com.weather.core.design.components.WeatherSquareWidget
 import com.weather.core.design.theme.WeatherTheme
@@ -38,12 +42,13 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 @Composable
-fun PressureWidget(modifier: Modifier = Modifier, pressure: Int) {
+fun PressureWidget(modifier: Modifier = Modifier, pressure: Int, surfaceColor: Color) {
     WeatherSquareWidget(
         modifier = modifier,
-        icon = Icons.Outlined.ArrowDownward,
         title = stringResource(id = string.pressure),
+        surfaceColor = surfaceColor,
         infoText = "$pressure"
+
     ) {
         PressureGraph(
             pressure = pressure,
@@ -62,6 +67,7 @@ private fun PressureGraph(
 ) {
     val textMeasurer = rememberTextMeasurer()
     val painter = rememberVectorPainter(image = Icons.Outlined.ArrowDownward)
+    val paleOnSurfaceColor = LocalContentColor.current.copy(alpha = 0.6f)
     Spacer(
         modifier = modifier
             .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
@@ -136,7 +142,7 @@ private fun PressureGraph(
                     )
                     drawText(
                         textLayoutResult,
-                        color = Color.LightGray,
+                        color = paleOnSurfaceColor,
                         topLeft = Offset(
                             x = (width / 2).minus(textLayoutResult.size.width.div(2)),
                             y = (height / 1.2f).minus(textLayoutResult.size.height.div(2))
@@ -165,9 +171,13 @@ private fun PressureGraph(
 @Composable
 private fun PressurePreview() {
     WeatherTheme {
-        FlowRow(Modifier.background(Color.Blue.copy(green = 0.35f)), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            PressureWidget(Modifier.weight(1f), pressure = 890)
-            PressureWidget(Modifier.weight(1f), pressure = 1080)
+        val color = MaterialTheme.colorScheme.background
+        FlowRow(
+            Modifier.background(Color.Blue.copy(green = 0.35f)),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            PressureWidget(Modifier.weight(1f), pressure = 890, surfaceColor = color)
+            PressureWidget(Modifier.weight(1f), pressure = 1080, surfaceColor = color)
         }
     }
 }

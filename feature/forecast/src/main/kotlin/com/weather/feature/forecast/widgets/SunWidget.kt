@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.WbSunny
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
@@ -27,13 +27,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.experiment.weather.core.common.R.string
 import com.weather.core.design.components.WeatherSquareWidget
+import com.weather.core.design.theme.WeatherTheme
 
 @Composable
-fun SunWidget(sunrise: Int, sunset: Int, currentTime: Int, modifier: Modifier = Modifier) {
+fun SunWidget(
+    sunrise: Int,
+    sunset: Int,
+    currentTime: Int,
+    modifier: Modifier = Modifier,
+    surfaceColor: Color,
+) {
     WeatherSquareWidget(
-        modifier = modifier.graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen),
-        icon = Icons.Outlined.WbSunny,
-        title = stringResource(id = string.sunrise)
+        modifier = modifier,
+        title = stringResource(id = string.sunrise),
+        surfaceColor = surfaceColor
     ) {
         SunGraph(
             modifier = Modifier,
@@ -51,7 +58,9 @@ private fun SunGraph(
     sunset: Int,
     currentTime: Int,
 ) {
+    val paleOnSurfaceColor = LocalContentColor.current.copy(alpha = 0.6f)
     Spacer(modifier = modifier
+        .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
         .aspectRatio(1f)
         .padding(16.dp)
         .drawWithCache {
@@ -59,9 +68,9 @@ private fun SunGraph(
             val height = size.height
             val circleSize = 5.dp.toPx()
 
-            val sunsetColor = Color.Red.copy(green = 0.3f)
+            val sunsetColor = Color(0xFFf4a169)
             val darkBlue = Color(5, 20, 50)
-            val daylightColor = Color(244, 250, 127)
+            val daylightColor = Color(0xFFfaca6b)
 
             val timeRange = sunset.minus(sunrise)
 
@@ -77,24 +86,24 @@ private fun SunGraph(
                 val measure = android.graphics.PathMeasure(path.asAndroidPath(), false)
                 val length = measure.length
                 measure.getPosTan(length * progress, pathPosition, pathTangent)
-                val brush = Brush.horizontalGradient(
-                    0.0f to darkBlue,
-                    0.10f to sunsetColor,
-                    0.15f to daylightColor,
-                    0.85f to daylightColor,
+                val brush = Brush.verticalGradient(
+                    0.0f to daylightColor,
+                    0.65f to daylightColor,
                     0.90f to sunsetColor,
-                    1.0f to darkBlue
+                    1.0f to darkBlue,
+                    startY = -height * 0.3f, // magic number
+                    endY = height - 10f
                 )
                 val indicatorBoarderOffset = circleSize / 32
                 drawLine(
-                    Color.White.copy(alpha = 0.5f),
+                    paleOnSurfaceColor,
                     start = Offset(
                         width - (width.times(1.25f)),
                         height / 1.20f
                     ),
                     end = Offset(width.times(1.25f), height / 1.20f)
                 )
-                drawSundial(
+                drawSundialPath(
                     path = path,
                     brush = brush
                 )
@@ -140,7 +149,7 @@ fun DrawScope.calculatePath(): Path {
     }
 }
 
-private fun DrawScope.drawSundial(path: Path, brush: Brush) {
+private fun DrawScope.drawSundialPath(path: Path, brush: Brush) {
     drawPath(path, brush, style = Stroke(size.width / 12, cap = StrokeCap.Round))
 }
 
@@ -154,7 +163,7 @@ private fun DrawScope.drawCircleIndicator(
 ) {
     if (shouldShowBorder) {
         drawCircle(
-            Color.Black,
+            Color.Transparent,
             radius = radius + boarderRadius,
             center = Offset(position[0], position[1]),
             blendMode = BlendMode.Clear
@@ -172,8 +181,23 @@ private fun DrawScope.drawCircleIndicator(
 @Composable
 private fun UVPreview() {
     val position = 55
-    FlowRow(maxItemsInEachRow = 2, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-        SunWidget(modifier = Modifier.weight(1f), sunrise = 20, sunset = 90, currentTime = position)
-        SunWidget(modifier = Modifier.weight(1f), sunrise = 20, sunset = 90, currentTime = position)
+    WeatherTheme {
+        val color = MaterialTheme.colorScheme.background
+        FlowRow(maxItemsInEachRow = 2, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            SunWidget(
+                modifier = Modifier.weight(1f),
+                sunrise = 20,
+                sunset = 90,
+                currentTime = position,
+                surfaceColor = color
+            )
+            SunWidget(
+                modifier = Modifier.weight(1f),
+                sunrise = 20,
+                sunset = 90,
+                currentTime = position,
+                surfaceColor = color
+            )
+        }
     }
 }

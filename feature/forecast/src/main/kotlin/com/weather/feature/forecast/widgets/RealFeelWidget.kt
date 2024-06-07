@@ -3,8 +3,8 @@ package com.weather.feature.forecast.widgets
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Thermostat
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import com.experiment.weather.core.common.R.*
 import com.weather.core.design.components.WeatherSquareWidget
 import com.weather.core.design.theme.WeatherTheme
-import com.weather.feature.forecast.R
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -27,12 +26,13 @@ import kotlin.math.sin
 internal fun RealFeelWidget(
     realFeel: Int,
     modifier: Modifier = Modifier,
+    surfaceColor: Color,
 ) {
     WeatherSquareWidget(
         modifier,
-        icon = Icons.Outlined.Thermostat,
         title = stringResource(id = string.real_feel),
-        infoText = "$realFeel°",
+        surfaceColor = surfaceColor,
+        infoText = "$realFeel°"
     ) {
         RealFeelGraph(realFeel)
     }
@@ -40,6 +40,7 @@ internal fun RealFeelWidget(
 
 @Composable
 private fun RealFeelGraph(realFeel: Int) {
+    val indicatorColor = LocalContentColor.current
     Spacer(
         modifier = Modifier
             .aspectRatio(1f)
@@ -90,13 +91,13 @@ private fun RealFeelGraph(realFeel: Int) {
                     )
                     //indicator
                     drawCircle(
-                        color = Color.White,
+                        color = indicatorColor,
                         radius = circleSize,
                         center = Offset(x = width / 2, y = height / 2),
                         style = Stroke(width = indicatorStrokeWidth)
                     )
                     drawLine(
-                        color = Color.White,
+                        color = indicatorColor,
                         start = Offset(x, y),
                         end = Offset(xEnd, yEnd),
                         strokeWidth = indicatorStrokeWidth,
@@ -113,6 +114,7 @@ private fun RealFeelGraph(realFeel: Int) {
 @Composable
 private fun RealFeelPrev() {
     WeatherTheme {
-        RealFeelWidget(-10)
+        val color = MaterialTheme.colorScheme.background
+        RealFeelWidget(-10, surfaceColor = color)
     }
 }

@@ -17,6 +17,8 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowRight
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,15 +35,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.experiment.weather.core.common.R.*
+import com.experiment.weather.core.common.R.string
 import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
-import com.weather.feature.forecast.R
 import com.weather.feature.forecast.components.TempBar
 import com.weather.feature.forecast.components.TempData
 import com.weather.feature.forecast.components.hourlydata.DailyPreviewStaticData
 import com.weather.model.DailyPreview
-import timber.log.Timber
 import kotlin.math.roundToInt
 
 @Composable
@@ -49,13 +49,14 @@ internal fun DailyWidget(
     modifier: Modifier = Modifier,
     dailyList: List<DailyPreview>,
     currentTemp: Int,
-    surfaceColor: Color = Color.Black.copy(alpha = 0.10f),
+    surfaceColor: Color,
 ) {
     Surface(
         modifier = Modifier.bouncyTapEffect() then modifier,
         shape = RoundedCornerShape(16.dp),
         color = surfaceColor,
     ) {
+        val paleOnSurfaceColor = LocalContentColor.current.copy(alpha = 0.6f)
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -74,37 +75,36 @@ internal fun DailyWidget(
                         modifier = Modifier
                             .clip(CircleShape)
                             .size(15.dp)
-                            .background(Color.White.copy(alpha = 0.5f)),
+                            .background(paleOnSurfaceColor),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.CalendarMonth,
                             modifier = Modifier.padding(3.dp),
-                            tint = Color.Blue.copy(alpha = 0.4f),
+                            tint = paleOnSurfaceColor,
                             contentDescription = null
                         )
                     }
                     Text(
                         text = stringResource(id = string.five_day_forecast),
                         fontSize = 14.sp,
-                        color = Color.White.copy(alpha = 0.5f)
+                        color = paleOnSurfaceColor
                     )
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = stringResource(id = string.more_details),
                         fontSize = 14.sp,
-                        color = Color.White.copy(alpha = 0.5f)
+                        color = paleOnSurfaceColor
                     )
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.ArrowRight,
                         modifier = Modifier.padding(3.dp),
-                        tint = Color.White.copy(alpha = 0.5f),
+                        tint = paleOnSurfaceColor,
                         contentDescription = null
                     )
                 }
             }
-            HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
             val minTemp by remember(dailyList) {
                 mutableIntStateOf(dailyList.minOf { it.tempNight })
             }
@@ -186,12 +186,14 @@ internal fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview, tempD
 @Composable
 private fun DailyListPreview() {
     WeatherTheme {
+        val color = MaterialTheme.colorScheme.background
         DailyWidget(
             dailyList = DailyPreviewStaticData,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            currentTemp = 0
+            currentTemp = 0,
+            surfaceColor = color
         )
     }
 }
