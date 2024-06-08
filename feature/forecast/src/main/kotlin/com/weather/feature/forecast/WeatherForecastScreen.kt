@@ -216,7 +216,7 @@ internal fun ConditionAndDetails(
     val widgetColor by
     animateColorAsState(
         targetValue =
-        if (scrollProgress >= 15 && isDayTime) ForecastTheme.colorScheme.background
+        if (scrollProgress >= 10 && isDayTime) ForecastTheme.colorScheme.background
         else primaryWidgetColor,
         animationSpec = tween(durationMillis = 200),
         label = "scrolled widget background color"
