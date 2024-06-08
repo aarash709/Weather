@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeOut
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.weather.core.design.theme.ForecastTheme
 import com.weather.feature.forecast.WeatherForecastRoute
 import com.weather.feature.managelocations.LOCATIONS_ROUTE
 import com.weather.feature.settings.SETTINGS_ROUTE
@@ -51,12 +52,14 @@ fun NavGraphBuilder.forecastRoute(
         },
         arguments = listOf(navArgument(name = "cityName") { nullable = true })
     ) {
-        WeatherForecastRoute(
-            onNavigateToManageLocations = {
-                navigateToManageLocations()
-            },
-            onNavigateToSettings = {
-                navigateToSettings()
-            })
+        ForecastTheme{
+            WeatherForecastRoute(
+                onNavigateToManageLocations = {
+                    navigateToManageLocations()
+                },
+                onNavigateToSettings = {
+                    navigateToSettings()
+                })
+        }
     }
 }

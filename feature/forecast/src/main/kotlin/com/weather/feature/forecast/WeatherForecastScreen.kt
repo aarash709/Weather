@@ -26,7 +26,6 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -47,7 +46,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.weather.core.design.components.weatherPlaceholder
-import com.weather.core.design.theme.WeatherTheme
+import com.weather.core.design.theme.ForecastTheme
 import com.weather.feature.forecast.components.ForecastTopBar
 import com.weather.feature.forecast.components.hourlydata.DailyStaticData
 import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
@@ -217,7 +216,7 @@ internal fun ConditionAndDetails(
     val widgetColor by
     animateColorAsState(
         targetValue =
-        if (scrollProgress >= 15 && isDayTime) MaterialTheme.colorScheme.background
+        if (scrollProgress >= 15 && isDayTime) ForecastTheme.colorScheme.background
         else primaryWidgetColor,
         animationSpec = tween(durationMillis = 200),
         label = "scrolled widget background color"
@@ -361,7 +360,7 @@ private fun MainPagePreview() {
         delay(1000)
         placeholder = false
     })
-    WeatherTheme {
+    ForecastTheme {
         val data = SavableForecastData(
             weather = WeatherData(
                 coordinates = OneCallCoordinates(
@@ -397,7 +396,7 @@ private fun MainPagePreview() {
         )
         Box(
             modifier = Modifier
-//            .background(color = MaterialTheme.colorScheme.background)
+//            .background(color = ForecastTheme.colorScheme.background)
                 .background(
                     Brush.verticalGradient(
                         listOf(
@@ -423,7 +422,7 @@ private fun MainPagePreview() {
 @Preview(showBackground = false, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun WindPreview() {
-    WeatherTheme {
+    ForecastTheme {
         val animateDegree = remember {
             Animatable(25f)
         }
