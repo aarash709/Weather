@@ -29,7 +29,6 @@ fun WeatherApp(
     isDatabaseEmpty: Boolean,
     appState: WeatherAppState = rememberWeatherAppSate(),
 ) {
-
     WeatherTheme {
         val snackbarHostState = remember { SnackbarHostState() }
         val currentDestinationRoute = appState.currentTopLevelDestination

@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.weather.core.design.components.weatherPlaceholder
+import com.weather.feature.forecast.components.WeatherBackground
 import com.weather.core.design.theme.ForecastTheme
 import com.weather.feature.forecast.components.ForecastTopBar
 import com.weather.feature.forecast.components.hourlydata.DailyStaticData
@@ -84,36 +85,11 @@ fun WeatherForecastRoute(
         .weatherUIState.collectAsStateWithLifecycle()
     val syncing by viewModel.isSyncing.collectAsStateWithLifecycle()
     val timeOfDay by viewModel.timeOfDay.collectAsStateWithLifecycle()
-
-    val dayColors = Brush.verticalGradient(
-        listOf(
-            Color(0xFF1F4DCC),
-            Color(0xFF4D6199),
-        )
-    )
-    val nightColors = Brush.verticalGradient(
-        listOf(
-            Color(0xFF071333),
-            Color(0xFF0F2666),
-        )
-    )
-    val dawnColors = Brush.verticalGradient(
-        listOf(
-            Color(0xFF133080),
-            Color(0xFFCC471B),
-        )
-    )
-    //this should be calculated based on time of current and weather condition.
-    //darker color for nights
-    val dynamicBackground = when (timeOfDay) {
-        TimeOfDay.Day -> dayColors
-        TimeOfDay.Night -> nightColors
-        TimeOfDay.Dawn -> dawnColors
-    }
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(dynamicBackground)
+    val conditionID = weatherUIState.weather.current.weather[0].id
+    WeatherBackground(
+        conditionID = conditionID,
+        isDay = timeOfDay == TimeOfDay.Day,
+        isDawn = timeOfDay == TimeOfDay.Dawn
     ) {
         WeatherForecastScreen(
             weatherUIState = weatherUIState,
@@ -309,7 +285,7 @@ private fun CurrentWeather(
 ) {
     val highTemp = today.dayTemp.roundToInt().toString()
     val lowTemp = today.nightTemp.roundToInt().toString()
-    val condition = weatherData.weather.first().main
+    val condition = weatherData.weather.first().description
     Row(
         modifier = modifier
             .fillMaxWidth()
