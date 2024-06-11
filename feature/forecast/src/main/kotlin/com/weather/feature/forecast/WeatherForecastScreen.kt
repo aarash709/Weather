@@ -45,13 +45,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.weather.core.design.components.weatherPlaceholder
 import com.weather.core.design.theme.WeatherTheme
-import com.weather.feature.forecast.widgets.DailyWidget
 import com.weather.feature.forecast.components.ForecastTopBar
 import com.weather.feature.forecast.components.WeatherBackground
-import com.weather.feature.forecast.widgets.HourlyWidget
 import com.weather.feature.forecast.components.WindDetails
 import com.weather.feature.forecast.components.hourlydata.DailyStaticData
 import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
+import com.weather.feature.forecast.widgets.DailyWidget
+import com.weather.feature.forecast.widgets.HourlyWidget
 import com.weather.feature.forecast.widgets.HumidityWidget
 import com.weather.feature.forecast.widgets.PressureWidget
 import com.weather.feature.forecast.widgets.RealFeelWidget
@@ -83,35 +83,13 @@ fun WeatherForecastRoute(
     val weatherUIState by viewModel
         .weatherUIState.collectAsStateWithLifecycle()
     val syncing by viewModel.isSyncing.collectAsStateWithLifecycle()
-    val backgroundBrush = viewModel.timeOfDay.collectAsStateWithLifecycle()
-
-    val dayColors = Brush.verticalGradient(
-        listOf(
-            Color(0xFF1F4DCC),
-            Color(0xFF4D6199),
-        )
-    )
-    val nightColors = Brush.verticalGradient(
-        listOf(
-            Color(0xFF071333),
-            Color(0xFF0F2666),
-        )
-    )
-    val dawnColors = Brush.verticalGradient(
-        listOf(
-            Color(0xFF133080),
-            Color(0xFFCC471B),
-        )
-    )
-    //this should be calculated based on time of current and weather condition.
-    //darker color for nights
-    val dynamicBackground = when (backgroundBrush.value) {
-        TimeOfDay.Day -> dayColors
-        TimeOfDay.Night -> nightColors
-        TimeOfDay.Dawn -> dawnColors
-    }
+    val timeOfDay by viewModel.timeOfDay.collectAsStateWithLifecycle()
     val conditionID = weatherUIState.weather.current.weather[0].id
-    WeatherBackground(conditionID = conditionID) {
+    WeatherBackground(
+        conditionID = conditionID,
+        isDay = timeOfDay == TimeOfDay.Day,
+        isDawn = timeOfDay == TimeOfDay.Dawn
+    ) {
         WeatherForecastScreen(
             weatherUIState = weatherUIState,
             isSyncing = syncing,

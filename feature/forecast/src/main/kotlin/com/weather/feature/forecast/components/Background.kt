@@ -33,6 +33,8 @@ import com.weather.feature.forecast.R
 fun WeatherBackground(
     modifier: Modifier = Modifier,
     conditionID: Int,
+    isDay: Boolean,
+    isDawn: Boolean,
     content: @Composable () -> Unit,
 ) {
     val clearDay = painterResource(id = R.drawable.day_clear)
@@ -49,12 +51,18 @@ fun WeatherBackground(
     LaunchedEffect(key1 = conditionID) {
         //more details -> https://openweathermap.org/weather-conditions#Weather-Condition-Codes-2
         when (conditionID) {
-            800 -> condition = 1 // clear day
+            800 -> {
+                condition =
+                    if (isDay) {
+                        if (isDawn) 8
+                        else 1
+                    } else 7
+            }  // clear day or night or dawn
             in 200..232 -> condition = 2 //Thunderstorm
             in 300..321 -> condition = 3 //Drizzle
             in 500..531 -> condition = 3 //Rain
             in 600..622 -> condition = 4 //Snow
-            in 701..787-> condition = 5 //Atmosphere(only fog is shown. will add more)
+            in 701..787 -> condition = 5 //Atmosphere(only fog is shown. will add more)
             in 801..804 -> condition = 6 //clouds
         }
     }
@@ -92,13 +100,27 @@ fun WeatherBackground(
                     contentScale = ContentScale.Crop,
                     contentDescription = "image of clouds"
                 )
+
                 5 -> Image(
                     painter = fog,
                     contentScale = ContentScale.Crop,
                     contentDescription = "image of clouds"
                 )
+
                 6 -> Image(
                     painter = clouds,
+                    contentScale = ContentScale.Crop,
+                    contentDescription = "image of clouds"
+                )
+
+                7 -> Image(
+                    painter = clearNightSkyWithStars,
+                    contentScale = ContentScale.Crop,
+                    contentDescription = "image of clouds"
+                )
+
+                8 -> Image(
+                    painter = clearNightSkyWithStars,
                     contentScale = ContentScale.Crop,
                     contentDescription = "image of clouds"
                 )
@@ -112,7 +134,7 @@ fun WeatherBackground(
 @Composable
 private fun PreviewImage() {
     WeatherTheme {
-        WeatherBackground(conditionID = 804) {
+        WeatherBackground(conditionID = 804, isDay = false, isDawn = false) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
