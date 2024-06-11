@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,13 +26,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.experiment.weather.core.common.R.*
 import com.weather.core.design.theme.WeatherTheme
+import com.weather.feature.forecast.R
 import com.weather.feature.forecast.components.HourlyTemperatureGraph
 import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
 import com.weather.model.Hourly
@@ -48,6 +54,7 @@ internal fun HourlyWidget(
         shape = RoundedCornerShape(16.dp),
         color = surfaceColor,
     ) {
+        val paleOnSurfaceColor = LocalContentColor.current.copy(alpha = 0.6f)
         Column(modifier = Modifier.padding(vertical = 16.dp)) {
             Row(
                 modifier = Modifier
@@ -59,25 +66,26 @@ internal fun HourlyWidget(
                     modifier = Modifier
                         .clip(CircleShape)
                         .size(15.dp)
-                        .background(Color.White.copy(alpha = 0.5f)),
+                        .background(paleOnSurfaceColor),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.AccessTime,
                         modifier = Modifier.padding(3.dp),
-                        tint = Color.Blue.copy(alpha = 0.4f),
+                        tint = paleOnSurfaceColor,
                         contentDescription = null
                     )
                 }
                 Text(
-                    text = "Hourly forecast",
+                    text = stringResource(id = string.hourly_forecast),
                     modifier = Modifier,
                     fontSize = 14.sp,
-                    color = Color.White.copy(alpha = 0.5f)
+                    color = paleOnSurfaceColor
                 )
             }
             HourlyGraphLayout(
                 modifier = Modifier
+                    .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
                     .horizontalScroll(rememberScrollState()),
                 itemCount = hourly.size,
                 graphHeight = 50.dp,
@@ -101,19 +109,18 @@ internal fun HourlyWidget(
                             Text(
                                 text = hourly[it].sunriseSunset,
                                 fontSize = 12.sp,
-                                color = Color.White
                             )
                         } else {
                             Text(
                                 text = "$windSpeed$speedUnit",
                                 fontSize = 12.sp,
-                                color = Color.White.copy(alpha = 0.5f)
+                                color = paleOnSurfaceColor
                             )
                         }
                         Text(
                             text = time,
                             fontSize = 12.sp,
-                            color = Color.White.copy(alpha = 0.5f)
+                            color = paleOnSurfaceColor
                         )
                     }
                 })

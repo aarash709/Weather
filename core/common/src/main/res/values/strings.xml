@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<!--    forecast strings-->
+    <string name="wind_from">Wind from</string>
+    <string name="visibility">Visibility</string>
+    <string name="today">Today</string>
+    <string name="uv_index">UV Index</string>
+    <string name="sunrise">Sunrise</string>
+    <string name="temperature">Temperature</string>
+    <string name="humidity">Humidity</string>
+    <string name="pressure">Pressure</string>
+    <string name="pressure_symbol">mbar</string>
+    <string name="wind_direction">Wind Direction</string>
+    <string name="five_day_forecast">5-Day forecast</string>
+    <string name="more_details">More details</string>
+    <string name="hourly_forecast">Hourly forecast</string>
+    <string-array name="uv_intensity">
+        <item>Low</item>
+        <item>Moderate</item>
+        <item>High</item>
+        <item>Very High</item>
+        <item>Extreme</item>
+    </string-array>
+    <string-array name="wind_directions">
+        <item>North</item>
+        <item>Northeast</item>
+        <item>East</item>
+        <item>Southeast</item>
+        <item>South</item>
+        <item>Southwest</item>
+        <item>West</item>
+        <item>Northwest</item>
+        <item>Unknown</item>
+    </string-array>
+<!--    manage locations strings -->
+    <string name="search_and_add_a_location">Search and add a location</string>
+    <string name="search">Search</string>
+    <string name="real_feel">Real Feel</string>
+<!--  settings strings  -->
+    <string name="celsius_symbol">°C</string>
+    <string name="fahrenheit_symbol">°F</string>
+    <string name="kilometer_per_hour">Kilometer per hour</string>
+    <string name="meters_per_second">Meters per second</string>
+    <string name="miles_per_hour">Miles per hour</string>
+    <string name="kilometer_per_hour_symbol">km/h</string>
+    <string name="meters_per_second_symbol">m/s</string>
+    <string name="miles_per_hour_symbol">mph</string>
+    <string name="settings">Settings</string>
+    <string name="units">Units</string>
+    <string name="Temperature">Temperature</string>
+    <string name="wind_speed">Wind Speed</string>
+
+    <string name="about">About</string>
+
+    <string name="about_description">A work in progress 🚧 Weather sample app.</string>
+    <string name="about_data_source">Weather Data from Openweathermap.org</string>
+<!--  search strings  -->
+    <string name="popular_cities">"Popular Cities"</string>
+    <string-array name="popular_cities">
+        <item>Tehran</item>
+        <item>Beijing</item>
+        <item>Hong Kong</item>
+        <item>Rome</item>
+        <item>Shang Hai</item>
+        <item>Moscow</item>
+        <item>Los Angeles</item>
+        <item>Chicago</item>
+        <item>Bangkok</item>
+        <item>Seoul</item>
+        <item>Kuala Lumpur</item>
+        <item>New York</item>
+        <item>Munich</item>
+        <item>Boston</item>
+        <item>Singapore</item>
+        <item>Shiraz</item>
+        <item>Berlin</item>
+    </string-array>
+</resources>

@@ -50,7 +50,7 @@ internal fun ForecastTopBar(
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO)
 @Composable
-private fun Topbar() {
+private fun TopBar() {
     WeatherTheme {
         ForecastTopBar(
             onNavigateToManageLocations = { },

@@ -26,6 +26,7 @@ dependencies {
     implementation(project(":core:repository"))
     implementation(project(":core:design"))
     implementation(project(":core:model"))
+    implementation(project(":core:common"))
     implementation(project(":sync:work"))
 
     implementation(libs.androidx.navigationCompose)

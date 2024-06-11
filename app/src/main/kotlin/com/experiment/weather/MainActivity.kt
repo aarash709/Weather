@@ -20,6 +20,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -28,13 +29,16 @@ import timber.log.Timber
 class MainActivity : ComponentActivity() {
 
     private val mainViewModel: MainViewModel by viewModels()
-    private var hasInternet by mutableStateOf(false)
-    private var isDatabaseEmpty by mutableStateOf(false)
 
     @FlowPreview
     @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        var hasInternet by mutableStateOf(false)
+        var isDatabaseEmpty by mutableStateOf(true)
+        var isDataLoaded by mutableStateOf(false)
+
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 mainViewModel.hasInternet.collect {
@@ -45,15 +49,30 @@ class MainActivity : ComponentActivity() {
         }
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                mainViewModel.dataBaseIsEmpty.collect {
+                mainViewModel.isDataLoaded.collect {
+                    Timber.e("dataloaded:$it")
+                    isDataLoaded = it
+                }
+
+            }
+        }
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                mainViewModel.dataBaseIsEmpty.onEach { isDatabaseEmpty = it }.collect {
                     Timber.e("database is empty?:$it")
-                    isDatabaseEmpty = it
+
                 }
             }
         }
-        installSplashScreen()
-        enableEdgeToEdge()
 
+        val splashScreen = installSplashScreen()
+
+        //keep splash screen on-screen until we have loaded our data and
+        splashScreen.setKeepOnScreenCondition {
+            if (!isDatabaseEmpty) !isDataLoaded else false
+        }
+
+        enableEdgeToEdge()
         setContent {
             val isDarkTheme = isSystemInDarkTheme()
             LaunchedEffect(isDarkTheme) {
@@ -71,7 +90,6 @@ class MainActivity : ComponentActivity() {
                 )
             }
             WeatherApp(
-//                hasInternet = hasInternet,
                 isDatabaseEmpty = isDatabaseEmpty
             )
         }

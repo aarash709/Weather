@@ -21,10 +21,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.weather.model.TemperatureUnits
 import com.weather.model.WindSpeedUnits
+import com.experiment.weather.core.common.R
 
 @Composable
 fun SettingGroup(
@@ -38,6 +40,7 @@ fun SettingGroup(
     ) {
         Text(
             text = groupName,
+            modifier = Modifier.padding(horizontal = 16.dp),
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = .75f),
             fontSize = 14.sp
         )
@@ -57,8 +60,7 @@ fun TemperatureSection(
     SettingItem(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { expanded = true }
-            .padding(vertical = 8.dp),
+            .clickable { expanded = true },
     ) {
         Row(
             modifier = Modifier
@@ -91,7 +93,6 @@ fun WindSpeedSection(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { expanded = true }
-            .padding(vertical = 8.dp)
     ) {
         Text(text = title, color = MaterialTheme.colorScheme.onBackground)
         WindSpeedMenu(
@@ -124,21 +125,21 @@ private fun WindSpeedMenu(
             }
         ) {
             DialogItem(
-                itemName = "km/h",
+                itemName = stringResource(id = R.string.kilometer_per_hour_symbol),
                 onClick = {
                     setWindSpeed(WindSpeedUnits.KM)
                     setExpanded(false)
                 }
             )
             DialogItem(
-                itemName = "m/s",
+                itemName = stringResource(id = R.string.meters_per_second_symbol),
                 onClick = {
                     setWindSpeed(WindSpeedUnits.MS)
                     setExpanded(false)
                 }
             )
             DialogItem(
-                itemName = "mph",
+                itemName = stringResource(id = R.string.miles_per_hour_symbol),
                 onClick = {
                     setWindSpeed(WindSpeedUnits.MPH)
                     setExpanded(false)
@@ -203,7 +204,8 @@ fun SettingItem(
     content: @Composable () -> Unit,
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier
+            .padding(vertical = 8.dp, horizontal = 16.dp),
         horizontalArrangement = horizontalArrangement,
         verticalAlignment = verticalAlignment
     ) {

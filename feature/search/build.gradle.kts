@@ -25,12 +25,15 @@ dependencies {
     implementation(project(":core:repository"))
     implementation(project(":core:design"))
     implementation(project(":core:model"))
+    implementation(project(":core:common"))
     implementation(project(":sync:work"))
 
 
     implementation(libs.androidx.navigationCompose)
 
     implementation(libs.accompanist.flowLayout)
+
+    implementation(libs.coilCompose)
 
     implementation(libs.androidx.lifecycleRuntimeKtx)
     implementation(libs.androidx.lifecycleComposeRuntime)

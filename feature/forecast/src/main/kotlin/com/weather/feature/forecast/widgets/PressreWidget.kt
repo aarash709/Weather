@@ -1,6 +1,7 @@
 package com.weather.feature.forecast.widgets
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
@@ -8,33 +9,51 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDownward
-import androidx.compose.material3.Text
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.center
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.draw
+import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import arrow.optics.copy
+import com.experiment.weather.core.common.R.string
 import com.weather.core.design.components.WeatherSquareWidget
 import com.weather.core.design.theme.WeatherTheme
 import kotlin.math.cos
 import kotlin.math.sin
 
 @Composable
-fun PressureWidget(modifier: Modifier = Modifier, pressure: Int) {
+fun PressureWidget(modifier: Modifier = Modifier, pressure: Int, surfaceColor: Color) {
     WeatherSquareWidget(
         modifier = modifier,
-        icon = Icons.Outlined.ArrowDownward,
-        title = "Pressure"
+        title = stringResource(id = string.pressure),
+        surfaceColor = surfaceColor,
+        infoText = "$pressure"
+
     ) {
-        PressureGraph(pressure = pressure)
-        Text(text = "$pressure\n mb", fontSize = 24.sp, textAlign = TextAlign.Center)
+        PressureGraph(
+            pressure = pressure,
+            pressureUnit = stringResource(id = string.pressure_symbol)
+        )
     }
 }
 
@@ -42,16 +61,24 @@ fun PressureWidget(modifier: Modifier = Modifier, pressure: Int) {
 private fun PressureGraph(
     modifier: Modifier = Modifier,
     pressure: Int,
+    pressureUnit: String,
     minPressure: Int = 870,
     maxPressure: Int = 1080,
 ) {
+    val textMeasurer = rememberTextMeasurer()
+    val painter = rememberVectorPainter(image = Icons.Outlined.ArrowDownward)
+    val paleOnSurfaceColor = LocalContentColor.current.copy(alpha = 0.6f)
     Spacer(
         modifier = modifier
+            .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+            .padding(12.dp)
             .aspectRatio(1f)
-            .padding(16.dp)
             .drawWithCache {
+                val width = size.width
+                val height = size.height
                 val halfWidth = size.center.x
-                val archThickness = 7.dp.toPx()
+                val archThickness = (width / 12f)
+                val indicatorThickness = (width / 30f)
                 val range = maxPressure
                     .minus(minPressure)
                     .toFloat()
@@ -80,10 +107,10 @@ private fun PressureGraph(
                     .plus(halfWidth)
                     .toFloat()
 
-                val color = Color.Blue.copy(green = 0.5f)
+                val blueColor = Color.Blue.copy(green = 0.6f)
                 onDrawBehind {
                     drawArc(
-                        color = color,
+                        color = blueColor,
                         startAngle = 135f,
                         sweepAngle = 270f,
                         useCenter = false,
@@ -94,17 +121,46 @@ private fun PressureGraph(
                         color = Color.Black,
                         start = Offset(startLinesX, startLinesY),
                         end = Offset(endLinesX, endLinesY),
-                        strokeWidth = 30f,
+                        strokeWidth = indicatorThickness * 3f,
                         cap = StrokeCap.Round,
+                        blendMode = BlendMode.Clear
                     )
                     drawLine(
-                        color = color.copy(green = 0.4f),
+                        color = blueColor,
                         start = Offset(startLinesX, startLinesY),
                         end = Offset(endLinesX, endLinesY),
-                        strokeWidth = 15f,
+                        strokeWidth = indicatorThickness,
                         cap = StrokeCap.Round,
                     )
+                    val textLayoutResult = textMeasurer.measure(
+                        text = pressureUnit,
+                        maxLines = 1,
+                        style = TextStyle(
+                            fontSize = (size.width * 0.16f).toSp(),
+                            textAlign = TextAlign.Center
+                        )
+                    )
+                    drawText(
+                        textLayoutResult,
+                        color = paleOnSurfaceColor,
+                        topLeft = Offset(
+                            x = (width / 2).minus(textLayoutResult.size.width.div(2)),
+                            y = (height / 1.2f).minus(textLayoutResult.size.height.div(2))
 
+                        ),
+                    )
+                    val size = Size(width / 3, height / 3)
+                    translate(
+                        left = (width / 2) - size.width / 2,
+                        top = (height / 2) - size.height / 2
+                    ) {
+                        with(painter) {
+                            draw(
+                                size = Size(width / 3, height / 3),
+                                colorFilter = ColorFilter.tint(blueColor)
+                            )
+                        }
+                    }
                 }
             }
     )
@@ -115,9 +171,13 @@ private fun PressureGraph(
 @Composable
 private fun PressurePreview() {
     WeatherTheme {
-        FlowRow(Modifier.background(Color.Blue.copy(green = 0.35f))) {
-            PressureWidget(Modifier.weight(1f), pressure = 890)
-            PressureWidget(Modifier.weight(1f), pressure = 1080)
+        val color = MaterialTheme.colorScheme.background
+        FlowRow(
+            Modifier.background(Color.Blue.copy(green = 0.35f)),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            PressureWidget(Modifier.weight(1f), pressure = 890, surfaceColor = color)
+            PressureWidget(Modifier.weight(1f), pressure = 1080, surfaceColor = color)
         }
     }
 }

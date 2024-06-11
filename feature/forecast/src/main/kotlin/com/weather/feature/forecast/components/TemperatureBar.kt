@@ -1,16 +1,24 @@
 package com.weather.feature.forecast.components
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import timber.log.Timber
@@ -45,8 +53,18 @@ internal fun tempColor(temp: Int): Color {
 
 @Composable
 internal fun TempBar(tempData: TempData) {
+    val indicatorColor = LocalContentColor.current
     Spacer(modifier = Modifier
-        .size(width = 80.dp, height = 5.dp)
+        .clip(RoundedCornerShape(16.dp))
+        .background(Color.Black.copy(alpha = 0.2f))
+        .size(width = 80.dp, height = 6.dp)
+        .graphicsLayer {
+            // should be set to `CompositingStrategy.Offscreen` when
+            // using blend modes for transparency in indicators
+            //otherwise transparency with BlendMode.Clear will render black color
+//            compositingStrategy = CompositingStrategy.Offscreen
+            compositingStrategy = CompositingStrategy.Offscreen
+        }
         .drawWithCache {
             onDrawBehind {
                 val gradient = Brush.horizontalGradient(
@@ -57,7 +75,7 @@ internal fun TempBar(tempData: TempData) {
                 )
                 val width = size.width
                 val height = size.height
-                val backgroundColor = Color.Black.copy(alpha = 0.2f)
+                val indicatorSize = height *.7f
                 val tempRange = tempData.maxTemp - tempData.minTemp
                 val stepsInPixels = width / tempRange
                 val leftIndent = (tempData.currentLow - tempData.minTemp).times(stepsInPixels)
@@ -68,14 +86,6 @@ internal fun TempBar(tempData: TempData) {
                     y = height / 2
                 )
                 val strokeWidth = 5.dp.toPx()
-                // background
-                drawLine(
-                    color = backgroundColor,
-                    start = Offset(0f, height / 2),
-                    end = Offset(width, height / 2),
-                    cap = StrokeCap.Round,
-                    strokeWidth = strokeWidth
-                )
                 //temp bar
                 drawLine(
                     brush = gradient,
@@ -87,8 +97,14 @@ internal fun TempBar(tempData: TempData) {
                 //current temp indicator on first item
                 if (tempData.shouldShowCurrentTemp) {
                     drawCircle(
-                        color = Color.White,
-                        radius = 4.dp.toPx(),
+                        color = Color.Black,
+                        radius = indicatorSize,
+                        center = currentTempCirclePosition,
+                        blendMode = BlendMode.Clear
+                    )
+                    drawCircle(
+                        color = indicatorColor,
+                        radius = indicatorSize * 0.6f,
                         center = currentTempCirclePosition,
                     )
                 }

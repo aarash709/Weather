@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -46,6 +47,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -53,9 +57,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.experiment.weather.core.common.R
 import com.weather.core.design.components.weatherPlaceholder
 import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
+import com.weather.model.DailyPreview
 import com.weather.model.geocode.GeoSearchItem
 import com.weather.model.geocode.SavableSearchState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -71,11 +77,18 @@ fun SearchRoute(
 ) {
     //stateful
     val searchUIState by searchViewModel.searchUIState.collectAsStateWithLifecycle()
+    val weatherPreview by searchViewModel.weatherPreview.collectAsStateWithLifecycle()
+    val context = LocalContext.current
     var inputText by remember {
         mutableStateOf(TextFieldValue(""))
     }
     LaunchedEffect(key1 = inputText) {
         searchViewModel.setSearchQuery(cityName = inputText.text.trim())
+    }
+    LaunchedEffect(key1 = searchUIState) {
+        searchUIState.geoSearchItems[0].name?.let {
+            searchViewModel.getFiveDayPreview(searchUIState.geoSearchItems[0])
+        }
     }
     Box(
         modifier = Modifier
@@ -93,11 +106,12 @@ fun SearchRoute(
             SearchScreenContent(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 searchUIState = searchUIState,
+                weatherPreview = weatherPreview,
                 shouldRequestFocus = shouldRequestFocus,
                 searchInputText = inputText,
-                popularCities = cityList,
-                popularCityIndex = {
-                    val value = cityList[it]
+                popularCities = stringArrayResource(id = R.array.popular_cities).toList(),
+                popularCityIndex = { cityIndex ->
+                    val value = context.resources.getStringArray(R.array.popular_cities)[cityIndex]
                     inputText = TextFieldValue(
                         text = value,
                         selection = TextRange(value.length)
@@ -108,12 +122,11 @@ fun SearchRoute(
                 },
                 onClearSearch = {
                     inputText = TextFieldValue(text = "")
-                },
-                selectedSearchItem = { searchItem ->
-                    searchViewModel.syncWeather(searchItem)
-                    onSelectSearchItem()
                 }
-            )
+            ) { searchItem ->
+                searchViewModel.syncWeather(searchItem)
+                onSelectSearchItem()
+            }
         }
     }
 }
@@ -122,6 +135,7 @@ fun SearchRoute(
 fun SearchScreenContent(
     modifier: Modifier = Modifier,
     searchUIState: SavableSearchState,
+    weatherPreview: List<DailyPreview>,
     shouldRequestFocus: Boolean = true,
     searchInputText: TextFieldValue,
     popularCities: List<String>,
@@ -152,7 +166,7 @@ fun SearchScreenContent(
             Column {
                 if (isTextSearchEmpty) {
                     Text(
-                        text = "Popular Cities",
+                        text = stringResource(id = R.string.popular_cities),
                         modifier = Modifier.padding(top = 24.dp),
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                         fontSize = 14.sp
@@ -168,6 +182,7 @@ fun SearchScreenContent(
                     SearchList(
                         searchList = searchUIState.geoSearchItems,
                         showPlaceholder = searchUIState.showPlaceholder,
+                        weatherPreview = weatherPreview,
                         onSearchItemSelected = { searchItem ->
                             selectedSearchItem(searchItem)
                             //fetch and store weather based on selection
@@ -176,8 +191,6 @@ fun SearchScreenContent(
                 }
             }
         }
-
-
     }
 }
 
@@ -258,12 +271,25 @@ private fun TopSearchBar(
 @Composable
 private fun SearchList(
     searchList: List<GeoSearchItem>,
+    weatherPreview: List<DailyPreview>?,
     showPlaceholder: Boolean,
     onSearchItemSelected: (GeoSearchItem) -> Unit,
 ) {
     //max 5 item per search list
     LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        items(searchList) { searchItemItem ->
+        itemsIndexed(searchList) { index, searchItemItem ->
+            if(!weatherPreview.isNullOrEmpty()) {
+                if (index == 1) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        FiveDaySearchPreview(weatherPreview = weatherPreview)
+                        HorizontalDivider(
+                            modifier = Modifier
+                                .padding(bottom = 16.dp)
+                                .fillMaxWidth(0.9f)
+                        )
+                    }
+                }
+            }
             SearchItem(
                 modifier = Modifier
                     .bouncyTapEffect()
@@ -286,7 +312,7 @@ private fun SearchItem(
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.background
         ),
     ) {
         Row(
@@ -373,9 +399,10 @@ private fun SearchPreview() {
         Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
             SearchScreenContent(
                 searchUIState = SavableSearchState(GeoSearchItem.empty, true),
+                weatherPreview = dailyDummyData,
                 searchInputText = inputText,
                 shouldRequestFocus = false,
-                popularCities = cityList,
+                popularCities = popularCities,
                 popularCityIndex = {},
                 onClearSearch = {},
                 onSearchTextChange = { inputText = it },
@@ -403,7 +430,7 @@ private fun TopSearchBarPreview() {
 private fun PopularCityPreview() {
     WeatherTheme {
         PopularCities(
-            popularCities = cityList,
+            popularCities = popularCities,
             popularCityIndex = {}
         )
     }
@@ -425,12 +452,11 @@ private fun SearchCityWeatherPreview() {
     }
 }
 
-val cityList = listOf(
+val popularCities = listOf(
     "Tehran",
     "Beijing",
     "Hong Kong",
     "Rome",
-    "Shang Hai",
     "Shang Hai",
     "Moscow",
     "Los Angeles",
@@ -446,10 +472,10 @@ val cityList = listOf(
     "Berlin",
 )
 
-internal val items = listOf(
-    GeoSearchItem("Iran", name = "Tehran"),
-    GeoSearchItem("Iran2", name = "Tehran2"),
-    GeoSearchItem("Iran3", name = "Tehran3"),
-    GeoSearchItem("Iran4", name = "Tehran4"),
-    GeoSearchItem("Iran5", name = "Tehran5"),
-)
+//internal val items = listOf(
+//    GeoSearchItem("Iran", name = "Tehran"),
+//    GeoSearchItem("Iran2", name = "Tehran2"),
+//    GeoSearchItem("Iran3", name = "Tehran3"),
+//    GeoSearchItem("Iran4", name = "Tehran4"),
+//    GeoSearchItem("Iran5", name = "Tehran5"),
+//)

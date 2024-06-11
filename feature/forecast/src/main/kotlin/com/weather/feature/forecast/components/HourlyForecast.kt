@@ -17,9 +17,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.experiment.weather.core.common.R
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
 import com.weather.model.Hourly
@@ -39,7 +41,7 @@ internal fun HourlyForecast(
     ) {
         Column {
             Text(
-                text = "Today",
+                text = stringResource(id = R.string.today),
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                 color = LocalContentColor.current.copy(alpha = 0.5f)
             )
