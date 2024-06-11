@@ -47,6 +47,7 @@ import com.weather.core.design.components.weatherPlaceholder
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.feature.forecast.widgets.DailyWidget
 import com.weather.feature.forecast.components.ForecastTopBar
+import com.weather.feature.forecast.components.WeatherBackground
 import com.weather.feature.forecast.widgets.HourlyWidget
 import com.weather.feature.forecast.components.WindDetails
 import com.weather.feature.forecast.components.hourlydata.DailyStaticData
@@ -109,11 +110,8 @@ fun WeatherForecastRoute(
         TimeOfDay.Night -> nightColors
         TimeOfDay.Dawn -> dawnColors
     }
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(dynamicBackground)
-    ) {
+    val conditionID = weatherUIState.weather.current.weather[0].id
+    WeatherBackground(conditionID = conditionID) {
         WeatherForecastScreen(
             weatherUIState = weatherUIState,
             isSyncing = syncing,
@@ -259,7 +257,7 @@ private fun CurrentWeather(
 ) {
     val highTemp = today.dayTemp.roundToInt().toString()
     val lowTemp = today.nightTemp.roundToInt().toString()
-    val condition = weatherData.weather.first().main
+    val condition = weatherData.weather.first().description
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -297,6 +295,7 @@ private fun CurrentWeather(
         }
     }
 }
+
 @ExperimentalMaterialApi
 @Preview(name = "night", showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Preview(name = "day", showBackground = true, uiMode = UI_MODE_NIGHT_NO)

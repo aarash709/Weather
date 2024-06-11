@@ -70,14 +70,10 @@ class MainActivity : ComponentActivity() {
                     }
                 )
             }
-            WeatherBackground(background = {
-                /*TODO draw images and colors along with animations */
-            }) {
-                WeatherApp(
+            WeatherApp(
 //                hasInternet = hasInternet,
-                    isDatabaseEmpty = isDatabaseEmpty
-                )
-            }
+                isDatabaseEmpty = isDatabaseEmpty
+            )
         }
     }
 }
