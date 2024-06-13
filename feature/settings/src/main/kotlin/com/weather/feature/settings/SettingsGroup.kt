@@ -94,9 +94,18 @@ fun WindSpeedSection(
             .fillMaxWidth()
             .clickable { expanded = true }
     ) {
-        Text(text = title, color = MaterialTheme.colorScheme.onBackground)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = title, color = MaterialTheme.colorScheme.onBackground)
+            Text(
+                text = windSpeedUnitName,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+            )
+        }
         WindSpeedMenu(
-            tempUnitName = windSpeedUnitName,
             expanded = expanded,
             setWindSpeed = setWindSpeed,
             setExpanded = { expanded = it })
@@ -106,16 +115,11 @@ fun WindSpeedSection(
 
 @Composable
 private fun WindSpeedMenu(
-    tempUnitName: String,
     expanded: Boolean,
     setWindSpeed: (WindSpeedUnits) -> Unit,
     setExpanded: (Boolean) -> Unit,
 ) {
     Column {
-        Text(
-            text = tempUnitName,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
-        )
         SettingDialog(
             modifier = Modifier
                 .windowInsetsPadding(WindowInsets(left = 100, right = 100)),
