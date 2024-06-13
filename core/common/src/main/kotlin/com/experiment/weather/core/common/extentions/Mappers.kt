@@ -15,7 +15,6 @@ import com.weather.model.currentTemp
 import com.weather.model.daily
 import com.weather.model.dayTemp
 import com.weather.model.dew_point
-import com.weather.model.dt
 import com.weather.model.feelsLike
 import com.weather.model.feels_like
 import com.weather.model.hourly
@@ -51,7 +50,7 @@ fun List<Daily>.convertToUserSettings(temperature: TemperatureUnits): List<Daily
     return map { daily ->
         daily.copy {
             Daily.dew_point transform { dewPoint -> dewPoint.convertToUserTemperature(temperature) }
-            Daily.dt transform { time -> calculateUIDailyTime(time.toLong()) }
+            Daily.time transform { time -> calculateUIDailyTime(time.toLong()) }
             Daily.dayTemp transform { dayTemp -> dayTemp.convertToUserTemperature(temperature) }
             Daily.nightTemp.transform { nightTemp -> nightTemp.convertToUserTemperature(temperature) }
         }

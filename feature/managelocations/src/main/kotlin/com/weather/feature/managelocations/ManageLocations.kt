@@ -122,22 +122,16 @@ fun ManageLocations(
     var locationsList by remember {
         mutableStateOf(emptyList<ManageLocationsData>())
     }
-    var isAllSelected by rememberSaveable {
+    var shouldSelectAll by rememberSaveable {
         mutableStateOf(false)
     }
-    var itemsToDelete by remember {
-        mutableStateOf(listOf<String>())
-    }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    LaunchedEffect(key1 = isAllSelected) {
-        if (isAllSelected) {
+    LaunchedEffect(key1 = shouldSelectAll) {
+        if (shouldSelectAll) {
             selectedCities += locationsList.map { it.locationName }
         } else {
             selectedCities = emptySet()
         }
-    }
-    LaunchedEffect(key1 = selectedCities) {
-        itemsToDelete = selectedCities.toList()
     }
     BackHandler(enabled = isInEditMode) {
         if (isInEditMode)
@@ -151,7 +145,7 @@ fun ManageLocations(
                 selectedCitySize = selectedCities.size,
                 scrollBehavior = scrollBehavior,
                 onBackPressed = { onBackPressed() },
-                onIsAllSelected = { isAllSelected = !isAllSelected },
+                onIsAllSelected = { shouldSelectAll = !shouldSelectAll },
                 onEmptyCitySelection = { selectedCities = emptySet() }
             )
         },
@@ -159,7 +153,7 @@ fun ManageLocations(
             LocationsBottombar(
                 isInEditMode = isInEditMode,
                 selectedCitySize = selectedCities.size,
-                onDeleteItem = { onDeleteItem(itemsToDelete) },
+                onDeleteItem = { onDeleteItem(selectedCities.toList()) },
                 onEmptyCitySelection = { selectedCities = emptySet() },
                 onSetFavoriteItem = {
                     onSetFavoriteItem(selectedCities.first())
@@ -207,8 +201,8 @@ fun ManageLocations(
                                 key = {
                                     it.locationName
                                 }) { locationData ->
-                                val selected by remember {
-                                    derivedStateOf { locationData.locationName in selectedCities }
+                                val selected by remember(selectedCities) {
+                                    mutableStateOf(locationData.locationName in selectedCities )
                                 }
                                 SavedLocationItem(
                                     modifier = Modifier

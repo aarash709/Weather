@@ -132,9 +132,9 @@ fun WeatherForecastScreen(
             )
         })
     val scrollState = rememberScrollState()
-    val scrollProgress by remember {
+    val scrollProgress by remember(scrollState.value) {
         derivedStateOf {
-            (scrollState.value.toFloat() / scrollState.maxValue).times(100).roundToInt()
+            (scrollState.value.toFloat() / scrollState.maxValue.toFloat()).times(100)
         }
     }
     Column(
@@ -161,7 +161,7 @@ fun WeatherForecastScreen(
                     isDayTime = isDayTime,
                     showPlaceholder = weatherUIState.showPlaceHolder,
                     speedUnit = speedUnit,
-                    scrollProgress = scrollProgress
+                    shouldChangeColor = scrollProgress > 10
                 )
             }
         }
@@ -176,7 +176,7 @@ internal fun ConditionAndDetails(
     isDayTime: Boolean,
     showPlaceholder: Boolean,
     speedUnit: String,
-    scrollProgress: Int,
+    shouldChangeColor: Boolean,
 ) {
     val dayTimePrimaryColor = Color.Black.copy(
         alpha = 0.10f
@@ -185,14 +185,14 @@ internal fun ConditionAndDetails(
         alpha = 0.10f
     )
     val primaryWidgetColor by
-        animateColorAsState(
-            targetValue = if (isDayTime) dayTimePrimaryColor else nightTimePrimaryColor,
-            label = "primary widget background color"
-        )
+    animateColorAsState(
+        targetValue = if (isDayTime) dayTimePrimaryColor else nightTimePrimaryColor,
+        label = "primary widget background color"
+    )
     val widgetColor by
     animateColorAsState(
         targetValue =
-        if (scrollProgress >= 10 && isDayTime) ForecastTheme.colorScheme.background
+        if (shouldChangeColor && isDayTime) ForecastTheme.colorScheme.background
         else primaryWidgetColor,
         animationSpec = tween(durationMillis = 200),
         label = "scrolled widget background color"
@@ -213,27 +213,21 @@ internal fun ConditionAndDetails(
             location = weatherData.coordinates.name,
             weatherData = weatherData.current,
             today = weatherData.daily[0],
-            showPlaceholder = showPlaceholder,
+            showPlaceholder = false,
         )
         Spacer(modifier = Modifier.height(65.dp))
         //widgets
         // TODO: Weather alert goes here
         DailyWidget(
             modifier = Modifier
-                .fillMaxWidth()
-                .weatherPlaceholder(
-                    visible = showPlaceholder,
-                ),
-            dailyList = weatherData.daily.map { it.toDailyPreview() },
+                .fillMaxWidth(),
+            dailyList = weatherData.daily,
             currentTemp = weatherData.current.currentTemp.roundToInt(),
             surfaceColor = widgetColor
         )
         HourlyWidget(
             modifier = Modifier
-                .fillMaxWidth()
-                .weatherPlaceholder(
-                    visible = showPlaceholder
-                ),
+                .fillMaxWidth(),
             hourly = weatherData.hourly,
             speedUnit = speedUnit,
             surfaceColor = widgetColor

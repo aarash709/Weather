@@ -1,6 +1,5 @@
 package com.weather.feature.forecast
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.experiment.weather.core.common.extentions.convertToUserSettings
@@ -51,7 +50,7 @@ class ForecastViewModel @Inject constructor(
 //    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-//    private val cityName = savedStateHandle.get<String>("cityName").orEmpty()
+    //    private val cityName = savedStateHandle.get<String>("cityName").orEmpty()
     private val _timeOfDay = MutableStateFlow(TimeOfDay.Day)
     internal val timeOfDay = _timeOfDay
     internal var isSyncing = syncStatus.isSyncing

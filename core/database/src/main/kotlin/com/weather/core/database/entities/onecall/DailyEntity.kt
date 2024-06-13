@@ -5,7 +5,6 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.ForeignKey.Companion.NO_ACTION
-import androidx.room.PrimaryKey
 import com.weather.model.Daily
 
 @Entity(
@@ -52,7 +51,7 @@ data class DailyEntity(
         return Daily(
             clouds = clouds,
             dew_point = dew_point,
-            dt = dt.toString(),
+            time = dt.toString(),
             humidity = humidity,
             moon_phase = moon_phase,
             moonrise = moonrise,
