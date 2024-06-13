@@ -48,7 +48,7 @@ data class Current(
 data class Daily(
     val clouds: Int,
     val dew_point: Double,
-    val dt: String,
+    val time: String,
     val humidity: Int,
     val moon_phase: Double,
     val moonrise: Int,
@@ -73,7 +73,7 @@ data class Daily(
             Daily(
                 clouds = 0,
                 dew_point = 0.0,
-                dt = "",
+                time = "",
                 humidity = 0,
                 moon_phase = 0.0,
                 moonrise = 0,
@@ -100,7 +100,7 @@ data class Daily(
         return DailyPreview(
             tempDay = dayTemp.roundToInt(),
             tempNight = nightTemp.roundToInt(),
-            time = dt,
+            time = time,
             icon = icon,
             condition = main
         )

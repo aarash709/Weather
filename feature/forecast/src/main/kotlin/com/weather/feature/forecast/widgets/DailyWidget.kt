@@ -41,13 +41,13 @@ import com.weather.core.design.theme.WeatherTheme
 import com.weather.feature.forecast.components.TempBar
 import com.weather.feature.forecast.components.TempData
 import com.weather.feature.forecast.components.hourlydata.DailyPreviewStaticData
-import com.weather.model.DailyPreview
+import com.weather.model.Daily
 import kotlin.math.roundToInt
 
 @Composable
 internal fun DailyWidget(
     modifier: Modifier = Modifier,
-    dailyList: List<DailyPreview>,
+    dailyList: List<Daily>,
     currentTemp: Int,
     surfaceColor: Color,
 ) {
@@ -106,14 +106,14 @@ internal fun DailyWidget(
                 }
             }
             val minTemp by remember(dailyList) {
-                mutableIntStateOf(dailyList.minOf { it.tempNight })
+                mutableIntStateOf(dailyList.minOf { it.nightTemp.roundToInt() })
             }
             val maxTemp by remember(dailyList) {
-                mutableIntStateOf(dailyList.maxOf { it.tempDay })
+                mutableIntStateOf(dailyList.maxOf { it.dayTemp.roundToInt() })
             }
             dailyList.forEachIndexed { index, daily ->
-                val currentLow = daily.tempNight
-                val currentHigh = daily.tempDay
+                val currentLow = daily.dayTemp.roundToInt()
+                val currentHigh = daily.nightTemp.roundToInt()
                 DailyItem(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -136,7 +136,7 @@ internal fun DailyWidget(
 }
 
 @Composable
-internal fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview, tempData: TempData) {
+internal fun DailyItem(modifier: Modifier = Modifier, daily: Daily, tempData: TempData) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -159,14 +159,14 @@ internal fun DailyItem(modifier: Modifier = Modifier, daily: DailyPreview, tempD
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "${daily.tempNight.toFloat().roundToInt()}°",
+                text = "${daily.nightTemp.roundToInt()}°",
                 modifier = Modifier.weight(1.0f),
                 textAlign = TextAlign.Start,
                 fontSize = 14.sp,
             )
             TempBar(tempData = tempData)
             Text(
-                text = "${daily.tempDay.toFloat().roundToInt()}°",
+                text = "${daily.dayTemp.roundToInt()}°",
                 modifier = Modifier.weight(1.0f),
                 textAlign = TextAlign.Right,
                 fontSize = 14.sp,

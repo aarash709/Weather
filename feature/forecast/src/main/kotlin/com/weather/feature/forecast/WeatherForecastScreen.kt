@@ -220,20 +220,14 @@ internal fun ConditionAndDetails(
         // TODO: Weather alert goes here
         DailyWidget(
             modifier = Modifier
-                .fillMaxWidth()
-                .weatherPlaceholder(
-                    visible = showPlaceholder,
-                ),
-            dailyList = weatherData.daily.map { it.toDailyPreview() },
+                .fillMaxWidth(),
+            dailyList = weatherData.daily,
             currentTemp = weatherData.current.currentTemp.roundToInt(),
             surfaceColor = widgetColor
         )
         HourlyWidget(
             modifier = Modifier
-                .fillMaxWidth()
-                .weatherPlaceholder(
-                    visible = showPlaceholder
-                ),
+                .fillMaxWidth(),
             hourly = weatherData.hourly,
             speedUnit = speedUnit,
             surfaceColor = widgetColor

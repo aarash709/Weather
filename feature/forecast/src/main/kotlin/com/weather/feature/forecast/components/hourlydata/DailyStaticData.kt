@@ -1,7 +1,6 @@
 package com.weather.feature.forecast.components.hourlydata
 
 import com.weather.model.Daily
-import com.weather.model.DailyPreview
 
 
 internal val DailyStaticData = listOf(
@@ -99,39 +98,119 @@ internal val DailyStaticData = listOf(
     )
 )
 val DailyPreviewStaticData = listOf(
-    DailyPreview(
-        tempDay = 283,
-        tempNight = 275,
+    Daily(
+        dayTemp = 283.0,
+        nightTemp = 275.0,
         time = "Tomorrow",
         icon = "",
-        condition = "Clouds"
+        main = "Clouds",
+        clouds = 0,
+        dew_point = 0.0,
+        humidity = 0,
+        moon_phase = 0.0,
+        moonrise = 0,
+        moonset = 0,
+        pop = 0.0,
+        pressure = 0,
+        sunrise = 0,
+        sunset = 0,
+        uvi = 0.0,
+        id = 0,
+        description = "",
+        wind_deg = 0,
+        wind_gust = 0.0,
+        wind_speed = 0.0,
     ),
-    DailyPreview(
-        tempDay = 280,
-        tempNight = 274,
+    Daily(
+        dayTemp = 280.0,
+        nightTemp = 274.0,
         time = "Wed",
         icon = "",
-        condition = "Snow"
+        main = "Snow",
+        clouds = 0,
+        dew_point = 0.0,
+        humidity = 0,
+        moon_phase = 0.0,
+        moonrise = 0,
+        moonset = 0,
+        pop = 0.0,
+        pressure = 0,
+        sunrise = 0,
+        sunset = 0,
+        uvi = 0.0,
+        id = 0,
+        description = "",
+        wind_deg = 0,
+        wind_gust = 0.0,
+        wind_speed = 0.0
     ),
-    DailyPreview(
-        tempDay = 284,
-        tempNight = 276,
+    Daily(
+        dayTemp = 284.0,
+        nightTemp = 276.0,
         time = "Thur",
         icon = "",
-        condition = "Clouds"
+        main = "Clouds",
+        clouds = 0,
+        dew_point = 0.0,
+        humidity = 0,
+        moon_phase = 0.0,
+        moonrise = 0,
+        moonset = 0,
+        pop = 0.0,
+        pressure = 0,
+        sunrise = 0,
+        sunset = 0,
+        uvi = 0.0,
+        id = 0,
+        description = "",
+        wind_deg = 0,
+        wind_gust = 0.0,
+        wind_speed = 0.0
     ),
-    DailyPreview(
-        tempDay = 278,
-        tempNight = 270,
+    Daily(
+        dayTemp = 278.0,
+        nightTemp = 270.0,
         time = "Friday",
         icon = "",
-        condition = "Rain"
+        main = "Rain",
+        clouds = 0,
+        dew_point = 0.0,
+        humidity = 0,
+        moon_phase = 0.0,
+        moonrise = 0,
+        moonset = 0,
+        pop = 0.0,
+        pressure = 0,
+        sunrise = 0,
+        sunset = 0,
+        uvi = 0.0,
+        id = 0,
+        description = "",
+        wind_deg = 0,
+        wind_gust = 0.0,
+        wind_speed = 0.0
     ),
-    DailyPreview(
-        tempDay = 281,
-        tempNight = 269,
+    Daily(
+        dayTemp = 281.0,
+        nightTemp = 269.0,
         time = "Saturday",
         icon = "",
-        condition = "Snow"
+        main = "Snow",
+        clouds = 0,
+        dew_point = 0.0,
+        humidity = 0,
+        moon_phase = 0.0,
+        moonrise = 0,
+        moonset = 0,
+        pop = 0.0,
+        pressure = 0,
+        sunrise = 0,
+        sunset = 0,
+        uvi = 0.0,
+        id = 0,
+        description = "",
+        wind_deg = 0,
+        wind_gust = 0.0,
+        wind_speed = 0.0
     )
 )
