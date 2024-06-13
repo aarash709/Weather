@@ -4,13 +4,13 @@ Work in progress [🚧] sample android weather app written entirely in Kotlin an
 
 ## Roadmap
 
-* [ ] Add animated shader for weather conditions(similar to hyperOS and iOS)
-* [ ] Implement better design inspired by hyperOS and iOS weather app
-* [ ] Data Sync strategy
+* [x] Implement better design similar to hyperOS and iOS weather apps
 * [x] Remove search bottom sheet
-* [x] Add background to Forecast page
+* [x] Add static weather condition background to Forecast page
 * [x] Test module
 * [x] Add testing for core layer and feature modules
+#### backlog
+* [ ] Add animated weather condition shader effects 
 
 ## Architecture
 
