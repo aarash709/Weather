@@ -6,6 +6,7 @@
     <string name="today">Today</string>
     <string name="uv_index">UV Index</string>
     <string name="sunrise">Sunrise</string>
+    <string name="sunset">Sunset</string>
     <string name="temperature">Temperature</string>
     <string name="humidity">Humidity</string>
     <string name="pressure">Pressure</string>

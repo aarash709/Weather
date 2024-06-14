@@ -27,8 +27,12 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.experiment.weather.core.common.R.string
 import com.weather.core.design.components.WeatherSquareWidget
 import com.weather.core.design.theme.WeatherTheme
@@ -36,22 +40,35 @@ import timber.log.Timber
 
 @Composable
 fun SunWidget(
-    sunrise: Int,
-    sunset: Int,
-    currentTime: Int,
+    formattedSunrise: String,
+    formattedSunset: String,
+    sunriseSeconds: Int,
+    sunsetSeconds: Int,
+    currentTimeSeconds: Int,
     modifier: Modifier = Modifier,
     surfaceColor: Color,
 ) {
+    val title = if (currentTimeSeconds > sunsetSeconds)
+        stringResource(id = string.sunrise)
+    else stringResource(
+        id = string.sunset
+    )
+    val infoText = if (currentTimeSeconds > sunsetSeconds)
+        formattedSunrise
+    else formattedSunset
     WeatherSquareWidget(
         modifier = modifier,
-        title = stringResource(id = string.sunrise),
+        title = title,
+        infoText = infoText,
         surfaceColor = surfaceColor
     ) {
         SunGraph(
             modifier = Modifier,
-            sunrise = sunrise,
-            sunset = sunset,
-            currentTime = currentTime
+            formattedSunrise = formattedSunrise,
+            formattedSunset = formattedSunset,
+            sunrise = sunriseSeconds,
+            sunset = sunsetSeconds,
+            currentTime = currentTimeSeconds
         )
     }
 }
@@ -59,11 +76,14 @@ fun SunWidget(
 @Composable
 private fun SunGraph(
     modifier: Modifier = Modifier,
+    formattedSunrise: String = "00:00",
+    formattedSunset: String = "00:00",
     sunrise: Int,
     sunset: Int,
     currentTime: Int,
 ) {
     val paleOnSurfaceColor = LocalContentColor.current.copy(alpha = 0.6f)
+    val textMeasure = rememberTextMeasurer()
     Spacer(modifier = modifier
         .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
         .aspectRatio(1f)
@@ -146,6 +166,23 @@ private fun SunGraph(
                     position = pathPosition,
                     shouldShowBorder = true
                 )
+                val sunriseText =
+                    textMeasure.measure(formattedSunrise, style = TextStyle(fontSize = 10.sp))
+                val sunsetText =
+                    textMeasure.measure(formattedSunset, style = TextStyle(fontSize = 10.sp))
+                drawText(
+                    textLayoutResult = sunriseText,
+                    color = paleOnSurfaceColor,
+                    topLeft = Offset(x = -width * 0.15f, height + sunriseText.size.height / 2),
+                )
+                drawText(
+                    textLayoutResult = sunsetText,
+                    color = paleOnSurfaceColor,
+                    topLeft = Offset(
+                        x = width * 1.15f - sunsetText.size.width,
+                        y = height + sunsetText.size.height / 2
+                    )
+                )
             }
         })
 }
@@ -225,26 +262,30 @@ private fun DrawScope.drawCircleIndicator(
 //}
 
 @OptIn(ExperimentalLayoutApi::class)
-@Preview
+@PreviewLightDark
 @Composable
 private fun UVPreview() {
-    val position = 80
+    val position = 50
     WeatherTheme {
         val color = MaterialTheme.colorScheme.background
         FlowRow(maxItemsInEachRow = 2, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             SunWidget(
                 modifier = Modifier.weight(1f),
-                sunrise = 0,
-                sunset = 100,
-                currentTime = position,
-                surfaceColor = color
+                sunriseSeconds = 0,
+                sunsetSeconds = 100,
+                currentTimeSeconds = position,
+                surfaceColor = color,
+                formattedSunrise = "06:10",
+                formattedSunset = "18:30"
             )
             SunWidget(
                 modifier = Modifier.weight(1f),
-                sunrise = 20,
-                sunset = 90,
-                currentTime = position,
-                surfaceColor = color
+                sunriseSeconds = 0,
+                sunsetSeconds = 100,
+                currentTimeSeconds = position,
+                surfaceColor = color,
+                formattedSunrise = "06:10",
+                formattedSunset = "18:30"
             )
         }
     }

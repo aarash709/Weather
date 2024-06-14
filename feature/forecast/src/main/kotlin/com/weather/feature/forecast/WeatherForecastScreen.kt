@@ -71,6 +71,9 @@ import com.weather.model.WeatherData
 import com.weather.model.WindSpeedUnits
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlin.math.roundToInt
 
 @ExperimentalCoroutinesApi
@@ -241,9 +244,17 @@ internal fun ConditionAndDetails(
         )
         SunWidget(
             modifier = Modifier.weight(1f),
-            sunrise = weatherData.current.sunrise,
-            sunset = weatherData.current.sunset,
-            currentTime = weatherData.current.dt,
+            formattedSunrise = SimpleDateFormat(
+                "HH:mm",
+                Locale.getDefault()
+            ).format(Date(weatherData.current.sunrise.toLong() * 1000)),
+            formattedSunset = SimpleDateFormat(
+                "HH:mm",
+                Locale.getDefault()
+            ).format(Date(weatherData.current.sunset.toLong() * 1000)),
+            sunriseSeconds = weatherData.current.sunrise,
+            sunsetSeconds = weatherData.current.sunset,
+            currentTimeSeconds = weatherData.current.dt,
             surfaceColor = widgetColor
         )
         RealFeelWidget(
