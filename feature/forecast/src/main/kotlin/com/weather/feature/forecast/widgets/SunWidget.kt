@@ -1,25 +1,21 @@
 package com.weather.feature.forecast.widgets
 
-import android.graphics.Matrix
 import android.graphics.PathMeasure
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Sailing
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.ClipOp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.Path
@@ -28,16 +24,15 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.asAndroidPath
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.setFrom
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.experiment.weather.core.common.R.string
 import com.weather.core.design.components.WeatherSquareWidget
 import com.weather.core.design.theme.WeatherTheme
+import timber.log.Timber
 
 @Composable
 fun SunWidget(
@@ -79,7 +74,8 @@ private fun SunGraph(
             val circleSize = 5.dp.toPx()
 
             val sunsetColor = Color(0xFFf4a169)
-            val darkBlue = Color(5, 20, 50)
+            val lightPurple = Color(0xFF7C78E9)
+            val darkPurple = Color(0xFF544FE6)
             val daylightColor = Color(0xFFfaca6b)
 
             val timeRange = sunset.minus(sunrise)
@@ -95,13 +91,19 @@ private fun SunGraph(
                 val measure = PathMeasure(path.asAndroidPath(), false)
                 val length = measure.length
                 measure.getPosTan(length * progress, pathPosition, pathTangent)
-                val brush = Brush.verticalGradient(
+                Timber.e("path lenght:${progress}")
+                val dayBrush = Brush.verticalGradient(
                     0.0f to daylightColor,
                     0.65f to daylightColor,
-                    0.90f to sunsetColor,
-                    1.0f to darkBlue,
+                    1.0f to sunsetColor,
                     startY = -height * 0.3f, // magic number
-                    endY = height - 10f
+                    endY = height / 1.4f
+                )
+                val nightBrush = Brush.verticalGradient(
+                    0.0f to lightPurple,
+                    1.0f to darkPurple,
+                    startY = height / 1.4f, // magic number
+                    endY = height * 0.8f
                 )
                 val indicatorBoarderOffset = circleSize / 32
                 drawLine(
@@ -111,14 +113,34 @@ private fun SunGraph(
                         height / 1.4f
                     ),
                     end = Offset(width.times(1.25f), height / 1.4f),
-                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(5f,5f))
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(5f, 5f))
                 )
-                drawSundialPath(
-                    path = path,
-                    brush = brush
-                )
+                clipRect(
+                    left = width - (width.times(1.25f)),
+                    top = height / 1.4f,
+                    right = width.times(1.25f),
+                    bottom = height * 1.1f,
+                    clipOp = ClipOp.Difference
+                ) {
+                    drawSundialPath(
+                        path = path,
+                        brush = dayBrush
+                    )
+                }
+                clipRect(
+                    left = width - (width.times(1.25f)),
+                    top = height / 1.4f,
+                    right = width.times(1.25f),
+                    bottom = height * 1.1f,
+                    clipOp = ClipOp.Intersect
+                ) {
+                    drawSundialPath(
+                        path = path,
+                        brush = nightBrush
+                    )
+                }
                 drawCircleIndicator(
-                    brush = brush,
+                    brush = if (progress in 0.18..0.85) dayBrush else nightBrush,
                     radius = circleSize,
                     boarderRadius = circleSize * indicatorBoarderOffset,
                     position = pathPosition,
@@ -160,7 +182,13 @@ fun DrawScope.calculatePath(): Path {
 }
 
 private fun DrawScope.drawSundialPath(path: Path, brush: Brush) {
-    drawPath(path, brush, style = Stroke(size.width / 12, cap = StrokeCap.Round))
+    drawPath(
+        path = path, brush = brush,
+        style = Stroke(
+            size.width / 12,
+            cap = StrokeCap.Round
+        )
+    )
 }
 
 
@@ -200,14 +228,14 @@ private fun DrawScope.drawCircleIndicator(
 @Preview
 @Composable
 private fun UVPreview() {
-    val position = 90
+    val position = 80
     WeatherTheme {
         val color = MaterialTheme.colorScheme.background
         FlowRow(maxItemsInEachRow = 2, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             SunWidget(
                 modifier = Modifier.weight(1f),
-                sunrise = 20,
-                sunset = 90,
+                sunrise = 0,
+                sunset = 100,
                 currentTime = position,
                 surfaceColor = color
             )
