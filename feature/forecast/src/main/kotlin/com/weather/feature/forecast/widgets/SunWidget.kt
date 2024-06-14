@@ -1,13 +1,19 @@
 package com.weather.feature.forecast.widgets
 
+import android.graphics.Matrix
+import android.graphics.PathMeasure
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Sailing
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
@@ -17,11 +23,15 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.asAndroidPath
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.setFrom
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -78,12 +88,11 @@ private fun SunGraph(
                 .minus(sunrise)
                 .toFloat()
                 .div(timeRange)
-
             onDrawBehind {
                 val path = calculatePath()
                 val pathPosition = FloatArray(2)
                 val pathTangent = FloatArray(2)
-                val measure = android.graphics.PathMeasure(path.asAndroidPath(), false)
+                val measure = PathMeasure(path.asAndroidPath(), false)
                 val length = measure.length
                 measure.getPosTan(length * progress, pathPosition, pathTangent)
                 val brush = Brush.verticalGradient(
@@ -99,9 +108,10 @@ private fun SunGraph(
                     paleOnSurfaceColor,
                     start = Offset(
                         width - (width.times(1.25f)),
-                        height / 1.20f
+                        height / 1.4f
                     ),
-                    end = Offset(width.times(1.25f), height / 1.20f)
+                    end = Offset(width.times(1.25f), height / 1.4f),
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(5f,5f))
                 )
                 drawSundialPath(
                     path = path,
@@ -124,27 +134,27 @@ fun DrawScope.calculatePath(): Path {
     val centerX = size.width / 2
     val centerY = size.height / 2
     return Path().apply {
-        moveTo(-width / 6, height)
-        //start
-        quadraticBezierTo(
-            x1 = width / 32,
-            y1 = centerY * 2,
-            x2 = width / 6,
-            y2 = centerY
+        //start point
+        moveTo(-width * 0.15f, height)
+        //center point
+        //control points 1 and 2
+        cubicTo(
+            x1 = width * 0.25f,
+            y1 = height,
+            x2 = width * 0.1f,
+            y2 = height * 0.1f,
+            x3 = centerX,
+            y3 = height * 0.1f
         )
-        //center
-        quadraticBezierTo(
-            x1 = centerX,
-            y1 = -centerY,
-            x2 = width - width / 6,
-            y2 = centerY
-        )
-        //end
-        quadraticBezierTo(
-            x1 = width - width / 32,
-            y1 = centerY * 2,
-            x2 = width + width / 6,
-            y2 = height
+        //end pint
+        //control points 3 and 4
+        cubicTo(
+            x1 = width * 0.9f,
+            y1 = height * 0.1f,
+            x2 = width * 0.75f,
+            y2 = height,
+            x3 = width * 1.15f,
+            y3 = height
         )
     }
 }
@@ -176,11 +186,21 @@ private fun DrawScope.drawCircleIndicator(
     )
 }
 
+//@Preview
+//@Composable
+//private fun GraphPreview() {
+//    WeatherTheme {
+//        Surface(modifier = Modifier.aspectRatio(0.9f), color = Color.Blue) {
+//            SunGraph(Modifier.padding(16.dp), sunrise = 1, sunset = 100, currentTime = 20)
+//        }
+//    }
+//}
+
 @OptIn(ExperimentalLayoutApi::class)
 @Preview
 @Composable
 private fun UVPreview() {
-    val position = 55
+    val position = 90
     WeatherTheme {
         val color = MaterialTheme.colorScheme.background
         FlowRow(maxItemsInEachRow = 2, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
