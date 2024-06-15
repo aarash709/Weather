@@ -1,5 +1,8 @@
 package com.weather.feature.forecast.widgets
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
@@ -110,11 +113,15 @@ private fun RealFeelGraph(realFeel: Int) {
 }
 
 
+@OptIn(ExperimentalLayoutApi::class)
 @Preview(backgroundColor = 0xFF255BFF, showBackground = false)
 @Composable
 private fun RealFeelPrev() {
     WeatherTheme {
         val color = MaterialTheme.colorScheme.background
-        RealFeelWidget(-10, surfaceColor = color)
+        FlowRow(maxItemsInEachRow = 2, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            RealFeelWidget(modifier = Modifier.weight(1f), realFeel = -10, surfaceColor = color)
+            RealFeelWidget(modifier = Modifier.weight(1f), realFeel = -10, surfaceColor = color)
+        }
     }
 }
