@@ -86,8 +86,8 @@ private fun SunGraph(
     val textMeasure = rememberTextMeasurer()
     Spacer(modifier = modifier
         .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
-        .aspectRatio(1f)
-        .padding(16.dp)
+        .aspectRatio(1.25f)
+        .padding(12.dp)
         .drawWithCache {
             val width = size.width
             val height = size.height
@@ -105,13 +105,15 @@ private fun SunGraph(
                 .toFloat()
                 .div(timeRange)
             onDrawBehind {
-                val path = calculatePath()
+                val strokeWidth = size.height / 12
+
                 val pathPosition = FloatArray(2)
                 val pathTangent = FloatArray(2)
+                val path = calculatePath(strokeWidth = strokeWidth)
                 val measure = PathMeasure(path.asAndroidPath(), false)
                 val length = measure.length
                 measure.getPosTan(length * progress, pathPosition, pathTangent)
-                Timber.e("path lenght:${progress}")
+
                 val dayBrush = Brush.verticalGradient(
                     0.0f to daylightColor,
                     0.65f to daylightColor,
@@ -129,12 +131,31 @@ private fun SunGraph(
                 drawLine(
                     paleOnSurfaceColor,
                     start = Offset(
-                        width - (width.times(1.25f)),
+                        0f,
                         height / 1.4f
                     ),
-                    end = Offset(width.times(1.25f), height / 1.4f),
+                    end = Offset(width, height / 1.4f),
                     pathEffect = PathEffect.dashPathEffect(floatArrayOf(5f, 5f))
                 )
+                //sunrise and sunset times under graph
+                val sunriseText =
+                    textMeasure.measure(formattedSunrise, style = TextStyle(fontSize = 8.sp))
+                val sunsetText =
+                    textMeasure.measure(formattedSunset, style = TextStyle(fontSize = 8.sp))
+                drawText(
+                    textLayoutResult = sunriseText,
+                    color = paleOnSurfaceColor,
+                    topLeft = Offset(x = 0f, height - sunriseText.size.height / 2),
+                )
+                drawText(
+                    textLayoutResult = sunsetText,
+                    color = paleOnSurfaceColor,
+                    topLeft = Offset(
+                        x = width - sunsetText.size.width,
+                        y = height - sunsetText.size.height / 2
+                    )
+                )
+                //one path clipped to apply two colors for day and night
                 clipRect(
                     left = width - (width.times(1.25f)),
                     top = height / 1.4f,
@@ -144,7 +165,8 @@ private fun SunGraph(
                 ) {
                     drawSundialPath(
                         path = path,
-                        brush = dayBrush
+                        brush = dayBrush,
+                        strokeWidth = strokeWidth
                     )
                 }
                 clipRect(
@@ -156,7 +178,8 @@ private fun SunGraph(
                 ) {
                     drawSundialPath(
                         path = path,
-                        brush = nightBrush
+                        brush = nightBrush,
+                        strokeWidth = strokeWidth
                     )
                 }
                 drawCircleIndicator(
@@ -166,63 +189,47 @@ private fun SunGraph(
                     position = pathPosition,
                     shouldShowBorder = true
                 )
-                val sunriseText =
-                    textMeasure.measure(formattedSunrise, style = TextStyle(fontSize = 10.sp))
-                val sunsetText =
-                    textMeasure.measure(formattedSunset, style = TextStyle(fontSize = 10.sp))
-                drawText(
-                    textLayoutResult = sunriseText,
-                    color = paleOnSurfaceColor,
-                    topLeft = Offset(x = -width * 0.15f, height + sunriseText.size.height / 2),
-                )
-                drawText(
-                    textLayoutResult = sunsetText,
-                    color = paleOnSurfaceColor,
-                    topLeft = Offset(
-                        x = width * 1.15f - sunsetText.size.width,
-                        y = height + sunsetText.size.height / 2
-                    )
-                )
+
             }
         })
 }
 
-fun DrawScope.calculatePath(): Path {
+fun DrawScope.calculatePath(strokeWidth: Float): Path {
     val width = size.width
     val height = size.height
     val centerX = size.width / 2
     val centerY = size.height / 2
     return Path().apply {
         //start point
-        moveTo(-width * 0.15f, height)
+        moveTo(strokeWidth, height * .85f)
         //center point
         //control points 1 and 2
         cubicTo(
-            x1 = width * 0.25f,
-            y1 = height,
-            x2 = width * 0.1f,
-            y2 = height * 0.1f,
-            x3 = centerX,
-            y3 = height * 0.1f
+            x1 = width * 0.35f,
+            y1 = height * 0.85f,
+            x2 = width * 0.2f,
+            y2 = 0f,
+            x3 = width * 0.5f,
+            y3 = 0f
         )
         //end pint
         //control points 3 and 4
         cubicTo(
-            x1 = width * 0.9f,
-            y1 = height * 0.1f,
-            x2 = width * 0.75f,
-            y2 = height,
-            x3 = width * 1.15f,
-            y3 = height
+            x1 = width * 0.8f,
+            y1 = 0f,
+            x2 = width * 0.65f,
+            y2 = height * 0.85f,
+            x3 = width - strokeWidth,
+            y3 = height * 0.85f
         )
     }
 }
 
-private fun DrawScope.drawSundialPath(path: Path, brush: Brush) {
+private fun DrawScope.drawSundialPath(path: Path, brush: Brush, strokeWidth: Float) {
     drawPath(
         path = path, brush = brush,
         style = Stroke(
-            size.width / 12,
+            strokeWidth,
             cap = StrokeCap.Round
         )
     )
@@ -250,16 +257,6 @@ private fun DrawScope.drawCircleIndicator(
         center = Offset(position[0], position[1])
     )
 }
-
-//@Preview
-//@Composable
-//private fun GraphPreview() {
-//    WeatherTheme {
-//        Surface(modifier = Modifier.aspectRatio(0.9f), color = Color.Blue) {
-//            SunGraph(Modifier.padding(16.dp), sunrise = 1, sunset = 100, currentTime = 20)
-//        }
-//    }
-//}
 
 @OptIn(ExperimentalLayoutApi::class)
 @PreviewLightDark
