@@ -39,7 +39,7 @@ appcompat = "1.7.0"
 arrow = "1.2.4"
 detekt = "1.23.6"
 kotlinter = "4.3.0"
-lottie = "2.8.0"
+lottie = "6.4.1"
 rive = "8.7.0"
 
 
