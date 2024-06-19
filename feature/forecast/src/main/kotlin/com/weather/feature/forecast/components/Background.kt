@@ -37,14 +37,6 @@ fun WeatherBackground(
     isDawn: Boolean,
     content: @Composable () -> Unit,
 ) {
-    val clearDay = painterResource(id = R.drawable.day_clear)
-    val thunderstorm = painterResource(id = R.drawable.thunderstorm)
-    val drizzleAndRain = painterResource(id = R.drawable.drizzel)
-    val snow = painterResource(id = R.drawable.snow)
-    val fog = painterResource(id = R.drawable.fog)
-    val clouds = painterResource(id = R.drawable.clouds)
-    val dawn = painterResource(id = R.drawable.dawn)
-    val clearNightSkyWithStars = painterResource(id = R.drawable.night_clear)
     var condition by remember {
         mutableIntStateOf(1)
     }
@@ -78,49 +70,49 @@ fun WeatherBackground(
         ) { condition ->
             when (condition) {
                 1 -> Image(
-                    painter = clearDay,
+                    painter = painterResource(id = R.drawable.day_clear),
                     contentScale = ContentScale.Crop,
                     contentDescription = "image of clouds"
                 )
 
                 2 -> Image(
-                    painter = thunderstorm,
+                    painter = painterResource(id = R.drawable.thunderstorm),
                     contentScale = ContentScale.Crop,
                     contentDescription = "image of clouds"
                 )
 
                 3 -> Image(
-                    painter = drizzleAndRain,
+                    painter = painterResource(id = R.drawable.drizzel),
                     contentScale = ContentScale.Crop,
                     contentDescription = "image of clouds"
                 )
 
                 4 -> Image(
-                    painter = snow,
+                    painter = painterResource(id = R.drawable.snow),
                     contentScale = ContentScale.Crop,
                     contentDescription = "image of clouds"
                 )
 
                 5 -> Image(
-                    painter = fog,
+                    painter = painterResource(id = R.drawable.fog),
                     contentScale = ContentScale.Crop,
                     contentDescription = "image of clouds"
                 )
 
                 6 -> Image(
-                    painter = clouds,
+                    painter = painterResource(id = R.drawable.clouds),
                     contentScale = ContentScale.Crop,
                     contentDescription = "image of clouds"
                 )
 
                 7 -> Image(
-                    painter = clearNightSkyWithStars,
+                    painter = painterResource(id = R.drawable.night_clear),
                     contentScale = ContentScale.Crop,
                     contentDescription = "image of clouds"
                 )
 
                 8 -> Image(
-                    painter = clearNightSkyWithStars,
+                    painter = painterResource(id = R.drawable.dawn),
                     contentScale = ContentScale.Crop,
                     contentDescription = "image of clouds"
                 )
