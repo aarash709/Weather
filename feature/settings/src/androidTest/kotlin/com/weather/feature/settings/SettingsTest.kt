@@ -32,7 +32,7 @@ class SettingsTest {
             SettingsContent(
                 settingsState = settingsState,
                 currentTempUnit = "°C",
-                currentTindUnit = "km/h",
+                currentWindUnit = "km/h",
                 onBackPressed = {  },
                 setTemperature = {_-> },
                 setWindSpeed = { _-> }
@@ -60,7 +60,7 @@ class SettingsTest {
             SettingsContent(
                 settingsState = settingsState,
                 currentTempUnit = "°C",
-                currentTindUnit = "Kilometer per hour",
+                currentWindUnit = "Kilometer per hour",
                 onBackPressed = {  },
                 setTemperature = {_-> },
                 setWindSpeed = { _-> }

@@ -89,81 +89,37 @@ fun TemperatureSettings(
 }
 
 @Composable
-fun WindSpeedSettings(modifier: Modifier = Modifier) {
-
-}
-@Composable
-fun WindSpeedSection(
+fun WindSpeedSettings(
+    modifier: Modifier = Modifier,
     title: String,
-    windSpeedUnitName: String,
+    currentSettingsName: String,
     setWindSpeed: (WindSpeedUnits) -> Unit,
 ) {
-    var expanded by remember {
+    var shouldShowOptions by remember {
         mutableStateOf(false)
     }
-    SettingItem(
-        modifier = Modifier
+    Row(
+        modifier = modifier
             .fillMaxWidth()
-            .clickable { expanded = true }
+            .clickable { shouldShowOptions = true }
+            .padding(vertical = 8.dp, horizontal = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(text = title, color = MaterialTheme.colorScheme.onBackground)
-            Text(
-                text = windSpeedUnitName,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-            )
-        }
-        WindSpeedMenu(
-            expanded = expanded,
+        Text(title, color = MaterialTheme.colorScheme.onBackground)
+        Text(
+            text = currentSettingsName,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+        )
+        WindSpeedOptions(
+            onSetValue = { shouldShowOptions = false },
+            currentWindSpeed = currentSettingsName,
+            shouldShowOptions = shouldShowOptions,
             setWindSpeed = setWindSpeed,
-            setExpanded = { expanded = it })
+            onDismissRequest = { shouldShowOptions = false })
     }
 }
 
-
-@Composable
-private fun WindSpeedMenu(
-    expanded: Boolean,
-    setWindSpeed: (WindSpeedUnits) -> Unit,
-    setExpanded: (Boolean) -> Unit,
-) {
-    Column {
-        SettingDialog(
-            modifier = Modifier
-                .windowInsetsPadding(WindowInsets(left = 100, right = 100)),
-            showDialog = expanded,
-            onDismissRequest = {
-                setExpanded(false)
-            }
-        ) {
-            DialogItem(
-                itemName = stringResource(id = R.string.kilometer_per_hour_symbol),
-                onClick = {
-                    setWindSpeed(WindSpeedUnits.KM)
-                    setExpanded(false)
-                }
-            )
-            DialogItem(
-                itemName = stringResource(id = R.string.meters_per_second_symbol),
-                onClick = {
-                    setWindSpeed(WindSpeedUnits.MS)
-                    setExpanded(false)
-                }
-            )
-            DialogItem(
-                itemName = stringResource(id = R.string.miles_per_hour_symbol),
-                onClick = {
-                    setWindSpeed(WindSpeedUnits.MPH)
-                    setExpanded(false)
-                }
-            )
-        }
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -207,20 +163,52 @@ internal fun TemperatureOptions(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingItem(
+fun WindSpeedOptions(
     modifier: Modifier = Modifier,
-    horizontalArrangement: Arrangement.Horizontal = Arrangement.SpaceBetween,
-    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
-    content: @Composable () -> Unit,
+    onSetValue: () -> Unit,
+    currentWindSpeed: String,
+    shouldShowOptions: Boolean,
+    dialogInsets: WindowInsets = WindowInsets(left = 100, right = 100),
+    setWindSpeed: (WindSpeedUnits) -> Unit,
+    onDismissRequest: () -> Unit,
 ) {
-    Row(
-        modifier = modifier
-            .padding(vertical = 8.dp, horizontal = 16.dp),
-        horizontalArrangement = horizontalArrangement,
-        verticalAlignment = verticalAlignment
-    ) {
-        content()
+    if (shouldShowOptions) {
+        AlertDialog(
+            onDismissRequest = { onDismissRequest() },
+            modifier = Modifier
+                .windowInsetsPadding(dialogInsets),
+        ) {
+            Surface(
+                modifier = modifier,
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Column {
+                    SettingOptionItem(
+                        title = stringResource(id = R.string.kilometer_per_hour_symbol),
+                        isSelected = currentWindSpeed == stringResource(id = R.string.kilometer_per_hour)
+                    ) {
+                        setWindSpeed(WindSpeedUnits.KM)
+                        onSetValue()
+                    }
+                    SettingOptionItem(
+                        title = stringResource(id = R.string.miles_per_hour_symbol),
+                        isSelected = currentWindSpeed == stringResource(id = R.string.miles_per_hour)
+                    ) {
+                        setWindSpeed(WindSpeedUnits.MPH)
+                        onSetValue()
+                    }
+                    SettingOptionItem(
+                        title = stringResource(id = R.string.meters_per_second_symbol),
+                        isSelected = currentWindSpeed == stringResource(id = R.string.meters_per_second)
+                    ) {
+                        setWindSpeed(WindSpeedUnits.MS)
+                        onSetValue()
+                    }
+                }
+            }
+        }
     }
 }
 

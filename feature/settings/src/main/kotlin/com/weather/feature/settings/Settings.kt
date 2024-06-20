@@ -83,7 +83,7 @@ fun SettingsRoute(
             modifier = Modifier.padding(horizontal = 0.dp),
             settingsState = settingsUIState,
             currentTempUnit = tempUnit,
-            currentTindUnit = windUnit,
+            currentWindUnit = windUnit,
             onBackPressed = { onBackPressed() },
             setTemperature = viewModel::setTemperatureUnit,
             setWindSpeed = viewModel::setWindSpeedUnit
@@ -98,7 +98,7 @@ fun SettingsContent(
     modifier: Modifier = Modifier,
     settingsState: SettingsUIState,
     currentTempUnit: String,
-    currentTindUnit: String,
+    currentWindUnit: String,
     onBackPressed: () -> Unit,
     setTemperature: (TemperatureUnits) -> Unit,
     setWindSpeed: (WindSpeedUnits) -> Unit,
@@ -130,11 +130,10 @@ fun SettingsContent(
                             currentSettingsName = currentTempUnit,
                             setTemperature = setTemperature
                         )
-                        WindSpeedSection(
+                        WindSpeedSettings(
                             title = stringResource(id = R.string.wind_speed),
-                            windSpeedUnitName = currentTindUnit,
-                            setWindSpeed = setWindSpeed
-                        )
+                            currentSettingsName = currentWindUnit,
+                            setWindSpeed = setWindSpeed)
                     }
                     SettingsHorizontalDivider()
                     SettingGroup(
@@ -186,7 +185,7 @@ private fun SettingsPreview() {
                 settingsState = SettingsUIState
                     .Success(settingsData = SettingsData(wind, temp)),
                 currentTempUnit = temp.toString(),
-                currentTindUnit = wind.toString(),
+                currentWindUnit = wind.toString(),
                 onBackPressed = {},
                 setTemperature = {},
                 setWindSpeed = {}
