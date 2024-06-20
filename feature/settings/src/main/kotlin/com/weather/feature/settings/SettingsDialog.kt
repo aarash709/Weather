@@ -1,6 +1,7 @@
 package com.weather.feature.settings
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,7 +21,7 @@ fun SettingDialog(
     modifier: Modifier = Modifier,
     showDialog: Boolean = false,
     onDismissRequest: (Boolean) -> Unit,
-    content: @Composable () -> Unit,
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     if (showDialog) {
         AlertDialog(

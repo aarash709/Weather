@@ -82,8 +82,8 @@ fun SettingsRoute(
         SettingsContent(
             modifier = Modifier.padding(horizontal = 0.dp),
             settingsState = settingsUIState,
-            tempUnit = tempUnit,
-            windUnit = windUnit,
+            currentTempUnit = tempUnit,
+            currentWindUnit = windUnit,
             onBackPressed = { onBackPressed() },
             setTemperature = viewModel::setTemperatureUnit,
             setWindSpeed = viewModel::setWindSpeedUnit
@@ -97,8 +97,8 @@ fun SettingsRoute(
 fun SettingsContent(
     modifier: Modifier = Modifier,
     settingsState: SettingsUIState,
-    tempUnit: String,
-    windUnit: String,
+    currentTempUnit: String,
+    currentWindUnit: String,
     onBackPressed: () -> Unit,
     setTemperature: (TemperatureUnits) -> Unit,
     setWindSpeed: (WindSpeedUnits) -> Unit,
@@ -125,16 +125,15 @@ fun SettingsContent(
                         modifier = Modifier,
                         groupName = stringResource(id = R.string.units)
                     ) {
-                        TemperatureSection(
+                        TemperatureSettings(
                             title = stringResource(id = R.string.Temperature),
-                            tempUnitName = tempUnit,
+                            currentSettingsName = currentTempUnit,
                             setTemperature = setTemperature
                         )
-                        WindSpeedSection(
+                        WindSpeedSettings(
                             title = stringResource(id = R.string.wind_speed),
-                            windSpeedUnitName = windUnit,
-                            setWindSpeed = setWindSpeed
-                        )
+                            currentSettingsName = currentWindUnit,
+                            setWindSpeed = setWindSpeed)
                     }
                     SettingsHorizontalDivider()
                     SettingGroup(
@@ -185,8 +184,8 @@ private fun SettingsPreview() {
                 modifier = Modifier,
                 settingsState = SettingsUIState
                     .Success(settingsData = SettingsData(wind, temp)),
-                tempUnit = temp.toString(),
-                windUnit = wind.toString(),
+                currentTempUnit = temp.toString(),
+                currentWindUnit = wind.toString(),
                 onBackPressed = {},
                 setTemperature = {},
                 setWindSpeed = {}
