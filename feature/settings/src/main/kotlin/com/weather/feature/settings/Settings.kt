@@ -82,8 +82,8 @@ fun SettingsRoute(
         SettingsContent(
             modifier = Modifier.padding(horizontal = 0.dp),
             settingsState = settingsUIState,
-            tempUnit = tempUnit,
-            windUnit = windUnit,
+            currentTempUnit = tempUnit,
+            currentTindUnit = windUnit,
             onBackPressed = { onBackPressed() },
             setTemperature = viewModel::setTemperatureUnit,
             setWindSpeed = viewModel::setWindSpeedUnit
@@ -97,8 +97,8 @@ fun SettingsRoute(
 fun SettingsContent(
     modifier: Modifier = Modifier,
     settingsState: SettingsUIState,
-    tempUnit: String,
-    windUnit: String,
+    currentTempUnit: String,
+    currentTindUnit: String,
     onBackPressed: () -> Unit,
     setTemperature: (TemperatureUnits) -> Unit,
     setWindSpeed: (WindSpeedUnits) -> Unit,
@@ -125,14 +125,19 @@ fun SettingsContent(
                         modifier = Modifier,
                         groupName = stringResource(id = R.string.units)
                     ) {
-                        TemperatureSection(
+                        SettingWithOptions(
                             title = stringResource(id = R.string.Temperature),
-                            tempUnitName = tempUnit,
-                            setTemperature = setTemperature
-                        )
+                            currentSettingsName = currentTempUnit
+                        ) {
+                            TemperatureOptions(
+                                currentTempUnit = currentTempUnit,
+                                setTemperature = setTemperature,
+                                onSetValue = {  }
+                            )
+                        }
                         WindSpeedSection(
                             title = stringResource(id = R.string.wind_speed),
-                            windSpeedUnitName = windUnit,
+                            windSpeedUnitName = currentTindUnit,
                             setWindSpeed = setWindSpeed
                         )
                     }
@@ -185,8 +190,8 @@ private fun SettingsPreview() {
                 modifier = Modifier,
                 settingsState = SettingsUIState
                     .Success(settingsData = SettingsData(wind, temp)),
-                tempUnit = temp.toString(),
-                windUnit = wind.toString(),
+                currentTempUnit = temp.toString(),
+                currentTindUnit = wind.toString(),
                 onBackPressed = {},
                 setTemperature = {},
                 setWindSpeed = {}
