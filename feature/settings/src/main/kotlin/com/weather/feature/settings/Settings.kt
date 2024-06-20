@@ -125,16 +125,11 @@ fun SettingsContent(
                         modifier = Modifier,
                         groupName = stringResource(id = R.string.units)
                     ) {
-                        SettingWithOptions(
+                        TemperatureSettings(
                             title = stringResource(id = R.string.Temperature),
-                            currentSettingsName = currentTempUnit
-                        ) {
-                            TemperatureOptions(
-                                currentTempUnit = currentTempUnit,
-                                setTemperature = setTemperature,
-                                onSetValue = {  }
-                            )
-                        }
+                            currentSettingsName = currentTempUnit,
+                            setTemperature = setTemperature
+                        )
                         WindSpeedSection(
                             title = stringResource(id = R.string.wind_speed),
                             windSpeedUnitName = currentTindUnit,

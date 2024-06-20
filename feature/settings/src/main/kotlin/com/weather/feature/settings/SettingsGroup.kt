@@ -55,19 +55,18 @@ fun SettingGroup(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingWithOptions(
+fun TemperatureSettings(
+    modifier: Modifier = Modifier,
     title: String,
     currentSettingsName: String,
-    dialogInsets: WindowInsets = WindowInsets(left = 100, right = 100),
-    options: @Composable () -> Unit,
+    setTemperature: (TemperatureUnits) -> Unit,
 ) {
     var shouldShowOptions by remember {
         mutableStateOf(false)
     }
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable { shouldShowOptions = true }
             .padding(vertical = 8.dp, horizontal = 16.dp),
@@ -79,18 +78,20 @@ fun SettingWithOptions(
             text = currentSettingsName,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
         )
-        if (shouldShowOptions) {
-            AlertDialog(
-                onDismissRequest = { shouldShowOptions = false },
-                modifier = Modifier
-                    .windowInsetsPadding(dialogInsets),
-            ) {
-                options()
-            }
-        }
+        TemperatureOptions(
+            onSetValue = { shouldShowOptions = false },
+            currentTempUnit = currentSettingsName,
+            shouldShowOptions = shouldShowOptions,
+            setTemperature = setTemperature,
+            onDismissRequest = { shouldShowOptions = false }
+        )
     }
 }
 
+@Composable
+fun WindSpeedSettings(modifier: Modifier = Modifier) {
+
+}
 @Composable
 fun WindSpeedSection(
     title: String,
@@ -164,31 +165,43 @@ private fun WindSpeedMenu(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TemperatureOptions(
     modifier: Modifier = Modifier,
     onSetValue: () -> Unit,
     currentTempUnit: String,
+    shouldShowOptions: Boolean,
+    dialogInsets: WindowInsets = WindowInsets(left = 100, right = 100),
     setTemperature: (TemperatureUnits) -> Unit,
+    onDismissRequest: () -> Unit,
 ) {
-    Surface(
-        modifier = modifier,
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column {
-            SettingOptionItem(
-                title = "°C",
-                isSelected = currentTempUnit == "°C"
+    if (shouldShowOptions) {
+        AlertDialog(
+            onDismissRequest = { onDismissRequest() },
+            modifier = Modifier
+                .windowInsetsPadding(dialogInsets),
+        ) {
+            Surface(
+                modifier = modifier,
+                shape = RoundedCornerShape(16.dp)
             ) {
-                setTemperature(TemperatureUnits.C)
-                onSetValue()
-            }
-            SettingOptionItem(
-                title = "°F",
-                isSelected = currentTempUnit == "°F"
-            ) {
-                setTemperature(TemperatureUnits.F)
-                onSetValue()
+                Column {
+                    SettingOptionItem(
+                        title = "°C",
+                        isSelected = currentTempUnit == "°C"
+                    ) {
+                        setTemperature(TemperatureUnits.C)
+                        onSetValue()
+                    }
+                    SettingOptionItem(
+                        title = "°F",
+                        isSelected = currentTempUnit == "°F"
+                    ) {
+                        setTemperature(TemperatureUnits.F)
+                        onSetValue()
+                    }
+                }
             }
         }
     }
