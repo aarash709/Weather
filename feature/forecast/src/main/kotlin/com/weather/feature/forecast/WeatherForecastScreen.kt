@@ -5,8 +5,14 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOutCubic
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.AnchoredDraggableState
+import androidx.compose.foundation.gestures.DraggableAnchors
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,11 +46,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.experiment.weather.core.common.R
 import com.weather.core.design.components.weatherPlaceholder
 import com.weather.feature.forecast.components.WeatherBackground
 import com.weather.core.design.theme.ForecastTheme
@@ -76,6 +86,10 @@ import java.util.Date
 import java.util.Locale
 import kotlin.math.roundToInt
 
+enum class Anchors {
+    OPEN, Closed
+}
+
 @ExperimentalCoroutinesApi
 @Composable
 fun WeatherForecastRoute(
@@ -105,7 +119,7 @@ fun WeatherForecastRoute(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun WeatherForecastScreen(
     modifier: Modifier = Modifier,
@@ -116,15 +130,18 @@ fun WeatherForecastScreen(
     onNavigateToSettings: () -> Unit,
     onRefresh: (Coordinate) -> Unit,
 ) {
-    // stateless
+    val resource = LocalContext.current.resources
+    val density = LocalDensity.current
+    val config = LocalConfiguration.current
+
     val speedUnit by remember(weatherUIState) {
-        val state = when (weatherUIState.userSettings.windSpeedUnits) {
-            WindSpeedUnits.KM -> "km/h"
-            WindSpeedUnits.MS -> "m/s"
-            WindSpeedUnits.MPH -> "mph"
+        val value = when (weatherUIState.userSettings.windSpeedUnits) {
+            WindSpeedUnits.KM -> resource.getString(R.string.kilometer_per_hour_symbol)
+            WindSpeedUnits.MS -> resource.getString(R.string.meters_per_second_symbol)
+            WindSpeedUnits.MPH -> resource.getString(R.string.miles_per_hour_symbol)
             null -> "null"
         }
-        mutableStateOf(state)
+        mutableStateOf(value)
     }
     val refreshState =
         rememberPullRefreshState(refreshing = isSyncing, onRefresh = {
@@ -139,6 +156,19 @@ fun WeatherForecastScreen(
         derivedStateOf {
             (scrollState.value.toFloat() / scrollState.maxValue.toFloat()).times(100)
         }
+    }
+    val anchors = DraggableAnchors {
+        Anchors.Closed at with(density) { config.screenHeightDp.dp.toPx() }
+        Anchors.OPEN at 0f
+    }
+    val draggableState = remember {
+        AnchoredDraggableState(
+            initialValue = Anchors.Closed,
+            anchors = anchors,
+            positionalThreshold = { totalDistance -> totalDistance * 0.1f },
+            animationSpec = spring(),
+            velocityThreshold = { with(density) { 10.dp.toPx() } }
+        )
     }
     Column(
         modifier = Modifier
@@ -156,10 +186,26 @@ fun WeatherForecastScreen(
                 contentAlignment = Alignment.TopCenter
             ) {
                 PullRefreshIndicator(refreshing = isSyncing, state = refreshState)
+                CurrentWeather(
+                    modifier = Modifier
+                        .padding(top = 60.dp, bottom = 100.dp)
+                        .graphicsLayer {
+                            //can be enabled after implementing independent scrolling
+                            alpha -= scrollState.value.toFloat().times(3f).div(scrollState.maxValue)
+                        },
+                    location = weatherUIState.weather.coordinates.name,
+                    weatherData = weatherUIState.weather.current,
+                    today = weatherUIState.weather.daily[0],
+                    showPlaceholder = false,
+                )
                 ConditionAndDetails(
                     modifier = Modifier
                         .fillMaxSize()
-                        .navigationBarsPadding(),
+                        .navigationBarsPadding()
+                        .graphicsLayer {
+                            translationY = draggableState.requireOffset()
+                        }
+                        .anchoredDraggable(draggableState, Orientation.Vertical),
                     weatherData = weatherUIState.weather,
                     isDayTime = isDayTime,
                     showPlaceholder = weatherUIState.showPlaceHolder,
@@ -206,18 +252,18 @@ internal fun ConditionAndDetails(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         maxItemsInEachRow = 2
     ) {
-        CurrentWeather(
-            modifier = Modifier
-                .padding(top = 60.dp, bottom = 100.dp)
-                .graphicsLayer {
-                    //can be enabled after implementing independent scrolling
-                    //alpha -= scrollState.value.toFloat().times(3f).div(scrollState.maxValue)
-                },
-            location = weatherData.coordinates.name,
-            weatherData = weatherData.current,
-            today = weatherData.daily[0],
-            showPlaceholder = false,
-        )
+//        CurrentWeather(
+//            modifier = Modifier
+//                .padding(top = 60.dp, bottom = 100.dp)
+//                .graphicsLayer {
+//                    //can be enabled after implementing independent scrolling
+//                    //alpha -= scrollState.value.toFloat().times(3f).div(scrollState.maxValue)
+//                },
+//            location = weatherData.coordinates.name,
+//            weatherData = weatherData.current,
+//            today = weatherData.daily[0],
+//            showPlaceholder = false,
+//        )
         Spacer(modifier = Modifier.height(65.dp))
         //widgets
         // TODO: Weather alert goes here
