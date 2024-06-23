@@ -8,26 +8,32 @@ import androidx.compose.animation.core.EaseOutCubic
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Surface
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -38,27 +44,37 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.experiment.weather.core.common.R
 import com.weather.core.design.components.weatherPlaceholder
-import com.weather.feature.forecast.components.WeatherBackground
 import com.weather.core.design.theme.ForecastTheme
 import com.weather.feature.forecast.components.ForecastTopBar
+import com.weather.feature.forecast.components.WeatherBackground
 import com.weather.feature.forecast.components.hourlydata.DailyStaticData
 import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
 import com.weather.feature.forecast.widgets.DailyWidget
@@ -81,9 +97,11 @@ import com.weather.model.WeatherData
 import com.weather.model.WindSpeedUnits
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
 enum class Anchors {
@@ -133,6 +151,12 @@ fun WeatherForecastScreen(
     val resource = LocalContext.current.resources
     val density = LocalDensity.current
     val config = LocalConfiguration.current
+    var height by remember {
+        mutableFloatStateOf(0f)
+    }
+    var firstScrollableItemHeight by rememberSaveable {
+        mutableIntStateOf(0)
+    }
 
     val speedUnit by remember(weatherUIState) {
         val value = when (weatherUIState.userSettings.windSpeedUnits) {
@@ -152,37 +176,65 @@ fun WeatherForecastScreen(
             )
         })
     val scrollState = rememberScrollState()
-    val scrollProgress by remember(scrollState.value) {
-        derivedStateOf {
-            (scrollState.value.toFloat() / scrollState.maxValue.toFloat()).times(100)
+//    val scrollProgress by remember(scrollState.value) {
+//        derivedStateOf {
+//            (scrollState.value.toFloat() / scrollState.maxValue.toFloat()).times(100)
+//        }
+//    }
+
+        val anchors = DraggableAnchors {
+            Anchors.Closed at 0f
+            Anchors.OPEN at 0f
         }
-    }
-    val anchors = DraggableAnchors {
-        Anchors.Closed at with(density) { config.screenHeightDp.dp.toPx() }
-        Anchors.OPEN at 0f
-    }
-    val draggableState = remember {
-        AnchoredDraggableState(
-            initialValue = Anchors.Closed,
-            anchors = anchors,
-            positionalThreshold = { totalDistance -> totalDistance * 0.1f },
-            animationSpec = spring(),
-            velocityThreshold = { with(density) { 10.dp.toPx() } }
-        )
-    }
+        val draggableState = remember {
+            AnchoredDraggableState(
+                initialValue = Anchors.Closed,
+//                anchors = anchors,
+                positionalThreshold = { totalDistance -> totalDistance * 0.1f },
+                animationSpec = spring(),
+                velocityThreshold = { with(density) { 50.dp.toPx() } }
+            )
+        }
+        val connection = remember {
+            object : NestedScrollConnection {
+                override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                    Timber.e("avalible: ${available.y}")
+                    Timber.e("draggg: ${draggableState.currentValue.name}")
+                    if (available.y > 0f) {
+                        draggableState.dispatchRawDelta(available.y)
+                        return Offset.Zero
+                    }
+                    if (available.y < 0f && draggableState.currentValue == Anchors.Closed){
+                        scrollState.dispatchRawDelta(0f)
+                        draggableState.dispatchRawDelta(available.y)
+                        return Offset.Zero
+                    }
+//                    scrollState.dispatchRawDelta(delta)
+                    return super.onPreScroll(available, source)
+                }
+            }
+        }
     Column(
         modifier = Modifier
+            .nestedScroll(connection)
             .pullRefresh(refreshState) then modifier
-    )
-    {
+    ) {
+        // TODO: remove
+        //expertiment
+//        ModalBottomSheet(onDismissRequest = { /*TODO*/ }) {
+//
+//        }
         CompositionLocalProvider(LocalContentColor provides Color.White) {
             ForecastTopBar(
                 onNavigateToManageLocations = { onNavigateToManageLocations() },
                 onNavigateToSettings = { onNavigateToSettings() })
             Box(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .verticalScroll(scrollState),
+                    .fillMaxSize()
+                    .graphicsLayer {
+//                        height = size.height
+                    }
+                    .padding(horizontal = 16.dp),
                 contentAlignment = Alignment.TopCenter
             ) {
                 PullRefreshIndicator(refreshing = isSyncing, state = refreshState)
@@ -191,27 +243,68 @@ fun WeatherForecastScreen(
                         .padding(top = 60.dp, bottom = 100.dp)
                         .graphicsLayer {
                             //can be enabled after implementing independent scrolling
-                            alpha -= scrollState.value.toFloat().times(3f).div(scrollState.maxValue)
+//                            alpha -= draggableState.progress
+//                                .toFloat()
+//                                .times(3f)
+//                                .div(draggableState.targetValue)
                         },
                     location = weatherUIState.weather.coordinates.name,
                     weatherData = weatherUIState.weather.current,
                     today = weatherUIState.weather.daily[0],
                     showPlaceholder = false,
                 )
+//                LazyColumn(modifier = Modifier
+//                    .fillMaxSize()
+//                    .anchoredDraggable(draggableState, Orientation.Vertical)
+//                    .offset {
+//                        IntOffset(
+//                            x = 0,
+//                            y = draggableState
+//                                .requireOffset()
+//                                .toInt()
+//                        )
+//                    },) {
+//                    items(100){
+//                        Box(Modifier.fillMaxSize()) {
+//                            Text(text = "text")
+//                        }
+//                    }
+//                    item { Text(text = "last") }
+//                }
+//                Surface(
+//                    onClick = { /*TODO*/ },
+//                    color = Color.Transparent,
+//                    modifier = Modifier
+//
+//                ) {
                 ConditionAndDetails(
                     modifier = Modifier
                         .fillMaxSize()
                         .navigationBarsPadding()
-                        .graphicsLayer {
-                            translationY = draggableState.requireOffset()
-                        }
-                        .anchoredDraggable(draggableState, Orientation.Vertical),
+                        .anchoredDraggable(draggableState, Orientation.Vertical)
+                        .offset {
+                            IntOffset(
+                                x = 0,
+                                y = draggableState
+                                    .requireOffset()
+                                    .toInt()
+                            )
+                        },
+                    scrollState = scrollState,
                     weatherData = weatherUIState.weather,
                     isDayTime = isDayTime,
                     showPlaceholder = weatherUIState.showPlaceHolder,
                     speedUnit = speedUnit,
-                    shouldChangeColor = scrollProgress > 10
+                    shouldChangeColor = /*scrollProgress > 10*/ false,
+                    firstItemHeight = {
+                        firstScrollableItemHeight = it
+                        draggableState.updateAnchors(DraggableAnchors {
+                            Anchors.Closed at with(density) { config.screenHeightDp.dp.toPx() - it.toFloat() * 2 }
+                            Anchors.OPEN at 0f
+                        })
+                    }
                 )
+//                }
             }
         }
     }
@@ -221,11 +314,13 @@ fun WeatherForecastScreen(
 @Composable
 internal fun ConditionAndDetails(
     modifier: Modifier = Modifier,
+    scrollState: ScrollState = rememberScrollState(),
     weatherData: WeatherData,
     isDayTime: Boolean,
     showPlaceholder: Boolean,
     speedUnit: String,
     shouldChangeColor: Boolean,
+    firstItemHeight: (Int) -> Unit,
 ) {
     val dayTimePrimaryColor = Color.Black.copy(
         alpha = 0.10f
@@ -247,7 +342,9 @@ internal fun ConditionAndDetails(
         label = "scrolled widget background color"
     )
     FlowRow(
-        modifier,
+        modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         maxItemsInEachRow = 2
@@ -264,12 +361,13 @@ internal fun ConditionAndDetails(
 //            today = weatherData.daily[0],
 //            showPlaceholder = false,
 //        )
-        Spacer(modifier = Modifier.height(65.dp))
+//        Spacer(modifier = Modifier.height(65.dp))
         //widgets
         // TODO: Weather alert goes here
         DailyWidget(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .onSizeChanged { firstItemHeight(it.height) },
             dailyList = weatherData.daily,
             currentTemp = weatherData.current.currentTemp.roundToInt(),
             surfaceColor = widgetColor
