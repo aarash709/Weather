@@ -45,11 +45,11 @@ fun HumidityGraph(humidity: Int) {
     Spacer(
         modifier = Modifier
             .aspectRatio(1f)
-            .padding(12.dp)
+            .padding(10.dp)
             .drawWithCache {
                 val width = size.width
                 val height = size.height
-                val archThickness = (width / 12f)
+                val archThickness = (width / 14f)
                 val progress = humidity
                     .times(270)
                     .div(100)

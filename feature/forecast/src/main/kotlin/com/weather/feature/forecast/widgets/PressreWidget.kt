@@ -71,13 +71,13 @@ private fun PressureGraph(
     Spacer(
         modifier = modifier
             .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
-            .padding(12.dp)
+            .padding(10.dp)
             .aspectRatio(1f)
             .drawWithCache {
                 val width = size.width
                 val height = size.height
                 val halfWidth = size.center.x
-                val archThickness = (width / 12f)
+                val archThickness = (width / 14f)
                 val indicatorThickness = (width / 30f)
                 val range = maxPressure
                     .minus(minPressure)
@@ -91,7 +91,7 @@ private fun PressureGraph(
                 val angle = (progress * 270) + 135.0
                 val lineRad = Math.toRadians(angle)
                 val innerRadius = halfWidth.times(0.9f)
-                val outerRadius = halfWidth.times(1.08f)
+                val outerRadius = halfWidth.times(1.1f)
 
                 val startLinesX = (innerRadius * cos(lineRad))
                     .plus(halfWidth)
@@ -121,7 +121,7 @@ private fun PressureGraph(
                         color = Color.Black,
                         start = Offset(startLinesX, startLinesY),
                         end = Offset(endLinesX, endLinesY),
-                        strokeWidth = indicatorThickness * 3f,
+                        strokeWidth = indicatorThickness * 2.5f,
                         cap = StrokeCap.Round,
                         blendMode = BlendMode.Clear
                     )

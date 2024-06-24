@@ -47,13 +47,13 @@ private fun RealFeelGraph(realFeel: Int) {
     Spacer(
         modifier = Modifier
             .aspectRatio(1f)
-            .padding(12.dp)
+            .padding(10.dp)
             .drawWithCache {
                 val width = size.width
                 val height = size.height
                 val circleSize = (width * 0.06f)
                 val indicatorStrokeWidth = (width * 0.03f)
-                val archThickness = (width / 12f)
+                val archThickness = (width / 14f)
                 val progress =
                     realFeel
                         .coerceIn(minimumValue = 0, maximumValue = 40)
@@ -121,6 +121,17 @@ private fun RealFeelPrev() {
         val color = MaterialTheme.colorScheme.background
         FlowRow(maxItemsInEachRow = 2, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             RealFeelWidget(modifier = Modifier.weight(1f), realFeel = -10, surfaceColor = color)
+            RealFeelWidget(modifier = Modifier.weight(1f), realFeel = -10, surfaceColor = color)
+        }
+    }
+}
+@OptIn(ExperimentalLayoutApi::class)
+@Preview(backgroundColor = 0xFF255BFF, showBackground = false)
+@Composable
+private fun RealFeelSinglePrev() {
+    WeatherTheme {
+        val color = MaterialTheme.colorScheme.background
+        FlowRow(maxItemsInEachRow = 2, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             RealFeelWidget(modifier = Modifier.weight(1f), realFeel = -10, surfaceColor = color)
         }
     }

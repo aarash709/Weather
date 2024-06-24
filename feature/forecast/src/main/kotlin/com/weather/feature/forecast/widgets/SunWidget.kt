@@ -87,11 +87,10 @@ private fun SunGraph(
     Spacer(modifier = modifier
         .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
         .aspectRatio(1.25f)
-        .padding(12.dp)
+        .padding(10.dp)
         .drawWithCache {
             val width = size.width
             val height = size.height
-            val circleSize = 5.dp.toPx()
 
             val sunsetColor = Color(0xFFf4a169)
             val lightPurple = Color(0xFF7C78E9)
@@ -105,8 +104,8 @@ private fun SunGraph(
                 .toFloat()
                 .div(timeRange)
             onDrawBehind {
-                val strokeWidth = size.height / 12
-
+                val strokeWidth = height / 14
+                val indicatorRadius = (height / 17f)
                 val pathPosition = FloatArray(2)
                 val pathTangent = FloatArray(2)
                 val path = calculatePath(strokeWidth = strokeWidth)
@@ -127,7 +126,7 @@ private fun SunGraph(
                     startY = height / 1.4f, // magic number
                     endY = height * 0.8f
                 )
-                val indicatorBoarderOffset = circleSize / 32
+//                val indicatorBoarderOffset = circleSize / 32
                 drawLine(
                     paleOnSurfaceColor,
                     start = Offset(
@@ -184,8 +183,7 @@ private fun SunGraph(
                 }
                 drawCircleIndicator(
                     brush = if (progress in 0.18..0.85) dayBrush else nightBrush,
-                    radius = circleSize,
-                    boarderRadius = circleSize * indicatorBoarderOffset,
+                    radius = indicatorRadius,
                     position = pathPosition,
                     shouldShowBorder = true
                 )
@@ -239,15 +237,15 @@ private fun DrawScope.drawSundialPath(path: Path, brush: Brush, strokeWidth: Flo
 private fun DrawScope.drawCircleIndicator(
     brush: Brush,
     radius: Float,
-    boarderRadius: Float,
     position: FloatArray = floatArrayOf(0f, 0f),
     shouldShowBorder: Boolean = true,
 ) {
     if (shouldShowBorder) {
         drawCircle(
             Color.Transparent,
-            radius = radius + boarderRadius,
+            radius = radius,
             center = Offset(position[0], position[1]),
+            style = Stroke(radius),
             blendMode = BlendMode.Clear
         )
     }
@@ -275,6 +273,26 @@ private fun UVPreview() {
                 formattedSunrise = "06:10",
                 formattedSunset = "18:30"
             )
+            SunWidget(
+                modifier = Modifier.weight(1f),
+                sunriseSeconds = 0,
+                sunsetSeconds = 100,
+                currentTimeSeconds = position,
+                surfaceColor = color,
+                formattedSunrise = "06:10",
+                formattedSunset = "18:30"
+            )
+        }
+    }
+}
+@OptIn(ExperimentalLayoutApi::class)
+@PreviewLightDark
+@Composable
+private fun UVSinglePreview() {
+    val position = 50
+    WeatherTheme {
+        val color = MaterialTheme.colorScheme.background
+        FlowRow(maxItemsInEachRow = 2, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             SunWidget(
                 modifier = Modifier.weight(1f),
                 sunriseSeconds = 0,
