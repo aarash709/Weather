@@ -36,7 +36,6 @@ import androidx.compose.ui.unit.sp
 import com.experiment.weather.core.common.R.string
 import com.weather.core.design.components.WeatherSquareWidget
 import com.weather.core.design.theme.WeatherTheme
-import timber.log.Timber
 
 @Composable
 fun SunWidget(
@@ -108,6 +107,7 @@ private fun SunGraph(
                 val indicatorRadius = (height / 17f)
                 val pathPosition = FloatArray(2)
                 val pathTangent = FloatArray(2)
+                val maskingHeight = height / 1.5f
                 val path = calculatePath(strokeWidth = strokeWidth)
                 val measure = PathMeasure(path.asAndroidPath(), false)
                 val length = measure.length
@@ -118,46 +118,49 @@ private fun SunGraph(
                     0.65f to daylightColor,
                     1.0f to sunsetColor,
                     startY = -height * 0.3f, // magic number
-                    endY = height / 1.4f
+                    endY = maskingHeight
                 )
                 val nightBrush = Brush.verticalGradient(
                     0.0f to lightPurple,
                     1.0f to darkPurple,
-                    startY = height / 1.4f, // magic number
+                    startY = maskingHeight, // magic number
                     endY = height * 0.8f
                 )
-//                val indicatorBoarderOffset = circleSize / 32
                 drawLine(
                     paleOnSurfaceColor,
                     start = Offset(
-                        0f,
-                        height / 1.4f
+                        x = 0f,
+                        y = maskingHeight
                     ),
-                    end = Offset(width, height / 1.4f),
+                    end = Offset(width, height / 1.5f),
                     pathEffect = PathEffect.dashPathEffect(floatArrayOf(5f, 5f))
                 )
                 //sunrise and sunset times under graph
+                val fontSize = (height / 20).sp
                 val sunriseText =
-                    textMeasure.measure(formattedSunrise, style = TextStyle(fontSize = 8.sp))
+                    textMeasure.measure(
+                        formattedSunrise,
+                        style = TextStyle(fontSize = fontSize)
+                    )
                 val sunsetText =
-                    textMeasure.measure(formattedSunset, style = TextStyle(fontSize = 8.sp))
+                    textMeasure.measure(formattedSunset, style = TextStyle(fontSize = fontSize))
                 drawText(
                     textLayoutResult = sunriseText,
                     color = paleOnSurfaceColor,
-                    topLeft = Offset(x = 0f, height - sunriseText.size.height / 2),
+                    topLeft = Offset(x = 0f, height - sunriseText.size.height * 0.8f),
                 )
                 drawText(
                     textLayoutResult = sunsetText,
                     color = paleOnSurfaceColor,
                     topLeft = Offset(
                         x = width - sunsetText.size.width,
-                        y = height - sunsetText.size.height / 2
+                        y = height - sunsetText.size.height * 0.8f
                     )
                 )
                 //one path clipped to apply two colors for day and night
                 clipRect(
                     left = width - (width.times(1.25f)),
-                    top = height / 1.4f,
+                    top = maskingHeight,
                     right = width.times(1.25f),
                     bottom = height * 1.1f,
                     clipOp = ClipOp.Difference
@@ -170,7 +173,7 @@ private fun SunGraph(
                 }
                 clipRect(
                     left = width - (width.times(1.25f)),
-                    top = height / 1.4f,
+                    top = maskingHeight,
                     right = width.times(1.25f),
                     bottom = height * 1.1f,
                     clipOp = ClipOp.Intersect
@@ -195,30 +198,32 @@ private fun SunGraph(
 fun DrawScope.calculatePath(strokeWidth: Float): Path {
     val width = size.width
     val height = size.height
+    val bottomHeight = height * 0.8f
+    val topHeight = height *.1f
     val centerX = size.width / 2
     val centerY = size.height / 2
     return Path().apply {
         //start point
-        moveTo(strokeWidth, height * .85f)
+        moveTo(strokeWidth, bottomHeight)
         //center point
         //control points 1 and 2
         cubicTo(
             x1 = width * 0.35f,
-            y1 = height * 0.85f,
+            y1 = bottomHeight,
             x2 = width * 0.2f,
-            y2 = 0f,
+            y2 = topHeight,
             x3 = width * 0.5f,
-            y3 = 0f
+            y3 = topHeight
         )
         //end pint
         //control points 3 and 4
         cubicTo(
             x1 = width * 0.8f,
-            y1 = 0f,
+            y1 = topHeight,
             x2 = width * 0.65f,
-            y2 = height * 0.85f,
+            y2 = bottomHeight,
             x3 = width - strokeWidth,
-            y3 = height * 0.85f
+            y3 = bottomHeight
         )
     }
 }
@@ -285,6 +290,7 @@ private fun UVPreview() {
         }
     }
 }
+
 @OptIn(ExperimentalLayoutApi::class)
 @PreviewLightDark
 @Composable
