@@ -42,12 +42,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -97,6 +99,7 @@ import com.weather.model.WeatherData
 import com.weather.model.WindSpeedUnits
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -154,6 +157,7 @@ fun WeatherForecastScreen(
     var height by remember {
         mutableFloatStateOf(0f)
     }
+    val scope = rememberCoroutineScope()
     var firstScrollableItemHeight by rememberSaveable {
         mutableIntStateOf(0)
     }
@@ -176,54 +180,72 @@ fun WeatherForecastScreen(
             )
         })
     val scrollState = rememberScrollState()
+    var isScrollEnabled by rememberSaveable{
+        mutableStateOf(false)
+    }
 //    val scrollProgress by remember(scrollState.value) {
 //        derivedStateOf {
 //            (scrollState.value.toFloat() / scrollState.maxValue.toFloat()).times(100)
 //        }
 //    }
+    var returnToClosedAnchor by remember {
+        mutableStateOf(false)
+    }
 
-        val anchors = DraggableAnchors {
-            Anchors.Closed at 0f
-            Anchors.OPEN at 0f
-        }
-        val draggableState = remember {
-            AnchoredDraggableState(
-                initialValue = Anchors.Closed,
+    val anchors = DraggableAnchors {
+        Anchors.Closed at 0f
+        Anchors.OPEN at 0f
+    }
+    val draggableState = remember {
+        AnchoredDraggableState(
+            initialValue = Anchors.Closed,
 //                anchors = anchors,
-                positionalThreshold = { totalDistance -> totalDistance * 0.1f },
-                animationSpec = spring(),
-                velocityThreshold = { with(density) { 50.dp.toPx() } }
-            )
-        }
-        val connection = remember {
-            object : NestedScrollConnection {
-                override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                    Timber.e("avalible: ${available.y}")
-                    Timber.e("draggg: ${draggableState.currentValue.name}")
-                    if (available.y > 0f) {
-                        draggableState.dispatchRawDelta(available.y)
-                        return Offset.Zero
-                    }
-                    if (available.y < 0f && draggableState.currentValue == Anchors.Closed){
-                        scrollState.dispatchRawDelta(0f)
-                        draggableState.dispatchRawDelta(available.y)
-                        return Offset.Zero
-                    }
-//                    scrollState.dispatchRawDelta(delta)
-                    return super.onPreScroll(available, source)
-                }
+            positionalThreshold = { totalDistance -> totalDistance * 0.5f },
+            animationSpec = spring(),
+            velocityThreshold = { with(density) { 100.dp.toPx() } }
+        )
+    }
+    LaunchedEffect(key1 = returnToClosedAnchor) {
+        if (returnToClosedAnchor) {
+            draggableState.anchoredDrag(Anchors.Closed) { anchors, targetValue ->
+
             }
         }
+    }
+    SideEffect {
+        isScrollEnabled = draggableState.currentValue == Anchors.OPEN && scrollState.value == 0
+    }
+    val connection = remember {
+        object : NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+//                Timber.e("avalible: ${available.y}")
+//                Timber.e("draggg: ${draggableState.currentValue.name}")
+//                val scrollableConsumed = scrollState.value
+//                Timber.e("scrCons: ${scrollableConsumed}")
+//                //
+//                if (available.y > 0f && draggableState.currentValue == Anchors.OPEN) {
+//                    draggableState.dispatchRawDelta(-available.y)
+//                    scrollState.dispatchRawDelta(-available.y)
+//                    if (scrollState.value == 0) {
+//                        draggableState.dispatchRawDelta(-available.y)
+//                    }
+//                    return available
+//                }
+//                if (available.y < 0f && draggableState.currentValue == Anchors.Closed) {
+//                    draggableState.dispatchRawDelta(available.y)
+//                    return Offset.Zero
+//                }
+//                    scrollState.dispatchRawDelta(delta)
+                return super.onPreScroll(available, source)
+            }
+        }
+    }
     Column(
         modifier = Modifier
             .nestedScroll(connection)
+            .anchoredDraggable(draggableState, Orientation.Vertical)
             .pullRefresh(refreshState) then modifier
     ) {
-        // TODO: remove
-        //expertiment
-//        ModalBottomSheet(onDismissRequest = { /*TODO*/ }) {
-//
-//        }
         CompositionLocalProvider(LocalContentColor provides Color.White) {
             ForecastTopBar(
                 onNavigateToManageLocations = { onNavigateToManageLocations() },
@@ -253,35 +275,10 @@ fun WeatherForecastScreen(
                     today = weatherUIState.weather.daily[0],
                     showPlaceholder = false,
                 )
-//                LazyColumn(modifier = Modifier
-//                    .fillMaxSize()
-//                    .anchoredDraggable(draggableState, Orientation.Vertical)
-//                    .offset {
-//                        IntOffset(
-//                            x = 0,
-//                            y = draggableState
-//                                .requireOffset()
-//                                .toInt()
-//                        )
-//                    },) {
-//                    items(100){
-//                        Box(Modifier.fillMaxSize()) {
-//                            Text(text = "text")
-//                        }
-//                    }
-//                    item { Text(text = "last") }
-//                }
-//                Surface(
-//                    onClick = { /*TODO*/ },
-//                    color = Color.Transparent,
-//                    modifier = Modifier
-//
-//                ) {
                 ConditionAndDetails(
                     modifier = Modifier
                         .fillMaxSize()
                         .navigationBarsPadding()
-                        .anchoredDraggable(draggableState, Orientation.Vertical)
                         .offset {
                             IntOffset(
                                 x = 0,
@@ -291,6 +288,7 @@ fun WeatherForecastScreen(
                             )
                         },
                     scrollState = scrollState,
+                    isScrollEnabled = isScrollEnabled,
                     weatherData = weatherUIState.weather,
                     isDayTime = isDayTime,
                     showPlaceholder = weatherUIState.showPlaceHolder,
@@ -304,7 +302,6 @@ fun WeatherForecastScreen(
                         })
                     }
                 )
-//                }
             }
         }
     }
@@ -315,6 +312,7 @@ fun WeatherForecastScreen(
 internal fun ConditionAndDetails(
     modifier: Modifier = Modifier,
     scrollState: ScrollState = rememberScrollState(),
+    isScrollEnabled: Boolean = true,
     weatherData: WeatherData,
     isDayTime: Boolean,
     showPlaceholder: Boolean,
@@ -344,7 +342,7 @@ internal fun ConditionAndDetails(
     FlowRow(
         modifier
             .fillMaxSize()
-            .verticalScroll(scrollState),
+            .verticalScroll(scrollState, isScrollEnabled),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         maxItemsInEachRow = 2
