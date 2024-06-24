@@ -38,7 +38,7 @@ junit = "4.13.2"
 appcompat = "1.7.0"
 arrow = "1.2.4"
 detekt = "1.23.6"
-kotlinter = "4.3.0"
+kotlinter = "4.4.0"
 lottie = "6.4.1"
 rive = "9.4.2"
 
