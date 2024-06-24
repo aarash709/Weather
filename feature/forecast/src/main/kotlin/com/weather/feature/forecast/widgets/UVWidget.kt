@@ -65,13 +65,13 @@ fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
     Spacer(
         modifier = modifier
             .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
-            .padding(12.dp)
+            .padding(10.dp)
             .aspectRatio(1f)
             .drawWithCache {
                 val width = size.width
                 val height = size.height
-                val indicatorRadius = (width / 15f)
-                val archThickness = (width / 12f)
+                val indicatorRadius = (width / 17f)
+                val archThickness = (width / 14f)
                 val progress = uvIndex
                     .coerceAtMost(11)
                     .toDouble()
@@ -93,17 +93,17 @@ fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
                         style = Stroke(width = archThickness, cap = StrokeCap.Round),
                     )
                     drawCircle(
-                        brush = colors,
-                        radius = indicatorRadius,
-                        center = Offset(x = x, y = y)
-                    )
-                    drawCircle(
                         Color.Black,
                         radius = indicatorRadius,
                         center = Offset(x = x, y = y),
-                        style = Stroke(indicatorRadius / 2),
+                        style = Stroke(indicatorRadius),
                         blendMode = BlendMode.Clear
 
+                    )
+                    drawCircle(
+                        brush = colors,
+                        radius = indicatorRadius,
+                        center = Offset(x = x, y = y)
                     )
                     val textSize = (size.width * 0.30f).toSp()
                     val textLayoutResult = textMeasurer.measure(
@@ -130,7 +130,7 @@ fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
 private fun UVPreview() {
     WeatherTheme {
         val color = MaterialTheme.colorScheme.background
-        UVWidget(uvIndex = 5, surfaceColor = color)
+        UVWidget(uvIndex = 2, surfaceColor = color)
     }
 
 }

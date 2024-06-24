@@ -94,7 +94,7 @@ internal fun WindDirectionGraph(
     Spacer(
         modifier = modifier
             .aspectRatio(1f)
-            .padding(12.dp)
+            .padding(10.dp)
             .drawWithCache {
                 val width = size.width
                 val halfWidth = size.center.x
@@ -297,6 +297,27 @@ private fun WidPreview() {
             windDirection = 0,
             windSpeed = 12,
             "mph",
+            surfaceColor = color
+        )
+    }
+}
+@OptIn(ExperimentalLayoutApi::class)
+@Preview(backgroundColor = 0xFF255BFF, showBackground = false)
+@Composable
+private fun WidsPreview() {
+    FlowRow(
+        Modifier
+            .background(Color.Blue.copy(green = 0.35f)),
+        maxItemsInEachRow = 2,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        val color = MaterialTheme.colorScheme.background
+        WindWidget(
+            Modifier.weight(1f),
+            windDirection = 0,
+            windSpeed = 12,
+            "km/h",
             surfaceColor = color
         )
     }
