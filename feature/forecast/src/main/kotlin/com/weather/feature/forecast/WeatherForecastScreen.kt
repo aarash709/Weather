@@ -36,9 +36,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -91,7 +89,6 @@ import com.weather.model.WeatherData
 import com.weather.model.WindSpeedUnits
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -144,9 +141,6 @@ fun WeatherForecastScreen(
     val resource = LocalContext.current.resources
     val density = LocalDensity.current
     val config = LocalConfiguration.current
-    var height by remember {
-        mutableFloatStateOf(0f)
-    }
     val scope = rememberCoroutineScope()
     var firstScrollableItemHeight by rememberSaveable {
         mutableIntStateOf(0)
@@ -173,11 +167,6 @@ fun WeatherForecastScreen(
     var isScrollEnabled by rememberSaveable {
         mutableStateOf(false)
     }
-//    val scrollProgress by remember(scrollState.value) {
-//        derivedStateOf {
-//            (scrollState.value.toFloat() / scrollState.maxValue.toFloat()).times(100)
-//        }
-//    }
     val draggableState = remember {
         AnchoredDraggableState(
             initialValue = Anchors.Closed,
@@ -192,9 +181,12 @@ fun WeatherForecastScreen(
     val connection = remember {
         object : NestedScrollConnection {
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                //disable scrolling if Anchor is Anchor.OPEN and scroll position is 0(at the beginning)
+                //disable scrolling if Anchor is Anchor.OPEN and
+                //scroll position is 0(at the beginning)
                 //and scrolling down
-                if (available.y > 0f && draggableState.currentValue == Anchors.OPEN && scrollState.value ==0) {
+                //NOTE: if scrolling is disabled this connection and
+                //all in child composable(s) scrollable wont work
+                if (available.y > 0f && draggableState.currentValue == Anchors.OPEN && scrollState.value == 0) {
                     isScrollEnabled = false
                 }
                 return super.onPreScroll(available, source)
@@ -214,9 +206,6 @@ fun WeatherForecastScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .graphicsLayer {
-//                        height = size.height
-                    }
                     .padding(horizontal = 16.dp),
                 contentAlignment = Alignment.TopCenter
             ) {
@@ -226,10 +215,10 @@ fun WeatherForecastScreen(
                         .padding(top = 60.dp, bottom = 100.dp)
                         .graphicsLayer {
                             //can be enabled after implementing independent scrolling
-//                            alpha -= draggableState.progress
-//                                .toFloat()
-//                                .times(3f)
-//                                .div(draggableState.targetValue)
+                            alpha = if (draggableState.currentValue == Anchors.OPEN) 0f else 1f
+//                                if (draggableState.currentValue == Anchors.Closed)
+//                                    draggableState.progress
+//                                else 0.5f
                         },
                     location = weatherUIState.weather.coordinates.name,
                     weatherData = weatherUIState.weather.current,
@@ -308,19 +297,6 @@ internal fun ConditionAndDetails(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         maxItemsInEachRow = 2
     ) {
-//        CurrentWeather(
-//            modifier = Modifier
-//                .padding(top = 60.dp, bottom = 100.dp)
-//                .graphicsLayer {
-//                    //can be enabled after implementing independent scrolling
-//                    //alpha -= scrollState.value.toFloat().times(3f).div(scrollState.maxValue)
-//                },
-//            location = weatherData.coordinates.name,
-//            weatherData = weatherData.current,
-//            today = weatherData.daily[0],
-//            showPlaceholder = false,
-//        )
-//        Spacer(modifier = Modifier.height(65.dp))
         //widgets
         // TODO: Weather alert goes here
         DailyWidget(
