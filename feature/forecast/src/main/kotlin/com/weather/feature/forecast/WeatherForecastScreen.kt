@@ -5,19 +5,25 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOutCubic
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.AnchoredDraggableState
+import androidx.compose.foundation.gestures.DraggableAnchors
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -30,25 +36,37 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.experiment.weather.core.common.R
 import com.weather.core.design.components.weatherPlaceholder
-import com.weather.feature.forecast.components.WeatherBackground
 import com.weather.core.design.theme.ForecastTheme
 import com.weather.feature.forecast.components.ForecastTopBar
+import com.weather.feature.forecast.components.WeatherBackground
 import com.weather.feature.forecast.components.hourlydata.DailyStaticData
 import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
 import com.weather.feature.forecast.widgets.DailyWidget
@@ -75,6 +93,10 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import kotlin.math.roundToInt
+
+enum class Anchors {
+    OPEN, Closed
+}
 
 @ExperimentalCoroutinesApi
 @Composable
@@ -105,7 +127,7 @@ fun WeatherForecastRoute(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun WeatherForecastScreen(
     modifier: Modifier = Modifier,
@@ -116,15 +138,22 @@ fun WeatherForecastScreen(
     onNavigateToSettings: () -> Unit,
     onRefresh: (Coordinate) -> Unit,
 ) {
-    // stateless
+    val resource = LocalContext.current.resources
+    val density = LocalDensity.current
+    val config = LocalConfiguration.current
+    val scope = rememberCoroutineScope()
+    var firstScrollableItemHeight by rememberSaveable {
+        mutableIntStateOf(0)
+    }
+
     val speedUnit by remember(weatherUIState) {
-        val state = when (weatherUIState.userSettings.windSpeedUnits) {
-            WindSpeedUnits.KM -> "km/h"
-            WindSpeedUnits.MS -> "m/s"
-            WindSpeedUnits.MPH -> "mph"
+        val value = when (weatherUIState.userSettings.windSpeedUnits) {
+            WindSpeedUnits.KM -> resource.getString(R.string.kilometer_per_hour_symbol)
+            WindSpeedUnits.MS -> resource.getString(R.string.meters_per_second_symbol)
+            WindSpeedUnits.MPH -> resource.getString(R.string.miles_per_hour_symbol)
             null -> "null"
         }
-        mutableStateOf(state)
+        mutableStateOf(value)
     }
     val refreshState =
         rememberPullRefreshState(refreshing = isSyncing, onRefresh = {
@@ -135,36 +164,93 @@ fun WeatherForecastScreen(
             )
         })
     val scrollState = rememberScrollState()
-    val scrollProgress by remember(scrollState.value) {
-        derivedStateOf {
-            (scrollState.value.toFloat() / scrollState.maxValue.toFloat()).times(100)
+    var isScrollEnabled by rememberSaveable {
+        mutableStateOf(false)
+    }
+    val draggableState = remember {
+        AnchoredDraggableState(
+            initialValue = Anchors.Closed,
+            positionalThreshold = { totalDistance -> totalDistance * 0.5f },
+            animationSpec = spring(),
+            velocityThreshold = { with(density) { 100.dp.toPx() } }
+        )
+    }
+    LaunchedEffect(key1 = draggableState.currentValue) {
+        isScrollEnabled = draggableState.currentValue == Anchors.OPEN
+    }
+    val connection = remember {
+        object : NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                //disable scrolling if Anchor is Anchor.OPEN and
+                //scroll position is 0(at the beginning)
+                //and scrolling down
+                //NOTE: if scrolling is disabled this connection and
+                //all in child composable(s) scrollable wont work
+                if (available.y > 0f && draggableState.currentValue == Anchors.OPEN && scrollState.value == 0) {
+                    isScrollEnabled = false
+                }
+                return super.onPreScroll(available, source)
+            }
         }
     }
     Column(
         modifier = Modifier
+            .nestedScroll(connection)
+            .anchoredDraggable(draggableState, Orientation.Vertical)
             .pullRefresh(refreshState) then modifier
-    )
-    {
+    ) {
         CompositionLocalProvider(LocalContentColor provides Color.White) {
             ForecastTopBar(
                 onNavigateToManageLocations = { onNavigateToManageLocations() },
                 onNavigateToSettings = { onNavigateToSettings() })
             Box(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .verticalScroll(scrollState),
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
                 contentAlignment = Alignment.TopCenter
             ) {
                 PullRefreshIndicator(refreshing = isSyncing, state = refreshState)
+                CurrentWeather(
+                    modifier = Modifier
+                        .padding(top = 60.dp, bottom = 100.dp)
+                        .graphicsLayer {
+                            //can be enabled after implementing independent scrolling
+                            alpha = if (draggableState.currentValue == Anchors.OPEN) 0f else 1f
+//                                if (draggableState.currentValue == Anchors.Closed)
+//                                    draggableState.progress
+//                                else 0.5f
+                        },
+                    location = weatherUIState.weather.coordinates.name,
+                    weatherData = weatherUIState.weather.current,
+                    today = weatherUIState.weather.daily[0],
+                    showPlaceholder = false,
+                )
                 ConditionAndDetails(
                     modifier = Modifier
                         .fillMaxSize()
-                        .navigationBarsPadding(),
+                        .navigationBarsPadding()
+                        .offset {
+                            IntOffset(
+                                x = 0,
+                                y = draggableState
+                                    .requireOffset()
+                                    .toInt()
+                            )
+                        },
+                    scrollState = scrollState,
+                    isScrollEnabled = isScrollEnabled,
                     weatherData = weatherUIState.weather,
                     isDayTime = isDayTime,
                     showPlaceholder = weatherUIState.showPlaceHolder,
                     speedUnit = speedUnit,
-                    shouldChangeColor = scrollProgress > 10
+                    shouldChangeColor = /*scrollProgress > 10*/ false,
+                    firstItemHeight = {
+                        firstScrollableItemHeight = it
+                        draggableState.updateAnchors(DraggableAnchors {
+                            Anchors.Closed at with(density) { config.screenHeightDp.dp.toPx() - it.toFloat() * 2 }
+                            Anchors.OPEN at 0f
+                        })
+                    }
                 )
             }
         }
@@ -175,11 +261,14 @@ fun WeatherForecastScreen(
 @Composable
 internal fun ConditionAndDetails(
     modifier: Modifier = Modifier,
+    scrollState: ScrollState = rememberScrollState(),
+    isScrollEnabled: Boolean = true,
     weatherData: WeatherData,
     isDayTime: Boolean,
     showPlaceholder: Boolean,
     speedUnit: String,
     shouldChangeColor: Boolean,
+    firstItemHeight: (Int) -> Unit,
 ) {
     val dayTimePrimaryColor = Color.Black.copy(
         alpha = 0.10f
@@ -201,29 +290,19 @@ internal fun ConditionAndDetails(
         label = "scrolled widget background color"
     )
     FlowRow(
-        modifier,
+        modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState, isScrollEnabled),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         maxItemsInEachRow = 2
     ) {
-        CurrentWeather(
-            modifier = Modifier
-                .padding(top = 60.dp, bottom = 100.dp)
-                .graphicsLayer {
-                    //can be enabled after implementing independent scrolling
-                    //alpha -= scrollState.value.toFloat().times(3f).div(scrollState.maxValue)
-                },
-            location = weatherData.coordinates.name,
-            weatherData = weatherData.current,
-            today = weatherData.daily[0],
-            showPlaceholder = false,
-        )
-        Spacer(modifier = Modifier.height(65.dp))
         //widgets
         // TODO: Weather alert goes here
         DailyWidget(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .onSizeChanged { firstItemHeight(it.height) },
             dailyList = weatherData.daily,
             currentTemp = weatherData.current.currentTemp.roundToInt(),
             surfaceColor = widgetColor
