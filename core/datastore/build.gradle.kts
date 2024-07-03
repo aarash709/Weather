@@ -20,10 +20,10 @@ android {
 dependencies {
 
     implementation(libs.androidx.datastore)
-    implementation(libs.androidx.lifecycleRuntimeKtx) //fixed duplicate class error while running android test.
+    implementation(libs.androidx.lifecycle.runtimeKtx) //fixed duplicate class error while running android test.
 
     implementation(libs.hilt.android)
-    ksp(libs.hilt.kaptCompiler)
+    ksp(libs.hilt.compiler)
 
     implementation(libs.kotlix.coroutinesAndroid)
 

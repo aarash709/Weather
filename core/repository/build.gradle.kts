@@ -28,11 +28,11 @@ dependencies {
     implementation(project(":core:common"))
 
     implementation(libs.timberLogger)
-    implementation(libs.androidx.lifecycleRuntimeKtx) //fixed duplicate class error while running android test.
+    implementation(libs.androidx.lifecycle.runtimeKtx) //fixed duplicate class error while running android test.
     implementation(libs.androidx.datastore)
     implementation(libs.kotlix.serialization)
     implementation(libs.hilt.android)
-    ksp(libs.hilt.kaptCompiler)
+    ksp(libs.hilt.compiler)
 
     testImplementation(project(":core:testing"))
     androidTestImplementation(project(":core:testing"))

@@ -31,14 +31,13 @@ dependencies {
 
     implementation(libs.androidx.navigationCompose)
 
-    implementation(libs.accompanist.flowLayout)
 
     implementation(libs.coilCompose)
 
-    implementation(libs.androidx.lifecycleRuntimeKtx)
-    implementation(libs.androidx.lifecycleComposeRuntime)
-    implementation(libs.androidx.lifecycleViewModelCompose)
-    implementation(libs.androidx.lifecycleViewModelKtx)
+    implementation(libs.androidx.lifecycle.runtimeKtx)
+    implementation(libs.androidx.lifecycle.composeRuntime)
+    implementation(libs.androidx.lifecycle.viewModelCompose)
+    implementation(libs.androidx.lifecycle.viewModelKtx)
 
     implementation(libs.kotlix.serialization)
     implementation(libs.androidx.datastore)
@@ -47,7 +46,7 @@ dependencies {
 
     implementation(libs.hilt.navigationCompose)
     implementation(libs.hilt.android)
-    ksp(libs.hilt.kaptCompiler)
+    ksp(libs.hilt.compiler)
 
     implementation(libs.timberLogger)
 
