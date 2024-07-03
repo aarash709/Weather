@@ -27,10 +27,10 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:common"))
 
-    implementation(libs.androidx.lifecycleRuntimeKtx) //fixed duplicate class error while running android test.
+    implementation(libs.androidx.lifecycle.runtimeKtx) //fixed duplicate class error while running android test.
 
     implementation(libs.hilt.android)
-    ksp(libs.hilt.kaptCompiler)
+    ksp(libs.hilt.compiler)
 
     //implementation("com.squareup.retrofit2:retrofit:$retrofit_version")
     implementation(libs.retrofitMoshi)

@@ -94,20 +94,19 @@ dependencies {
 
     implementation(libs.androidx.navigationCompose)
 
-    implementation(libs.androidx.lifecycleRuntimeKtx)
-    implementation(libs.androidx.lifecycleComposeRuntime)
-    implementation(libs.androidx.lifecycleViewModelCompose)
-
-    implementation(libs.androidx.lifecycleViewModelKtx)
-    implementation(libs.androidx.lifecycleLiveDataKtx)
-    implementation(libs.androidx.activityCompose)
+    implementation(libs.androidx.lifecycle.runtimeKtx)
+    implementation(libs.androidx.lifecycle.composeRuntime)
+    implementation(libs.androidx.lifecycle.viewModelCompose)
+    implementation(libs.androidx.lifecycle.viewModelKtx)
+    implementation(libs.androidx.lifecycle.liveDataKtx)
+    implementation(libs.androidx.activity.compose)
 
     implementation(libs.androidx.datastore)
 
     implementation(libs.hilt.navigationCompose)
 
     implementation(libs.hilt.android)
-    ksp(libs.hilt.kaptCompiler)
+    ksp(libs.hilt.compiler)
 
     implementation(libs.androidx.hiltWork)
     ksp(libs.androidx.hiltKaptCompiler)

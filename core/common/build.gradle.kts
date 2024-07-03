@@ -23,7 +23,7 @@ dependencies {
     implementation(project(":core:model"))
 
     implementation(libs.hilt.android)
-    ksp(libs.hilt.kaptCompiler)
+    ksp(libs.hilt.compiler)
 
     testImplementation(project(":core:testing"))
 }

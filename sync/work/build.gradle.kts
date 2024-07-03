@@ -26,12 +26,12 @@ dependencies {
     implementation(project(":core:repository"))
     implementation(project(":core:model"))
 
-    implementation(libs.androidx.lifecycleLiveDataKtx)
+//    implementation(libs.androidx.lifecycleLiveDataKtx)
     implementation(libs.kotlix.serialization)
     implementation(libs.androidx.work)
 
     implementation(libs.hilt.android)
-    ksp(libs.hilt.kaptCompiler)
+    ksp(libs.hilt.compiler)
 
     implementation(libs.androidx.hiltWork)
     ksp(libs.androidx.hiltKaptCompiler)
