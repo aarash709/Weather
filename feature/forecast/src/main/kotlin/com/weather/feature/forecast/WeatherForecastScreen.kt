@@ -7,6 +7,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOutCubic
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -167,11 +168,13 @@ fun WeatherForecastScreen(
     var isScrollEnabled by rememberSaveable {
         mutableStateOf(false)
     }
+    val decay = rememberSplineBasedDecay<Float>()
     val draggableState = remember {
         AnchoredDraggableState(
             initialValue = Anchors.Closed,
             positionalThreshold = { totalDistance -> totalDistance * 0.5f },
-            animationSpec = spring(),
+            snapAnimationSpec = spring(),
+            decayAnimationSpec = decay,
             velocityThreshold = { with(density) { 100.dp.toPx() } }
         )
     }
