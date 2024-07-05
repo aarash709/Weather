@@ -317,48 +317,54 @@ internal fun ConditionAndDetails(
             speedUnit = speedUnit,
             surfaceColor = widgetColor
         )
-        WindWidget(
-            modifier = Modifier.weight(1f),
-            windDirection = weatherData.current.wind_deg,
-            windSpeed = weatherData.current.wind_speed.roundToInt(),
-            speedUnits = speedUnit,
-            surfaceColor = widgetColor
-        )
-        SunWidget(
-            modifier = Modifier.weight(1f),
-            formattedSunrise = SimpleDateFormat(
-                "HH:mm",
-                Locale.getDefault()
-            ).format(Date(weatherData.current.sunrise.toLong() * 1000)),
-            formattedSunset = SimpleDateFormat(
-                "HH:mm",
-                Locale.getDefault()
-            ).format(Date(weatherData.current.sunset.toLong() * 1000)),
-            sunriseSeconds = weatherData.current.sunrise,
-            sunsetSeconds = weatherData.current.sunset,
-            currentTimeSeconds = weatherData.current.dt,
-            surfaceColor = widgetColor
-        )
-        RealFeelWidget(
-            modifier = Modifier.weight(1f),
-            realFeel = weatherData.current.feels_like.roundToInt(),
-            surfaceColor = widgetColor
-        )
-        HumidityWidget(
-            modifier = Modifier.weight(1f),
-            humidity = weatherData.current.humidity,
-            surfaceColor = widgetColor
-        )
-        UVWidget(
-            modifier = Modifier.weight(1f),
-            uvIndex = weatherData.current.uvi.toInt(),
-            surfaceColor = widgetColor
-        )
-        PressureWidget(
-            modifier = Modifier.weight(1f),
-            pressure = weatherData.current.pressure,
-            surfaceColor = widgetColor
-        )
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            WindWidget(
+                modifier = Modifier.weight(1f),
+                windDirection = weatherData.current.wind_deg,
+                windSpeed = weatherData.current.wind_speed.roundToInt(),
+                speedUnits = speedUnit,
+                surfaceColor = widgetColor
+            )
+            SunWidget(
+                modifier = Modifier.weight(1f),
+                formattedSunrise = SimpleDateFormat(
+                    "HH:mm",
+                    Locale.getDefault()
+                ).format(Date(weatherData.current.sunrise.toLong() * 1000)),
+                formattedSunset = SimpleDateFormat(
+                    "HH:mm",
+                    Locale.getDefault()
+                ).format(Date(weatherData.current.sunset.toLong() * 1000)),
+                sunriseSeconds = weatherData.current.sunrise,
+                sunsetSeconds = weatherData.current.sunset,
+                currentTimeSeconds = weatherData.current.dt,
+                surfaceColor = widgetColor
+            )
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            RealFeelWidget(
+                modifier = Modifier.weight(1f),
+                realFeel = weatherData.current.feels_like.roundToInt(),
+                surfaceColor = widgetColor
+            )
+            HumidityWidget(
+                modifier = Modifier.weight(1f),
+                humidity = weatherData.current.humidity,
+                surfaceColor = widgetColor
+            )
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            UVWidget(
+                modifier = Modifier.weight(1f),
+                uvIndex = weatherData.current.uvi.toInt(),
+                surfaceColor = widgetColor
+            )
+            PressureWidget(
+                modifier = Modifier.weight(1f),
+                pressure = weatherData.current.pressure,
+                surfaceColor = widgetColor
+            )
+        }
     }
 }
 
