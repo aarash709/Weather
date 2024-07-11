@@ -38,6 +38,7 @@ detekt = "1.23.6"
 kotlinter = "4.4.0"
 lottie = "6.4.1"
 rive = "9.5.3"
+haze = "0.7.3"
 
 
 
@@ -57,6 +58,7 @@ compose-material = { group = "androidx.compose.material", name = "material" }
 compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 compose-material3-windowSizeClass = { group = "androidx.compose.material3", name = "material3-window-size-class" }
 compose-material-iconsExtended = { group = "androidx.compose.material", name = "material-icons-extended" }
+haze = { group = "dev.chrisbanes.haze", name = "haze",version.ref = "haze" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidxAppcompat" }
 androidx-coreKtx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
 androidx-splashScreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidxSplashScreen" }

@@ -34,6 +34,8 @@ dependencies {
 
     implementation(libs.coilCompose)
 
+    implementation(libs.haze)
+
     implementation(libs.androidx.lifecycle.runtimeKtx)
     implementation(libs.androidx.lifecycle.composeRuntime)
     implementation(libs.androidx.lifecycle.viewModelCompose)

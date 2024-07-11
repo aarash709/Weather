@@ -88,6 +88,9 @@ import com.weather.model.TemperatureUnits
 import com.weather.model.Weather
 import com.weather.model.WeatherData
 import com.weather.model.WindSpeedUnits
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.haze
+import dev.chrisbanes.haze.hazeChild
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
@@ -196,14 +199,18 @@ fun WeatherForecastScreen(
             }
         }
     }
+    val hazeState = remember { HazeState() }
     Column(
         modifier = Modifier
+            .haze(hazeState)
             .nestedScroll(connection)
             .anchoredDraggable(draggableState, Orientation.Vertical)
             .pullRefresh(refreshState) then modifier
     ) {
         CompositionLocalProvider(LocalContentColor provides Color.White) {
             ForecastTopBar(
+                modifier = Modifier
+                    .hazeChild(hazeState),
                 onNavigateToManageLocations = { onNavigateToManageLocations() },
                 onNavigateToSettings = { onNavigateToSettings() })
             Box(
