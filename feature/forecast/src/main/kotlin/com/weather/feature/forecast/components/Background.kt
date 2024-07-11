@@ -61,12 +61,13 @@ fun WeatherBackground(
             in 801..804 -> condition = 6 //clouds
         }
     }
-    Box(modifier = modifier
+    Box(modifier = Modifier
         .drawWithCache {
             onDrawBehind {
             }
         }) {
         AnimatedContent(
+            modifier = modifier,
             targetState = condition,
             transitionSpec = { fadeIn() togetherWith fadeOut(tween(300)) },
             label = "background condition image"

@@ -115,12 +115,15 @@ fun WeatherForecastRoute(
     val syncing by viewModel.isSyncing.collectAsStateWithLifecycle()
     val timeOfDay by viewModel.timeOfDay.collectAsStateWithLifecycle()
     val conditionID = weatherUIState.weather.current.weather[0].id
+    val hazeState = remember { HazeState() }
     WeatherBackground(
+        modifier = Modifier.haze(hazeState),
         conditionID = conditionID,
         isDay = timeOfDay == TimeOfDay.Day,
         isDawn = timeOfDay == TimeOfDay.Dawn
     ) {
         WeatherForecastScreen(
+            hazeState,
             weatherUIState = weatherUIState,
             isDayTime = timeOfDay != TimeOfDay.Night,
             isSyncing = syncing,
@@ -134,6 +137,7 @@ fun WeatherForecastRoute(
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun WeatherForecastScreen(
+    hazeState: HazeState,
     modifier: Modifier = Modifier,
     weatherUIState: SavableForecastData,
     isDayTime: Boolean,
@@ -199,18 +203,14 @@ fun WeatherForecastScreen(
             }
         }
     }
-    val hazeState = remember { HazeState() }
     Column(
         modifier = Modifier
-            .haze(hazeState)
             .nestedScroll(connection)
             .anchoredDraggable(draggableState, Orientation.Vertical)
             .pullRefresh(refreshState) then modifier
     ) {
         CompositionLocalProvider(LocalContentColor provides Color.White) {
             ForecastTopBar(
-                modifier = Modifier
-                    .hazeChild(hazeState),
                 onNavigateToManageLocations = { onNavigateToManageLocations() },
                 onNavigateToSettings = { onNavigateToSettings() })
             Box(
@@ -236,6 +236,7 @@ fun WeatherForecastScreen(
                     showPlaceholder = false,
                 )
                 ConditionAndDetails(
+                    hazeState = hazeState,
                     modifier = Modifier
                         .fillMaxSize()
                         .navigationBarsPadding()
@@ -270,6 +271,7 @@ fun WeatherForecastScreen(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun ConditionAndDetails(
+    hazeState: HazeState,
     modifier: Modifier = Modifier,
     scrollState: ScrollState = rememberScrollState(),
     isScrollEnabled: Boolean = true,
@@ -301,7 +303,7 @@ internal fun ConditionAndDetails(
     )
     FlowRow(
         modifier
-            .fillMaxSize()
+            .hazeChild(hazeState)
             .verticalScroll(scrollState, isScrollEnabled),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -483,6 +485,7 @@ private fun MainPagePreview() {
                 )
         ) {
             WeatherForecastScreen(
+                hazeState = HazeState(),
                 weatherUIState = data,
                 isSyncing = false,
                 isDayTime = false,
