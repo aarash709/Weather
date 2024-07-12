@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -194,7 +195,8 @@ fun WeatherForecastScreen(
     }
     val hazeState = remember { HazeState() }
     WeatherBackground(
-        modifier = Modifier.haze(hazeState),
+        modifier = Modifier
+            .haze(hazeState),
         conditionID = conditionID,
         isDay = timeOfDay == TimeOfDay.Day,
         isDawn = timeOfDay == TimeOfDay.Dawn
@@ -300,7 +302,6 @@ internal fun ConditionAndDetails(
     )
     FlowRow(
         modifier
-            .hazeChild(hazeState)
             .verticalScroll(scrollState, isScrollEnabled),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -311,6 +312,7 @@ internal fun ConditionAndDetails(
         DailyWidget(
             modifier = Modifier
                 .fillMaxWidth()
+                .hazeChild(hazeState, shape = RoundedCornerShape(16.dp))
                 .onSizeChanged { firstItemHeight(it.height) },
             dailyList = weatherData.daily,
             currentTemp = weatherData.current.currentTemp.roundToInt(),
@@ -318,21 +320,26 @@ internal fun ConditionAndDetails(
         )
         HourlyWidget(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .hazeChild(hazeState, shape = RoundedCornerShape(16.dp)),
             hourly = weatherData.hourly,
             speedUnit = speedUnit,
             surfaceColor = widgetColor
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             WindWidget(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .hazeChild(hazeState, shape = RoundedCornerShape(16.dp)),
                 windDirection = weatherData.current.wind_deg,
                 windSpeed = weatherData.current.wind_speed.roundToInt(),
                 speedUnits = speedUnit,
                 surfaceColor = widgetColor
             )
             SunWidget(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .hazeChild(hazeState, shape = RoundedCornerShape(16.dp)),
                 formattedSunrise = SimpleDateFormat(
                     "HH:mm",
                     Locale.getDefault()
@@ -349,24 +356,32 @@ internal fun ConditionAndDetails(
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             RealFeelWidget(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .hazeChild(hazeState, shape = RoundedCornerShape(16.dp)),
                 realFeel = weatherData.current.feels_like.roundToInt(),
                 surfaceColor = widgetColor
             )
             HumidityWidget(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .hazeChild(hazeState, shape = RoundedCornerShape(16.dp)),
                 humidity = weatherData.current.humidity,
                 surfaceColor = widgetColor
             )
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             UVWidget(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .hazeChild(hazeState, shape = RoundedCornerShape(16.dp)),
                 uvIndex = weatherData.current.uvi.toInt(),
                 surfaceColor = widgetColor
             )
             PressureWidget(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .hazeChild(hazeState, shape = RoundedCornerShape(16.dp)),
                 pressure = weatherData.current.pressure,
                 surfaceColor = widgetColor
             )
