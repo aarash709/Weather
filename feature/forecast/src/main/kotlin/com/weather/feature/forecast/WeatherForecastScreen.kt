@@ -26,10 +26,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Scaffold
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -90,6 +92,7 @@ import com.weather.model.Weather
 import com.weather.model.WeatherData
 import com.weather.model.WindSpeedUnits
 import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -194,76 +197,83 @@ fun WeatherForecastScreen(
         }
     }
     val hazeState = remember { HazeState() }
-    WeatherBackground(
-        modifier = Modifier
-            .haze(hazeState),
-        conditionID = conditionID,
-        isDay = timeOfDay == TimeOfDay.Day,
-        isDawn = timeOfDay == TimeOfDay.Dawn
-    ) {
-        Column(
+    Scaffold(
+        topBar = {
+            ForecastTopBar(
+                onNavigateToManageLocations = { onNavigateToManageLocations() },
+                onNavigateToSettings = { onNavigateToSettings() })
+        }) { scaffoldPadding ->
+        WeatherBackground(
             modifier = Modifier
-                .nestedScroll(connection)
-                .anchoredDraggable(draggableState, Orientation.Vertical)
-                .pullRefresh(refreshState) then modifier
+//                .navigationBarsPadding()
+                .padding(scaffoldPadding)
+                .haze(hazeState),
+            conditionID = conditionID,
+            isDay = timeOfDay == TimeOfDay.Day,
+            isDawn = timeOfDay == TimeOfDay.Dawn
         ) {
-            CompositionLocalProvider(LocalContentColor provides Color.White) {
-                ForecastTopBar(
-                    onNavigateToManageLocations = { onNavigateToManageLocations() },
-                    onNavigateToSettings = { onNavigateToSettings() })
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp),
-                    contentAlignment = Alignment.TopCenter
-                ) {
-                    PullRefreshIndicator(refreshing = isSyncing, state = refreshState)
-                    CurrentWeather(
+            Column(
+                modifier = Modifier
+                    .nestedScroll(connection)
+                    .anchoredDraggable(draggableState, Orientation.Vertical)
+                    .pullRefresh(refreshState) then modifier
+            ) {
+                CompositionLocalProvider(LocalContentColor provides Color.White) {
+                    Box(
                         modifier = Modifier
-                            .padding(top = 60.dp, bottom = 100.dp)
-                            .graphicsLayer {
-                                //can be enabled after implementing independent scrolling
-                                alpha = if (draggableState.currentValue == Anchors.OPEN) 0f else 1f
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp),
+                        contentAlignment = Alignment.TopCenter
+                    ) {
+                        PullRefreshIndicator(refreshing = isSyncing, state = refreshState)
+                        CurrentWeather(
+                            modifier = Modifier
+                                .padding(top = 60.dp, bottom = 100.dp)
+                                .graphicsLayer {
+                                    //can be enabled after implementing independent scrolling
+                                    alpha =
+                                        if (draggableState.currentValue == Anchors.OPEN) 0f else 1f
 //                                if (draggableState.currentValue == Anchors.Closed)
 //                                    draggableState.progress
 //                                else 0.5f
-                            },
-                        location = weatherUIState.weather.coordinates.name,
-                        weatherData = weatherUIState.weather.current,
-                        today = weatherUIState.weather.daily[0],
-                        showPlaceholder = false,
-                    )
-                    ConditionAndDetails(
-                        hazeState = hazeState,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .navigationBarsPadding()
-                            .offset {
-                                IntOffset(
-                                    x = 0,
-                                    y = draggableState
-                                        .requireOffset()
-                                        .toInt()
-                                )
-                            },
-                        scrollState = scrollState,
-                        isScrollEnabled = isScrollEnabled,
-                        weatherData = weatherUIState.weather,
-                        isDayTime = timeOfDay != TimeOfDay.Night,
-                        showPlaceholder = weatherUIState.showPlaceHolder,
-                        speedUnit = speedUnit,
-                        shouldChangeColor = /*scrollProgress > 10*/ false,
-                        firstItemHeight = {
-                            firstScrollableItemHeight = it
-                            draggableState.updateAnchors(DraggableAnchors {
-                                Anchors.Closed at with(density) { config.screenHeightDp.dp.toPx() - it.toFloat() * 2 }
-                                Anchors.OPEN at 0f
-                            })
-                        }
-                    )
+                                },
+                            location = weatherUIState.weather.coordinates.name,
+                            weatherData = weatherUIState.weather.current,
+                            today = weatherUIState.weather.daily[0],
+                            showPlaceholder = false,
+                        )
+                        ConditionAndDetails(
+                            hazeState = hazeState,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .offset {
+                                    IntOffset(
+                                        x = 0,
+                                        y = draggableState
+                                            .requireOffset()
+                                            .toInt()
+                                    )
+                                },
+                            scrollState = scrollState,
+                            isScrollEnabled = isScrollEnabled,
+                            weatherData = weatherUIState.weather,
+                            isDayTime = timeOfDay != TimeOfDay.Night,
+                            showPlaceholder = weatherUIState.showPlaceHolder,
+                            speedUnit = speedUnit,
+                            shouldChangeColor = /*scrollProgress > 10*/ false,
+                            firstItemHeight = {
+                                firstScrollableItemHeight = it
+                                draggableState.updateAnchors(DraggableAnchors {
+                                    Anchors.Closed at with(density) { config.screenHeightDp.dp.toPx() - it.toFloat() * 2 }
+                                    Anchors.OPEN at 0f
+                                })
+                            }
+                        )
+                    }
                 }
             }
         }
+
     }
 }
 
