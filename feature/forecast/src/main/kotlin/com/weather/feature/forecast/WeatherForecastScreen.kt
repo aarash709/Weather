@@ -21,9 +21,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -31,11 +31,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Scaffold
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -92,7 +92,6 @@ import com.weather.model.Weather
 import com.weather.model.WeatherData
 import com.weather.model.WindSpeedUnits
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -128,7 +127,10 @@ fun WeatherForecastRoute(
     )
 }
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
+@OptIn(
+    ExperimentalMaterialApi::class,
+    ExperimentalFoundationApi::class
+)
 @Composable
 fun WeatherForecastScreen(
     modifier: Modifier = Modifier,
@@ -198,15 +200,12 @@ fun WeatherForecastScreen(
     }
     val hazeState = remember { HazeState() }
     Scaffold(
-        topBar = {
-            ForecastTopBar(
-                onNavigateToManageLocations = { onNavigateToManageLocations() },
-                onNavigateToSettings = { onNavigateToSettings() })
-        }) { scaffoldPadding ->
+        modifier = Modifier.fillMaxSize(),
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
+    ) { padding ->
         WeatherBackground(
-            modifier = Modifier
-//                .navigationBarsPadding()
-                .padding(scaffoldPadding)
+            modifier = modifier
+                .padding(padding)
                 .haze(hazeState),
             conditionID = conditionID,
             isDay = timeOfDay == TimeOfDay.Day,
@@ -216,13 +215,17 @@ fun WeatherForecastScreen(
                 modifier = Modifier
                     .nestedScroll(connection)
                     .anchoredDraggable(draggableState, Orientation.Vertical)
-                    .pullRefresh(refreshState) then modifier
+                    .pullRefresh(refreshState)
             ) {
                 CompositionLocalProvider(LocalContentColor provides Color.White) {
+                    ForecastTopBar(
+                        modifier = Modifier.statusBarsPadding(),
+                        onNavigateToManageLocations = { onNavigateToManageLocations() },
+                        onNavigateToSettings = { onNavigateToSettings() })
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(horizontal = 16.dp),
+                            .padding(horizontal = 8.dp),
                         contentAlignment = Alignment.TopCenter
                     ) {
                         PullRefreshIndicator(refreshing = isSyncing, state = refreshState)
@@ -270,6 +273,7 @@ fun WeatherForecastScreen(
                             }
                         )
                     }
+
                 }
             }
         }
