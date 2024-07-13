@@ -8,11 +8,8 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -24,7 +21,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -61,62 +57,64 @@ fun WeatherBackground(
             in 801..804 -> condition = 6 //clouds
         }
     }
-    Box(modifier = modifier
-        .drawWithCache {
-            onDrawBehind {
-            }
-        }) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
         AnimatedContent(
+            modifier = Modifier
+                .fillMaxSize() then modifier,
             targetState = condition,
             transitionSpec = { fadeIn() togetherWith fadeOut(tween(300)) },
             label = "background condition image"
         ) { condition ->
+            val contentScale = ContentScale.Crop
             when (condition) {
                 1 -> Image(
                     painter = painterResource(id = R.drawable.day_clear),
-                    contentScale = ContentScale.Crop,
+                    contentScale = contentScale,
                     contentDescription = "image of clouds"
                 )
 
                 2 -> Image(
                     painter = painterResource(id = R.drawable.thunderstorm),
-                    contentScale = ContentScale.Crop,
+                    contentScale = contentScale,
                     contentDescription = "image of clouds"
                 )
 
                 3 -> Image(
                     painter = painterResource(id = R.drawable.drizzel),
-                    contentScale = ContentScale.Crop,
+                    contentScale = contentScale,
                     contentDescription = "image of clouds"
                 )
 
                 4 -> Image(
                     painter = painterResource(id = R.drawable.snow),
-                    contentScale = ContentScale.Crop,
+                    contentScale = contentScale,
                     contentDescription = "image of clouds"
                 )
 
                 5 -> Image(
                     painter = painterResource(id = R.drawable.fog),
-                    contentScale = ContentScale.Crop,
+                    contentScale = contentScale,
                     contentDescription = "image of clouds"
                 )
 
                 6 -> Image(
                     painter = painterResource(id = R.drawable.clouds),
-                    contentScale = ContentScale.Crop,
+                    contentScale = contentScale,
                     contentDescription = "image of clouds"
                 )
 
                 7 -> Image(
                     painter = painterResource(id = R.drawable.night_clear),
-                    contentScale = ContentScale.Crop,
+                    contentScale = contentScale,
                     contentDescription = "image of clouds"
                 )
 
                 8 -> Image(
                     painter = painterResource(id = R.drawable.dawn),
-                    contentScale = ContentScale.Crop,
+                    contentScale = contentScale,
                     contentDescription = "image of clouds"
                 )
             }

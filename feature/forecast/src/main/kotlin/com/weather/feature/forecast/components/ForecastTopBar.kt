@@ -11,6 +11,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.weather.core.design.theme.WeatherTheme
@@ -18,10 +19,12 @@ import com.weather.core.design.theme.WeatherTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ForecastTopBar(
+    modifier: Modifier = Modifier,
     onNavigateToManageLocations: () -> Unit,
     onNavigateToSettings: () -> Unit,
 ) {
     CenterAlignedTopAppBar(
+        modifier = modifier,
         title = {},
         navigationIcon = {},
         actions = {

@@ -25,6 +25,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -47,7 +48,7 @@ private val lightColorScheme = lightColorScheme(
 )
 
 //ONLY use in forecast theme
-private val forecastColors = lightColorScheme
+private val forecastColors = lightColorScheme.copy(background = Color.DarkGray)
 
 @Composable
 fun WeatherTheme(

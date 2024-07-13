@@ -21,18 +21,21 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -88,6 +91,9 @@ import com.weather.model.TemperatureUnits
 import com.weather.model.Weather
 import com.weather.model.WeatherData
 import com.weather.model.WindSpeedUnits
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.haze
+import dev.chrisbanes.haze.hazeChild
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
@@ -111,29 +117,25 @@ fun WeatherForecastRoute(
         .weatherUIState.collectAsStateWithLifecycle()
     val syncing by viewModel.isSyncing.collectAsStateWithLifecycle()
     val timeOfDay by viewModel.timeOfDay.collectAsStateWithLifecycle()
-    val conditionID = weatherUIState.weather.current.weather[0].id
-    WeatherBackground(
-        conditionID = conditionID,
-        isDay = timeOfDay == TimeOfDay.Day,
-        isDawn = timeOfDay == TimeOfDay.Dawn
-    ) {
-        WeatherForecastScreen(
-            weatherUIState = weatherUIState,
-            isDayTime = timeOfDay != TimeOfDay.Night,
-            isSyncing = syncing,
-            onNavigateToManageLocations = { onNavigateToManageLocations() },
-            onNavigateToSettings = { onNavigateToSettings() },
-            onRefresh = viewModel::sync
-        )
-    }
+    WeatherForecastScreen(
+        weatherUIState = weatherUIState,
+        timeOfDay = timeOfDay,
+        isSyncing = syncing,
+        onNavigateToManageLocations = { onNavigateToManageLocations() },
+        onNavigateToSettings = { onNavigateToSettings() },
+        onRefresh = viewModel::sync
+    )
 }
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
+@OptIn(
+    ExperimentalMaterialApi::class,
+    ExperimentalFoundationApi::class
+)
 @Composable
 fun WeatherForecastScreen(
     modifier: Modifier = Modifier,
     weatherUIState: SavableForecastData,
-    isDayTime: Boolean,
+    timeOfDay: TimeOfDay,
     isSyncing: Boolean,
     onNavigateToManageLocations: () -> Unit,
     onNavigateToSettings: () -> Unit,
@@ -146,7 +148,7 @@ fun WeatherForecastScreen(
     var firstScrollableItemHeight by rememberSaveable {
         mutableIntStateOf(0)
     }
-
+    val conditionID = weatherUIState.weather.current.weather[0].id
     val speedUnit by remember(weatherUIState) {
         val value = when (weatherUIState.userSettings.windSpeedUnits) {
             WindSpeedUnits.KM -> resource.getString(R.string.kilometer_per_hour_symbol)
@@ -196,73 +198,93 @@ fun WeatherForecastScreen(
             }
         }
     }
-    Column(
-        modifier = Modifier
-            .nestedScroll(connection)
-            .anchoredDraggable(draggableState, Orientation.Vertical)
-            .pullRefresh(refreshState) then modifier
-    ) {
-        CompositionLocalProvider(LocalContentColor provides Color.White) {
-            ForecastTopBar(
-                onNavigateToManageLocations = { onNavigateToManageLocations() },
-                onNavigateToSettings = { onNavigateToSettings() })
-            Box(
+    val hazeState = remember { HazeState() }
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
+    ) { padding ->
+        WeatherBackground(
+            modifier = modifier
+                .padding(padding)
+                .haze(hazeState),
+            conditionID = conditionID,
+            isDay = timeOfDay == TimeOfDay.Day,
+            isDawn = timeOfDay == TimeOfDay.Dawn
+        ) {
+            Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
-                contentAlignment = Alignment.TopCenter
+                    .nestedScroll(connection)
+                    .anchoredDraggable(draggableState, Orientation.Vertical)
+                    .pullRefresh(refreshState)
             ) {
-                PullRefreshIndicator(refreshing = isSyncing, state = refreshState)
-                CurrentWeather(
-                    modifier = Modifier
-                        .padding(top = 60.dp, bottom = 100.dp)
-                        .graphicsLayer {
-                            //can be enabled after implementing independent scrolling
-                            alpha = if (draggableState.currentValue == Anchors.OPEN) 0f else 1f
+                CompositionLocalProvider(LocalContentColor provides Color.White) {
+                    ForecastTopBar(
+                        modifier = Modifier.statusBarsPadding(),
+                        onNavigateToManageLocations = { onNavigateToManageLocations() },
+                        onNavigateToSettings = { onNavigateToSettings() })
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 8.dp),
+                        contentAlignment = Alignment.TopCenter
+                    ) {
+                        PullRefreshIndicator(refreshing = isSyncing, state = refreshState)
+                        CurrentWeather(
+                            modifier = Modifier
+                                .padding(top = 60.dp, bottom = 100.dp)
+                                .graphicsLayer {
+                                    //can be enabled after implementing independent scrolling
+                                    alpha =
+                                        if (draggableState.currentValue == Anchors.OPEN) 0f else 1f
 //                                if (draggableState.currentValue == Anchors.Closed)
 //                                    draggableState.progress
 //                                else 0.5f
-                        },
-                    location = weatherUIState.weather.coordinates.name,
-                    weatherData = weatherUIState.weather.current,
-                    today = weatherUIState.weather.daily[0],
-                    showPlaceholder = false,
-                )
-                ConditionAndDetails(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .navigationBarsPadding()
-                        .offset {
-                            IntOffset(
-                                x = 0,
-                                y = draggableState
-                                    .requireOffset()
-                                    .toInt()
-                            )
-                        },
-                    scrollState = scrollState,
-                    isScrollEnabled = isScrollEnabled,
-                    weatherData = weatherUIState.weather,
-                    isDayTime = isDayTime,
-                    showPlaceholder = weatherUIState.showPlaceHolder,
-                    speedUnit = speedUnit,
-                    shouldChangeColor = /*scrollProgress > 10*/ false,
-                    firstItemHeight = {
-                        firstScrollableItemHeight = it
-                        draggableState.updateAnchors(DraggableAnchors {
-                            Anchors.Closed at with(density) { config.screenHeightDp.dp.toPx() - it.toFloat() * 2 }
-                            Anchors.OPEN at 0f
-                        })
+                                },
+                            location = weatherUIState.weather.coordinates.name,
+                            weatherData = weatherUIState.weather.current,
+                            today = weatherUIState.weather.daily[0],
+                            showPlaceholder = false,
+                        )
+                        ConditionAndDetails(
+                            hazeState = hazeState,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .offset {
+                                    IntOffset(
+                                        x = 0,
+                                        y = draggableState
+                                            .requireOffset()
+                                            .toInt()
+                                    )
+                                },
+                            scrollState = scrollState,
+                            isScrollEnabled = isScrollEnabled,
+                            weatherData = weatherUIState.weather,
+                            isDayTime = timeOfDay != TimeOfDay.Night,
+                            showPlaceholder = weatherUIState.showPlaceHolder,
+                            speedUnit = speedUnit,
+                            shouldChangeColor = /*scrollProgress > 10*/ false,
+                            firstItemHeight = {
+                                firstScrollableItemHeight = it
+                                draggableState.updateAnchors(DraggableAnchors {
+                                    Anchors.Closed at with(density) { config.screenHeightDp.dp.toPx() - it.toFloat() * 2 }
+                                    Anchors.OPEN at 0f
+                                })
+                            }
+                        )
                     }
-                )
+
+                }
             }
         }
+
     }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun ConditionAndDetails(
+    hazeState: HazeState,
     modifier: Modifier = Modifier,
     scrollState: ScrollState = rememberScrollState(),
     isScrollEnabled: Boolean = true,
@@ -294,7 +316,6 @@ internal fun ConditionAndDetails(
     )
     FlowRow(
         modifier
-            .fillMaxSize()
             .verticalScroll(scrollState, isScrollEnabled),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -305,6 +326,7 @@ internal fun ConditionAndDetails(
         DailyWidget(
             modifier = Modifier
                 .fillMaxWidth()
+                .hazeChild(hazeState, shape = RoundedCornerShape(16.dp))
                 .onSizeChanged { firstItemHeight(it.height) },
             dailyList = weatherData.daily,
             currentTemp = weatherData.current.currentTemp.roundToInt(),
@@ -312,21 +334,26 @@ internal fun ConditionAndDetails(
         )
         HourlyWidget(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .hazeChild(hazeState, shape = RoundedCornerShape(16.dp)),
             hourly = weatherData.hourly,
             speedUnit = speedUnit,
             surfaceColor = widgetColor
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             WindWidget(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .hazeChild(hazeState, shape = RoundedCornerShape(16.dp)),
                 windDirection = weatherData.current.wind_deg,
                 windSpeed = weatherData.current.wind_speed.roundToInt(),
                 speedUnits = speedUnit,
                 surfaceColor = widgetColor
             )
             SunWidget(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .hazeChild(hazeState, shape = RoundedCornerShape(16.dp)),
                 formattedSunrise = SimpleDateFormat(
                     "HH:mm",
                     Locale.getDefault()
@@ -343,24 +370,32 @@ internal fun ConditionAndDetails(
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             RealFeelWidget(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .hazeChild(hazeState, shape = RoundedCornerShape(16.dp)),
                 realFeel = weatherData.current.feels_like.roundToInt(),
                 surfaceColor = widgetColor
             )
             HumidityWidget(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .hazeChild(hazeState, shape = RoundedCornerShape(16.dp)),
                 humidity = weatherData.current.humidity,
                 surfaceColor = widgetColor
             )
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             UVWidget(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .hazeChild(hazeState, shape = RoundedCornerShape(16.dp)),
                 uvIndex = weatherData.current.uvi.toInt(),
                 surfaceColor = widgetColor
             )
             PressureWidget(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .hazeChild(hazeState, shape = RoundedCornerShape(16.dp)),
                 pressure = weatherData.current.pressure,
                 surfaceColor = widgetColor
             )
@@ -478,7 +513,7 @@ private fun MainPagePreview() {
             WeatherForecastScreen(
                 weatherUIState = data,
                 isSyncing = false,
-                isDayTime = false,
+                timeOfDay = TimeOfDay.Day,
                 onRefresh = {},
                 onNavigateToManageLocations = {},
                 onNavigateToSettings = {}
