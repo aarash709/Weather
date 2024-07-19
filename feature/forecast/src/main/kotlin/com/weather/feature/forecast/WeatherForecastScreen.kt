@@ -5,16 +5,9 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOutCubic
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.rememberSplineBasedDecay
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.AnchoredDraggableState
-import androidx.compose.foundation.gestures.DraggableAnchors
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +17,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
@@ -44,24 +37,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -101,10 +86,6 @@ import java.util.Date
 import java.util.Locale
 import kotlin.math.roundToInt
 
-enum class Anchors {
-    OPEN, Closed
-}
-
 @ExperimentalCoroutinesApi
 @Composable
 fun WeatherForecastRoute(
@@ -128,8 +109,7 @@ fun WeatherForecastRoute(
 }
 
 @OptIn(
-    ExperimentalMaterialApi::class,
-    ExperimentalFoundationApi::class
+    ExperimentalMaterialApi::class
 )
 @Composable
 fun WeatherForecastScreen(
@@ -142,9 +122,6 @@ fun WeatherForecastScreen(
     onRefresh: (Coordinate) -> Unit,
 ) {
     val resource = LocalContext.current.resources
-    val density = LocalDensity.current
-    val config = LocalConfiguration.current
-    val scope = rememberCoroutineScope()
     var firstScrollableItemHeight by rememberSaveable {
         mutableIntStateOf(0)
     }
@@ -167,37 +144,9 @@ fun WeatherForecastScreen(
             )
         })
     val scrollState = rememberScrollState()
-    var isScrollEnabled by rememberSaveable {
-        mutableStateOf(false)
-    }
-    val decay = rememberSplineBasedDecay<Float>()
-    val draggableState = remember {
-        AnchoredDraggableState(
-            initialValue = Anchors.Closed,
-            positionalThreshold = { totalDistance -> totalDistance * 0.5f },
-            snapAnimationSpec = spring(),
-            decayAnimationSpec = decay,
-            velocityThreshold = { with(density) { 100.dp.toPx() } }
-        )
-    }
-    LaunchedEffect(key1 = draggableState.currentValue) {
-        isScrollEnabled = draggableState.currentValue == Anchors.OPEN
-    }
-    val connection = remember {
-        object : NestedScrollConnection {
-            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                //disable scrolling if Anchor is Anchor.OPEN and
-                //scroll position is 0(at the beginning)
-                //and scrolling down
-                //NOTE: if scrolling is disabled this connection and
-                //all in child composable(s) scrollable wont work
-                if (available.y > 0f && draggableState.currentValue == Anchors.OPEN && scrollState.value == 0) {
-                    isScrollEnabled = false
-                }
-                return super.onPreScroll(available, source)
-            }
-        }
-    }
+//    val scrollProgress by remember {
+//        derivedStateOf { (scrollState.value.toFloat() / scrollState.maxValue.toFloat()) * 100 }
+//    }
     val hazeState = remember { HazeState() }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -213,8 +162,6 @@ fun WeatherForecastScreen(
         ) {
             Column(
                 modifier = Modifier
-                    .nestedScroll(connection)
-                    .anchoredDraggable(draggableState, Orientation.Vertical)
                     .pullRefresh(refreshState)
             ) {
                 CompositionLocalProvider(LocalContentColor provides Color.White) {
@@ -229,36 +176,11 @@ fun WeatherForecastScreen(
                         contentAlignment = Alignment.TopCenter
                     ) {
                         PullRefreshIndicator(refreshing = isSyncing, state = refreshState)
-                        CurrentWeather(
-                            modifier = Modifier
-                                .padding(top = 60.dp, bottom = 100.dp)
-                                .graphicsLayer {
-                                    //can be enabled after implementing independent scrolling
-                                    alpha =
-                                        if (draggableState.currentValue == Anchors.OPEN) 0f else 1f
-//                                if (draggableState.currentValue == Anchors.Closed)
-//                                    draggableState.progress
-//                                else 0.5f
-                                },
-                            location = weatherUIState.weather.coordinates.name,
-                            weatherData = weatherUIState.weather.current,
-                            today = weatherUIState.weather.daily[0],
-                            showPlaceholder = false,
-                        )
                         ConditionAndDetails(
                             hazeState = hazeState,
                             modifier = Modifier
-                                .fillMaxSize()
-                                .offset {
-                                    IntOffset(
-                                        x = 0,
-                                        y = draggableState
-                                            .requireOffset()
-                                            .toInt()
-                                    )
-                                },
+                                .fillMaxSize(),
                             scrollState = scrollState,
-                            isScrollEnabled = isScrollEnabled,
                             weatherData = weatherUIState.weather,
                             isDayTime = timeOfDay != TimeOfDay.Night,
                             showPlaceholder = weatherUIState.showPlaceHolder,
@@ -266,10 +188,6 @@ fun WeatherForecastScreen(
                             shouldChangeColor = /*scrollProgress > 10*/ false,
                             firstItemHeight = {
                                 firstScrollableItemHeight = it
-                                draggableState.updateAnchors(DraggableAnchors {
-                                    Anchors.Closed at with(density) { config.screenHeightDp.dp.toPx() - it.toFloat() * 2 }
-                                    Anchors.OPEN at 0f
-                                })
                             }
                         )
                     }
@@ -316,13 +234,25 @@ internal fun ConditionAndDetails(
     )
     FlowRow(
         modifier
-            .verticalScroll(scrollState, isScrollEnabled),
+            .verticalScroll(scrollState, isScrollEnabled)
+            .navigationBarsPadding(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         maxItemsInEachRow = 2
     ) {
         //widgets
         // TODO: Weather alert goes here
+        CurrentWeather(
+            modifier = Modifier
+                .padding(top = 60.dp, bottom = 100.dp)
+                .graphicsLayer {
+                    //can be enabled after implementing independent scrolling
+                },
+            location = weatherData.coordinates.name,
+            weatherData = weatherData.current,
+            today = weatherData.daily[0],
+            showPlaceholder = false,
+        )
         DailyWidget(
             modifier = Modifier
                 .fillMaxWidth()
