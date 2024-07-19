@@ -40,6 +40,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -142,9 +143,6 @@ fun WeatherForecastScreen(
     onRefresh: (Coordinate) -> Unit,
 ) {
     val resource = LocalContext.current.resources
-    val density = LocalDensity.current
-    val config = LocalConfiguration.current
-    val scope = rememberCoroutineScope()
     var firstScrollableItemHeight by rememberSaveable {
         mutableIntStateOf(0)
     }
@@ -167,36 +165,8 @@ fun WeatherForecastScreen(
             )
         })
     val scrollState = rememberScrollState()
-    var isScrollEnabled by rememberSaveable {
-        mutableStateOf(false)
-    }
-    val decay = rememberSplineBasedDecay<Float>()
-    val draggableState = remember {
-        AnchoredDraggableState(
-            initialValue = Anchors.Closed,
-            positionalThreshold = { totalDistance -> totalDistance * 0.5f },
-            snapAnimationSpec = spring(),
-            decayAnimationSpec = decay,
-            velocityThreshold = { with(density) { 100.dp.toPx() } }
-        )
-    }
-    LaunchedEffect(key1 = draggableState.currentValue) {
-        isScrollEnabled = draggableState.currentValue == Anchors.OPEN
-    }
-    val connection = remember {
-        object : NestedScrollConnection {
-            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                //disable scrolling if Anchor is Anchor.OPEN and
-                //scroll position is 0(at the beginning)
-                //and scrolling down
-                //NOTE: if scrolling is disabled this connection and
-                //all in child composable(s) scrollable wont work
-                if (available.y > 0f && draggableState.currentValue == Anchors.OPEN && scrollState.value == 0) {
-                    isScrollEnabled = false
-                }
-                return super.onPreScroll(available, source)
-            }
-        }
+    val scrollProgress by remember {
+        derivedStateOf { (scrollState.value.toFloat() / scrollState.maxValue.toFloat()) * 100 }
     }
     val hazeState = remember { HazeState() }
     Scaffold(
@@ -213,8 +183,6 @@ fun WeatherForecastScreen(
         ) {
             Column(
                 modifier = Modifier
-                    .nestedScroll(connection)
-                    .anchoredDraggable(draggableState, Orientation.Vertical)
                     .pullRefresh(refreshState)
             ) {
                 CompositionLocalProvider(LocalContentColor provides Color.White) {
@@ -229,47 +197,18 @@ fun WeatherForecastScreen(
                         contentAlignment = Alignment.TopCenter
                     ) {
                         PullRefreshIndicator(refreshing = isSyncing, state = refreshState)
-                        CurrentWeather(
-                            modifier = Modifier
-                                .padding(top = 60.dp, bottom = 100.dp)
-                                .graphicsLayer {
-                                    //can be enabled after implementing independent scrolling
-                                    alpha =
-                                        if (draggableState.currentValue == Anchors.OPEN) 0f else 1f
-//                                if (draggableState.currentValue == Anchors.Closed)
-//                                    draggableState.progress
-//                                else 0.5f
-                                },
-                            location = weatherUIState.weather.coordinates.name,
-                            weatherData = weatherUIState.weather.current,
-                            today = weatherUIState.weather.daily[0],
-                            showPlaceholder = false,
-                        )
                         ConditionAndDetails(
                             hazeState = hazeState,
                             modifier = Modifier
-                                .fillMaxSize()
-                                .offset {
-                                    IntOffset(
-                                        x = 0,
-                                        y = draggableState
-                                            .requireOffset()
-                                            .toInt()
-                                    )
-                                },
+                                .fillMaxSize(),
                             scrollState = scrollState,
-                            isScrollEnabled = isScrollEnabled,
                             weatherData = weatherUIState.weather,
                             isDayTime = timeOfDay != TimeOfDay.Night,
                             showPlaceholder = weatherUIState.showPlaceHolder,
                             speedUnit = speedUnit,
-                            shouldChangeColor = /*scrollProgress > 10*/ false,
+                            shouldChangeColor = scrollProgress > 10,
                             firstItemHeight = {
                                 firstScrollableItemHeight = it
-                                draggableState.updateAnchors(DraggableAnchors {
-                                    Anchors.Closed at with(density) { config.screenHeightDp.dp.toPx() - it.toFloat() * 2 }
-                                    Anchors.OPEN at 0f
-                                })
                             }
                         )
                     }
@@ -323,6 +262,17 @@ internal fun ConditionAndDetails(
     ) {
         //widgets
         // TODO: Weather alert goes here
+        CurrentWeather(
+            modifier = Modifier
+                .padding(top = 60.dp, bottom = 100.dp)
+                .graphicsLayer {
+                    //can be enabled after implementing independent scrolling
+                },
+            location = weatherData.coordinates.name,
+            weatherData = weatherData.current,
+            today = weatherData.daily[0],
+            showPlaceholder = false,
+        )
         DailyWidget(
             modifier = Modifier
                 .fillMaxWidth()
