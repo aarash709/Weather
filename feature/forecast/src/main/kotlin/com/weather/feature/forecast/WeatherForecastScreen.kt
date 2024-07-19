@@ -5,16 +5,9 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOutCubic
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.rememberSplineBasedDecay
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.AnchoredDraggableState
-import androidx.compose.foundation.gestures.DraggableAnchors
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +17,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
@@ -40,29 +33,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -102,10 +86,6 @@ import java.util.Date
 import java.util.Locale
 import kotlin.math.roundToInt
 
-enum class Anchors {
-    OPEN, Closed
-}
-
 @ExperimentalCoroutinesApi
 @Composable
 fun WeatherForecastRoute(
@@ -129,8 +109,7 @@ fun WeatherForecastRoute(
 }
 
 @OptIn(
-    ExperimentalMaterialApi::class,
-    ExperimentalFoundationApi::class
+    ExperimentalMaterialApi::class
 )
 @Composable
 fun WeatherForecastScreen(
@@ -165,9 +144,9 @@ fun WeatherForecastScreen(
             )
         })
     val scrollState = rememberScrollState()
-    val scrollProgress by remember {
-        derivedStateOf { (scrollState.value.toFloat() / scrollState.maxValue.toFloat()) * 100 }
-    }
+//    val scrollProgress by remember {
+//        derivedStateOf { (scrollState.value.toFloat() / scrollState.maxValue.toFloat()) * 100 }
+//    }
     val hazeState = remember { HazeState() }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -206,7 +185,7 @@ fun WeatherForecastScreen(
                             isDayTime = timeOfDay != TimeOfDay.Night,
                             showPlaceholder = weatherUIState.showPlaceHolder,
                             speedUnit = speedUnit,
-                            shouldChangeColor = scrollProgress > 10,
+                            shouldChangeColor = /*scrollProgress > 10*/ false,
                             firstItemHeight = {
                                 firstScrollableItemHeight = it
                             }
@@ -255,7 +234,8 @@ internal fun ConditionAndDetails(
     )
     FlowRow(
         modifier
-            .verticalScroll(scrollState, isScrollEnabled),
+            .verticalScroll(scrollState, isScrollEnabled)
+            .navigationBarsPadding(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         maxItemsInEachRow = 2
