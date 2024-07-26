@@ -50,7 +50,7 @@ internal fun DailyWidget(
     modifier: Modifier = Modifier,
     dailyList: List<Daily>,
     currentTemp: Int,
-    tempUnit : TemperatureUnits,
+    tempUnit: TemperatureUnits,
     surfaceColor: Color,
 ) {
     Surface(
@@ -64,49 +64,10 @@ internal fun DailyWidget(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
+            DailyTitle(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .size(15.dp)
-                            .background(paleOnSurfaceColor),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.CalendarMonth,
-                            modifier = Modifier.padding(3.dp),
-                            tint = paleOnSurfaceColor,
-                            contentDescription = null
-                        )
-                    }
-                    Text(
-                        text = stringResource(id = string.five_day_forecast),
-                        fontSize = 14.sp,
-                        color = paleOnSurfaceColor
-                    )
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = stringResource(id = string.more_details),
-                        fontSize = 14.sp,
-                        color = paleOnSurfaceColor
-                    )
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.ArrowRight,
-                        modifier = Modifier.padding(3.dp),
-                        tint = paleOnSurfaceColor,
-                        contentDescription = null
-                    )
-                }
-            }
+                contentColor = paleOnSurfaceColor
+            )
             val minTemp by remember(dailyList) {
                 mutableIntStateOf(dailyList.minOf { it.nightTemp.roundToInt() })
             }
@@ -139,7 +100,54 @@ internal fun DailyWidget(
 }
 
 @Composable
-internal fun DailyItem(modifier: Modifier = Modifier, daily: Daily, tempData: TempData) {
+private fun DailyTitle(modifier: Modifier = Modifier, contentColor: Color) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .size(15.dp)
+                    .background(contentColor),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.CalendarMonth,
+                    modifier = Modifier.padding(3.dp),
+                    tint = contentColor,
+                    contentDescription = null
+                )
+            }
+            Text(
+                text = stringResource(id = string.five_day_forecast),
+                fontSize = 14.sp,
+                color = contentColor
+            )
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = stringResource(id = string.more_details),
+                fontSize = 14.sp,
+                color = contentColor
+            )
+            Icon(
+                imageVector = Icons.AutoMirrored.Rounded.ArrowRight,
+                modifier = Modifier.padding(3.dp),
+                tint = contentColor,
+                contentDescription = null
+            )
+        }
+    }
+}
+
+@Composable
+private fun DailyItem(modifier: Modifier = Modifier, daily: Daily, tempData: TempData) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
