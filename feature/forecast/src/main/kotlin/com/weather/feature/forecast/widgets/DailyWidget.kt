@@ -42,6 +42,7 @@ import com.weather.feature.forecast.components.TempBar
 import com.weather.feature.forecast.components.TempData
 import com.weather.feature.forecast.components.hourlydata.DailyPreviewStaticData
 import com.weather.model.Daily
+import com.weather.model.TemperatureUnits
 import kotlin.math.roundToInt
 
 @Composable
@@ -49,6 +50,7 @@ internal fun DailyWidget(
     modifier: Modifier = Modifier,
     dailyList: List<Daily>,
     currentTemp: Int,
+    tempUnit : TemperatureUnits,
     surfaceColor: Color,
 ) {
     Surface(
@@ -119,6 +121,7 @@ internal fun DailyWidget(
                         .fillMaxWidth(),
                     daily = daily,
                     tempData = TempData(
+                        tempUnit = tempUnit,
                         minTemp = minTemp,
                         maxTemp = maxTemp,
                         currentLow = currentLow,
@@ -193,7 +196,8 @@ private fun DailyListPreview() {
                 .fillMaxWidth()
                 .padding(16.dp),
             currentTemp = 0,
-            surfaceColor = color
+            surfaceColor = color,
+            tempUnit = TemperatureUnits.C
         )
     }
 }
@@ -205,6 +209,7 @@ private fun DailyItemPreview() {
         DailyItem(
             daily = DailyPreviewStaticData[0],
             tempData = TempData(
+                tempUnit = TemperatureUnits.C,
                 minTemp = 0,
                 maxTemp = 0,
                 currentLow = 0,
