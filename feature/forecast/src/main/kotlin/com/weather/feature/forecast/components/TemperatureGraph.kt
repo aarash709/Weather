@@ -11,12 +11,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -25,25 +23,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
+import com.weather.feature.forecast.tempColor
 import com.weather.model.Hourly
+import com.weather.model.TemperatureUnits
 import kotlin.math.roundToInt
 
-private fun calculateTempColor(temp: Int): Color {
-    return when {
-        temp <= 0 -> Color(25, 165, 221, 255)
-        temp in 1..15 -> Color(25, 205, 221, 255)
-        temp in 16..19 -> Color(67, 221, 25, 255)
-        temp in 20..24 -> Color(218, 215, 19, 255)
-        temp in 25..29 -> Color(255, 150, 21, 255) //Orange
-        temp in 30..70 -> Color(238, 68, 26, 255)
-        else -> Color.White
-
-    }
-}
-
-private fun calculateGraphBrush(minTemp: Int, maxTemp: Int, startYOffset: Float = 0f): Brush {
-    val minTempColor = calculateTempColor(minTemp)
-    val maxTempColor = calculateTempColor(maxTemp)
+private fun calculateGraphBrush(
+    tempUnit: TemperatureUnits,
+    minTemp: Int,
+    maxTemp: Int,
+    startYOffset: Float = 0f,
+): Brush {
+    val minTempColor = tempColor(temp = minTemp, tempUnit = tempUnit)
+    val maxTempColor = tempColor(temp = maxTemp, tempUnit = tempUnit)
     return Brush.verticalGradient(
         colors = listOf(maxTempColor, minTempColor),
         startY = startYOffset
@@ -51,7 +43,11 @@ private fun calculateGraphBrush(minTemp: Int, maxTemp: Int, startYOffset: Float 
 }
 
 @Composable
-internal fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Hourly>) {
+internal fun HourlyTemperatureGraph(
+    modifier: Modifier = Modifier,
+    data: List<Hourly>,
+    temperatureUnits: TemperatureUnits,
+) {
     val textColor = LocalContentColor.current
     val verticalLineColor = Color.White.copy(alpha = 0.5f)
     val textMeasurer = rememberTextMeasurer()
@@ -143,6 +139,7 @@ internal fun HourlyTemperatureGraph(modifier: Modifier = Modifier, data: List<Ho
                     }
                 }
                 val graphBrush = calculateGraphBrush(
+                    tempUnit = temperatureUnits,
                     minTemp = data
                         .minOf { it.temp }
                         .toInt(),
@@ -174,6 +171,7 @@ private fun HourlyGraphPreview() {
             .background(MaterialTheme.colorScheme.surface)
             .padding(16.dp)
             .aspectRatio(16 / 9f),
-        data = HourlyStaticData
+        data = HourlyStaticData,
+        temperatureUnits = TemperatureUnits.C
     )
 }

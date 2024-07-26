@@ -35,18 +35,19 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.experiment.weather.core.common.R.*
+import com.experiment.weather.core.common.R.string
 import com.weather.core.design.theme.WeatherTheme
-import com.weather.feature.forecast.R
 import com.weather.feature.forecast.components.HourlyTemperatureGraph
 import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
 import com.weather.model.Hourly
+import com.weather.model.TemperatureUnits
 
 @Composable
 internal fun HourlyWidget(
     modifier: Modifier = Modifier,
     hourly: List<Hourly>,
     speedUnit: String,
+    tempUnit: TemperatureUnits,
     surfaceColor: Color = Color.Black.copy(alpha = 0.10f),
 ) {
     Surface(
@@ -90,7 +91,7 @@ internal fun HourlyWidget(
                 itemCount = hourly.size,
                 graphHeight = 50.dp,
                 hourlyGraph = {
-                    HourlyTemperatureGraph(data = hourly)
+                    HourlyTemperatureGraph(data = hourly, temperatureUnits = tempUnit)
                 },
                 hourlyTimeStamps = {
                     val time = hourly[it].time
@@ -236,7 +237,8 @@ private fun HourlyWidgetPreview() {
         HourlyWidget(
             modifier = Modifier,
             HourlyStaticData,
-            "km/h"
+            "km/h", tempUnit = TemperatureUnits.C
+
         )
     }
 }
@@ -252,7 +254,9 @@ private fun HourlyCustomLayoutPreview() {
                 .background(MaterialTheme.colorScheme.surface),
             itemCount = HourlyStaticData.size,
             graphHeight = 50.dp,
-            hourlyGraph = { HourlyTemperatureGraph(data = HourlyStaticData) },
+            hourlyGraph = { HourlyTemperatureGraph(data = HourlyStaticData,
+                temperatureUnits = TemperatureUnits.C
+            ) },
             hourlyTimeStamps = { index ->
                 val timeStamp = HourlyStaticData[index].time
                 Column {

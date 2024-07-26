@@ -131,10 +131,10 @@ fun WeatherForecastScreen(
             WindSpeedUnits.KM -> resource.getString(R.string.kilometer_per_hour_symbol)
             WindSpeedUnits.MS -> resource.getString(R.string.meters_per_second_symbol)
             WindSpeedUnits.MPH -> resource.getString(R.string.miles_per_hour_symbol)
-            null -> "null"
         }
         mutableStateOf(value)
     }
+    val temperatureUnit = weatherUIState.userSettings.temperatureUnits
     val refreshState =
         rememberPullRefreshState(refreshing = isSyncing, onRefresh = {
             onRefresh(
@@ -185,6 +185,7 @@ fun WeatherForecastScreen(
                             isDayTime = timeOfDay != TimeOfDay.Night,
                             showPlaceholder = weatherUIState.showPlaceHolder,
                             speedUnit = speedUnit,
+                            tempUnit = temperatureUnit,
                             shouldChangeColor = /*scrollProgress > 10*/ false,
                             firstItemHeight = {
                                 firstScrollableItemHeight = it
@@ -210,6 +211,7 @@ internal fun ConditionAndDetails(
     isDayTime: Boolean,
     showPlaceholder: Boolean,
     speedUnit: String,
+    tempUnit: TemperatureUnits,
     shouldChangeColor: Boolean,
     firstItemHeight: (Int) -> Unit,
 ) {
@@ -260,6 +262,7 @@ internal fun ConditionAndDetails(
                 .onSizeChanged { firstItemHeight(it.height) },
             dailyList = weatherData.daily,
             currentTemp = weatherData.current.currentTemp.roundToInt(),
+            tempUnit = tempUnit,
             surfaceColor = widgetColor
         )
         HourlyWidget(
@@ -268,6 +271,7 @@ internal fun ConditionAndDetails(
                 .hazeChild(hazeState, shape = RoundedCornerShape(16.dp)),
             hourly = weatherData.hourly,
             speedUnit = speedUnit,
+            tempUnit = tempUnit,
             surfaceColor = widgetColor
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

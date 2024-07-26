@@ -1,8 +1,8 @@
 package com.weather.model
 
 data class SettingsData(
-    val windSpeedUnits: WindSpeedUnits?,
-    val temperatureUnits: TemperatureUnits?,
+    val windSpeedUnits: WindSpeedUnits = WindSpeedUnits.KM,
+    val temperatureUnits: TemperatureUnits = TemperatureUnits.C,
 )
 
 enum class WindSpeedUnits {

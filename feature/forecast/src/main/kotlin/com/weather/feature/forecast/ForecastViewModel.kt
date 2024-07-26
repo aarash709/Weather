@@ -135,7 +135,10 @@ class ForecastViewModel @Inject constructor(
     internal fun getUserSettings(): Flow<SettingsData> {
         return userRepository.getTemperatureUnitSetting()
             .combine(userRepository.getWindSpeedUnitSetting()) { temp, wind ->
-                SettingsData(windSpeedUnits = wind, temperatureUnits = temp)
+                //default settings if not set by user yet || null
+                val winUnit = wind ?: KM
+                val tempUnit = temp ?: C
+                SettingsData(windSpeedUnits = winUnit, temperatureUnits = tempUnit)
             }
     }
 

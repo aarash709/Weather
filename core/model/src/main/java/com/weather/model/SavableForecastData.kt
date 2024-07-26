@@ -29,7 +29,7 @@ data class SavableForecastData(
                 ), daily = Daily.empty,
                 hourly = Hourly.empty
             ),
-            userSettings = SettingsData(windSpeedUnits = null, temperatureUnits = null)
+            userSettings = SettingsData()
         )
     }
 }

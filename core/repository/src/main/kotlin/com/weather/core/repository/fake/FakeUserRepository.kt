@@ -13,11 +13,11 @@ class FakeUserRepository : UserRepository {
         emit(cityName)
     }
 
-    override fun getTemperatureUnitSetting(): Flow<TemperatureUnits?> = flow {
+    override fun getTemperatureUnitSetting(): Flow<TemperatureUnits> = flow {
         emit(TemperatureUnits.C)
     }
 
-    override fun getWindSpeedUnitSetting(): Flow<WindSpeedUnits?> = flow {
+    override fun getWindSpeedUnitSetting(): Flow<WindSpeedUnits> = flow {
         emit(WindSpeedUnits.KM)
     }
 
