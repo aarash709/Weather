@@ -125,7 +125,6 @@ fun WeatherForecastScreen(
     var firstScrollableItemHeight by rememberSaveable {
         mutableIntStateOf(0)
     }
-    val conditionID = weatherUIState.weather.current.weather[0].id
     val speedUnit by remember(weatherUIState) {
         val value = when (weatherUIState.userSettings.windSpeedUnits) {
             WindSpeedUnits.KM -> resource.getString(R.string.kilometer_per_hour_symbol)
@@ -156,9 +155,7 @@ fun WeatherForecastScreen(
             modifier = modifier
                 .padding(padding)
                 .haze(hazeState),
-            conditionID = conditionID,
-            isDay = timeOfDay == TimeOfDay.Day,
-            isDawn = timeOfDay == TimeOfDay.Dawn
+            background = weatherUIState.background
         ) {
             Column(
                 modifier = Modifier
@@ -430,6 +427,7 @@ private fun MainPagePreview() {
                 hourly = HourlyStaticData,
             ),
             userSettings = SettingsData(WindSpeedUnits.KM, TemperatureUnits.C),
+            background = 0,
             showPlaceHolder = placeholder
         )
         Box(

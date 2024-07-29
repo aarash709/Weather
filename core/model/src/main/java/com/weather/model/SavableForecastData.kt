@@ -1,8 +1,12 @@
 package com.weather.model
 
+import androidx.annotation.DrawableRes
+
 data class SavableForecastData(
     val weather: WeatherData,
     val userSettings: SettingsData,
+    @DrawableRes
+    val background : Int,
     val showPlaceHolder: Boolean = true,
 ) {
     companion object {
@@ -29,6 +33,7 @@ data class SavableForecastData(
                 ), daily = Daily.empty,
                 hourly = Hourly.empty
             ),
+            background = 0,
             userSettings = SettingsData()
         )
     }

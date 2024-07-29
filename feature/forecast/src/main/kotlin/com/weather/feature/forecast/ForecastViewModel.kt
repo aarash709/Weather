@@ -1,5 +1,6 @@
 package com.weather.feature.forecast
 
+import androidx.annotation.DrawableRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.experiment.weather.core.common.extentions.convertToUserSettings
@@ -85,9 +86,14 @@ class ForecastViewModel @Inject constructor(
                     sunrise = current.sunrise,
                     sunset = current.sunset
                 )
+                val background = weatherBackgroundDrawableRes(
+                    conditionID = newWeather.current.weather[0].id,
+                    timeOfDay = timeOfDay.value
+                )
                 SavableForecastData(
                     weather = newWeather.copy(hourly = hourlyData),
                     userSettings = userSettings,
+                    background = background,
                     showPlaceHolder = false
                 )
             }
@@ -206,5 +212,25 @@ class ForecastViewModel @Inject constructor(
                 mutableHourly.add(index, sunsetHourly)
             }
         return mutableHourly.toList()
+    }
+
+    private fun weatherBackgroundDrawableRes(conditionID: Int, timeOfDay: TimeOfDay): Int {
+        //more details -> https://openweathermap.org/weather-conditions#Weather-Condition-Codes-2
+        return when (conditionID) {
+            800 -> {
+                when (timeOfDay) {
+                    TimeOfDay.Day -> R.drawable.day_clear
+                    TimeOfDay.Night -> R.drawable.night_clear
+                    TimeOfDay.Dawn -> R.drawable.dawn
+                }
+            }
+            in 200..232 -> R.drawable.thunderstorm //Thunderstorm
+            in 300..321 -> R.drawable.thunderstorm //Drizzle
+            in 500..531 -> R.drawable.snow //Rain
+            in 600..622 -> R.drawable.snow //Snow
+            in 701..787 -> R.drawable.fog //Atmosphere(only fog is shown. will add more)
+            in 801..804 -> R.drawable.clouds //clouds
+            else -> R.drawable.day_clear
+        }
     }
 }
