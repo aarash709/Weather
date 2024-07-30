@@ -77,16 +77,11 @@ class MainActivity : ComponentActivity() {
             val isDarkTheme = isSystemInDarkTheme()
             LaunchedEffect(isDarkTheme) {
                 enableEdgeToEdge(
-                    navigationBarStyle = if (isDarkTheme) {
-                        SystemBarStyle.dark(
-                            Color.TRANSPARENT,
-                        )
-                    } else {
-                        SystemBarStyle.light(
-                            Color.TRANSPARENT,
-                            Color.TRANSPARENT,
-                        )
-                    }
+                    navigationBarStyle =
+                    SystemBarStyle.auto(
+                        Color.TRANSPARENT,
+                        Color.TRANSPARENT,
+                    ) { isDarkTheme }
                 )
             }
             WeatherApp(

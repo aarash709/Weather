@@ -1,6 +1,6 @@
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
-    alias (libs.plugins.weather.android.library)
+    alias(libs.plugins.weather.android.library)
     alias(libs.plugins.kotlinx.ksp)
 }
 
@@ -21,7 +21,7 @@ android {
 
 dependencies {
     implementation(project(":core:model"))
-
+    api(libs.androidx.annotation)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 
