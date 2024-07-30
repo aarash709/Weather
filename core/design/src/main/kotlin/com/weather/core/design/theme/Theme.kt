@@ -48,7 +48,8 @@ private val lightColorScheme = lightColorScheme(
 )
 
 //ONLY use in forecast theme
-private val forecastColors = lightColorScheme.copy(background = Color.DarkGray)
+private val forecastColors =
+    lightColorScheme.copy(background = DarkBackground, surface = Color.White)
 
 @Composable
 fun WeatherTheme(

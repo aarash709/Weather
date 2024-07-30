@@ -1,6 +1,5 @@
 package com.weather.feature.forecast.components
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,7 +23,8 @@ import com.weather.feature.forecast.R
 @Composable
 fun WeatherBackground(
     modifier: Modifier = Modifier,
-    @DrawableRes background: Int,
+//    @DrawableRes background: Int,
+    showBackground: Boolean = true,
     content: @Composable () -> Unit,
 ) {
     Box(
@@ -32,20 +32,22 @@ fun WeatherBackground(
             .fillMaxSize()
     ) {
         val contentScale = ContentScale.Crop
-        Image(
-            painter = painterResource(id = background),
-            contentScale = contentScale,
-            contentDescription = "background image"
-        )
+        if (showBackground) {
+            Image(
+                painter = painterResource(id = R.drawable.dawn),
+                contentScale = contentScale,
+                contentDescription = "background image"
+            )
+        }
+        content()
     }
-    content()
 }
 
 @Preview
 @Composable
 private fun PreviewImage() {
     WeatherTheme {
-        WeatherBackground(background = R.drawable.dawn) {
+        WeatherBackground(/*background = R.drawable.dawn,*/ showBackground = false) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Surface(
                     modifier = Modifier
