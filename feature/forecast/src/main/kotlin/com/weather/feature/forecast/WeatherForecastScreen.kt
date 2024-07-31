@@ -140,10 +140,7 @@ fun WeatherForecastScreen(
             )
         })
     val scrollState = rememberScrollState()
-//    val scrollProgress by remember {
-//        derivedStateOf { (scrollState.value.toFloat() / scrollState.maxValue.toFloat()) * 100 }
-//    }
-    val hazeState = remember { HazeState() }
+//    val hazeState = remember { HazeState() }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         contentWindowInsets = WindowInsets(0, 0, 0, 0)
@@ -173,7 +170,7 @@ fun WeatherForecastScreen(
                     ) {
                         PullRefreshIndicator(refreshing = isSyncing, state = refreshState)
                         ConditionAndDetails(
-                            hazeState = hazeState,
+//                            hazeState = hazeState,
                             modifier = Modifier
                                 .fillMaxSize(),
                             scrollState = scrollState,
@@ -198,7 +195,7 @@ fun WeatherForecastScreen(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun ConditionAndDetails(
-    hazeState: HazeState,
+//    hazeState: HazeState,
     modifier: Modifier = Modifier,
     scrollState: ScrollState = rememberScrollState(),
     isScrollEnabled: Boolean = true,
@@ -428,7 +425,6 @@ private fun MainPagePreview() {
                 hourly = HourlyStaticData,
             ),
             userSettings = SettingsData(WindSpeedUnits.KM, TemperatureUnits.C),
-            background = 0,
             showPlaceHolder = placeholder
         )
         Box(

@@ -86,14 +86,9 @@ class ForecastViewModel @Inject constructor(
                     sunrise = current.sunrise,
                     sunset = current.sunset
                 )
-                val background = weatherBackgroundDrawableRes(
-                    conditionID = newWeather.current.weather[0].id,
-                    timeOfDay = timeOfDay.value
-                )
                 SavableForecastData(
                     weather = newWeather.copy(hourly = hourlyData),
                     userSettings = userSettings,
-                    background = background,
                     showPlaceHolder = false
                 )
             }

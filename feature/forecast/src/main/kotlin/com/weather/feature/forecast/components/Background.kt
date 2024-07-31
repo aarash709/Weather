@@ -31,8 +31,8 @@ fun WeatherBackground(
         modifier = modifier
             .fillMaxSize()
     ) {
-        val contentScale = ContentScale.Crop
         if (showBackground) {
+            val contentScale = ContentScale.Crop
             Image(
                 painter = painterResource(id = R.drawable.dawn),
                 contentScale = contentScale,
