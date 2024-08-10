@@ -40,7 +40,7 @@ internal fun TempBar(tempData: TempData) {
     Spacer(modifier = Modifier
         .clip(RoundedCornerShape(16.dp))
         .background(Color.Black.copy(alpha = 0.2f))
-        .size(width = 80.dp, height = 6.dp)
+        .size(width = 60.dp, height = 6.dp)
         .graphicsLayer {
             // should be set to `CompositingStrategy.Offscreen` when
             // using blend modes for transparency in indicators
