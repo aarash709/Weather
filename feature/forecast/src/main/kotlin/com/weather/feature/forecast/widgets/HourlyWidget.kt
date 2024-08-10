@@ -52,9 +52,10 @@ internal fun HourlyWidget(
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(32.dp),
         color = surfaceColor,
     ) {
+        val contentColor = LocalContentColor.current
         val paleOnSurfaceColor = LocalContentColor.current.copy(alpha = 0.6f)
         Column(modifier = Modifier.padding(vertical = 16.dp)) {
             Row(
@@ -63,25 +64,17 @@ internal fun HourlyWidget(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .size(15.dp)
-                        .background(paleOnSurfaceColor),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.AccessTime,
-                        modifier = Modifier.padding(3.dp),
-                        tint = paleOnSurfaceColor,
-                        contentDescription = null
-                    )
-                }
+                Icon(
+                    imageVector = Icons.Outlined.AccessTime,
+                    modifier = Modifier.padding(3.dp),
+                    tint = contentColor,
+                    contentDescription = null
+                )
                 Text(
                     text = stringResource(id = string.hourly_forecast),
                     modifier = Modifier,
                     fontSize = 14.sp,
-                    color = paleOnSurfaceColor
+                    color = contentColor
                 )
             }
             HourlyGraphLayout(
