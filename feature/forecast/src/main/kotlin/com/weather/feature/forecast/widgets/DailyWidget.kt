@@ -2,18 +2,13 @@ package com.weather.feature.forecast.widgets
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowRight
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -27,7 +22,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -55,17 +49,17 @@ internal fun DailyWidget(
 ) {
     Surface(
         modifier = Modifier.bouncyTapEffect() then modifier,
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(32.dp),
         color = surfaceColor,
     ) {
-        val paleOnSurfaceColor = LocalContentColor.current.copy(alpha = 0.6f)
+        val paleOnSurfaceColor = LocalContentColor.current
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             DailyTitle(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
                 contentColor = paleOnSurfaceColor
             )
             val minTemp by remember(dailyList) {
@@ -110,39 +104,29 @@ private fun DailyTitle(modifier: Modifier = Modifier, contentColor: Color) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .size(15.dp)
-                    .background(contentColor),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.CalendarMonth,
-                    modifier = Modifier.padding(3.dp),
-                    tint = contentColor,
-                    contentDescription = null
-                )
-            }
+            Icon(
+                imageVector = Icons.Outlined.CalendarMonth,
+                tint = contentColor,
+                contentDescription = null
+            )
             Text(
                 text = stringResource(id = string.five_day_forecast),
                 fontSize = 14.sp,
                 color = contentColor
             )
         }
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = stringResource(id = string.more_details),
-                fontSize = 14.sp,
-                color = contentColor
-            )
-            Icon(
-                imageVector = Icons.AutoMirrored.Rounded.ArrowRight,
-                modifier = Modifier.padding(3.dp),
-                tint = contentColor,
-                contentDescription = null
-            )
-        }
+//        Row(verticalAlignment = Alignment.CenterVertically) {
+//            Text(
+//                text = stringResource(id = string.more_details),
+//                fontSize = 14.sp,
+//                color = contentColor
+//            )
+//            Icon(
+//                imageVector = Icons.AutoMirrored.Rounded.ArrowRight,
+//                tint = contentColor,
+//                contentDescription = null
+//            )
+//        }
     }
 }
 
