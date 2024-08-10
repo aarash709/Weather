@@ -14,9 +14,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -45,6 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -165,7 +168,7 @@ fun WeatherForecastScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(horizontal = 8.dp),
+                            .padding(horizontal = 16.dp),
                         contentAlignment = Alignment.TopCenter
                     ) {
                         PullRefreshIndicator(refreshing = isSyncing, state = refreshState)
@@ -240,7 +243,7 @@ internal fun ConditionAndDetails(
         //widgets
         CurrentWeather(
             modifier = Modifier
-                .padding(top = 60.dp, bottom = 100.dp)
+                .padding(top = 50.dp, bottom = 50.dp)
                 .graphicsLayer {
                     //can be enabled after implementing independent scrolling
                 },
@@ -349,34 +352,35 @@ private fun CurrentWeather(
             .weatherPlaceholder(
                 visible = showPlaceholder,
             ),
-        horizontalArrangement = Arrangement.Start,
+        horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
             modifier = Modifier,
-            horizontalAlignment = Alignment.Start,
+            horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(
-                text = location,
-                fontSize = 16.sp,
-            )
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = location,
+                    fontSize = 18.sp,
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = condition,
+                    fontSize = 14.sp,
+                    color = LocalContentColor.current.copy(alpha = 0.75f)
+                )
+            }
             Text(
                 text = "${weatherData.currentTemp.roundToInt()}°",
                 fontSize = 120.sp,
             )
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(
-                    text = condition,
-                    fontSize = 16.sp,
-                    color = LocalContentColor.current.copy(alpha = 0.75f)
-                )
-                Text(
-                    text = "$highTemp°/$lowTemp°",
-                    fontSize = 18.sp,
-                    color = LocalContentColor.current.copy(alpha = 0.75f)
-                )
-            }
+            Text(
+                text = "High $highTemp° • Low $lowTemp°",
+                fontSize = 14.sp,
+                color = LocalContentColor.current.copy(alpha = 0.75f)
+            )
         }
     }
 }
@@ -418,7 +422,7 @@ private fun MainPagePreview() {
                     wind_deg = 246,
                     wind_speed = 2.64,
                     weather = listOf(
-                        Weather("", "", 0, "Snow")
+                        Weather("Light snow", "", 0, "Snow")
                     )
                 ),
                 daily = DailyStaticData,

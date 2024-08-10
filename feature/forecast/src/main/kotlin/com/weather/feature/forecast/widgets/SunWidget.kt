@@ -47,14 +47,16 @@ fun SunWidget(
     modifier: Modifier = Modifier,
     surfaceColor: Color,
 ) {
-    val title = if (currentTimeSeconds > sunsetSeconds)
-        stringResource(id = string.sunrise)
-    else stringResource(
-        id = string.sunset
-    )
-    val infoText = if (currentTimeSeconds > sunsetSeconds)
-        formattedSunrise
-    else formattedSunset
+    val title =  when {
+        currentTimeSeconds < sunriseSeconds -> stringResource(id = string.sunrise)
+        currentTimeSeconds in (sunriseSeconds + 1)..<sunsetSeconds -> stringResource(id = string.sunrise)
+        else -> ""
+    }
+    val infoText = when {
+        currentTimeSeconds < sunriseSeconds -> formattedSunrise
+        currentTimeSeconds in (sunriseSeconds + 1)..<sunsetSeconds -> formattedSunset
+        else -> ""
+    }
     WeatherSquareWidget(
         modifier = modifier,
         title = title,
@@ -199,7 +201,7 @@ fun DrawScope.calculatePath(strokeWidth: Float): Path {
     val width = size.width
     val height = size.height
     val bottomHeight = height * 0.8f
-    val topHeight = height *.1f
+    val topHeight = height * .1f
     val centerX = size.width / 2
     val centerY = size.height / 2
     return Path().apply {

@@ -48,8 +48,7 @@ internal fun HourlyTemperatureGraph(
     data: List<Hourly>,
     temperatureUnits: TemperatureUnits,
 ) {
-    val textColor = LocalContentColor.current
-    val verticalLineColor = Color.White.copy(alpha = 0.5f)
+    val contentColor = LocalContentColor.current
     val textMeasurer = rememberTextMeasurer()
 
     Spacer(modifier = Modifier
@@ -88,7 +87,7 @@ internal fun HourlyTemperatureGraph(
                     val textYOffset = 5.dp.toPx()
                     drawText(
                         textLayoutResult = textLayoutResult,
-                        color = textColor,
+                        color = contentColor,
                         topLeft = Offset(
                             x = xPerIndex - textLayoutResult.size.width / 2f,
                             y = (y - textLayoutResult.size.height).minus(textYOffset)
@@ -113,7 +112,7 @@ internal fun HourlyTemperatureGraph(
                         path.moveTo(0f, y)
                         //draw vertical on first point
                         drawLine(
-                            color = verticalLineColor,
+                            color = contentColor,
                             start = Offset(x = 0f, y),
                             end = Offset(x = 0f, y = y + (height - y).plus(15f)),
                             strokeWidth = 3f,
@@ -155,7 +154,7 @@ internal fun HourlyTemperatureGraph(
                 )
                 //first index circle
                 drawCircle(
-                    color = textColor,
+                    color = contentColor,
                     radius = 10f,
                     center = firstIndexOffset,
                 )

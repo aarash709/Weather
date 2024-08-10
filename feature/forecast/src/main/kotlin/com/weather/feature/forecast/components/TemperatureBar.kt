@@ -40,7 +40,7 @@ internal fun TempBar(tempData: TempData) {
     Spacer(modifier = Modifier
         .clip(RoundedCornerShape(16.dp))
         .background(Color.Black.copy(alpha = 0.2f))
-        .size(width = 80.dp, height = 6.dp)
+        .size(width = 60.dp, height = 6.dp)
         .graphicsLayer {
             // should be set to `CompositingStrategy.Offscreen` when
             // using blend modes for transparency in indicators
@@ -63,8 +63,24 @@ internal fun TempBar(tempData: TempData) {
                 val leftIndent = (tempData.currentLow - tempData.minTemp).times(stepsInPixels)
                 val rightIndent =
                     width - (tempData.currentHigh - tempData.maxTemp).times(stepsInPixels).absoluteValue
+                //indicator`s
+                val indicatorXPosition =
+                    (width - (tempData.currentTemp - tempData.maxTemp).times(stepsInPixels).absoluteValue)
+                val indicatorXOffset = when {
+                    tempData.currentTemp == tempData.maxTemp -> indicatorXPosition.minus(
+                        indicatorSize * 0.6f
+                    )
+
+                    tempData.currentTemp == tempData.minTemp -> indicatorXPosition.plus(
+                        indicatorSize * 0.6f
+                    )
+                    else -> indicatorXPosition
+                }
+                if (tempData.currentTemp == tempData.maxTemp) indicatorXPosition.minus(
+                    indicatorSize * 0.6f
+                ) else indicatorXPosition.plus(indicatorSize * 0.6f)
                 val currentTempCirclePosition = Offset(
-                    x = width - (tempData.currentTemp - tempData.maxTemp).times(stepsInPixels).absoluteValue,
+                    x = indicatorXOffset,
                     y = height / 2
                 )
                 val strokeWidth = 5.dp.toPx()

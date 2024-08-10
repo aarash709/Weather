@@ -80,8 +80,19 @@ fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
                 val angle = (progress * 270) + 45
                 val x = -(radius * sin(Math.toRadians(angle)).toFloat()) + size.width / 2
                 val y = (radius * cos(Math.toRadians(angle)).toFloat()) + size.height / 2
-                val colors = Brush.linearGradient(
-                    listOf(Color.Green, Color.Yellow, Color.Red, Color.Blue),
+                //hacky colors to make sweep smooth
+                val colors = Brush.sweepGradient(
+                    listOf(
+                        Color(0xFF9E25E0),
+                        Color(0xFF9E25E0),
+                        Color(0xFF9E25E0),
+                        Color.Green,
+                        Color.Green,
+                        Color.Yellow,
+                        Color.Yellow,
+                        Color.Red,
+                        Color(0xFF9E25E0),
+                    ),
                 )
                 onDrawBehind {
                     drawArc(
@@ -130,7 +141,7 @@ fun UVGraph(modifier: Modifier = Modifier, uvIndex: Int) {
 private fun UVPreview() {
     WeatherTheme {
         val color = MaterialTheme.colorScheme.background
-        UVWidget(uvIndex = 2, surfaceColor = color)
+        UVWidget(uvIndex = 3, surfaceColor = color)
     }
 
 }
