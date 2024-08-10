@@ -243,7 +243,7 @@ internal fun ConditionAndDetails(
         //widgets
         CurrentWeather(
             modifier = Modifier
-                .padding(top = 60.dp, bottom = 100.dp)
+                .padding(top = 50.dp, bottom = 50.dp)
                 .graphicsLayer {
                     //can be enabled after implementing independent scrolling
                 },
