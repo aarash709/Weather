@@ -165,7 +165,7 @@ fun WeatherForecastScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(horizontal = 8.dp),
+                            .padding(horizontal = 16.dp),
                         contentAlignment = Alignment.TopCenter
                     ) {
                         PullRefreshIndicator(refreshing = isSyncing, state = refreshState)
