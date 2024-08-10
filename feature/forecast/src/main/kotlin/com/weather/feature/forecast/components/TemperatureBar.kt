@@ -63,8 +63,24 @@ internal fun TempBar(tempData: TempData) {
                 val leftIndent = (tempData.currentLow - tempData.minTemp).times(stepsInPixels)
                 val rightIndent =
                     width - (tempData.currentHigh - tempData.maxTemp).times(stepsInPixels).absoluteValue
+                //indicator`s
+                val indicatorXPosition =
+                    (width - (tempData.currentTemp - tempData.maxTemp).times(stepsInPixels).absoluteValue)
+                val indicatorXOffset = when {
+                    tempData.currentTemp == tempData.maxTemp -> indicatorXPosition.minus(
+                        indicatorSize * 0.6f
+                    )
+
+                    tempData.currentTemp == tempData.minTemp -> indicatorXPosition.plus(
+                        indicatorSize * 0.6f
+                    )
+                    else -> indicatorXPosition
+                }
+                if (tempData.currentTemp == tempData.maxTemp) indicatorXPosition.minus(
+                    indicatorSize * 0.6f
+                ) else indicatorXPosition.plus(indicatorSize * 0.6f)
                 val currentTempCirclePosition = Offset(
-                    x = width - (tempData.currentTemp - tempData.maxTemp).times(stepsInPixels).absoluteValue,
+                    x = indicatorXOffset,
                     y = height / 2
                 )
                 val strokeWidth = 5.dp.toPx()
