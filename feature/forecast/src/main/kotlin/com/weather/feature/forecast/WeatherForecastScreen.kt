@@ -22,6 +22,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
@@ -47,7 +49,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -78,7 +79,6 @@ import com.weather.model.TemperatureUnits
 import com.weather.model.Weather
 import com.weather.model.WeatherData
 import com.weather.model.WindSpeedUnits
-import dev.chrisbanes.haze.HazeState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
@@ -96,16 +96,24 @@ fun WeatherForecastRoute(
     //stateful
     val weatherUIState by viewModel
         .weatherUIState.collectAsStateWithLifecycle()
+    val settings by viewModel
+        .userSettings.collectAsStateWithLifecycle()
     val syncing by viewModel.isSyncing.collectAsStateWithLifecycle()
     val timeOfDay by viewModel.timeOfDay.collectAsStateWithLifecycle()
-    WeatherForecastScreen(
-        weatherUIState = weatherUIState,
-        timeOfDay = timeOfDay,
-        isSyncing = syncing,
-        onNavigateToManageLocations = { onNavigateToManageLocations() },
-        onNavigateToSettings = { onNavigateToSettings() },
-        onRefresh = viewModel::sync
-    )
+    val pagerState = rememberPagerState {
+        10
+    }
+    HorizontalPager(state = pagerState) { state ->
+        WeatherForecastScreen(
+            weatherUIState = weatherUIState,
+            userSettings = settings,
+            timeOfDay = timeOfDay,
+            isSyncing = syncing,
+            onNavigateToManageLocations = { onNavigateToManageLocations() },
+            onNavigateToSettings = { onNavigateToSettings() },
+            onRefresh = viewModel::sync
+        )
+    }
 }
 
 @OptIn(
@@ -115,6 +123,7 @@ fun WeatherForecastRoute(
 fun WeatherForecastScreen(
     modifier: Modifier = Modifier,
     weatherUIState: SavableForecastData,
+    userSettings: SettingsData,
     timeOfDay: TimeOfDay,
     isSyncing: Boolean,
     onNavigateToManageLocations: () -> Unit,
@@ -126,14 +135,14 @@ fun WeatherForecastScreen(
         mutableIntStateOf(0)
     }
     val speedUnit by remember(weatherUIState) {
-        val value = when (weatherUIState.userSettings.windSpeedUnits) {
+        val value = when (userSettings.windSpeedUnits) {
             WindSpeedUnits.KM -> resource.getString(R.string.kilometer_per_hour_symbol)
             WindSpeedUnits.MS -> resource.getString(R.string.meters_per_second_symbol)
             WindSpeedUnits.MPH -> resource.getString(R.string.miles_per_hour_symbol)
         }
         mutableStateOf(value)
     }
-    val temperatureUnit = weatherUIState.userSettings.temperatureUnits
+    val temperatureUnit = userSettings.temperatureUnits
     val refreshState =
         rememberPullRefreshState(refreshing = isSyncing, onRefresh = {
             onRefresh(
@@ -445,6 +454,7 @@ private fun MainPagePreview() {
         ) {
             WeatherForecastScreen(
                 weatherUIState = data,
+                userSettings = SettingsData(),
                 isSyncing = false,
                 timeOfDay = TimeOfDay.Day,
                 onRefresh = {},

@@ -1,6 +1,5 @@
 package com.weather.feature.forecast
 
-import androidx.annotation.DrawableRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.experiment.weather.core.common.extentions.convertToUserSettings
@@ -57,6 +56,11 @@ class ForecastViewModel @Inject constructor(
     internal var isSyncing = syncStatus.isSyncing
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), false)
 
+    internal val userSettings = getUserSettings().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(1000),
+        initialValue = SettingsData()
+    )
 
     @ExperimentalCoroutinesApi
     internal val weatherUIState = getWeatherData().stateIn(
@@ -64,6 +68,15 @@ class ForecastViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(1000),
         initialValue = SavableForecastData.placeholderDefault
     )
+
+    private fun getAllLocationsData(): Flow<List<SavableForecastData>> {
+        return weatherRepository.getAllForecastWeatherData()
+            .combine(getUserSettings()) { allWeather, setting ->
+                allWeather.map { weather ->
+                    SavableForecastData(weather, setting)
+                }
+            }
+    }
 
     private fun getWeatherData(): Flow<SavableForecastData> {
         return weatherRepository.getAllForecastWeatherData()
@@ -219,6 +232,7 @@ class ForecastViewModel @Inject constructor(
                     TimeOfDay.Dawn -> R.drawable.dawn
                 }
             }
+
             in 200..232 -> R.drawable.thunderstorm //Thunderstorm
             in 300..321 -> R.drawable.thunderstorm //Drizzle
             in 500..531 -> R.drawable.snow //Rain
