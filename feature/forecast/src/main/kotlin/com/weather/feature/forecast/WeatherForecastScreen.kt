@@ -101,11 +101,11 @@ fun WeatherForecastRoute(
     val syncing by viewModel.isSyncing.collectAsStateWithLifecycle()
     val timeOfDay by viewModel.timeOfDay.collectAsStateWithLifecycle()
     val pagerState = rememberPagerState {
-        10
+        weatherUIState.size
     }
-    HorizontalPager(state = pagerState) { state ->
+    HorizontalPager(state = pagerState) { index ->
         WeatherForecastScreen(
-            weatherUIState = weatherUIState,
+            weatherUIState = weatherUIState[index],
             userSettings = settings,
             timeOfDay = timeOfDay,
             isSyncing = syncing,
@@ -437,7 +437,6 @@ private fun MainPagePreview() {
                 daily = DailyStaticData,
                 hourly = HourlyStaticData,
             ),
-            userSettings = SettingsData(WindSpeedUnits.KM, TemperatureUnits.C),
             showPlaceHolder = placeholder
         )
         Box(

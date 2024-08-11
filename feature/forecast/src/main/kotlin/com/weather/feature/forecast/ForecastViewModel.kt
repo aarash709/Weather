@@ -63,22 +63,57 @@ class ForecastViewModel @Inject constructor(
     )
 
     @ExperimentalCoroutinesApi
-    internal val weatherUIState = getWeatherData().stateIn(
+    internal val weatherUIState = getAllLocationsData().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(1000),
-        initialValue = SavableForecastData.placeholderDefault
+        initialValue = listOf(SavableForecastData.placeholderDefault)
     )
 
     private fun getAllLocationsData(): Flow<List<SavableForecastData>> {
         return weatherRepository.getAllForecastWeatherData()
             .combine(getUserSettings()) { allWeather, setting ->
                 allWeather.map { weather ->
-                    SavableForecastData(weather, setting)
+                    val newWeather = weather.convertToUserSettings(userSettings = setting)
+                    val hourly = newWeather.hourly
+                    val current = newWeather.current
+                    val hourlyData = calculateSunriseAndSunset(
+                        hourlyData = hourly,
+                        sunrise = current.sunrise,
+                        sunset = current.sunset
+                    )
+                    SavableForecastData(weather = newWeather.copy(hourly = hourlyData))
                 }
+            }
+            .onEach { allForecast ->
+                allForecast.map { data ->
+                    val currentForecastTime = data.weather.current.dt
+                    val current = data.weather.current
+                    _timeOfDay.update {
+                        calculateTimeOfDay(
+                            currentForecastTime = currentForecastTime.toLong(),
+                            sunrise = current.sunrise.toLong(),
+                            sunset = current.sunset.toLong(),
+                            30
+                        )
+                    }
+                    val coordinate = Coordinate(
+                        data.weather.coordinates.name,
+                        data.weather.coordinates.lat.toString(),
+                        data.weather.coordinates.lon.toString()
+                    )
+                    if (isDataExpired(dataTimestamp = currentForecastTime, minutesThreshold = 30)) {
+                        sync(coordinate)
+                    }
+                }
+
+            }
+            .retry(2)
+            .catch {
+                Timber.e("data error:${it.message}")
             }
     }
 
-    private fun getWeatherData(): Flow<SavableForecastData> {
+    private fun getFavoriteWeatherData(): Flow<SavableForecastData> {
         return weatherRepository.getAllForecastWeatherData()
             .combine(getFavoriteCityCoordinate()) { allWeather, favoriteCityName ->
                 if (favoriteCityName.isNullOrBlank() ||
@@ -101,7 +136,6 @@ class ForecastViewModel @Inject constructor(
                 )
                 SavableForecastData(
                     weather = newWeather.copy(hourly = hourlyData),
-                    userSettings = userSettings,
                     showPlaceHolder = false
                 )
             }
