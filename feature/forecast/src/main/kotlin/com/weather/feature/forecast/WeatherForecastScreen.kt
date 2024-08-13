@@ -201,18 +201,19 @@ fun WeatherForecastScreen(
                         PullRefreshIndicator(refreshing = isSyncing, state = refreshState)
                         CurrentWeather(
                             modifier = Modifier
-                                .padding(top = 50.dp, bottom = 50.dp)
+                                .padding(top = 50.dp)
                                 .graphicsLayer {
                                     //can be enabled after implementing independent scrolling
                                     val scrollProgress =
                                         (scrollState.value.toFloat() / scrollState.maxValue.toFloat())
                                     val newAlpha = 1 - scrollProgress
-                                        .times(7)
+                                        .times(5)
                                     val scale = 1 - scrollProgress
                                     Timber.e(scrollProgress.toString())
                                     scaleX = scale
                                     scaleY = scale
                                     alpha = newAlpha
+                                    translationY = scrollState.value.toFloat()/2 * -1
                                 }
                                 .onGloballyPositioned {
                                     currentWeatherSize =
@@ -232,7 +233,8 @@ fun WeatherForecastScreen(
                             ConditionAndDetails(
 //                            hazeState = hazeState,
                                 modifier = Modifier
-                                    .fillMaxSize(),
+                                    .fillMaxSize()
+                                    .padding(top = 50.dp),
                                 scrollState = scrollState,
                                 weatherData = forecastData[index].weather,
                                 isDayTime = timeOfDay != TimeOfDay.Night,
