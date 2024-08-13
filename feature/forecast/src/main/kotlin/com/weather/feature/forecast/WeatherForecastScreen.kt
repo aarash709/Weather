@@ -50,8 +50,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -169,8 +171,17 @@ fun WeatherForecastScreen(
                     .pullRefresh(refreshState)
             ) {
                 CompositionLocalProvider(LocalContentColor provides Color.White) {
+                    var topAppBarSize by remember {
+                        mutableIntStateOf(0)
+                    }
+                    val density = LocalDensity.current
                     ForecastTopBar(
-                        modifier = Modifier.statusBarsPadding(),
+                        modifier = Modifier
+                            .statusBarsPadding()
+                            .onGloballyPositioned {
+                                topAppBarSize =
+                                    with(density) { it.size.height.toDp().value.toInt() }
+                            },
                         onNavigateToManageLocations = { onNavigateToManageLocations() },
                         onNavigateToSettings = { onNavigateToSettings() })
                     Box(
@@ -178,16 +189,35 @@ fun WeatherForecastScreen(
                             .fillMaxSize(),
                         contentAlignment = Alignment.TopCenter
                     ) {
+                        var currentWeatherSize by remember {
+                            mutableIntStateOf(0)
+                        }
+
                         val pagerState = rememberPagerState(
                             pageCount = { forecastData.size }
                         )
                         val currentPageIndex = pagerState.currentPage
-                        PagerIndicators(
-                            modifier = Modifier,
-                            count = pagerState.pageCount,
-                            currentPage = currentPageIndex
-                        )
                         PullRefreshIndicator(refreshing = isSyncing, state = refreshState)
+                        CurrentWeather(
+                            modifier = Modifier
+                                .padding(top = 50.dp, bottom = 50.dp)
+                                .graphicsLayer {
+                                    //can be enabled after implementing independent scrolling
+                                }
+                                .onGloballyPositioned {
+                                    currentWeatherSize =
+                                        with(density) { it.size.height.toDp().value.toInt() }
+                                },
+                            weatherData = forecastData[currentPageIndex].weather,
+                            indicator = {
+                                PagerIndicators(
+                                    modifier = Modifier,
+                                    count = pagerState.pageCount,
+                                    currentPage = currentPageIndex,
+                                    size = 6.dp
+                                )
+                            }
+                        )
                         HorizontalPager(state = pagerState, pageSpacing = 16.dp) { index ->
                             ConditionAndDetails(
 //                            hazeState = hazeState,
@@ -200,13 +230,10 @@ fun WeatherForecastScreen(
                                 speedUnit = speedUnit,
                                 tempUnit = temperatureUnit,
                                 shouldChangeColor = /*scrollProgress > 10*/ false,
-                                firstItemHeight = {
-                                    firstScrollableItemHeight = it
-                                }
+                                firstItemHeight = currentWeatherSize + topAppBarSize
                             )
                         }
                     }
-
                 }
             }
         }
@@ -226,7 +253,7 @@ internal fun ConditionAndDetails(
     speedUnit: String,
     tempUnit: TemperatureUnits,
     shouldChangeColor: Boolean,
-    firstItemHeight: (Int) -> Unit,
+    firstItemHeight: Int,
 ) {
     //these colors are used if a static or animated background is present
     val dayTimePrimaryColor = Color.Black.copy(
@@ -259,20 +286,21 @@ internal fun ConditionAndDetails(
         maxItemsInEachRow = 2
     ) {
         //widgets
-        CurrentWeather(
-            modifier = Modifier
-                .padding(top = 50.dp, bottom = 50.dp)
-                .graphicsLayer {
-                    //can be enabled after implementing independent scrolling
-                },
-            weatherData = weatherData,
-        )
+//        CurrentWeather(
+//            modifier = Modifier
+//                .padding(top = 50.dp, bottom = 50.dp)
+//                .graphicsLayer {
+//                    //can be enabled after implementing independent scrolling
+//                },
+//            weatherData = weatherData,
+//        )
+        Spacer(modifier = Modifier.height(firstItemHeight.dp))
         // TODO: Weather alert goes here
         DailyWidget(
             modifier = Modifier
                 .fillMaxWidth()
 //                .hazeChild(hazeState, shape = RoundedCornerShape(16.dp))
-                .onSizeChanged { firstItemHeight(it.height) },
+                .onSizeChanged { /*firstItemHeight(it.height)*/ },
             dailyList = weatherData.daily,
             currentTemp = weatherData.current.currentTemp.roundToInt(),
             tempUnit = tempUnit,
@@ -354,6 +382,7 @@ private fun CurrentWeather(
     weatherData: WeatherData,
     location: String = weatherData.coordinates.name,
     showPlaceholder: Boolean = false,
+    indicator: @Composable () -> Unit,
 ) {
     val today = weatherData.daily.first()
     val highTemp = today.dayTemp.roundToInt().toString()
@@ -378,7 +407,7 @@ private fun CurrentWeather(
                     text = location,
                     fontSize = 18.sp,
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                indicator()
                 Text(
                     text = condition,
                     fontSize = 14.sp,
@@ -399,7 +428,12 @@ private fun CurrentWeather(
 }
 
 @Composable
-private fun PagerIndicators(modifier: Modifier = Modifier, size: Dp = 8.dp, count: Int, currentPage: Int) {
+private fun PagerIndicators(
+    modifier: Modifier = Modifier,
+    size: Dp = 8.dp,
+    count: Int,
+    currentPage: Int,
+) {
     Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         repeat(count) { iteration ->
             val color = if (currentPage == iteration) Color.DarkGray else Color.LightGray
