@@ -86,6 +86,7 @@ import com.weather.model.WeatherData
 import com.weather.model.WindSpeedUnits
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -203,6 +204,15 @@ fun WeatherForecastScreen(
                                 .padding(top = 50.dp, bottom = 50.dp)
                                 .graphicsLayer {
                                     //can be enabled after implementing independent scrolling
+                                    val scrollProgress =
+                                        (scrollState.value.toFloat() / scrollState.maxValue.toFloat())
+                                    val newAlpha = 1 - scrollProgress
+                                        .times(7)
+                                    val scale = 1 - scrollProgress
+                                    Timber.e(scrollProgress.toString())
+                                    scaleX = scale
+                                    scaleY = scale
+                                    alpha = newAlpha
                                 }
                                 .onGloballyPositioned {
                                     currentWeatherSize =
