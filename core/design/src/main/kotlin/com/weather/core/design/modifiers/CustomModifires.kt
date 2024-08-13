@@ -15,9 +15,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.platform.LocalView
 
-fun Modifier.bouncyTapEffect(targetScale:Float = 0.95f) = composed {
+fun Modifier.bouncyTapEffect(targetScale:Float = 0.97f) = composed {
     var itemPressed by remember {
         mutableStateOf(false)
     }
