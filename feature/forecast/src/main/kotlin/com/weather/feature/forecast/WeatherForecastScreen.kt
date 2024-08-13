@@ -21,10 +21,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -44,12 +46,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -71,7 +75,6 @@ import com.weather.feature.forecast.widgets.UVWidget
 import com.weather.feature.forecast.widgets.WindWidget
 import com.weather.model.Coordinate
 import com.weather.model.Current
-import com.weather.model.Daily
 import com.weather.model.OneCallCoordinates
 import com.weather.model.SavableForecastData
 import com.weather.model.SettingsData
@@ -149,7 +152,9 @@ fun WeatherForecastScreen(
     val scrollState = rememberScrollState()
 //    val hazeState = remember { HazeState() }
     Scaffold(
-        modifier = Modifier.padding(16.dp).fillMaxSize(),
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxSize(),
         contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { padding ->
         WeatherBackground(
@@ -176,7 +181,12 @@ fun WeatherForecastScreen(
                         val pagerState = rememberPagerState(
                             pageCount = { forecastData.size }
                         )
-                        val pageIndex = pagerState.currentPage
+                        val currentPageIndex = pagerState.currentPage
+                        PagerIndicators(
+                            modifier = Modifier,
+                            count = pagerState.pageCount,
+                            currentPage = currentPageIndex
+                        )
                         PullRefreshIndicator(refreshing = isSyncing, state = refreshState)
                         HorizontalPager(state = pagerState, pageSpacing = 16.dp) { index ->
                             ConditionAndDetails(
@@ -383,6 +393,22 @@ private fun CurrentWeather(
                 text = "High $highTemp° • Low $lowTemp°",
                 fontSize = 14.sp,
                 color = LocalContentColor.current.copy(alpha = 0.75f)
+            )
+        }
+    }
+}
+
+@Composable
+private fun PagerIndicators(modifier: Modifier = Modifier, size: Dp = 8.dp, count: Int, currentPage: Int) {
+    Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+        repeat(count) { iteration ->
+            val color = if (currentPage == iteration) Color.DarkGray else Color.LightGray
+            Box(
+                modifier = Modifier
+                    .padding(5.dp)
+                    .clip(CircleShape)
+                    .size(size)
+                    .background(color)
             )
         }
     }
