@@ -36,25 +36,29 @@ import androidx.compose.ui.unit.sp
 import com.experiment.weather.core.common.R.string
 import com.weather.core.design.components.WeatherSquareWidget
 import com.weather.core.design.theme.WeatherTheme
+import com.weather.core.repository.fake.data.listOfWeatherDataTest
+import com.weather.model.WeatherData
 
 @Composable
 fun SunWidget(
     formattedSunrise: String,
     formattedSunset: String,
-    sunriseSeconds: Int,
-    sunsetSeconds: Int,
+    weatherData: WeatherData,
     currentTimeSeconds: Int,
     modifier: Modifier = Modifier,
     surfaceColor: Color,
 ) {
-    val title =  when {
-        currentTimeSeconds < sunriseSeconds -> stringResource(id = string.sunrise)
-        currentTimeSeconds in (sunriseSeconds + 1)..<sunsetSeconds -> stringResource(id = string.sunrise)
+
+    val sunrise = weatherData.current.sunrise
+    val sunset = weatherData.current.sunset
+    val title = when {
+        currentTimeSeconds < sunrise -> stringResource(id = string.sunrise)
+        currentTimeSeconds in (sunrise + 1)..<sunset -> stringResource(id = string.sunrise)
         else -> ""
     }
     val infoText = when {
-        currentTimeSeconds < sunriseSeconds -> formattedSunrise
-        currentTimeSeconds in (sunriseSeconds + 1)..<sunsetSeconds -> formattedSunset
+        currentTimeSeconds > sunset -> formattedSunrise
+        currentTimeSeconds in (sunrise + 1)..<sunset -> formattedSunset
         else -> ""
     }
     WeatherSquareWidget(
@@ -67,8 +71,8 @@ fun SunWidget(
             modifier = Modifier,
             formattedSunrise = formattedSunrise,
             formattedSunset = formattedSunset,
-            sunrise = sunriseSeconds,
-            sunset = sunsetSeconds,
+            sunrise = sunrise,
+            sunset = sunset,
             currentTime = currentTimeSeconds
         )
     }
@@ -273,8 +277,7 @@ private fun UVPreview() {
         FlowRow(maxItemsInEachRow = 2, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             SunWidget(
                 modifier = Modifier.weight(1f),
-                sunriseSeconds = 0,
-                sunsetSeconds = 100,
+                weatherData = listOfWeatherDataTest.first(),
                 currentTimeSeconds = position,
                 surfaceColor = color,
                 formattedSunrise = "06:10",
@@ -282,8 +285,7 @@ private fun UVPreview() {
             )
             SunWidget(
                 modifier = Modifier.weight(1f),
-                sunriseSeconds = 0,
-                sunsetSeconds = 100,
+                weatherData = listOfWeatherDataTest.first(),
                 currentTimeSeconds = position,
                 surfaceColor = color,
                 formattedSunrise = "06:10",
@@ -303,8 +305,7 @@ private fun UVSinglePreview() {
         FlowRow(maxItemsInEachRow = 2, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             SunWidget(
                 modifier = Modifier.weight(1f),
-                sunriseSeconds = 0,
-                sunsetSeconds = 100,
+                weatherData = listOfWeatherDataTest.first(),
                 currentTimeSeconds = position,
                 surfaceColor = color,
                 formattedSunrise = "06:10",

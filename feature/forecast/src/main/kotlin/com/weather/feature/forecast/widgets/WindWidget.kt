@@ -38,18 +38,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.experiment.weather.core.common.R.array
 import com.weather.core.design.components.WeatherSquareWidget
+import com.weather.core.repository.fake.data.listOfWeatherDataTest
+import com.weather.model.WeatherData
 import kotlin.math.cos
+import kotlin.math.roundToInt
 import kotlin.math.sin
 
 @Composable
 internal fun WindWidget(
     modifier: Modifier = Modifier,
-    windDirection: Int,
-    windSpeed: Int,
+    weatherData:WeatherData,
     speedUnits: String,
     surfaceColor: Color,
 ) {
     val context = LocalContext.current
+    val windDirection = weatherData.current.wind_deg
+    val windSpeed = weatherData.current.wind_speed.roundToInt()
     val direction by remember(windDirection) {
         val directions = context.resources.getStringArray(array.wind_directions)
         val value = when (windDirection) {
@@ -287,15 +291,13 @@ private fun WidPreview() {
         val color = MaterialTheme.colorScheme.background
         WindWidget(
             Modifier.weight(1f),
-            windDirection = 0,
-            windSpeed = 12,
+            weatherData = listOfWeatherDataTest.first(),
             "km/h",
             surfaceColor = color
         )
         WindWidget(
             Modifier.weight(1f),
-            windDirection = 0,
-            windSpeed = 12,
+            weatherData = listOfWeatherDataTest.first(),
             "mph",
             surfaceColor = color
         )
@@ -304,7 +306,7 @@ private fun WidPreview() {
 @OptIn(ExperimentalLayoutApi::class)
 @Preview(backgroundColor = 0xFF255BFF, showBackground = false)
 @Composable
-private fun WidsPreview() {
+private fun WindPreview() {
     FlowRow(
         Modifier
             .background(Color.Blue.copy(green = 0.35f)),
@@ -315,8 +317,7 @@ private fun WidsPreview() {
         val color = MaterialTheme.colorScheme.background
         WindWidget(
             Modifier.weight(1f),
-            windDirection = 0,
-            windSpeed = 12,
+            weatherData = listOfWeatherDataTest.first(),
             "km/h",
             surfaceColor = color
         )

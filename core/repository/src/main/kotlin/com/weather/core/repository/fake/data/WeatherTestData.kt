@@ -27,7 +27,7 @@ val listOfWeatherDataTest = listOf(
             visibility = 0,
             wind_deg = 0,
 //            wind_gust = 0.0,
-            wind_speed = 0.0,
+            wind_speed = 12.0,
             weather = listOf()
         ),
         daily = listOf(),

@@ -255,10 +255,7 @@ internal fun ConditionAndDetails(
                 .graphicsLayer {
                     //can be enabled after implementing independent scrolling
                 },
-            location = weatherData.coordinates.name,
-            weatherData = weatherData.current,
-            today = weatherData.daily[0],
-            showPlaceholder = false,
+            weatherData = weatherData,
         )
         // TODO: Weather alert goes here
         DailyWidget(
@@ -285,8 +282,7 @@ internal fun ConditionAndDetails(
                 modifier = Modifier
                     .weight(1f)
                 /*.hazeChild(hazeState, shape = RoundedCornerShape(16.dp))*/,
-                windDirection = weatherData.current.wind_deg,
-                windSpeed = weatherData.current.wind_speed.roundToInt(),
+                weatherData = weatherData,
                 speedUnits = speedUnit,
                 surfaceColor = surfaceColor
             )
@@ -302,8 +298,7 @@ internal fun ConditionAndDetails(
                     "HH:mm",
                     Locale.getDefault()
                 ).format(Date(weatherData.current.sunset.toLong() * 1000)),
-                sunriseSeconds = weatherData.current.sunrise,
-                sunsetSeconds = weatherData.current.sunset,
+                weatherData = weatherData,
                 currentTimeSeconds = weatherData.current.dt,
                 surfaceColor = surfaceColor
             )
@@ -346,14 +341,14 @@ internal fun ConditionAndDetails(
 @Composable
 private fun CurrentWeather(
     modifier: Modifier = Modifier,
-    location: String,
-    weatherData: Current,
-    today: Daily,
-    showPlaceholder: Boolean,
+    weatherData: WeatherData,
+    location: String = weatherData.coordinates.name,
+    showPlaceholder: Boolean = false,
 ) {
+    val today = weatherData.daily.first()
     val highTemp = today.dayTemp.roundToInt().toString()
     val lowTemp = today.nightTemp.roundToInt().toString()
-    val condition = weatherData.weather.first().description
+    val condition = weatherData.current.weather.first().description
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -381,7 +376,7 @@ private fun CurrentWeather(
                 )
             }
             Text(
-                text = "${weatherData.currentTemp.roundToInt()}°",
+                text = "${weatherData.current.currentTemp.roundToInt()}°",
                 fontSize = 120.sp,
             )
             Text(
