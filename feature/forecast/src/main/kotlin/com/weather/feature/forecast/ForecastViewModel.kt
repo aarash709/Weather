@@ -1,6 +1,5 @@
 package com.weather.feature.forecast
 
-import androidx.annotation.DrawableRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.experiment.weather.core.common.extentions.convertToUserSettings
@@ -57,15 +56,64 @@ class ForecastViewModel @Inject constructor(
     internal var isSyncing = syncStatus.isSyncing
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), false)
 
-
-    @ExperimentalCoroutinesApi
-    internal val weatherUIState = getWeatherData().stateIn(
+    internal val userSettings = getUserSettings().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(1000),
-        initialValue = SavableForecastData.placeholderDefault
+        initialValue = SettingsData()
     )
 
-    private fun getWeatherData(): Flow<SavableForecastData> {
+    @ExperimentalCoroutinesApi
+    internal val weatherUIState = getAllLocationsData().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(1000),
+        initialValue = listOf(SavableForecastData.placeholderDefault)
+    )
+
+    private fun getAllLocationsData(): Flow<List<SavableForecastData>> {
+        return weatherRepository.getAllForecastWeatherData()
+            .combine(getUserSettings()) { allWeather, setting ->
+                allWeather.map { weather ->
+                    val newWeather = weather.convertToUserSettings(userSettings = setting)
+                    val hourly = newWeather.hourly
+                    val current = newWeather.current
+                    val hourlyData = calculateSunriseAndSunset(
+                        hourlyData = hourly,
+                        sunrise = current.sunrise,
+                        sunset = current.sunset
+                    )
+                    SavableForecastData(weather = newWeather.copy(hourly = hourlyData))
+                }
+            }
+            .onEach { allForecast ->
+                allForecast.map { data ->
+                    val currentForecastTime = data.weather.current.dt
+                    val current = data.weather.current
+                    _timeOfDay.update {
+                        calculateTimeOfDay(
+                            currentForecastTime = currentForecastTime.toLong(),
+                            sunrise = current.sunrise.toLong(),
+                            sunset = current.sunset.toLong(),
+                            30
+                        )
+                    }
+                    val coordinate = Coordinate(
+                        data.weather.coordinates.name,
+                        data.weather.coordinates.lat.toString(),
+                        data.weather.coordinates.lon.toString()
+                    )
+                    if (isDataExpired(dataTimestamp = currentForecastTime, minutesThreshold = 30)) {
+                        sync(coordinate)
+                    }
+                }
+
+            }
+            .retry(2)
+            .catch {
+                Timber.e("data error:${it.message}")
+            }
+    }
+
+    private fun getFavoriteWeatherData(): Flow<SavableForecastData> {
         return weatherRepository.getAllForecastWeatherData()
             .combine(getFavoriteCityCoordinate()) { allWeather, favoriteCityName ->
                 if (favoriteCityName.isNullOrBlank() ||
@@ -88,7 +136,6 @@ class ForecastViewModel @Inject constructor(
                 )
                 SavableForecastData(
                     weather = newWeather.copy(hourly = hourlyData),
-                    userSettings = userSettings,
                     showPlaceHolder = false
                 )
             }
@@ -219,6 +266,7 @@ class ForecastViewModel @Inject constructor(
                     TimeOfDay.Dawn -> R.drawable.dawn
                 }
             }
+
             in 200..232 -> R.drawable.thunderstorm //Thunderstorm
             in 300..321 -> R.drawable.thunderstorm //Drizzle
             in 500..531 -> R.drawable.snow //Rain

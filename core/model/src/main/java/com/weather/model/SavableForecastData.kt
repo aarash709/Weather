@@ -2,7 +2,6 @@ package com.weather.model
 
 data class SavableForecastData(
     val weather: WeatherData,
-    val userSettings: SettingsData,
     val showPlaceHolder: Boolean = true,
 ) {
     companion object {
@@ -29,7 +28,6 @@ data class SavableForecastData(
                 ), daily = Daily.empty,
                 hourly = Hourly.empty
             ),
-            userSettings = SettingsData()
         )
     }
 }
