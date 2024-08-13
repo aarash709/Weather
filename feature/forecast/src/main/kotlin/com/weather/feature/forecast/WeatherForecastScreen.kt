@@ -149,7 +149,7 @@ fun WeatherForecastScreen(
     val scrollState = rememberScrollState()
 //    val hazeState = remember { HazeState() }
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.padding(16.dp).fillMaxSize(),
         contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { padding ->
         WeatherBackground(
@@ -161,7 +161,6 @@ fun WeatherForecastScreen(
         ) {
             Column(
                 modifier = Modifier
-                    .padding(padding)
                     .pullRefresh(refreshState)
             ) {
                 CompositionLocalProvider(LocalContentColor provides Color.White) {
@@ -171,8 +170,7 @@ fun WeatherForecastScreen(
                         onNavigateToSettings = { onNavigateToSettings() })
                     Box(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 16.dp),
+                            .fillMaxSize(),
                         contentAlignment = Alignment.TopCenter
                     ) {
                         val pagerState = rememberPagerState(
@@ -180,7 +178,7 @@ fun WeatherForecastScreen(
                         )
                         val pageIndex = pagerState.currentPage
                         PullRefreshIndicator(refreshing = isSyncing, state = refreshState)
-                        HorizontalPager(state = pagerState) { index ->
+                        HorizontalPager(state = pagerState, pageSpacing = 16.dp) { index ->
                             ConditionAndDetails(
 //                            hazeState = hazeState,
                                 modifier = Modifier
