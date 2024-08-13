@@ -94,26 +94,21 @@ fun WeatherForecastRoute(
     onNavigateToSettings: () -> Unit,
 ) {
     //stateful
-    val weatherUIState by viewModel
+    val forecastData by viewModel
         .weatherUIState.collectAsStateWithLifecycle()
     val settings by viewModel
         .userSettings.collectAsStateWithLifecycle()
     val syncing by viewModel.isSyncing.collectAsStateWithLifecycle()
     val timeOfDay by viewModel.timeOfDay.collectAsStateWithLifecycle()
-    val pagerState = rememberPagerState {
-        weatherUIState.size
-    }
-    HorizontalPager(state = pagerState) { index ->
-        WeatherForecastScreen(
-            weatherUIState = weatherUIState[index],
-            userSettings = settings,
-            timeOfDay = timeOfDay,
-            isSyncing = syncing,
-            onNavigateToManageLocations = { onNavigateToManageLocations() },
-            onNavigateToSettings = { onNavigateToSettings() },
-            onRefresh = viewModel::sync
-        )
-    }
+    WeatherForecastScreen(
+        forecastData = forecastData,
+        settingsData = settings,
+        timeOfDay = timeOfDay,
+        isSyncing = syncing,
+        onNavigateToManageLocations = { onNavigateToManageLocations() },
+        onNavigateToSettings = { onNavigateToSettings() },
+        onRefresh = viewModel::sync
+    )
 }
 
 @OptIn(
@@ -122,8 +117,8 @@ fun WeatherForecastRoute(
 @Composable
 fun WeatherForecastScreen(
     modifier: Modifier = Modifier,
-    weatherUIState: SavableForecastData,
-    userSettings: SettingsData,
+    forecastData: List<SavableForecastData>,
+    settingsData: SettingsData,
     timeOfDay: TimeOfDay,
     isSyncing: Boolean,
     onNavigateToManageLocations: () -> Unit,
@@ -134,19 +129,19 @@ fun WeatherForecastScreen(
     var firstScrollableItemHeight by rememberSaveable {
         mutableIntStateOf(0)
     }
-    val speedUnit by remember(weatherUIState) {
-        val value = when (userSettings.windSpeedUnits) {
+    val speedUnit by remember(forecastData) {
+        val value = when (settingsData.windSpeedUnits) {
             WindSpeedUnits.KM -> resource.getString(R.string.kilometer_per_hour_symbol)
             WindSpeedUnits.MS -> resource.getString(R.string.meters_per_second_symbol)
             WindSpeedUnits.MPH -> resource.getString(R.string.miles_per_hour_symbol)
         }
         mutableStateOf(value)
     }
-    val temperatureUnit = userSettings.temperatureUnits
+    val temperatureUnit = settingsData.temperatureUnits
     val refreshState =
         rememberPullRefreshState(refreshing = isSyncing, onRefresh = {
             onRefresh(
-                weatherUIState.weather.coordinates.let {
+                forecastData[0].weather.coordinates.let {
                     Coordinate(it.name, it.lat.toString(), it.lon.toString())
                 }
             )
@@ -180,22 +175,28 @@ fun WeatherForecastScreen(
                             .padding(horizontal = 16.dp),
                         contentAlignment = Alignment.TopCenter
                     ) {
-                        PullRefreshIndicator(refreshing = isSyncing, state = refreshState)
-                        ConditionAndDetails(
-//                            hazeState = hazeState,
-                            modifier = Modifier
-                                .fillMaxSize(),
-                            scrollState = scrollState,
-                            weatherData = weatherUIState.weather,
-                            isDayTime = timeOfDay != TimeOfDay.Night,
-                            showPlaceholder = weatherUIState.showPlaceHolder,
-                            speedUnit = speedUnit,
-                            tempUnit = temperatureUnit,
-                            shouldChangeColor = /*scrollProgress > 10*/ false,
-                            firstItemHeight = {
-                                firstScrollableItemHeight = it
-                            }
+                        val pagerState = rememberPagerState(
+                            pageCount = { forecastData.size }
                         )
+                        val pageIndex = pagerState.currentPage
+                        PullRefreshIndicator(refreshing = isSyncing, state = refreshState)
+                        HorizontalPager(state = pagerState) { index ->
+                            ConditionAndDetails(
+//                            hazeState = hazeState,
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                scrollState = scrollState,
+                                weatherData = forecastData[index].weather,
+                                isDayTime = timeOfDay != TimeOfDay.Night,
+                                showPlaceholder = forecastData[index].showPlaceHolder,
+                                speedUnit = speedUnit,
+                                tempUnit = temperatureUnit,
+                                shouldChangeColor = /*scrollProgress > 10*/ false,
+                                firstItemHeight = {
+                                    firstScrollableItemHeight = it
+                                }
+                            )
+                        }
                     }
 
                 }
@@ -407,37 +408,39 @@ private fun MainPagePreview() {
         placeholder = false
     })
     ForecastTheme {
-        val data = SavableForecastData(
-            weather = WeatherData(
-                coordinates = OneCallCoordinates(
-                    name = "Tehran",
-                    lat = 0.0,
-                    lon = 0.0,
-                    timezone = "tehran",
-                    timezone_offset = 0
+        val data = listOf(
+            SavableForecastData(
+                weather = WeatherData(
+                    coordinates = OneCallCoordinates(
+                        name = "Tehran",
+                        lat = 0.0,
+                        lon = 0.0,
+                        timezone = "tehran",
+                        timezone_offset = 0
+                    ),
+                    current = Current(
+                        clouds = 27,
+                        dew_point = 273.46,
+                        dt = 1674649142,
+                        feels_like = 286.08,
+                        humidity = 38,
+                        pressure = 1017,
+                        sunrise = 1674617749,
+                        sunset = 1674655697,
+                        currentTemp = 287.59,
+                        uvi = 0.91,
+                        visibility = 10000,
+                        wind_deg = 246,
+                        wind_speed = 2.64,
+                        weather = listOf(
+                            Weather("Light snow", "", 0, "Snow")
+                        )
+                    ),
+                    daily = DailyStaticData,
+                    hourly = HourlyStaticData,
                 ),
-                current = Current(
-                    clouds = 27,
-                    dew_point = 273.46,
-                    dt = 1674649142,
-                    feels_like = 286.08,
-                    humidity = 38,
-                    pressure = 1017,
-                    sunrise = 1674617749,
-                    sunset = 1674655697,
-                    currentTemp = 287.59,
-                    uvi = 0.91,
-                    visibility = 10000,
-                    wind_deg = 246,
-                    wind_speed = 2.64,
-                    weather = listOf(
-                        Weather("Light snow", "", 0, "Snow")
-                    )
-                ),
-                daily = DailyStaticData,
-                hourly = HourlyStaticData,
-            ),
-            showPlaceHolder = placeholder
+                showPlaceHolder = placeholder
+            )
         )
         Box(
             modifier = Modifier
@@ -452,8 +455,8 @@ private fun MainPagePreview() {
                 )
         ) {
             WeatherForecastScreen(
-                weatherUIState = data,
-                userSettings = SettingsData(),
+                forecastData = data,
+                settingsData = SettingsData(),
                 isSyncing = false,
                 timeOfDay = TimeOfDay.Day,
                 onRefresh = {},
