@@ -42,7 +42,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -85,7 +84,6 @@ import com.weather.model.WeatherData
 import com.weather.model.WindSpeedUnits
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -102,12 +100,14 @@ fun WeatherForecastRoute(
     //stateful
     val forecastData by viewModel
         .weatherUIState.collectAsStateWithLifecycle()
+    val favoriteCity by viewModel.favoriteCity.collectAsStateWithLifecycle()
     val settings by viewModel
         .userSettings.collectAsStateWithLifecycle()
     val syncing by viewModel.isSyncing.collectAsStateWithLifecycle()
     val timeOfDay by viewModel.timeOfDay.collectAsStateWithLifecycle()
     WeatherForecastScreen(
         forecastData = forecastData,
+        favoriteCity = favoriteCity,
         settingsData = settings,
         timeOfDay = timeOfDay,
         isSyncing = syncing,
@@ -124,6 +124,7 @@ fun WeatherForecastRoute(
 fun WeatherForecastScreen(
     modifier: Modifier = Modifier,
     forecastData: List<SavableForecastData>,
+    favoriteCity: String?,
     settingsData: SettingsData,
     timeOfDay: TimeOfDay,
     isSyncing: Boolean,
@@ -184,13 +185,20 @@ fun WeatherForecastScreen(
                             .fillMaxSize(),
                         contentAlignment = Alignment.TopCenter
                     ) {
+                        val pagerState = rememberPagerState(
+                            pageCount = { forecastData.size }
+                        )
+                        LaunchedEffect(key1 = favoriteCity) {
+                            val page = forecastData.indexOfFirst {
+                                it.weather.coordinates.name == (favoriteCity
+                                    ?: it.weather.coordinates.name)
+                            }
+                            pagerState.scrollToPage(page)
+                        }
                         var currentWeatherSize by remember {
                             mutableIntStateOf(0)
                         }
 
-                        val pagerState = rememberPagerState(
-                            pageCount = { forecastData.size }
-                        )
                         val currentPageIndex = pagerState.currentPage
                         val scrollState = rememberScrollState()
                         PullRefreshIndicator(refreshing = isSyncing, state = refreshState)
@@ -509,12 +517,13 @@ private fun MainPagePreview() {
         ) {
             WeatherForecastScreen(
                 forecastData = data,
+                favoriteCity = "",
                 settingsData = SettingsData(),
-                isSyncing = false,
                 timeOfDay = TimeOfDay.Day,
-                onRefresh = {},
+                isSyncing = false,
                 onNavigateToManageLocations = {},
-                onNavigateToSettings = {}
+                onNavigateToSettings = {},
+                onRefresh = {}
             )
         }
     }
