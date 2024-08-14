@@ -88,6 +88,7 @@ class ForecastViewModel @Inject constructor(
                 allForecast.map { data ->
                     val currentForecastTime = data.weather.current.dt
                     val current = data.weather.current
+                    Timber.e("time ${allForecast.first().weather.hourly.first().time}")
                     _timeOfDay.update {
                         calculateTimeOfDay(
                             currentForecastTime = currentForecastTime.toLong(),
@@ -105,7 +106,6 @@ class ForecastViewModel @Inject constructor(
                         sync(coordinate)
                     }
                 }
-
             }
             .retry(2)
             .catch {
