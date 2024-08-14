@@ -30,7 +30,28 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 import kotlin.math.roundToInt
+
+
+fun WeatherData.convertToUserSettings(userSettings: SettingsData): WeatherData {
+    val tempUnit = userSettings.temperatureUnits
+    val windUnit = userSettings.windSpeedUnits
+    val timeOffset = coordinates.timezone_offset.toLong()
+    return copy {
+        WeatherData.current transform {
+            it.convertToUserSettings(
+                tempUnit,
+                windUnit
+            )
+        }
+        WeatherData.daily transform {
+            it.convertToUserSettings(tempUnit)
+        }
+        WeatherData.hourly transform { it.convertToUserSettings(tempUnit, windUnit, timeOffset) }
+
+    }
+}
 
 fun Current.convertToUserSettings(
     temperature: TemperatureUnits?,
@@ -61,6 +82,7 @@ fun List<Daily>.convertToUserSettings(temperature: TemperatureUnits): List<Daily
 fun List<Hourly>.convertToUserSettings(
     temperature: TemperatureUnits,
     windSpeed: WindSpeedUnits,
+    timeOffset: Long,
 ): List<Hourly> {
     return map { hourly ->
         hourly.copy {
@@ -69,28 +91,15 @@ fun List<Hourly>.convertToUserSettings(
                     temperature
                 )
             }
-            Hourly.time transform { timeInSeconds -> calculateUIHourlyTime(timeInSeconds.toLong()) }
+            Hourly.time transform { timeInSeconds ->
+                calculateUIHourlyTime(
+                    timeInSeconds.toLong(),
+                    timeOffset
+                )
+            }
             Hourly.temp transform { it.convertToUserTemperature(temperature) }
             Hourly.wind_speed transform { it.convertToUserSpeed(windSpeed) }
         }
-    }
-}
-
-fun WeatherData.convertToUserSettings(userSettings: SettingsData): WeatherData {
-    val tempUnit = userSettings.temperatureUnits
-    val windUnit = userSettings.windSpeedUnits
-    return copy {
-        WeatherData.current transform {
-            it.convertToUserSettings(
-                tempUnit,
-                windUnit
-            )
-        }
-        WeatherData.daily transform {
-            it.convertToUserSettings(tempUnit!!)
-        }
-        WeatherData.hourly transform { it.convertToUserSettings(tempUnit!!, windUnit!!) }
-
     }
 }
 
@@ -126,23 +135,31 @@ fun List<DailyPreview>.convertTimeAndTemperature(): List<DailyPreview> {
     }
 }
 
-private fun unixMillisToHumanDate(unixTimeStamp: Long, pattern: String): String {
+private fun unixMillisToHumanDate(
+    unixTimeStampInSeconds: Long,
+    pattern: String,
+): String {
     val formatter = SimpleDateFormat(pattern, Locale.getDefault())
-    val date = Date(unixTimeStamp * 1000) //to millisecond
+    val date = Date(unixTimeStampInSeconds * 1000) //to millisecond
+    formatter.timeZone = TimeZone.getTimeZone("UTC")
     return formatter.format(date)
 }
 
-private fun calculateUIHourlyTime(hourlyTimeSeconds: Long): String {
+private fun calculateUIHourlyTime(hourlyTimeSeconds: Long, timeOffsetSeconds: Long): String {
     val differenceInMinutes =
         Duration.ofSeconds(hourlyTimeSeconds.minus(Instant.now().epochSecond)).toMinutes()
     return if (differenceInMinutes in hourlyRangeThreshold)
         NOW
     else
-        unixMillisToHumanDate(hourlyTimeSeconds, HOURLY_PATTERN)
+        unixMillisToHumanDate(hourlyTimeSeconds.plus(timeOffsetSeconds), HOURLY_PATTERN)
 }
 
 private fun calculateUIDailyTime(hourlyTimeSeconds: Long): String {
-    val dayOfWeekOfDailyData = unixMillisToHumanDate(hourlyTimeSeconds, DAILY_PATTERN)
+    val dayOfWeekOfDailyData =
+        unixMillisToHumanDate(
+            unixTimeStampInSeconds = hourlyTimeSeconds,
+            pattern = DAILY_PATTERN
+        )
     val localToday = LocalDateTime.now().dayOfWeek.name
     val localTomorrow = LocalDateTime.now().plusDays(1).dayOfWeek.name
     return when (dayOfWeekOfDailyData.uppercase()) {

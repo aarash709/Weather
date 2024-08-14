@@ -34,6 +34,7 @@ import java.time.Duration
 import java.time.Instant
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 import javax.inject.Inject
 
 enum class TimeOfDay {
@@ -76,10 +77,12 @@ class ForecastViewModel @Inject constructor(
                     val newWeather = weather.convertToUserSettings(userSettings = setting)
                     val hourly = newWeather.hourly
                     val current = newWeather.current
+                    val timezoneOffset = newWeather.coordinates.timezone_offset
                     val hourlyData = calculateSunriseAndSunset(
                         hourlyData = hourly,
                         sunrise = current.sunrise,
-                        sunset = current.sunset
+                        sunset = current.sunset,
+                        timezoneOffset = timezoneOffset.toLong()
                     )
                     SavableForecastData(weather = newWeather.copy(hourly = hourlyData))
                 }
@@ -88,6 +91,7 @@ class ForecastViewModel @Inject constructor(
                 allForecast.map { data ->
                     val currentForecastTime = data.weather.current.dt
                     val current = data.weather.current
+                    Timber.e("time ${allForecast.first().weather.hourly.first().time}")
                     _timeOfDay.update {
                         calculateTimeOfDay(
                             currentForecastTime = currentForecastTime.toLong(),
@@ -105,7 +109,6 @@ class ForecastViewModel @Inject constructor(
                         sync(coordinate)
                     }
                 }
-
             }
             .retry(2)
             .catch {
@@ -129,10 +132,12 @@ class ForecastViewModel @Inject constructor(
                 val newWeather = weather.convertToUserSettings(userSettings = userSettings)
                 val hourly = newWeather.hourly
                 val current = newWeather.current
+                val timezoneOffset = newWeather.coordinates.timezone_offset
                 val hourlyData = calculateSunriseAndSunset(
                     hourlyData = hourly,
-                    sunrise = current.sunrise,
-                    sunset = current.sunset
+                    sunrise = current.sunrise.plus(newWeather.coordinates.timezone_offset),
+                    sunset = current.sunset.plus(newWeather.coordinates.timezone_offset),
+                    timezoneOffset = timezoneOffset.toLong()
                 )
                 SavableForecastData(
                     weather = newWeather.copy(hourly = hourlyData),
@@ -228,11 +233,15 @@ class ForecastViewModel @Inject constructor(
         hourlyData: List<Hourly>,
         sunrise: Int,
         sunset: Int,
+        timezoneOffset: Long,
     ): List<Hourly> {
         val mutableHourly = hourlyData.toMutableList()
         val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
-        val formattedSunset = formatter.format(Date(sunset.toLong() * 1000))
-        val formattedSunrise = formatter.format(Date(sunrise.toLong() * 1000))
+        formatter.timeZone = TimeZone.getTimeZone("GMT")
+        val sunsetOffset = sunset.toLong().plus(timezoneOffset)
+        val sunriseOffset = sunrise.toLong().plus(timezoneOffset)
+        val formattedSunset = formatter.format(Date(sunsetOffset * 1000))
+        val formattedSunrise = formatter.format(Date(sunriseOffset * 1000))
         hourlyData.lastOrNull { it.dt <= sunset }
             ?.let { hourly ->
                 val index = hourlyData.indexOf(hourly)
@@ -241,7 +250,7 @@ class ForecastViewModel @Inject constructor(
                     time = formattedSunset,
                     dt = sunset
                 )
-                mutableHourly.add(index, sunsetHourly)
+                mutableHourly.add(index + 1, sunsetHourly)
             }
         hourlyData.lastOrNull { it.dt <= sunrise }
             ?.let { hourly ->
@@ -251,7 +260,7 @@ class ForecastViewModel @Inject constructor(
                     time = formattedSunrise,
                     dt = sunrise
                 )
-                mutableHourly.add(index, sunsetHourly)
+                mutableHourly.add(index + 1, sunsetHourly)
             }
         return mutableHourly.toList()
     }
