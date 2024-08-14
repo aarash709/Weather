@@ -38,6 +38,7 @@ import com.weather.core.design.components.WeatherSquareWidget
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.core.repository.fake.data.listOfWeatherDataTest
 import com.weather.model.WeatherData
+import timber.log.Timber
 
 @Composable
 fun SunWidget(
@@ -48,18 +49,20 @@ fun SunWidget(
     modifier: Modifier = Modifier,
     surfaceColor: Color,
 ) {
-
     val sunrise = weatherData.current.sunrise
     val sunset = weatherData.current.sunset
+    Timber.e("current:$currentTimeSeconds,sunrise:$sunrise")
     val title = when {
         currentTimeSeconds < sunrise -> stringResource(id = string.sunrise)
-        currentTimeSeconds in (sunrise + 1)..<sunset -> stringResource(id = string.sunrise)
-        else -> ""
+        currentTimeSeconds in (sunrise + 1)..<sunset -> stringResource(id = string.sunset)
+        //default title because sometimes open weather servers not updating sunrise and set on time
+        else -> stringResource(id = string.sunrise)
     }
     val infoText = when {
-        currentTimeSeconds > sunset -> formattedSunrise
+        currentTimeSeconds < sunrise -> formattedSunrise
         currentTimeSeconds in (sunrise + 1)..<sunset -> formattedSunset
-        else -> ""
+        //default sun time because sometimes open weather servers not updating sunrise and set on time
+        else -> formattedSunrise
     }
     WeatherSquareWidget(
         modifier = modifier,
@@ -281,7 +284,7 @@ private fun UVPreview() {
                 currentTimeSeconds = position,
                 surfaceColor = color,
                 formattedSunrise = "06:10",
-                formattedSunset = "18:30"
+                formattedSunset = "18:30",
             )
             SunWidget(
                 modifier = Modifier.weight(1f),
@@ -289,7 +292,7 @@ private fun UVPreview() {
                 currentTimeSeconds = position,
                 surfaceColor = color,
                 formattedSunrise = "06:10",
-                formattedSunset = "18:30"
+                formattedSunset = "18:30",
             )
         }
     }
@@ -309,7 +312,7 @@ private fun UVSinglePreview() {
                 currentTimeSeconds = position,
                 surfaceColor = color,
                 formattedSunrise = "06:10",
-                formattedSunset = "18:30"
+                formattedSunset = "18:30",
             )
         }
     }

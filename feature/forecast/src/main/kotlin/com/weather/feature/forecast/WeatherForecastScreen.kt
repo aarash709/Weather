@@ -90,6 +90,7 @@ import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 import kotlin.math.roundToInt
 
 @ExperimentalCoroutinesApi
@@ -213,7 +214,7 @@ fun WeatherForecastScreen(
                                     scaleX = scale
                                     scaleY = scale
                                     alpha = newAlpha
-                                    translationY = scrollState.value.toFloat()/2 * -1
+                                    translationY = scrollState.value.toFloat() / 2 * -1
                                 }
                                 .onGloballyPositioned {
                                     currentWeatherSize =
@@ -336,18 +337,30 @@ internal fun ConditionAndDetails(
                 speedUnits = speedUnit,
                 surfaceColor = surfaceColor
             )
+            var formattedSunrise by remember {
+                mutableStateOf("00:00")
+            }
+            var formattedSunset by remember {
+                mutableStateOf("00:00")
+            }
+            LaunchedEffect(key1 = weatherData) {
+                val sdf = SimpleDateFormat(
+                    "HH:mm",
+                    Locale.getDefault()
+                )
+                val offset = weatherData.coordinates.timezone_offset
+                val sunrise = weatherData.current.sunrise.plus(offset).toLong()
+                val sunset = weatherData.current.sunset.plus(offset).toLong()
+                sdf.timeZone = TimeZone.getTimeZone("UTC")
+                formattedSunrise = sdf.format(Date(sunrise * 1000))
+                formattedSunset = sdf.format(Date(sunset * 1000))
+            }
             SunWidget(
                 modifier = Modifier
                     .weight(1f)
                 /*.hazeChild(hazeState, shape = RoundedCornerShape(16.dp))*/,
-                formattedSunrise = SimpleDateFormat(
-                    "HH:mm",
-                    Locale.getDefault()
-                ).format(Date(weatherData.current.sunrise.toLong() * 1000)),
-                formattedSunset = SimpleDateFormat(
-                    "HH:mm",
-                    Locale.getDefault()
-                ).format(Date(weatherData.current.sunset.toLong() * 1000)),
+                formattedSunrise = formattedSunrise,
+                formattedSunset = formattedSunset,
                 weatherData = weatherData,
                 currentTimeSeconds = weatherData.current.dt,
                 surfaceColor = surfaceColor
