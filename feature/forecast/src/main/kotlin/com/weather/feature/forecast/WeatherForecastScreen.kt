@@ -51,7 +51,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
@@ -133,9 +132,6 @@ fun WeatherForecastScreen(
     onRefresh: (Coordinate) -> Unit,
 ) {
     val resource = LocalContext.current.resources
-    var firstScrollableItemHeight by rememberSaveable {
-        mutableIntStateOf(0)
-    }
     val speedUnit by remember(forecastData) {
         val value = when (settingsData.windSpeedUnits) {
             WindSpeedUnits.KM -> resource.getString(R.string.kilometer_per_hour_symbol)
@@ -153,8 +149,6 @@ fun WeatherForecastScreen(
                 }
             )
         })
-    val scrollState = rememberScrollState()
-//    val hazeState = remember { HazeState() }
     Scaffold(
         modifier = Modifier
             .padding(16.dp)
@@ -163,8 +157,7 @@ fun WeatherForecastScreen(
     ) { padding ->
         WeatherBackground(
             modifier = modifier
-                .padding(padding)
-            /*.haze(hazeState)*/,
+                .padding(padding),
 //            background = weatherUIState.background,
             showBackground = false
         ) {
@@ -199,6 +192,7 @@ fun WeatherForecastScreen(
                             pageCount = { forecastData.size }
                         )
                         val currentPageIndex = pagerState.currentPage
+                        val scrollState = rememberScrollState()
                         PullRefreshIndicator(refreshing = isSyncing, state = refreshState)
                         CurrentWeather(
                             modifier = Modifier
@@ -210,7 +204,6 @@ fun WeatherForecastScreen(
                                     val newAlpha = 1 - scrollProgress
                                         .times(5)
                                     val scale = 1 - scrollProgress
-                                    Timber.e(scrollProgress.toString())
                                     scaleX = scale
                                     scaleY = scale
                                     alpha = newAlpha
@@ -232,10 +225,9 @@ fun WeatherForecastScreen(
                         )
                         HorizontalPager(state = pagerState, pageSpacing = 16.dp) { index ->
                             ConditionAndDetails(
-//                            hazeState = hazeState,
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .padding(top = 50.dp),
+                                    .padding(top = 0.dp),
                                 scrollState = scrollState,
                                 weatherData = forecastData[index].weather,
                                 isDayTime = timeOfDay != TimeOfDay.Night,
@@ -256,7 +248,6 @@ fun WeatherForecastScreen(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun ConditionAndDetails(
-//    hazeState: HazeState,
     modifier: Modifier = Modifier,
     scrollState: ScrollState = rememberScrollState(),
     isScrollEnabled: Boolean = true,
@@ -290,30 +281,21 @@ internal fun ConditionAndDetails(
     )
     //if background is disabled use this color for widgets surface color
     val surfaceColor = ForecastTheme.colorScheme.surface
+    val rowPadding = 16.dp
+    val topPadding = firstItemHeight.plus(50).dp
     FlowRow(
         modifier
             .verticalScroll(scrollState, isScrollEnabled)
             .navigationBarsPadding(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(1.dp), //buggy so there has to be at least 1.dp
+        verticalArrangement = Arrangement.spacedBy(rowPadding),
         maxItemsInEachRow = 2
     ) {
-        //widgets
-//        CurrentWeather(
-//            modifier = Modifier
-//                .padding(top = 50.dp, bottom = 50.dp)
-//                .graphicsLayer {
-//                    //can be enabled after implementing independent scrolling
-//                },
-//            weatherData = weatherData,
-//        )
-        Spacer(modifier = Modifier.height(firstItemHeight.dp))
+        Spacer(modifier = Modifier.height(topPadding))
         // TODO: Weather alert goes here
         DailyWidget(
             modifier = Modifier
-                .fillMaxWidth()
-//                .hazeChild(hazeState, shape = RoundedCornerShape(16.dp))
-                .onSizeChanged { /*firstItemHeight(it.height)*/ },
+                .fillMaxWidth(),
             dailyList = weatherData.daily,
             currentTemp = weatherData.current.currentTemp.roundToInt(),
             tempUnit = tempUnit,
@@ -321,18 +303,16 @@ internal fun ConditionAndDetails(
         )
         HourlyWidget(
             modifier = Modifier
-                .fillMaxWidth()
-            /*.hazeChild(hazeState, shape = RoundedCornerShape(16.dp))*/,
+                .fillMaxWidth(),
             hourly = weatherData.hourly,
             speedUnit = speedUnit,
             tempUnit = tempUnit,
             surfaceColor = surfaceColor
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(rowPadding)) {
             WindWidget(
                 modifier = Modifier
-                    .weight(1f)
-                /*.hazeChild(hazeState, shape = RoundedCornerShape(16.dp))*/,
+                    .weight(1f),
                 weatherData = weatherData,
                 speedUnits = speedUnit,
                 surfaceColor = surfaceColor
@@ -357,8 +337,7 @@ internal fun ConditionAndDetails(
             }
             SunWidget(
                 modifier = Modifier
-                    .weight(1f)
-                /*.hazeChild(hazeState, shape = RoundedCornerShape(16.dp))*/,
+                    .weight(1f),
                 formattedSunrise = formattedSunrise,
                 formattedSunset = formattedSunset,
                 weatherData = weatherData,
@@ -366,34 +345,30 @@ internal fun ConditionAndDetails(
                 surfaceColor = surfaceColor
             )
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(rowPadding)) {
             RealFeelWidget(
                 modifier = Modifier
-                    .weight(1f)
-                /*.hazeChild(hazeState, shape = RoundedCornerShape(16.dp))*/,
+                    .weight(1f),
                 realFeel = weatherData.current.feels_like.roundToInt(),
                 surfaceColor = surfaceColor
             )
             HumidityWidget(
                 modifier = Modifier
-                    .weight(1f)
-                /*.hazeChild(hazeState, shape = RoundedCornerShape(16.dp))*/,
+                    .weight(1f),
                 humidity = weatherData.current.humidity,
                 surfaceColor = surfaceColor
             )
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(rowPadding)) {
             UVWidget(
                 modifier = Modifier
-                    .weight(1f)
-                /*.hazeChild(hazeState, shape = RoundedCornerShape(16.dp))*/,
+                    .weight(1f),
                 uvIndex = weatherData.current.uvi.toInt(),
                 surfaceColor = surfaceColor
             )
             PressureWidget(
                 modifier = Modifier
-                    .weight(1f)
-                /*.hazeChild(hazeState, shape = RoundedCornerShape(16.dp))*/,
+                    .weight(1f),
                 pressure = weatherData.current.pressure,
                 surfaceColor = surfaceColor
             )

@@ -38,7 +38,6 @@ import com.weather.core.design.components.WeatherSquareWidget
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.core.repository.fake.data.listOfWeatherDataTest
 import com.weather.model.WeatherData
-import timber.log.Timber
 
 @Composable
 fun SunWidget(
@@ -51,7 +50,6 @@ fun SunWidget(
 ) {
     val sunrise = weatherData.current.sunrise
     val sunset = weatherData.current.sunset
-    Timber.e("current:$currentTimeSeconds,sunrise:$sunrise")
     val title = when {
         currentTimeSeconds < sunrise -> stringResource(id = string.sunrise)
         currentTimeSeconds in (sunrise + 1)..<sunset -> stringResource(id = string.sunset)
