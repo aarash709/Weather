@@ -66,7 +66,7 @@ import com.experiment.weather.core.common.R
 import com.weather.core.design.components.ShowLoadingText
 import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
-import com.weather.feature.managelocations.components.LocationsBottombar
+import com.weather.feature.managelocations.components.LocationsBottomBar
 import com.weather.feature.managelocations.components.LocationsTopbar
 import com.weather.feature.managelocations.components.locationsClickable
 import com.weather.model.Coordinate
@@ -150,7 +150,7 @@ fun ManageLocations(
             )
         },
         bottomBar = {
-            LocationsBottombar(
+            LocationsBottomBar(
                 isInEditMode = isInEditMode,
                 selectedCitySize = selectedCities.size,
                 onDeleteItem = { onDeleteItem(selectedCities.toList()) },
@@ -202,7 +202,7 @@ fun ManageLocations(
                                     it.locationName
                                 }) { locationData ->
                                 val selected by remember(selectedCities) {
-                                    mutableStateOf(locationData.locationName in selectedCities )
+                                    mutableStateOf(locationData.locationName in selectedCities)
                                 }
                                 SavedLocationItem(
                                     modifier = Modifier
@@ -245,13 +245,14 @@ internal fun BottomBarItem(
     modifier: Modifier = Modifier,
     buttonName: String,
     imageVector: ImageVector,
+    enabled: Boolean = true,
     onClick: () -> Unit,
 ) {
     Column(
         modifier = modifier.padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        IconButton(onClick = { onClick() }) {
+        IconButton(onClick = { onClick() }, enabled = enabled) {
             Icon(
                 imageVector = imageVector,
                 modifier = Modifier.size(28.dp),
