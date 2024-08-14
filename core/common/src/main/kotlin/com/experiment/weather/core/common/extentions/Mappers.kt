@@ -136,28 +136,30 @@ fun List<DailyPreview>.convertTimeAndTemperature(): List<DailyPreview> {
 }
 
 private fun unixMillisToHumanDate(
-    unixTimeStamp: Long,
-    timeOffset: Long = 0L,
+    unixTimeStampInSeconds: Long,
     pattern: String,
 ): String {
-    val formatter = SimpleDateFormat(pattern,Locale.getDefault())
-    val date = Date(unixTimeStamp.plus(timeOffset) * 1000) //to millisecond
+    val formatter = SimpleDateFormat(pattern, Locale.getDefault())
+    val date = Date(unixTimeStampInSeconds * 1000) //to millisecond
     formatter.timeZone = TimeZone.getTimeZone("UTC")
     return formatter.format(date)
 }
 
-private fun calculateUIHourlyTime(hourlyTimeSeconds: Long, timeOffset: Long): String {
+private fun calculateUIHourlyTime(hourlyTimeSeconds: Long, timeOffsetSeconds: Long): String {
     val differenceInMinutes =
         Duration.ofSeconds(hourlyTimeSeconds.minus(Instant.now().epochSecond)).toMinutes()
     return if (differenceInMinutes in hourlyRangeThreshold)
         NOW
     else
-        unixMillisToHumanDate(hourlyTimeSeconds, timeOffset, HOURLY_PATTERN)
+        unixMillisToHumanDate(hourlyTimeSeconds.plus(timeOffsetSeconds), HOURLY_PATTERN)
 }
 
 private fun calculateUIDailyTime(hourlyTimeSeconds: Long): String {
     val dayOfWeekOfDailyData =
-        unixMillisToHumanDate(unixTimeStamp = hourlyTimeSeconds, pattern = DAILY_PATTERN)
+        unixMillisToHumanDate(
+            unixTimeStampInSeconds = hourlyTimeSeconds,
+            pattern = DAILY_PATTERN
+        )
     val localToday = LocalDateTime.now().dayOfWeek.name
     val localTomorrow = LocalDateTime.now().plusDays(1).dayOfWeek.name
     return when (dayOfWeekOfDailyData.uppercase()) {
