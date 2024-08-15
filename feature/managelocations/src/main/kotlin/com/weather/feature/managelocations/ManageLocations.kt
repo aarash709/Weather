@@ -207,6 +207,7 @@ fun ManageLocations(
                                 SavedLocationItem(
                                     modifier = Modifier
                                         .bouncyTapEffect()
+                                        .clip(RoundedCornerShape(32.dp))
                                         .locationsClickable(
                                             inSelectionMode = inSelectionMode,
                                             onSelectionMode = {
@@ -225,7 +226,8 @@ fun ManageLocations(
                                                 )
                                             },
                                             onLongClick = { selectedCities += locationData.locationName }
-                                        ),
+                                        )
+                                        ,
                                     data = locationData,
                                     inSelectionMode = inSelectionMode,
                                     selected = selected
@@ -299,15 +301,14 @@ internal fun SavedLocationItem(
 ) {
     val isFavorite = data.isFavorite
     Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp)) then modifier,
-        shape = RoundedCornerShape(16.dp),
+        modifier = modifier
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(32.dp),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 24.dp, horizontal = 16.dp),
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             AnimatedVisibility(
