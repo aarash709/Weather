@@ -3,12 +3,8 @@
 Work in progress [🚧] sample android weather app written entirely in Kotlin and jetpack compose. The app is fully functional and following offline first best practices. This is not and will not be a production ready app[⚠️]. Contributions are welcomed🫡.
 
 ## Roadmap
-
-* [x] Implement better design similar to hyperOS and iOS weather apps
-* [x] Remove search bottom sheet
-* [x] Add static weather condition background to Forecast page
-* [x] Test module
-* [x] Add testing for core layer and feature modules
+* [ ] Forecast background colors(day,night,dawn,cloudy, etc..)
+* [ ] Reorder saved locations
 #### backlog
 * [ ] Add animated weather condition shader effects 
 
