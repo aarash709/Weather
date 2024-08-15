@@ -62,6 +62,11 @@ class ForecastViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(1000),
         initialValue = SettingsData()
     )
+    internal val favoriteCity = getFavoriteCityCoordinate().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(1000),
+        initialValue = ""
+    )
 
     @ExperimentalCoroutinesApi
     internal val weatherUIState = getAllLocationsData().stateIn(
@@ -71,22 +76,25 @@ class ForecastViewModel @Inject constructor(
     )
 
     private fun getAllLocationsData(): Flow<List<SavableForecastData>> {
-        return weatherRepository.getAllForecastWeatherData()
-            .combine(getUserSettings()) { allWeather, setting ->
-                allWeather.map { weather ->
-                    val newWeather = weather.convertToUserSettings(userSettings = setting)
-                    val hourly = newWeather.hourly
-                    val current = newWeather.current
-                    val timezoneOffset = newWeather.coordinates.timezone_offset
-                    val hourlyData = calculateSunriseAndSunset(
-                        hourlyData = hourly,
-                        sunrise = current.sunrise,
-                        sunset = current.sunset,
-                        timezoneOffset = timezoneOffset.toLong()
-                    )
-                    SavableForecastData(weather = newWeather.copy(hourly = hourlyData))
-                }
+        return combine(
+            weatherRepository.getAllForecastWeatherData(),
+            getFavoriteCityCoordinate(),
+            getUserSettings()
+        ) { allWeather, favoriteCity, setting ->
+            allWeather.map { weather ->
+                val newWeather = weather.convertToUserSettings(userSettings = setting)
+                val hourly = newWeather.hourly
+                val current = newWeather.current
+                val timezoneOffset = newWeather.coordinates.timezone_offset
+                val hourlyData = calculateSunriseAndSunset(
+                    hourlyData = hourly,
+                    sunrise = current.sunrise,
+                    sunset = current.sunset,
+                    timezoneOffset = timezoneOffset.toLong()
+                )
+                SavableForecastData(weather = newWeather.copy(hourly = hourlyData))
             }
+        }
             .onEach { allForecast ->
                 allForecast.map { data ->
                     val currentForecastTime = data.weather.current.dt
@@ -116,6 +124,7 @@ class ForecastViewModel @Inject constructor(
             }
     }
 
+    @Deprecated("Use getAllLocationsData() instead")
     private fun getFavoriteWeatherData(): Flow<SavableForecastData> {
         return weatherRepository.getAllForecastWeatherData()
             .combine(getFavoriteCityCoordinate()) { allWeather, favoriteCityName ->

@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.weather.feature.managelocations.BottomBarItem
 
 @Composable
-internal fun LocationsBottombar(
+internal fun LocationsBottomBar(
     isInEditMode: Boolean,
     selectedCitySize: Int,
     onDeleteItem: () -> Unit,
@@ -45,12 +45,11 @@ internal fun LocationsBottombar(
                         onDeleteItem()
                         onEmptyCitySelection()
                     })
-                AnimatedVisibility(selectedCitySize < 2) {
-                    BottomBarItem(
-                        buttonName = "Favorite",
-                        imageVector = Icons.Default.StarBorder,
-                        onClick = { onSetFavoriteItem() })
-                }
+                BottomBarItem(
+                    buttonName = "Favorite",
+                    imageVector = Icons.Default.StarBorder,
+                    enabled = selectedCitySize < 2,
+                    onClick = { onSetFavoriteItem() })
             }
         }
     }
