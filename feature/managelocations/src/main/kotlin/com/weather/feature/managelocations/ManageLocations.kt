@@ -321,7 +321,7 @@ internal fun SavedLocationItem(
                 Icon(
                     imageVector = Icons.Default.DragHandle,
                     modifier = Modifier
-                        .padding(horizontal = 16.dp),
+                        .padding(end = 16.dp),
                     contentDescription = "draggable icon"
                 )
             }
@@ -343,25 +343,6 @@ internal fun SavedLocationItem(
                             contentDescription = "selected icon star"
                         )
                     }
-                }
-                Spacer(modifier = Modifier.height(4.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        modifier = Modifier.size(14.dp),
-                        imageVector = Icons.Outlined.WaterDrop,
-                        contentDescription = "Humidity Icon"
-                    )
-                    Text(
-                        text = "${data.humidity}%",
-                        fontSize = 12.sp
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Text(
-                        text = "${stringResource(id = R.string.real_feel)}: ${
-                            data.feelsLike
-                        }°",
-                        fontSize = 12.sp
-                    )
                 }
             }
             Row(
@@ -391,7 +372,7 @@ internal fun SavedLocationItem(
                 Icon(
                     imageVector = Icons.Filled.CheckCircle,
                     modifier = Modifier
-                        .padding(horizontal = 16.dp),
+                        .padding(start = 16.dp),
                     contentDescription = "selected Icon",
                     tint =
                     if (selected)
