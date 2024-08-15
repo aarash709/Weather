@@ -3,9 +3,8 @@ package com.weather.feature.managelocations
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -27,7 +26,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.WaterDrop
@@ -297,10 +297,6 @@ internal fun SavedLocationItem(
     inSelectionMode: Boolean,
     selected: Boolean,
 ) {
-    val transition = updateTransition(targetState = inSelectionMode, label = "selection mode")
-    val itemHorizontalPadding by transition.animateDp(label = "item padding") { inEditMode ->
-        if (inEditMode) 12.dp else 0.dp
-    }
     val isFavorite = data.isFavorite
     Surface(
         modifier = Modifier
@@ -317,19 +313,15 @@ internal fun SavedLocationItem(
             AnimatedVisibility(
                 visible = inSelectionMode,
                 modifier = Modifier,
-                enter = fadeIn(animationSpec = tween(25)) + expandHorizontally(),
+                enter = fadeIn(animationSpec = tween(100)) + expandHorizontally(animationSpec = spring()),
                 exit = fadeOut(animationSpec = tween(25)) + shrinkHorizontally(),
-                label = "selection button"
+                label = "draggable icon"
             ) {
                 Icon(
-                    imageVector = Icons.Default.Check,
-                    modifier = Modifier.padding(horizontal = 4.dp),
-                    contentDescription = "selected Icon",
-                    tint =
-                    if (selected)
-                        MaterialTheme.colorScheme.primary
-                    else
-                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+                    imageVector = Icons.Default.DragHandle,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp),
+                    contentDescription = "draggable icon"
                 )
             }
             Column(
@@ -372,7 +364,7 @@ internal fun SavedLocationItem(
                 }
             }
             Row(
-                modifier = Modifier.padding(horizontal = itemHorizontalPadding),
+                modifier = Modifier,
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -386,6 +378,25 @@ internal fun SavedLocationItem(
                     modifier = Modifier.width(60.dp),
                     textAlign = TextAlign.End,
                     fontSize = 28.sp
+                )
+            }
+            AnimatedVisibility(
+                visible = inSelectionMode,
+                modifier = Modifier,
+                enter = fadeIn(animationSpec = tween(100)) + expandHorizontally(animationSpec = spring()),
+                exit = fadeOut(animationSpec = tween(25)) + shrinkHorizontally(),
+                label = "selection button"
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.CheckCircle,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp),
+                    contentDescription = "selected Icon",
+                    tint =
+                    if (selected)
+                        MaterialTheme.colorScheme.primary
+                    else
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
                 )
             }
         }
