@@ -52,7 +52,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -209,6 +208,9 @@ fun ManageLocations(
                         var draggableItemOffset: Float by remember {
                             mutableFloatStateOf(0f)
                         }
+                        var list by remember {
+                            mutableStateOf(dataState.data)
+                        }
                         LazyColumn(
                             modifier = Modifier.pointerInput(lazyListState) {
                                 detectDragGesturesAfterLongPress(
@@ -225,8 +227,39 @@ fun ManageLocations(
                                     onDrag = { change, dragAmount ->
                                         change.consume()
                                         draggableItemOffset += dragAmount.y
+                                        val currentDraggableItemIndex = draggableItemIndex
+                                            ?: return@detectDragGesturesAfterLongPress
+                                        val currentDraggableItem =
+                                            draggingItem ?: return@detectDragGesturesAfterLongPress
+                                        val startOffset =
+                                            currentDraggableItem.offset + draggableItemOffset
+                                        val endOffset =
+                                            currentDraggableItem.offset + currentDraggableItem.size + draggableItemOffset
+                                        val middleOffset =
+                                            startOffset + (endOffset - startOffset) / 2
+                                        val targetItem =
+                                            lazyListState.layoutInfo.visibleItemsInfo.find { item ->
+                                                middleOffset.toInt() in item.offset..item.offset + item.size && currentDraggableItemIndex != item.index
+                                            }
+
+                                        if (targetItem != null) {
+                                            list = list.toMutableList().apply {
+                                                add(
+                                                    targetItem.index,
+                                                    removeAt(currentDraggableItemIndex)
+                                                )
+                                            }
+                                            draggableItemIndex = targetItem.index
+                                            draggingItem = targetItem
+                                            draggableItemOffset += currentDraggableItem.offset - targetItem.offset
+                                        }
                                     },
                                     onDragEnd = {
+                                        draggableItemOffset = 0f
+                                        draggableItemIndex = null
+                                        draggingItem = null
+                                    },
+                                    onDragCancel = {
                                         draggableItemOffset = 0f
                                         draggableItemIndex = null
                                         draggingItem = null
@@ -237,7 +270,7 @@ fun ManageLocations(
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             itemsIndexed(
-                                items = dataState.data,
+                                items = list,
                                 key = { index, item ->
                                     item.locationName
                                 }) { index, locationData ->
@@ -247,6 +280,7 @@ fun ManageLocations(
                                 val modifier = if (draggableItemIndex == index) {
                                     Modifier
                                         .zIndex(1f)
+                                        .animateItem()
                                         .graphicsLayer {
                                             translationY = draggableItemOffset
                                         }
@@ -256,7 +290,7 @@ fun ManageLocations(
                                 SavedLocationItem(
                                     modifier = modifier
                                         .bouncyTapEffect()
-                                        .clip(RoundedCornerShape(32.dp))
+//                                        .clip(RoundedCornerShape(32.dp))
                                         .locationsClickable(
                                             inSelectionMode = inSelectionMode,
                                             onSelectionMode = {
