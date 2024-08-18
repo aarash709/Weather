@@ -224,7 +224,7 @@ fun ManageLocations(
                                     },
                                     onDrag = { change, dragAmount ->
                                         change.consume()
-                                        draggableItemOffset = dragAmount.y
+                                        draggableItemOffset += dragAmount.y
                                     },
                                     onDragEnd = {
                                         draggableItemOffset = 0f
@@ -233,6 +233,7 @@ fun ManageLocations(
                                     }
                                 )
                             },
+                            state = lazyListState,
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             itemsIndexed(
@@ -256,7 +257,7 @@ fun ManageLocations(
                                     modifier = modifier
                                         .bouncyTapEffect()
                                         .clip(RoundedCornerShape(32.dp))
-                                        /*.locationsClickable(
+                                        .locationsClickable(
                                             inSelectionMode = inSelectionMode,
                                             onSelectionMode = {
                                                 if (selected)
@@ -274,7 +275,7 @@ fun ManageLocations(
                                                 )
                                             },
                                             onLongClick = { selectedCities += locationData.locationName }
-                                        )*/,
+                                        ),
                                     data = locationData,
                                     inSelectionMode = inSelectionMode,
                                     selected = selected
