@@ -75,6 +75,7 @@ import com.weather.core.design.theme.WeatherTheme
 import com.weather.feature.managelocations.components.LocationsBottomBar
 import com.weather.feature.managelocations.components.LocationsTopbar
 import com.weather.feature.managelocations.components.detectLongPressGesture
+import com.weather.feature.managelocations.components.draggableItem
 import com.weather.feature.managelocations.components.locationsClickable
 import com.weather.feature.managelocations.components.rememberDragAndDropListItem
 import com.weather.model.Coordinate
@@ -202,22 +203,13 @@ fun ManageLocations(
                         )
                     } else {
                         val lazyListState = rememberLazyListState()
-                        var draggingItem: LazyListItemInfo? by remember {
-                            mutableStateOf(null)
-                        }
-                        var draggableItemIndex: Int? by remember {
-                            mutableStateOf(null)
-                        }
-                        var draggableItemOffset: Float by remember {
-                            mutableFloatStateOf(0f)
-                        }
                         var list by remember {
                             mutableStateOf(dataState.data)
                         }
                         val dragDropState =
                             rememberDragAndDropListItem(
                                 lazyListState = lazyListState,
-                                onUpdateData = {fromIndex,toIndex->
+                                onUpdateData = { fromIndex, toIndex ->
                                     list = list
                                         .toMutableList()
                                         .apply {
@@ -229,82 +221,24 @@ fun ManageLocations(
                                 })
                         LazyColumn(
                             modifier = Modifier
-                                .detectLongPressGesture(lazyListState = lazyListState, dragAndDropListItemState = dragDropState)
-                                .pointerInput(lazyListState) {
-                                    detectDragGesturesAfterLongPress(
-                                        onDragStart = { offset ->
-                                            lazyListState.layoutInfo.visibleItemsInfo
-                                                .firstOrNull { item ->
-                                                    offset.y.toInt() in item.offset..(item.offset + item.size)
-                                                }
-                                                ?.also {
-                                                    draggableItemIndex = it.index
-                                                    draggingItem = it
-                                                    Timber.e("draggindx:$draggableItemIndex")
-                                                    Timber.e("draggamount:$draggableItemOffset")
-                                                }
-                                        },
-                                        onDrag = { change, dragAmount ->
-                                            change.consume()
-                                            draggableItemOffset += dragAmount.y
-                                            val currentDraggableItemIndex = draggableItemIndex
-                                                ?: return@detectDragGesturesAfterLongPress
-                                            val currentDraggableItem =
-                                                draggingItem
-                                                    ?: return@detectDragGesturesAfterLongPress
-                                            val startOffset =
-                                                currentDraggableItem.offset + draggableItemOffset
-                                            val endOffset =
-                                                currentDraggableItem.offset + currentDraggableItem.size + draggableItemOffset
-                                            val middleOffset =
-                                                startOffset + (endOffset - startOffset) / 2
-                                            val targetItem =
-                                                lazyListState.layoutInfo.visibleItemsInfo.find { item ->
-                                                    middleOffset.toInt() in item.offset..item.offset + item.size && currentDraggableItemIndex != item.index
-                                                }
-
-                                            if (targetItem != null) {
-                                                list = list
-                                                    .toMutableList()
-                                                    .apply {
-                                                        add(
-                                                            targetItem.index,
-                                                            removeAt(currentDraggableItemIndex)
-                                                        )
-                                                    }
-                                                draggableItemIndex = targetItem.index
-                                                draggingItem = targetItem
-                                                draggableItemOffset += currentDraggableItem.offset - targetItem.offset
-                                            }
-                                        },
-                                        onDragEnd = {
-                                            draggableItemOffset = 0f
-                                            draggableItemIndex = null
-                                            draggingItem = null
-                                        },
-                                        onDragCancel = {
-                                            draggableItemOffset = 0f
-                                            draggableItemIndex = null
-                                            draggingItem = null
-                                        }
-                                    )
-                                },
+                                .detectLongPressGesture(
+                                    lazyListState = lazyListState,
+                                    dragAndDropListItemState = dragDropState
+                                ),
                             state = lazyListState,
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             itemsIndexed(
                                 items = list,
-                                key = { index, item ->
+                                key = { _, item ->
                                     item.locationName
                                 }) { index, locationData ->
                                 val selected by remember(selectedCities) {
                                     mutableStateOf(locationData.locationName in selectedCities)
                                 }
-
                                 SavedLocationItem(
                                     modifier = Modifier
                                         .bouncyTapEffect()
-                                        .clip(RoundedCornerShape(32.dp))
                                         .locationsClickable(
                                             inSelectionMode = inSelectionMode,
                                             onSelectionMode = {
@@ -323,7 +257,9 @@ fun ManageLocations(
                                                 )
                                             },
                                             onLongClick = { selectedCities += locationData.locationName }
-                                        ),
+                                        )
+                                        .draggableItem(draggableState = dragDropState, listIndex = index)
+                                        .animateItem(),
                                     data = locationData,
                                     inSelectionMode = inSelectionMode,
                                     selected = selected
