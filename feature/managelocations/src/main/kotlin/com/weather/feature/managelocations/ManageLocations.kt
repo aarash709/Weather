@@ -67,6 +67,7 @@ import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.feature.managelocations.components.LocationsBottomBar
 import com.weather.feature.managelocations.components.LocationsTopbar
+import com.weather.feature.managelocations.components.SearchBarCard
 import com.weather.feature.managelocations.components.detectLongPressGesture
 import com.weather.feature.managelocations.components.draggableItem
 import com.weather.feature.managelocations.components.locationsClickable
@@ -270,56 +271,6 @@ fun ManageLocations(
             }
         }
 
-    }
-}
-
-@Composable
-internal fun BottomBarItem(
-    modifier: Modifier = Modifier,
-    buttonName: String,
-    imageVector: ImageVector,
-    enabled: Boolean = true,
-    onClick: () -> Unit,
-) {
-    Column(
-        modifier = modifier.padding(horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        IconButton(onClick = { onClick() }, enabled = enabled) {
-            Icon(
-                imageVector = imageVector,
-                modifier = Modifier.size(28.dp),
-                contentDescription = "Delete button"
-            )
-        }
-        Text(text = buttonName, fontSize = 14.sp)
-    }
-}
-
-@Composable
-internal fun SearchBarCard(onClick: () -> Unit) {
-    Surface(
-        onClick = onClick,
-        shape = RoundedCornerShape(32.dp),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp)
-                .defaultMinSize(minHeight = 54.dp, minWidth = 132.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Default.Search,
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                contentDescription = "Search Icon"
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(
-                text = stringResource(id = R.string.search),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-            )
-        }
     }
 }
 
