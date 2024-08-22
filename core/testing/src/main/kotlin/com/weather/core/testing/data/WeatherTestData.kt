@@ -8,6 +8,7 @@ import com.weather.core.database.entities.onecall.OneCallHourlyEntity
 
 val oneCall = OneCallEntity(
     cityName = "Sommersdale",
+    orderIndex = 0,
     lat = 4.5,
     lon = 6.7,
     timezone = "graecis",

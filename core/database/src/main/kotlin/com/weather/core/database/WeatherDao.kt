@@ -37,7 +37,7 @@ interface WeatherDao {
     suspend fun insertHourly(hourly: List<OneCallHourlyEntity>)
 
     @Transaction
-    @Query("SELECT * FROM one_call WHERE cityName = :cityName")
+    @Query("SELECT * FROM one_call WHERE cityName = :cityName ORDER BY orderIndex ASC")
     fun getOneCallAndCurrentByCityName(cityName: String): Flow<OneCallAndCurrent>
 
     @Transaction
@@ -93,5 +93,9 @@ interface WeatherDao {
         insertHourly(hourly = hourly)
     }
 
+    @Transaction
+    fun reorderOneCallWeatherData() {
+
+    }
 
 }

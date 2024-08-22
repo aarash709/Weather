@@ -16,24 +16,23 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DragHandle
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.WaterDrop
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -49,9 +48,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -68,7 +65,11 @@ import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.feature.managelocations.components.LocationsBottomBar
 import com.weather.feature.managelocations.components.LocationsTopbar
+import com.weather.feature.managelocations.components.SearchBarCard
+import com.weather.feature.managelocations.components.detectLongPressGesture
+import com.weather.feature.managelocations.components.draggableItem
 import com.weather.feature.managelocations.components.locationsClickable
+import com.weather.feature.managelocations.components.rememberDragAndDropListItem
 import com.weather.model.Coordinate
 import com.weather.model.ManageLocationsData
 
@@ -83,7 +84,7 @@ fun ManageLocationsRoute(
     //stateful
     val dataState by viewModel.locationsState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
+    Card(modifier = Modifier) {
         ManageLocations(
             dataState = dataState,
             onBackPressed = onBackPressed,
@@ -96,7 +97,10 @@ fun ManageLocationsRoute(
             onSetFavoriteItem = { favoriteCity ->
                 viewModel.saveFavoriteCityCoordinate(cityName = favoriteCity, context = context)
             },
-            onNavigateToSearch = { onNavigateToSearch() }
+            onNavigateToSearch = { onNavigateToSearch() },
+            onUpdateData = { fromIndex, toIndex ->
+                viewModel.updateDataIndexes(fromIndex, toIndex)
+            }
         )
     }
 }
@@ -112,6 +116,7 @@ fun ManageLocations(
     onDeleteItem: (List<String>) -> Unit,
     onSetFavoriteItem: (String) -> Unit,
     onNavigateToSearch: () -> Unit,
+    onUpdateData: (Int, Int) -> Unit,
 ) {
     var selectedCities by rememberSaveable {
         mutableStateOf(emptySet<String>())
@@ -192,22 +197,45 @@ fun ManageLocations(
                             fontSize = 12.sp
                         )
                     } else {
+                        val lazyListState = rememberLazyListState()
+                        var list by remember {
+                            mutableStateOf(dataState.data)
+                        }
+                        val dragDropState =
+                            rememberDragAndDropListItem(
+                                lazyListState = lazyListState,
+                                onUpdateData = { fromIndex, toIndex ->
+                                    onUpdateData(fromIndex, toIndex)
+                                    list = list
+                                        .toMutableList()
+                                        .apply {
+                                            add(
+                                                toIndex,
+                                                removeAt(fromIndex)
+                                            )
+                                        }
+                                })
                         LazyColumn(
-                            modifier = Modifier,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .detectLongPressGesture(
+                                    lazyListState = lazyListState,
+                                    dragAndDropListItemState = dragDropState
+                                ),
+                            state = lazyListState,
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-                            items(
-                                items = dataState.data,
-                                key = {
-                                    it.locationName
-                                }) { locationData ->
+                            itemsIndexed(
+                                items = list,
+                                key = { _, item ->
+                                    item.locationName
+                                }) { index, locationData ->
                                 val selected by remember(selectedCities) {
                                     mutableStateOf(locationData.locationName in selectedCities)
                                 }
                                 SavedLocationItem(
                                     modifier = Modifier
                                         .bouncyTapEffect()
-                                        .clip(RoundedCornerShape(32.dp))
                                         .locationsClickable(
                                             inSelectionMode = inSelectionMode,
                                             onSelectionMode = {
@@ -227,10 +255,18 @@ fun ManageLocations(
                                             },
                                             onLongClick = { selectedCities += locationData.locationName }
                                         )
-                                        ,
+                                        .draggableItem(
+                                            draggableState = dragDropState,
+                                            listIndex = index
+                                        )
+                                            then if (dragDropState.draggableItemIndex != index) {
+                                        Modifier.animateItem()
+                                    } else {
+                                        Modifier
+                                    },
                                     data = locationData,
                                     inSelectionMode = inSelectionMode,
-                                    selected = selected
+                                    selected = selected,
                                 )
                             }
                         }
@@ -239,56 +275,6 @@ fun ManageLocations(
             }
         }
 
-    }
-}
-
-@Composable
-internal fun BottomBarItem(
-    modifier: Modifier = Modifier,
-    buttonName: String,
-    imageVector: ImageVector,
-    enabled: Boolean = true,
-    onClick: () -> Unit,
-) {
-    Column(
-        modifier = modifier.padding(horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        IconButton(onClick = { onClick() }, enabled = enabled) {
-            Icon(
-                imageVector = imageVector,
-                modifier = Modifier.size(28.dp),
-                contentDescription = "Delete button"
-            )
-        }
-        Text(text = buttonName, fontSize = 14.sp)
-    }
-}
-
-@Composable
-internal fun SearchBarCard(onClick: () -> Unit) {
-    Surface(
-        onClick = onClick,
-        shape = RoundedCornerShape(32.dp),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp)
-                .defaultMinSize(minHeight = 54.dp, minWidth = 132.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Default.Search,
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                contentDescription = "Search Icon"
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(
-                text = stringResource(id = R.string.search),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-            )
-        }
     }
 }
 
@@ -420,7 +406,8 @@ internal fun ManageLocationsPreview() {
                 onItemSelected = {},
                 onDeleteItem = {},
                 onSetFavoriteItem = {},
-                onNavigateToSearch = {})
+                onNavigateToSearch = {},
+                onUpdateData = {_,_->})
         }
     }
 }

@@ -6,16 +6,24 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.weather.feature.managelocations.BottomBarItem
+import androidx.compose.ui.unit.sp
 
 @Composable
 internal fun LocationsBottomBar(
@@ -54,4 +62,28 @@ internal fun LocationsBottomBar(
         }
     }
 
+}
+
+
+@Composable
+internal fun BottomBarItem(
+    modifier: Modifier = Modifier,
+    buttonName: String,
+    imageVector: ImageVector,
+    enabled: Boolean = true,
+    onClick: () -> Unit,
+) {
+    Column(
+        modifier = modifier.padding(horizontal = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        IconButton(onClick = { onClick() }, enabled = enabled) {
+            Icon(
+                imageVector = imageVector,
+                modifier = Modifier.size(28.dp),
+                contentDescription = "Delete button"
+            )
+        }
+        Text(text = buttonName, fontSize = 14.sp)
+    }
 }

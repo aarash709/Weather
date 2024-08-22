@@ -9,18 +9,19 @@ import com.weather.model.OneCallCoordinates
 data class OneCallEntity(
     @PrimaryKey(autoGenerate = false)
     val cityName: String,
+    val orderIndex: Int,
     val lat: Double,
     val lon: Double,
     val timezone: String,
     val timezone_offset: Int,
-    ){
-        fun asDomainModel(): OneCallCoordinates {
-            return OneCallCoordinates(
-                name = cityName,
-                lat = lat,
-                lon = lon,
-                timezone = timezone,
-                timezone_offset = timezone_offset
-            )
-        }
+) {
+    fun asDomainModel(): OneCallCoordinates {
+        return OneCallCoordinates(
+            name = cityName,
+            lat = lat,
+            lon = lon,
+            timezone = timezone,
+            timezone_offset = timezone_offset
+        )
+    }
 }
