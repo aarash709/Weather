@@ -19,6 +19,10 @@ class WeatherLocalDataSource(
         return dao.getAllOneCallAndCurrent()
     }
 
+    suspend fun reorderData() {
+        dao.reorderOneCallWeatherData()
+    }
+
     fun deleteDaily(cityName: String, timeStamp: Long) = dao.deleteDaily(
         cityName = cityName,
         timeStamp = timeStamp

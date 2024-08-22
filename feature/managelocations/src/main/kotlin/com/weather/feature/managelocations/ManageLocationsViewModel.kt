@@ -77,6 +77,12 @@ class ManageLocationsViewModel @Inject constructor(
             hapticFeedback.vibrate(60)
         }
     }
+
+    fun updateDataIndexes(fromIndex: Int, toIndex: Int) {
+        viewModelScope.launch {
+
+        }
+    }
 }
 
 sealed interface LocationsUIState {

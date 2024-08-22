@@ -38,6 +38,10 @@ class FakeWeatherRepository : WeatherRepository {
             emit(listOfLocationsDataTest)
         }
 
+    override suspend fun updateWeatherLocationsOrder(fromIndex: Int, toIndex: Int) {
+        TODO("Not yet implemented")
+    }
+
 
     override fun getAllForecastWeatherData(): Flow<List<WeatherData>> =
         flow {

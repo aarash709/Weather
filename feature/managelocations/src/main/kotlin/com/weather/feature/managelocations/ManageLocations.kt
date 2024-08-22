@@ -97,7 +97,10 @@ fun ManageLocationsRoute(
             onSetFavoriteItem = { favoriteCity ->
                 viewModel.saveFavoriteCityCoordinate(cityName = favoriteCity, context = context)
             },
-            onNavigateToSearch = { onNavigateToSearch() }
+            onNavigateToSearch = { onNavigateToSearch() },
+            onUpdateData = { fromIndex, toIndex ->
+                viewModel.updateDataIndexes(fromIndex, toIndex)
+            }
         )
     }
 }
@@ -113,6 +116,7 @@ fun ManageLocations(
     onDeleteItem: (List<String>) -> Unit,
     onSetFavoriteItem: (String) -> Unit,
     onNavigateToSearch: () -> Unit,
+    onUpdateData: (Int, Int) -> Unit,
 ) {
     var selectedCities by rememberSaveable {
         mutableStateOf(emptySet<String>())
@@ -201,6 +205,7 @@ fun ManageLocations(
                             rememberDragAndDropListItem(
                                 lazyListState = lazyListState,
                                 onUpdateData = { fromIndex, toIndex ->
+                                    onUpdateData(fromIndex, toIndex)
                                     list = list
                                         .toMutableList()
                                         .apply {
@@ -401,7 +406,8 @@ internal fun ManageLocationsPreview() {
                 onItemSelected = {},
                 onDeleteItem = {},
                 onSetFavoriteItem = {},
-                onNavigateToSearch = {})
+                onNavigateToSearch = {},
+                onUpdateData = {_,_->})
         }
     }
 }
