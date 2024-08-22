@@ -159,6 +159,15 @@ fun WeatherForecastScreen(
     LaunchedEffect(key1 = isSyncing) {
         if (isSyncing) pullToRefreshState.startRefresh() else pullToRefreshState.endRefresh()
     }
+    if (pullToRefreshState.isRefreshing){
+        LaunchedEffect(key1 = Unit) {
+            onRefresh(
+                forecastData[0].weather.coordinates.let {
+                    Coordinate(it.name, it.lat.toString(), it.lon.toString())
+                }
+            )
+        }
+    }
     Scaffold(
         modifier = Modifier
             .padding(16.dp)
@@ -211,7 +220,6 @@ fun WeatherForecastScreen(
                         val currentPageIndex = pagerState.currentPage
                         val scrollState = rememberScrollState()
 //                        PullRefreshIndicator(refreshing = isSyncing, state = refreshState)
-                        PullToRefreshContainer(state = pullToRefreshState)
                         CurrentWeather(
                             modifier = Modifier
                                 .padding(top = 50.dp)
@@ -256,6 +264,7 @@ fun WeatherForecastScreen(
                                 firstItemHeight = currentWeatherSize + topAppBarSize
                             )
                         }
+                        PullToRefreshContainer(state = pullToRefreshState)
                     }
                 }
             }
