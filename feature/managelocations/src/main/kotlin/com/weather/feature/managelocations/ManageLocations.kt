@@ -99,7 +99,7 @@ fun ManageLocationsRoute(
             },
             onNavigateToSearch = { onNavigateToSearch() },
             onUpdateData = { fromIndex, toIndex ->
-                viewModel.updateDataIndexes(fromIndex, toIndex)
+                viewModel.reorderDataIndexes(fromIndex, toIndex)
             }
         )
     }
@@ -198,22 +198,11 @@ fun ManageLocations(
                         )
                     } else {
                         val lazyListState = rememberLazyListState()
-                        var list by remember {
-                            mutableStateOf(dataState.data)
-                        }
                         val dragDropState =
                             rememberDragAndDropListItem(
                                 lazyListState = lazyListState,
                                 onUpdateData = { fromIndex, toIndex ->
                                     onUpdateData(fromIndex, toIndex)
-                                    list = list
-                                        .toMutableList()
-                                        .apply {
-                                            add(
-                                                toIndex,
-                                                removeAt(fromIndex)
-                                            )
-                                        }
                                 })
                         LazyColumn(
                             modifier = Modifier
@@ -226,7 +215,7 @@ fun ManageLocations(
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             itemsIndexed(
-                                items = list,
+                                items = dataState.data,
                                 key = { _, item ->
                                     item.locationName
                                 }) { index, locationData ->
@@ -274,7 +263,6 @@ fun ManageLocations(
                 }
             }
         }
-
     }
 }
 

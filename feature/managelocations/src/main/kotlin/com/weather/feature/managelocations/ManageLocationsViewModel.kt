@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -78,9 +79,12 @@ class ManageLocationsViewModel @Inject constructor(
         }
     }
 
-    fun updateDataIndexes(fromIndex: Int, toIndex: Int) {
+    fun reorderDataIndexes(fromIndex: Int, toIndex: Int) {
         viewModelScope.launch {
-
+            val fromCity =
+                weatherRepository.getAllWeatherLocations().first()[fromIndex].locationName
+            val toCity = weatherRepository.getAllWeatherLocations().first()[toIndex].locationName
+            weatherRepository.reorderData(fromIndex = fromCity, toIndex = toCity)
         }
     }
 }

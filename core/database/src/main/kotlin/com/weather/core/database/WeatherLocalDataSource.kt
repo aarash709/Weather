@@ -20,8 +20,17 @@ class WeatherLocalDataSource(
         return dao.getAllOneCallAndCurrent().map { it.sortedBy { it.oneCall.orderIndex } }
     }
 
-    suspend fun reorderData() {
-        dao.reorderOneCallWeatherData()
+    suspend fun reorderData(fromCity: String, toCity: String) {
+        val from = dao.getOneCallAndCurrentByCityName(fromCity).first().oneCall
+        val to = dao.getOneCallAndCurrentByCityName(toCity).first().oneCall
+        val fromIndex = from.orderIndex!!
+        val toIndex = to.orderIndex!!
+        dao.reorderOneCallWeatherData(
+            from = from,
+            to = to,
+            fromIndex = fromIndex,
+            toIndex = toIndex
+        )
     }
 
     fun deleteDaily(cityName: String, timeStamp: Long) = dao.deleteDaily(

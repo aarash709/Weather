@@ -38,7 +38,7 @@ class FakeWeatherRepository : WeatherRepository {
             emit(listOfLocationsDataTest)
         }
 
-    override suspend fun updateWeatherLocationsOrder(fromIndex: Int, toIndex: Int) {
+    override suspend fun reorderData(fromIndex: String, toIndex: String) {
         TODO("Not yet implemented")
     }
 

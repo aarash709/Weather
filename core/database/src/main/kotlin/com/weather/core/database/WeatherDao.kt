@@ -97,8 +97,14 @@ interface WeatherDao {
     }
 
     @Transaction
-    fun reorderOneCallWeatherData() {
-
+    suspend fun reorderOneCallWeatherData(
+        from: OneCallEntity,
+        to: OneCallEntity,
+        fromIndex: Int,
+        toIndex: Int,
+    ) {
+        insertOneCall(from.copy(orderIndex = toIndex))
+        insertOneCall(to.copy(orderIndex = fromIndex))
     }
 
 }

@@ -23,7 +23,7 @@ interface WeatherRepository {
 
     fun getAllWeatherLocations(): Flow<List<ManageLocationsData>>
 
-    suspend fun updateWeatherLocationsOrder(fromIndex: Int, toIndex: Int)
+    suspend fun reorderData(fromIndex: String, toIndex: String)
 
     fun getAllForecastWeatherData(): Flow<List<WeatherData>>
 

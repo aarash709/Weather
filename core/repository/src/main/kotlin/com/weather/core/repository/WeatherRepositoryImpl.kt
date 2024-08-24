@@ -61,8 +61,8 @@ class WeatherRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateWeatherLocationsOrder(fromIndex: Int, toIndex: Int) {
-
+    override suspend fun reorderData(fromCity: String, toCity: String) {
+        localWeather.reorderData(fromCity, toCity)
     }
 
     override fun getLocalWeatherByCityName(cityName: String): Flow<WeatherData> {
