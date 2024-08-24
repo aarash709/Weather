@@ -48,7 +48,7 @@ class FakeWeatherRepository : WeatherRepository {
             emit(listOfWeatherDataTest)
         }
 
-    override fun isDatabaseEmpty(): Int {
-        return 0
+    override fun isDatabaseEmpty(): Boolean {
+        return true
     }
 }

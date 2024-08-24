@@ -34,7 +34,7 @@ class WeatherLocalDataSource(
         timeStamp = timeStamp
     )
 
-    fun databaseIsEmpty(): Int = dao.databaseIsEmpty()
+    fun databaseIsEmpty(): Boolean = dao.countOneCall() == 0
     suspend fun deleteWeatherByCityName(cityNames: List<String>) =
         dao.deleteWeatherByCityName(cityName = cityNames)
 
@@ -82,13 +82,17 @@ class WeatherLocalDataSource(
         val dataBaseCount = dao.countOneCall()
         val isCityExists =
             dao.checkIfCityExists(cityName = oneCall.cityName) == 1
+        val orderIndex = if (isCityExists) dao.getOneCallAndCurrentByCityName(oneCall.cityName)
+            .first().oneCall.orderIndex
+        else {
+            dao.getAllOneCallAndCurrent()
+                .first()
+                .map { it.oneCall.orderIndex!! }
+                .sumOf { it + 1 }
+        }
         val oneCallWithOrderIndex = if (dataBaseCount == 0) {
             oneCall.copy(orderIndex = 1)
         } else {
-            val orderIndex = if (isCityExists) dao.getOneCallAndCurrentByCityName(oneCall.cityName)
-                .first().oneCall.orderIndex else {
-               dao.getAllOneCallAndCurrent().first().map { it.oneCall.orderIndex }.sumOf { it!! }
-            }
             oneCall.copy(orderIndex = orderIndex)
         }
         dao.insertData(

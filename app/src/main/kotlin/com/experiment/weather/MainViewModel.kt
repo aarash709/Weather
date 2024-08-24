@@ -44,7 +44,7 @@ class MainViewModel @Inject constructor(
 
     private fun checkDatabaseIsEmpty() {
         viewModelScope.launch {
-            val isEmpty = weatherRepository.isDatabaseEmpty() == 0
+            val isEmpty = weatherRepository.isDatabaseEmpty()
             _dataBaseIsEmpty.value = isEmpty
         }
     }

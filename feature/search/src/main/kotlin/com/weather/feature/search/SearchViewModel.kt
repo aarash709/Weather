@@ -79,7 +79,7 @@ class SearchViewModel @Inject constructor(
             )
 
             val stringCoordinate = Json.encodeToString(coordinate)
-            val isDatabaseEmpty = weatherRepository.isDatabaseEmpty() == 0
+            val isDatabaseEmpty = weatherRepository.isDatabaseEmpty()
 
             if (isDatabaseEmpty) {
                 userRepository.setFavoriteCityCoordinate(stringCoordinate)

@@ -20,7 +20,7 @@ class WeatherRepositoryImpl @Inject constructor(
         localWeather.deleteWeatherByCityName(cityNames = cityNames)
     }
 
-    override fun isDatabaseEmpty(): Int = localWeather.databaseIsEmpty()
+    override fun isDatabaseEmpty(): Boolean = localWeather.databaseIsEmpty()
     override suspend fun getFiveDay(coordinate: Coordinate): List<DailyPreview> {
         return try {
             val data = remoteWeather.getRemoteData(coordinates = coordinate, exclude = "")

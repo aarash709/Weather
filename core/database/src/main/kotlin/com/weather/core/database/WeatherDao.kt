@@ -15,8 +15,8 @@ interface WeatherDao {
     /**
      * checking if database has at least one data row, otherwise returns 0(counts rows).
      */
-    @Query("select count(cityName) from one_call")
-    fun databaseIsEmpty(): Int
+    @Query("SELECT count(cityName) FROM one_call")
+    fun countOneCall(): Int
 
     /**
      * method to store data.
@@ -35,9 +35,6 @@ interface WeatherDao {
 
     @Upsert()
     suspend fun insertHourly(hourly: List<OneCallHourlyEntity>)
-
-    @Query("SELECT count(*) FROM one_call")
-    fun countOneCall(): Int
 
     @Query("SELECT count(*) FROM one_call WHERE cityName = :cityName")
     fun checkIfCityExists(cityName: String): Int

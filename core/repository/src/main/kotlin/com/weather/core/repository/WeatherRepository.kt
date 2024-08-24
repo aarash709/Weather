@@ -27,6 +27,6 @@ interface WeatherRepository {
 
     fun getAllForecastWeatherData(): Flow<List<WeatherData>>
 
-    fun isDatabaseEmpty(): Int
+    fun isDatabaseEmpty(): Boolean
 
 }
