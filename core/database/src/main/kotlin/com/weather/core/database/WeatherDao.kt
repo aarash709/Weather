@@ -36,8 +36,14 @@ interface WeatherDao {
     @Upsert()
     suspend fun insertHourly(hourly: List<OneCallHourlyEntity>)
 
+    @Query("SELECT count(*) FROM one_call")
+    fun countOneCall(): Int
+
+    @Query("SELECT count(*) FROM one_call WHERE cityName = :cityName")
+    fun checkIfCityExists(cityName: String): Int
+
     @Transaction
-    @Query("SELECT * FROM one_call WHERE cityName = :cityName ORDER BY orderIndex ASC")
+    @Query("SELECT * FROM one_call WHERE cityName = :cityName")
     fun getOneCallAndCurrentByCityName(cityName: String): Flow<OneCallAndCurrent>
 
     @Transaction

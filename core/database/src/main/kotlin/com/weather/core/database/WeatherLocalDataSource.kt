@@ -9,6 +9,7 @@ import com.weather.core.database.entities.relation.OneCallAndCurrent
 import com.weather.model.WeatherData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 class WeatherLocalDataSource(
@@ -16,7 +17,7 @@ class WeatherLocalDataSource(
 ) {
 
     fun getAllLocalWeatherData(): Flow<List<OneCallAndCurrent>> {
-        return dao.getAllOneCallAndCurrent()
+        return dao.getAllOneCallAndCurrent().map { it.sortedBy { it.oneCall.orderIndex } }
     }
 
     suspend fun reorderData() {
@@ -78,8 +79,20 @@ class WeatherLocalDataSource(
         daily: List<DailyEntity>,
         hourly: List<OneCallHourlyEntity>,
     ) {
+        val dataBaseCount = dao.countOneCall()
+        val isCityExists =
+            dao.checkIfCityExists(cityName = oneCall.cityName) == 1
+        val oneCallWithOrderIndex = if (dataBaseCount == 0) {
+            oneCall.copy(orderIndex = 1)
+        } else {
+            val orderIndex = if (isCityExists) dao.getOneCallAndCurrentByCityName(oneCall.cityName)
+                .first().oneCall.orderIndex else {
+               dao.getAllOneCallAndCurrent().first().map { it.oneCall.orderIndex }.sumOf { it!! }
+            }
+            oneCall.copy(orderIndex = orderIndex)
+        }
         dao.insertData(
-            oneCall = oneCall,
+            oneCall = oneCallWithOrderIndex,
             oneCallCurrent = current,
             currentWeatherList = currentWeather,
             daily = daily,

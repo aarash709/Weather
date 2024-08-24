@@ -22,7 +22,9 @@ object DatabaseModule {
             context,
             WeatherDatabase::class.java,
             "weahter_db"
-        ).allowMainThreadQueries()
+        )
+            .allowMainThreadQueries()
+            .fallbackToDestructiveMigration()
             .build()
     }
     @Singleton

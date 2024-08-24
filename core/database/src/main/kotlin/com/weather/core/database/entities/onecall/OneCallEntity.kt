@@ -9,7 +9,7 @@ import com.weather.model.OneCallCoordinates
 data class OneCallEntity(
     @PrimaryKey(autoGenerate = false)
     val cityName: String,
-    val orderIndex: Int,
+    val orderIndex: Int? = null,
     val lat: Double,
     val lon: Double,
     val timezone: String,
