@@ -29,7 +29,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Scaffold
@@ -40,7 +39,6 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -49,7 +47,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -123,7 +120,6 @@ fun WeatherForecastRoute(
 }
 
 @OptIn(
-    ExperimentalMaterialApi::class,
     ExperimentalMaterial3Api::class
 )
 @Composable
@@ -148,14 +144,6 @@ fun WeatherForecastScreen(
         mutableStateOf(value)
     }
     val temperatureUnit = settingsData.temperatureUnits
-    val refreshState =
-        rememberPullRefreshState(refreshing = isSyncing, onRefresh = {
-            onRefresh(
-                forecastData[0].weather.coordinates.let {
-                    Coordinate(it.name, it.lat.toString(), it.lon.toString())
-                }
-            )
-        })
     val pullToRefreshState =
         rememberPullToRefreshState()
     LaunchedEffect(key1 = isSyncing) {
@@ -179,7 +167,6 @@ fun WeatherForecastScreen(
         WeatherBackground(
             modifier = modifier
                 .padding(padding),
-//            background = weatherUIState.background,
             showBackground = false
         ) {
             Column(
@@ -220,12 +207,10 @@ fun WeatherForecastScreen(
                         }
                         val currentPageIndex = pagerState.currentPage
                         val scrollState = rememberScrollState()
-//                        PullRefreshIndicator(refreshing = isSyncing, state = refreshState)
                         CurrentWeather(
                             modifier = Modifier
                                 .padding(top = 50.dp)
                                 .graphicsLayer {
-                                    //can be enabled after implementing independent scrolling
                                     val scrollProgress =
                                         (scrollState.value.toFloat() / scrollState.maxValue.toFloat())
                                     val newAlpha = 1 - scrollProgress
