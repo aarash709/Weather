@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -17,6 +18,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.zIndex
+import timber.log.Timber
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -51,7 +53,7 @@ internal fun Modifier.detectLongPressGesture(
 
             },
             onDragEnd = {
-                dragAndDropListItemState.onDragCancelOrInterrupted()
+                dragAndDropListItemState.onDragEnd()
             },
             onDragCancel = {
                 dragAndDropListItemState.onDragCancelOrInterrupted()
@@ -80,21 +82,28 @@ internal fun Modifier.draggableItem(
 fun rememberDragAndDropListItem(
     lazyListState: LazyListState,
     onUpdateData: (fromIndex: Int, toIndex: Int) -> Unit,
+    onReorderEnd: (fromIndex: Int, toIndex: Int) -> Unit,
 ): DragAndDropListItemState {
     return remember(lazyListState) {
-        DragAndDropListItemState(lazyListState, onUpdateData = { fromIndex, toIndex ->
-            onUpdateData(fromIndex, toIndex)
-        })
+        DragAndDropListItemState(
+            lazyListState = lazyListState,
+            onUpdateData = onUpdateData,
+            onReorderEnd = onReorderEnd
+        )
     }
 }
 
 class DragAndDropListItemState(
     private val lazyListState: LazyListState,
     private val onUpdateData: (fromIndex: Int, toIndex: Int) -> Unit,
+    private val onReorderEnd: (fromIndex: Int, toIndex: Int) -> Unit,
 ) {
     private var draggingItem: LazyListItemInfo? by mutableStateOf(null)
     var draggableItemIndex: Int? by mutableStateOf(null)
     var draggableItemOffsetDelta: Float by mutableFloatStateOf(0f)
+    private var currentIndex: Int by mutableIntStateOf(0)
+    private var targetIndex: Int by mutableIntStateOf(0)
+//    private var targetItem: LazyListItemInfo? by mutableStateOf(null)
 
     fun onDragStart(offset: Offset) {
         lazyListState.layoutInfo.visibleItemsInfo.firstOrNull { item ->
@@ -122,10 +131,11 @@ class DragAndDropListItemState(
                 middleOffset.toInt() in item.offset..item.offset + item.size && currentDraggableItemIndex != item.index
             }
         if (targetItem != null) {
-            onUpdateData(currentDraggableItemIndex, targetItem.index)
             draggableItemIndex = targetItem.index
             draggingItem = targetItem
             draggableItemOffsetDelta += currentDraggableItem.offset - targetItem.offset
+            onUpdateData(currentDraggableItemIndex, targetItem.index)
+            setDataIndexes(currentDraggableItemIndex, targetItem.index)
         }
     }
 
@@ -133,5 +143,17 @@ class DragAndDropListItemState(
         draggableItemOffsetDelta = 0f
         draggableItemIndex = null
         draggingItem = null
+        currentIndex = 0
+        targetIndex = 0
+    }
+
+    fun onDragEnd() {
+        onReorderEnd(currentIndex, targetIndex)
+        onDragCancelOrInterrupted()
+    }
+
+    private fun setDataIndexes(from: Int, to: Int) {
+        currentIndex = from
+        targetIndex = to
     }
 }

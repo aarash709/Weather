@@ -98,7 +98,7 @@ fun ManageLocationsRoute(
                 viewModel.saveFavoriteCityCoordinate(cityName = favoriteCity, context = context)
             },
             onNavigateToSearch = { onNavigateToSearch() },
-            onUpdateData = { fromIndex, toIndex ->
+            onReorderEnd = { fromIndex, toIndex ->
                 viewModel.reorderDataIndexes(fromIndex, toIndex)
             }
         )
@@ -116,7 +116,7 @@ fun ManageLocations(
     onDeleteItem: (List<String>) -> Unit,
     onSetFavoriteItem: (String) -> Unit,
     onNavigateToSearch: () -> Unit,
-    onUpdateData: (Int, Int) -> Unit,
+    onReorderEnd: (Int, Int) -> Unit,
 ) {
     var selectedCities by rememberSaveable {
         mutableStateOf(emptySet<String>())
@@ -197,13 +197,20 @@ fun ManageLocations(
                             fontSize = 12.sp
                         )
                     } else {
+                        var items by remember() {
+                            mutableStateOf(dataState.data)
+                        }
                         val lazyListState = rememberLazyListState()
                         val dragDropState =
                             rememberDragAndDropListItem(
                                 lazyListState = lazyListState,
                                 onUpdateData = { fromIndex, toIndex ->
-                                    onUpdateData(fromIndex, toIndex)
-                                })
+                                    items = items.toMutableList().apply {
+                                        add(toIndex, removeAt(fromIndex))
+                                    }
+                                },
+                                onReorderEnd = onReorderEnd
+                            )
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -215,7 +222,7 @@ fun ManageLocations(
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             itemsIndexed(
-                                items = dataState.data,
+                                items = items,
                                 key = { _, item ->
                                     item.locationName
                                 }) { index, locationData ->
@@ -395,7 +402,7 @@ internal fun ManageLocationsPreview() {
                 onDeleteItem = {},
                 onSetFavoriteItem = {},
                 onNavigateToSearch = {},
-                onUpdateData = {_,_->})
+                onReorderEnd = { _, _ -> })
         }
     }
 }
