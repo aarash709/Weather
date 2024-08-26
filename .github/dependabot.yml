@@ -12,6 +12,7 @@ updates:
       kotlin:
         patterns:
           - "org.jetbrains.kotlin:*"
+          - "com.google.devtools.ksp"
       android-plugins:
         patterns:
           - "com.android.*"
