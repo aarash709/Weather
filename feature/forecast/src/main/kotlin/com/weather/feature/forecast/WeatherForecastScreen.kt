@@ -160,7 +160,6 @@ fun WeatherForecastScreen(
     }
     Scaffold(
         modifier = Modifier
-            .padding(16.dp)
             .fillMaxSize(),
         contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { padding ->
@@ -171,6 +170,7 @@ fun WeatherForecastScreen(
         ) {
             Column(
                 modifier = Modifier
+                    .padding(16.dp)
             ) {
                 CompositionLocalProvider(LocalContentColor provides Color.White) {
                     var topAppBarSize by remember {
