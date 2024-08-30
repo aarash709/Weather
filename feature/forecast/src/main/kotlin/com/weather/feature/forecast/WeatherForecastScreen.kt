@@ -160,7 +160,6 @@ fun WeatherForecastScreen(
     }
     Scaffold(
         modifier = Modifier
-            .padding(16.dp)
             .fillMaxSize(),
         contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { padding ->
