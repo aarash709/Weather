@@ -170,6 +170,7 @@ fun WeatherForecastScreen(
         ) {
             Column(
                 modifier = Modifier
+                    .padding(16.dp)
             ) {
                 CompositionLocalProvider(LocalContentColor provides Color.White) {
                     var topAppBarSize by remember {
