@@ -1,6 +1,6 @@
 [versions]
 kotlin = "2.0.20"
-kotlinxSerialization = "1.7.1"
+kotlinxSerialization = "1.7.2"
 kotlinxCoroutines = "1.8.1"
 kotlinxKsp = "2.0.20-1.0.24"
 androidGradlePlugin = "8.6.0"
