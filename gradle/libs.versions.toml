@@ -37,7 +37,7 @@ junit = "4.13.2"
 arrow = "1.2.4"
 detekt = "1.23.6"
 kotlinter = "4.4.1"
-lottie = "6.5.0"
+lottie = "6.5.1"
 rive = "9.6.5"
 haze = "0.7.3"
 
