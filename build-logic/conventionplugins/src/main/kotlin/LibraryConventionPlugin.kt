@@ -12,7 +12,6 @@ class LibraryConventionPlugin : Plugin<Project> {
                 apply("org.jetbrains.kotlin.android")
             }
             extensions.configure<LibraryExtension> {
-                defaultConfig.targetSdk = 34
                 configureAndroid(this)
             }
         }
