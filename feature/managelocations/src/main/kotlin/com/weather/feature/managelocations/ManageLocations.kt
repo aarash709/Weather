@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -28,12 +27,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DragHandle
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.WaterDrop
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -51,7 +47,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -68,6 +63,7 @@ import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.feature.managelocations.components.LocationsBottomBar
 import com.weather.feature.managelocations.components.LocationsTopbar
+import com.weather.feature.managelocations.components.SearchBarCard
 import com.weather.feature.managelocations.components.locationsClickable
 import com.weather.model.Coordinate
 import com.weather.model.ManageLocationsData
@@ -94,7 +90,7 @@ fun ManageLocationsRoute(
                 viewModel.deleteWeatherByCityName(cityNames = cityNames, context = context)
             },
             onSetFavoriteItem = { favoriteCity ->
-                viewModel.saveFavoriteCityCoordinate(cityName = favoriteCity, context = context)
+                viewModel.saveFavoriteCityCoordinate(cityName = favoriteCity)
             },
             onNavigateToSearch = { onNavigateToSearch() }
         )
@@ -242,55 +238,6 @@ fun ManageLocations(
     }
 }
 
-@Composable
-internal fun BottomBarItem(
-    modifier: Modifier = Modifier,
-    buttonName: String,
-    imageVector: ImageVector,
-    enabled: Boolean = true,
-    onClick: () -> Unit,
-) {
-    Column(
-        modifier = modifier.padding(horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        IconButton(onClick = { onClick() }, enabled = enabled) {
-            Icon(
-                imageVector = imageVector,
-                modifier = Modifier.size(28.dp),
-                contentDescription = "Delete button"
-            )
-        }
-        Text(text = buttonName, fontSize = 14.sp)
-    }
-}
-
-@Composable
-internal fun SearchBarCard(onClick: () -> Unit) {
-    Surface(
-        onClick = onClick,
-        shape = RoundedCornerShape(32.dp),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp)
-                .defaultMinSize(minHeight = 54.dp, minWidth = 132.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Default.Search,
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                contentDescription = "Search Icon"
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(
-                text = stringResource(id = R.string.search),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-            )
-        }
-    }
-}
 
 @Composable
 internal fun SavedLocationItem(

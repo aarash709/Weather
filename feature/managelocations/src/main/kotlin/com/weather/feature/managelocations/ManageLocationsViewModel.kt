@@ -61,10 +61,9 @@ class ManageLocationsViewModel @Inject constructor(
         )
 
 
-    fun saveFavoriteCityCoordinate(cityName: String, context: Context) {
+    fun saveFavoriteCityCoordinate(cityName: String) {
         viewModelScope.launch {
             userRepository.setFavoriteCityCoordinate(cityName)
-            vibrate(context = context)
         }
     }
 
@@ -80,7 +79,7 @@ class ManageLocationsViewModel @Inject constructor(
     }
 
     private fun vibrate(context: Context) {
-        val vibrationEffect = VibrationEffect.createOneShot(60, 50)
+        val vibrationEffect = VibrationEffect.createOneShot(75, 50)
         val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             (context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
         } else {
