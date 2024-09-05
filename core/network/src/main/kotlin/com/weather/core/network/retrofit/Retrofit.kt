@@ -8,7 +8,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 
 const val BASE_URL = BuildConfig.BASE_URL
 
-val moshi: Moshi? = Moshi
+val moshi: Moshi = Moshi
     .Builder()
     .addLast(KotlinJsonAdapterFactory())
     .build()
