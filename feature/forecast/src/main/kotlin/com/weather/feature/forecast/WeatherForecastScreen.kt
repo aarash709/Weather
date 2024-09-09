@@ -32,10 +32,8 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -50,7 +48,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -144,20 +141,6 @@ fun WeatherForecastScreen(
         mutableStateOf(value)
     }
     val temperatureUnit = settingsData.temperatureUnits
-    val pullToRefreshState =
-        rememberPullToRefreshState()
-    LaunchedEffect(key1 = isSyncing) {
-        if (isSyncing) pullToRefreshState.startRefresh() else pullToRefreshState.endRefresh()
-    }
-    if (pullToRefreshState.isRefreshing){
-        LaunchedEffect(key1 = Unit) {
-            onRefresh(
-                forecastData[0].weather.coordinates.let {
-                    Coordinate(it.name, it.lat.toString(), it.lon.toString())
-                }
-            )
-        }
-    }
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
@@ -186,76 +169,76 @@ fun WeatherForecastScreen(
                             },
                         onNavigateToManageLocations = { onNavigateToManageLocations() },
                         onNavigateToSettings = { onNavigateToSettings() })
-                    Surface(
-                        modifier = Modifier
-                            .nestedScroll(pullToRefreshState.nestedScrollConnection),
-                        color = Color.Transparent
-
-                    ) {
-                        val pagerState = rememberPagerState(
-                            pageCount = { forecastData.size }
-                        )
-                        LaunchedEffect(key1 = favoriteCity) {
-                            val page = forecastData.indexOfFirst {
-                                it.weather.coordinates.name == (favoriteCity
-                                    ?: it.weather.coordinates.name)
-                            }
-                            pagerState.scrollToPage(page)
-                        }
-                        var currentWeatherSize by remember {
-                            mutableIntStateOf(0)
-                        }
-                        val currentPageIndex = pagerState.currentPage
-                        val scrollState = rememberScrollState()
-                        CurrentWeather(
-                            modifier = Modifier
-                                .padding(top = 50.dp)
-                                .graphicsLayer {
-                                    val scrollProgress =
-                                        (scrollState.value.toFloat() / scrollState.maxValue.toFloat())
-                                    val newAlpha = 1 - scrollProgress
-                                        .times(5)
-                                    val scale = 1 - scrollProgress
-                                    scaleX = scale
-                                    scaleY = scale
-                                    alpha = newAlpha
-                                    translationY = scrollState.value.toFloat() / 2 * -1
+                    PullToRefreshBox(
+                        modifier = Modifier,
+                        isRefreshing = isSyncing,
+                        onRefresh = {
+                            onRefresh(
+                                forecastData[0].weather.coordinates.let {
+                                    Coordinate(it.name, it.lat.toString(), it.lon.toString())
                                 }
-                                .onGloballyPositioned {
-                                    currentWeatherSize =
-                                        with(density) { it.size.height.toDp().value.toInt() }
-                                },
-                            weatherData = forecastData[currentPageIndex].weather,
-                            indicator = {
-                                PagerIndicators(
-                                    modifier = Modifier,
-                                    count = pagerState.pageCount,
-                                    currentPage = currentPageIndex,
-                                    size = 6.dp
+                            )
+                        },
+                        contentAlignment = Alignment.TopCenter,
+                        content = {
+                            val pagerState = rememberPagerState(
+                                pageCount = { forecastData.size }
+                            )
+                            LaunchedEffect(key1 = favoriteCity) {
+                                val page = forecastData.indexOfFirst {
+                                    it.weather.coordinates.name == (favoriteCity
+                                        ?: it.weather.coordinates.name)
+                                }
+                                pagerState.scrollToPage(page)
+                            }
+                            var currentWeatherSize by remember {
+                                mutableIntStateOf(0)
+                            }
+                            val currentPageIndex = pagerState.currentPage
+                            val scrollState = rememberScrollState()
+                            CurrentWeather(
+                                modifier = Modifier
+                                    .padding(top = 50.dp)
+                                    .graphicsLayer {
+                                        val scrollProgress =
+                                            (scrollState.value.toFloat() / scrollState.maxValue.toFloat())
+                                        val newAlpha = 1 - scrollProgress
+                                            .times(5)
+                                        val scale = 1 - scrollProgress
+                                        scaleX = scale
+                                        scaleY = scale
+                                        alpha = newAlpha
+                                        translationY = scrollState.value.toFloat() / 2 * -1
+                                    }
+                                    .onGloballyPositioned {
+                                        currentWeatherSize =
+                                            with(density) { it.size.height.toDp().value.toInt() }
+                                    },
+                                weatherData = forecastData[currentPageIndex].weather,
+                                indicator = {
+                                    PagerIndicators(
+                                        modifier = Modifier,
+                                        count = pagerState.pageCount,
+                                        currentPage = currentPageIndex,
+                                        size = 6.dp
+                                    )
+                                }
+                            )
+                            HorizontalPager(state = pagerState, pageSpacing = 16.dp) { index ->
+                                ConditionAndDetails(
+                                    modifier = Modifier
+                                        .padding(top = 0.dp),
+                                    scrollState = scrollState,
+                                    weatherData = forecastData[index].weather,
+                                    isDayTime = timeOfDay != TimeOfDay.Night,
+                                    showPlaceholder = forecastData[index].showPlaceHolder,
+                                    speedUnit = speedUnit,
+                                    tempUnit = temperatureUnit,
+                                    shouldChangeColor = /*scrollProgress > 10*/ false,
+                                    firstItemHeight = currentWeatherSize + topAppBarSize
                                 )
                             }
-                        )
-                        HorizontalPager(state = pagerState, pageSpacing = 16.dp) { index ->
-                            ConditionAndDetails(
-                                modifier = Modifier
-                                    .padding(top = 0.dp),
-                                scrollState = scrollState,
-                                weatherData = forecastData[index].weather,
-                                isDayTime = timeOfDay != TimeOfDay.Night,
-                                showPlaceholder = forecastData[index].showPlaceHolder,
-                                speedUnit = speedUnit,
-                                tempUnit = temperatureUnit,
-                                shouldChangeColor = /*scrollProgress > 10*/ false,
-                                firstItemHeight = currentWeatherSize + topAppBarSize
-                            )
-                        }
-                        Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                            PullToRefreshContainer(
-                                state = pullToRefreshState,
-                                modifier = Modifier,
-                            )
-                        }
-                    }
+                        })
                 }
             }
         }
