@@ -44,20 +44,20 @@ haze = "0.7.3"
 [libraries]
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }
-compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "androidxComposeAlpha" }
-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "androidxComposeAlpha" }
-compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "androidxComposeAlpha" }
+compose-animation = { group = "androidx.compose.animation", name = "animation" }
+compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
+compose-ui = { group = "androidx.compose.ui", name = "ui" }
 compose-ui-util = { group = "androidx.compose.ui", name = "ui-util" }
 compose-ui-toolingPreview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 compose-ui-test = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 compose-ui-testManifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "androidxComposeAlpha" }
+compose-runtime = { group = "androidx.compose.runtime", name = "runtime" }
 compose-material = { group = "androidx.compose.material", name = "material" }
 compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 compose-material3-windowSizeClass = { group = "androidx.compose.material3", name = "material3-window-size-class" }
 compose-material-iconsExtended = { group = "androidx.compose.material", name = "material-icons-extended" }
-haze = { group = "dev.chrisbanes.haze", name = "haze",version.ref = "haze" }
+haze = { group = "dev.chrisbanes.haze", name = "haze", version.ref = "haze" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidxAppcompat" }
 androidx-coreKtx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
 androidx-splashScreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidxSplashScreen" }
