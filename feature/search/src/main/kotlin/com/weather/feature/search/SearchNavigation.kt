@@ -7,21 +7,20 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import com.weather.core.design.SearchRoute
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
-const val SEARCH_ROUTE = "SEARCH_ROUTE"
 
 fun NavController.toSearchScreen(navOptions: NavOptions? = null) {
-    navigate(SEARCH_ROUTE, navOptions)
+    navigate(SearchRoute, navOptions)
 }
 
 @ExperimentalCoroutinesApi
 @ExperimentalAnimationApi
 @FlowPreview
 fun NavGraphBuilder.searchScreen(onSearchItemSelected: () -> Unit) {
-    composable(
-        route = SEARCH_ROUTE,
+    composable<SearchRoute>(
         enterTransition = { fadeIn() },
         exitTransition = { fadeOut() }
     ) {

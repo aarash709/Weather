@@ -4,27 +4,29 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
+import com.weather.core.design.ForecastRoute
+import com.weather.core.design.LocationsRoute
+import com.weather.core.design.SettingsRoute
 import com.weather.core.design.theme.ForecastTheme
 import com.weather.feature.forecast.WeatherForecastRoute
-import com.weather.feature.managelocations.LOCATIONS_ROUTE
-import com.weather.feature.settings.SETTINGS_ROUTE
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-const val FORECAST_ROUTE = "FORECAST_ROUTE"
 
 @ExperimentalCoroutinesApi
 fun NavGraphBuilder.forecastRoute(
     navigateToManageLocations: () -> Unit,
     navigateToSettings: () -> Unit,
 ) {
-    composable(
-        route = FORECAST_ROUTE,
+    composable<ForecastRoute>(
         enterTransition = {
-            when (initialState.destination.route) {
-                SETTINGS_ROUTE, LOCATIONS_ROUTE -> {
+            when {
+                initialState.destination.hierarchy.any {
+                    it.hasRoute<LocationsRoute>() || it.hasRoute<SettingsRoute>()
+                } -> {
                     slideIntoContainer(
                         towards = AnimatedContentTransitionScope.SlideDirection.Right,
                         animationSpec = tween(350),
@@ -38,21 +40,20 @@ fun NavGraphBuilder.forecastRoute(
             }
         },
         exitTransition = {
-            when (targetState.destination.route) {
-                SETTINGS_ROUTE, LOCATIONS_ROUTE -> {
-                    slideOutOfContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                        animationSpec = tween(350), targetOffset = { it / 3 })
-                }
+            when {
+                targetState.destination.hierarchy.any {
+                    it.hasRoute<LocationsRoute>() || it.hasRoute<SettingsRoute>()
+                } -> slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(350), targetOffset = { it / 3 })
 
                 else -> {
                     fadeOut()
                 }
             }
-        },
-        arguments = listOf(navArgument(name = "cityName") { nullable = true })
+        }
     ) {
-        ForecastTheme{
+        ForecastTheme {
             WeatherForecastRoute(
                 onNavigateToManageLocations = {
                     navigateToManageLocations()

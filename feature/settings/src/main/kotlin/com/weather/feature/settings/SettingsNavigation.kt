@@ -6,15 +6,14 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import com.weather.core.design.SettingsRoute
 
-const val SETTINGS_ROUTE = "SETTINGS_ROUTE"
 fun NavController.toSettings(navOptions: NavOptions? = null) {
-    navigate(SETTINGS_ROUTE, navOptions)
+    navigate(SettingsRoute, navOptions)
 }
 
 fun NavGraphBuilder.settingsScreen(onBackPress: () -> Unit) {
-    composable(
-        SETTINGS_ROUTE,
+    composable<SettingsRoute>(
         enterTransition = {
             slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left,
                 animationSpec = tween(350)
