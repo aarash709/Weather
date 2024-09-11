@@ -1,7 +1,7 @@
 plugins {
     id("java-library")
     id("org.jetbrains.kotlin.jvm")
-    id("org.jetbrains.kotlin.plugin.serialization")
+    alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.kotlinx.ksp)
 }
 

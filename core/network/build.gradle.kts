@@ -2,8 +2,8 @@ plugins {
     alias(libs.plugins.weather.android.library)
     alias(libs.plugins.secrets)
     alias(libs.plugins.kotlinx.ksp)
-    id("dagger.hilt.android.plugin")
-    id("org.jetbrains.kotlin.plugin.serialization")
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.kotlinSerialization)
 }
 android {
     namespace = "com.weather.core.network"
