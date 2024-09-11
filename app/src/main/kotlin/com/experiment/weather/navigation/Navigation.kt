@@ -7,10 +7,12 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
 import com.experiment.weather.WeatherAppState
-import com.weather.feature.managelocations.LOCATIONS_ROUTE
+import com.weather.core.design.ForecastRoute
+import com.weather.core.design.LocationsRoute
+import com.weather.core.design.SearchRoute
+import com.weather.feature.forecast.forecastRoute
 import com.weather.feature.managelocations.manageLocationsScreen
 import com.weather.feature.managelocations.toManageLocations
-import com.weather.feature.search.SEARCH_ROUTE
 import com.weather.feature.search.searchScreen
 import com.weather.feature.search.toSearchScreen
 import com.weather.feature.settings.settingsScreen
@@ -28,11 +30,10 @@ fun WeatherNavHost(
     appState: WeatherAppState,
     isDatabaseEmpty: Boolean,
 ) {
-    val startDestination = if (isDatabaseEmpty) SEARCH_ROUTE else FORECAST_ROUTE
     val navController = appState.navController
     NavHost(
         navController = navController,
-        startDestination = startDestination,
+        startDestination = if (isDatabaseEmpty) SearchRoute else ForecastRoute(),
         modifier = modifier
     ) {
         forecastRoute(
@@ -50,11 +51,11 @@ fun WeatherNavHost(
             },
             onItemSelected = { _ ->
                 navController.navigate(
-                    route = FORECAST_ROUTE,
+                    route = ForecastRoute(),
                     navOptions = navOptions {
                         launchSingleTop = true
                         popUpTo(
-                            route = LOCATIONS_ROUTE,
+                            route = LocationsRoute,
                             popUpToBuilder = {
                                 inclusive = true
                             }
@@ -65,7 +66,7 @@ fun WeatherNavHost(
         )
         searchScreen(onSearchItemSelected = {
             navController.toManageLocations(navOptions = navOptions {
-                popUpTo(LOCATIONS_ROUTE) {
+                popUpTo(LocationsRoute) {
                     inclusive = true
                 }
             })
