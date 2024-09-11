@@ -10,6 +10,7 @@ import com.experiment.weather.WeatherAppState
 import com.weather.core.design.ForecastRoute
 import com.weather.core.design.LocationsRoute
 import com.weather.core.design.SearchRoute
+import com.weather.feature.forecast.forecastRoute
 import com.weather.feature.managelocations.manageLocationsScreen
 import com.weather.feature.managelocations.toManageLocations
 import com.weather.feature.search.searchScreen

@@ -1,4 +1,4 @@
-package com.experiment.weather.navigation
+package com.weather.feature.forecast
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
@@ -12,7 +12,6 @@ import com.weather.core.design.ForecastRoute
 import com.weather.core.design.LocationsRoute
 import com.weather.core.design.SettingsRoute
 import com.weather.core.design.theme.ForecastTheme
-import com.weather.feature.forecast.WeatherForecastRoute
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 
