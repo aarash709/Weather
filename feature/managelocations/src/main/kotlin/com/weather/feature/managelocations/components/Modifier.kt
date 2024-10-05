@@ -18,7 +18,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.zIndex
-import timber.log.Timber
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -66,7 +65,7 @@ internal fun Modifier.draggableItem(
     draggableState: DragAndDropListItemState,
     listIndex: Int,
 ): Modifier {
-    return this then if (draggableState.draggableItemIndex == listIndex) {
+    return this then if (draggableState.currentDraggableItemIndex == listIndex) {
         Modifier
             .zIndex(1f)
             .graphicsLayer {
@@ -99,7 +98,8 @@ class DragAndDropListItemState(
     private val onReorderEnd: (fromIndex: Int, toIndex: Int) -> Unit,
 ) {
     private var draggingItem: LazyListItemInfo? by mutableStateOf(null)
-    var draggableItemIndex: Int? by mutableStateOf(null)
+    private var initialDraggableItemIndex: Int by mutableIntStateOf(0)
+    var currentDraggableItemIndex: Int? by mutableStateOf(null)
     var draggableItemOffsetDelta: Float by mutableFloatStateOf(0f)
     private var currentIndex: Int by mutableIntStateOf(0)
     private var targetIndex: Int by mutableIntStateOf(0)
@@ -109,14 +109,15 @@ class DragAndDropListItemState(
         lazyListState.layoutInfo.visibleItemsInfo.firstOrNull { item ->
             offset.y.toInt() in item.offset..(item.offset + item.size)
         }?.also {
-            draggableItemIndex = it.index
+            currentDraggableItemIndex = it.index
+            initialDraggableItemIndex = it.index
             draggingItem = it
         }
     }
 
     fun onDrag(dragOffset: Float) {
         draggableItemOffsetDelta += dragOffset
-        val currentDraggableItemIndex = draggableItemIndex
+        val currentDraggableItemIndex = currentDraggableItemIndex
             ?: return
         val currentDraggableItem =
             draggingItem ?: return
@@ -131,24 +132,28 @@ class DragAndDropListItemState(
                 middleOffset.toInt() in item.offset..item.offset + item.size && currentDraggableItemIndex != item.index
             }
         if (targetItem != null) {
-            draggableItemIndex = targetItem.index
+            //swap current dragging item for each reordering
+            this.currentDraggableItemIndex = targetItem.index
             draggingItem = targetItem
             draggableItemOffsetDelta += currentDraggableItem.offset - targetItem.offset
-            setDataIndexes(currentDraggableItemIndex, targetItem.index)
+            //used for updating ui data for realtime data updates and smooth animations
             onUpdateData(currentDraggableItemIndex, targetItem.index)
+            setDataIndexes(currentDraggableItemIndex, targetItem.index)
         }
     }
 
     fun onDragCancelOrInterrupted() {
         draggableItemOffsetDelta = 0f
-        draggableItemIndex = null
+        currentDraggableItemIndex = null
         draggingItem = null
+        initialDraggableItemIndex = 0
         currentIndex = 0
         targetIndex = 0
     }
 
     fun onDragEnd() {
-        onReorderEnd(currentIndex, targetIndex)
+        //we notify the database the end result
+        onReorderEnd(initialDraggableItemIndex, targetIndex)
         onDragCancelOrInterrupted()
     }
 

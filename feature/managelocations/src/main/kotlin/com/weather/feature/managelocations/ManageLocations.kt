@@ -255,7 +255,7 @@ fun ManageLocations(
                                             draggableState = dragDropState,
                                             listIndex = index
                                         )
-                                            then if (dragDropState.draggableItemIndex != index) {
+                                            then if (dragDropState.currentDraggableItemIndex != index) {
                                         Modifier.animateItem()
                                     } else {
                                         Modifier
@@ -271,6 +271,15 @@ fun ManageLocations(
             }
         }
     }
+}
+
+@Composable
+private fun EmptyListMassage() {
+	Text(
+		text = stringResource(id = R.string.search_and_add_a_location),
+		color = MaterialTheme.colorScheme.onBackground.copy(alpha = .75f),
+		fontSize = 12.sp
+	)
 }
 
 @Composable
