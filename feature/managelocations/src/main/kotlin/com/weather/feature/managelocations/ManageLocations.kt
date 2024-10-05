@@ -197,7 +197,7 @@ fun ManageLocations(
                             fontSize = 12.sp
                         )
                     } else {
-                        var items by remember() {
+                        var items by remember(dataState) {
                             mutableStateOf(dataState.data)
                         }
                         val lazyListState = rememberLazyListState()
@@ -222,7 +222,7 @@ fun ManageLocations(
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             itemsIndexed(
-                                items = items,
+                                items = dataState.data,
                                 key = { _, item ->
                                     item.locationName
                                 }) { index, locationData ->

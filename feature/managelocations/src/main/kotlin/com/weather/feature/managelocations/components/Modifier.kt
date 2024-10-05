@@ -134,8 +134,8 @@ class DragAndDropListItemState(
             draggableItemIndex = targetItem.index
             draggingItem = targetItem
             draggableItemOffsetDelta += currentDraggableItem.offset - targetItem.offset
-            onUpdateData(currentDraggableItemIndex, targetItem.index)
             setDataIndexes(currentDraggableItemIndex, targetItem.index)
+            onUpdateData(currentDraggableItemIndex, targetItem.index)
         }
     }
 

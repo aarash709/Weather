@@ -81,9 +81,10 @@ class ManageLocationsViewModel @Inject constructor(
 
     fun reorderDataIndexes(fromIndex: Int, toIndex: Int) {
         viewModelScope.launch {
+            val allCities = weatherRepository.getAllWeatherLocations()
             val fromCity =
-                weatherRepository.getAllWeatherLocations().first()[fromIndex].locationName
-            val toCity = weatherRepository.getAllWeatherLocations().first()[toIndex].locationName
+                allCities.first()[fromIndex].locationName
+            val toCity = allCities.first()[toIndex].locationName
             weatherRepository.reorderData(fromIndex = fromCity, toIndex = toCity)
         }
     }
