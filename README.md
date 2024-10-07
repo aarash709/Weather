@@ -1,20 +1,21 @@
 # Weather Sample
 
-Work in progress [🚧] sample android weather app written entirely in Kotlin and jetpack compose. The app is fully functional and following offline first best practices. This is not and will not be a production ready app[⚠️]. Contributions are welcomed🫡.
+Work in progress [🚧] sample android weather app written entirely in Kotlin and jetpack compose. The app is fully functional and following offline first best practices. This is a demo and is not a production ready app[⚠️]. Contributions are welcomed🫡.
 
 ## Roadmap
-* [ ] Forecast background colors(day,night,dawn,cloudy, etc..)
-* [ ] Reorder saved locations
-#### backlog
-* [ ] Add animated weather condition shader effects 
+
+| Active | Backlog |
+|-|-|
+|Forecast background colors(day,night,dawn,cloudy, etc..) |Animated weather condition shader effects|
+|Reorder saved locations||
 
 ## Architecture
 
-Hybrid model is used for modules which is the best for managing code and readability.
-* `app` is responsible for managing navigation.
-* `Feature` modules are compose ui pages and VMs and navigation setup for each page.
+This project is leveraging hybrid model architecture(by layer + by feature)
+* `app` primarily managing navigation logic.
+* `Feature` Ui code and navigation setup for each page.
 * `Core` has separate modules for networking and offline cache and shared code across application.
-* `WorkManager` for fetching remote data in background.
+* `WorkManager` for fetching remote data in the background.
 
 ## Stack
 
