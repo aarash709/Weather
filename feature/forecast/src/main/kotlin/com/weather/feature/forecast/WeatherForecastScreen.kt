@@ -4,6 +4,7 @@ import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOutCubic
 import androidx.compose.animation.core.tween
@@ -424,17 +425,27 @@ private fun CurrentWeather(
 				)
 			}
 			val currentTemp = weatherData.current.currentTemp.roundToInt()
-			AnimatedContent(targetState = currentTemp, transitionSpec = {
-				if (targetState > initialState ) {
-					slideInVertically { -it } togetherWith slideOutVertically { it }
-				}else{
-					slideInVertically { it } togetherWith slideOutVertically { -it }
+			Row(
+				modifier = Modifier.animateContentSize(),
+				horizontalArrangement = Arrangement.Center,
+				verticalAlignment = Alignment.CenterVertically
+			) {
+				currentTemp.toString().mapIndexed() { index, c ->
+					c
+				}.forEach { ch ->
+					AnimatedContent(targetState = ch, transitionSpec = {
+						if (targetState > initialState) {
+							slideInVertically { -it } togetherWith slideOutVertically { it }
+						} else {
+							slideInVertically { it } togetherWith slideOutVertically { -it }
+						}
+					}, label = "current temp") { temp ->
+						Text(
+							text = "$temp",
+							fontSize = 120.sp,
+						)
+					}
 				}
-			}, label = "current temp") { temp->
-				Text(
-					text = "${temp}°",
-					fontSize = 120.sp,
-				)
 			}
 			Text(
 				text = "High $highTemp° • Low $lowTemp°",
