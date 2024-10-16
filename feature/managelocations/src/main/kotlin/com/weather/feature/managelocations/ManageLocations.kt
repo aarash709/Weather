@@ -64,6 +64,7 @@ import com.experiment.weather.core.common.R
 import com.weather.core.design.components.ShowLoadingText
 import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
+import com.weather.feature.managelocations.components.LocationItem
 import com.weather.feature.managelocations.components.LocationsBottomBar
 import com.weather.feature.managelocations.components.LocationsTopbar
 import com.weather.feature.managelocations.components.SearchBarCard
@@ -73,7 +74,6 @@ import com.weather.feature.managelocations.components.locationsClickable
 import com.weather.feature.managelocations.components.rememberDragAndDropListItem
 import com.weather.model.Coordinate
 import com.weather.model.ManageLocationsData
-import timber.log.Timber
 
 @ExperimentalFoundationApi
 @Composable
@@ -193,11 +193,7 @@ fun ManageLocations(
 						derivedStateOf { selectedCities.isNotEmpty() }
 					}
 					if (dataState.data.isEmpty()) {
-						Text(
-							text = stringResource(id = R.string.search_and_add_a_location),
-							color = MaterialTheme.colorScheme.onBackground.copy(alpha = .75f),
-							fontSize = 12.sp
-						)
+						EmptyListMassage()
 					} else {
 						var items by remember {
 							mutableStateOf(dataState.data)
@@ -236,7 +232,7 @@ fun ManageLocations(
 								val selected by remember(selectedCities) {
 									mutableStateOf(locationData.locationName in selectedCities)
 								}
-								SavedLocationItem(
+								LocationItem(
 									modifier = Modifier
 										.bouncyTapEffect()
 										.locationsClickable(
@@ -288,100 +284,6 @@ private fun EmptyListMassage() {
 		fontSize = 12.sp
 	)
 }
-
-@Composable
-internal fun SavedLocationItem(
-	modifier: Modifier = Modifier,
-	data: ManageLocationsData,
-	inSelectionMode: Boolean,
-	selected: Boolean,
-) {
-	val isFavorite = data.isFavorite
-	Surface(
-		modifier = modifier
-			.fillMaxWidth(),
-		shape = RoundedCornerShape(32.dp),
-	) {
-		Row(
-			modifier = Modifier
-				.fillMaxWidth()
-				.padding(16.dp),
-			verticalAlignment = Alignment.CenterVertically,
-		) {
-			AnimatedVisibility(
-				visible = inSelectionMode,
-				modifier = Modifier,
-				enter = fadeIn(animationSpec = tween(100)) + expandHorizontally(animationSpec = spring()),
-				exit = fadeOut(animationSpec = tween(25)) + shrinkHorizontally(),
-				label = "draggable icon"
-			) {
-				Icon(
-					imageVector = Icons.Default.DragHandle,
-					modifier = Modifier
-						.padding(end = 16.dp),
-					contentDescription = "draggable icon"
-				)
-			}
-			Column(
-				modifier = Modifier.weight(1f),
-				horizontalAlignment = Alignment.Start
-			) {
-				Row(verticalAlignment = Alignment.CenterVertically) {
-					Text(
-						text = data.locationName,
-						fontSize = 18.sp
-					)
-					Spacer(modifier = Modifier.width(16.dp))
-					if (isFavorite) {
-						Icon(
-							imageVector = Icons.Default.Star,
-							modifier = Modifier.size(20.dp),
-							tint = Color.Yellow,
-							contentDescription = "selected icon star"
-						)
-					}
-				}
-			}
-			Row(
-				modifier = Modifier,
-				horizontalArrangement = Arrangement.Start,
-				verticalAlignment = Alignment.CenterVertically
-			) {
-				AsyncImage(
-					model = "https://openweathermap.org/img/wn/${data.weatherIcon}@2x.png",
-					modifier = Modifier,
-					contentDescription = "weather icon"
-				)
-				Text(
-					text = "${data.currentTemp}°",
-					modifier = Modifier.width(60.dp),
-					textAlign = TextAlign.End,
-					fontSize = 28.sp
-				)
-			}
-			AnimatedVisibility(
-				visible = inSelectionMode,
-				modifier = Modifier,
-				enter = fadeIn(animationSpec = tween(100)) + expandHorizontally(animationSpec = spring()),
-				exit = fadeOut(animationSpec = tween(25)) + shrinkHorizontally(),
-				label = "selection button"
-			) {
-				Icon(
-					imageVector = Icons.Filled.CheckCircle,
-					modifier = Modifier
-						.padding(start = 16.dp),
-					contentDescription = "selected Icon",
-					tint =
-					if (selected)
-						MaterialTheme.colorScheme.primary
-					else
-						MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
-				)
-			}
-		}
-	}
-}
-
 
 @ExperimentalFoundationApi
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
@@ -445,7 +347,7 @@ internal fun SearchCardPreview() {
 @Composable
 internal fun CityItemPreview() {
 	WeatherTheme {
-		SavedLocationItem(
+		LocationItem(
 			data = ManageLocationsData(
 				locationName = "Tehran",
 				weatherIcon = "",

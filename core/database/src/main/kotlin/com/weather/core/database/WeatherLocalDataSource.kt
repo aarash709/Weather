@@ -18,21 +18,12 @@ class WeatherLocalDataSource(
 ) {
 
 	fun getAllLocalWeatherData(): Flow<List<OneCallAndCurrent>> {
-		return dao.getAllOneCallAndCurrent().map { it.sortedBy { it.oneCall.orderIndex } }
+		return dao.getAllOneCallAndCurrent().map {
+			it.sortedBy { oneCallAndCurrent -> oneCallAndCurrent.oneCall.orderIndex }
+		}
 	}
 
 	suspend fun updateListOrder(locations: List<ManageLocationsData>) {
-//		val from = dao.getOneCallAndCurrentByCityName(fromCity).first().oneCall
-//		val to = dao.getOneCallAndCurrentByCityName(toCity).first().oneCall
-//		val fromIndex = from.orderIndex!!
-//		val toIndex = to.orderIndex!!
-
-//		dao.reorderOneCallWeatherData(
-//			from = from,
-//			to = to,
-//			fromIndex = fromIndex,
-//			toIndex = toIndex
-//		)
 		val oneCalls = locations.map { location ->
 			OneCallEntity(
 				location.locationName,
@@ -43,7 +34,6 @@ class WeatherLocalDataSource(
 				timezone_offset = location.timezoneOffset
 			)
 		}
-
 		dao.insertOneCalls(oneCalls)
 	}
 
@@ -105,9 +95,9 @@ class WeatherLocalDataSource(
 		val dataBaseCount = dao.countOneCall()
 		val isCityExists =
 			dao.checkIfCityExists(cityName = oneCall.cityName) == 1
-		val orderIndex = if (isCityExists) dao.getOneCallAndCurrentByCityName(oneCall.cityName)
-			.first().oneCall.orderIndex
-		else {
+		val orderIndex = if (isCityExists) {
+			dao.getOneCallByCityName(oneCall.cityName).orderIndex
+		} else {
 			if (dataBaseCount == 0) 0
 			else dao.getAllOneCall().lastIndex.plus(1)
 		}

@@ -21,22 +21,22 @@ interface WeatherDao {
     /**
      * method to store data.
      */
-    @Upsert()
+    @Upsert
     suspend fun insertOneCall(oneCall: OneCallEntity)
 
-    @Upsert()
+    @Upsert
     suspend fun insertOneCalls(oneCalls: List<OneCallEntity>)
 
-    @Upsert()
+    @Upsert
     suspend fun insertOneCallCurrent(current: CurrentEntity)
 
-    @Upsert()
+    @Upsert
     suspend fun insertOneCallCurrentWeather(weather: List<CurrentWeatherEntity>)
 
-    @Upsert()
+    @Upsert
     suspend fun insertDaily(daily: List<DailyEntity>)
 
-    @Upsert()
+    @Upsert
     suspend fun insertHourly(hourly: List<OneCallHourlyEntity>)
 
     @Query("SELECT count(*) FROM one_call WHERE cityName = :cityName")
@@ -44,6 +44,9 @@ interface WeatherDao {
 
     @Query("SELECT * FROM one_call")
     fun getAllOneCall(): List<OneCallEntity>
+
+    @Query("SELECT * FROM one_call WHERE cityName = :cityName")
+    fun getOneCallByCityName(cityName: String): OneCallEntity
 
     @Transaction
     @Query("SELECT * FROM one_call WHERE cityName = :cityName")
