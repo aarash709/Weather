@@ -25,6 +25,9 @@ interface WeatherDao {
     suspend fun insertOneCall(oneCall: OneCallEntity)
 
     @Upsert()
+    suspend fun insertOneCalls(oneCalls: List<OneCallEntity>)
+
+    @Upsert()
     suspend fun insertOneCallCurrent(current: CurrentEntity)
 
     @Upsert()
@@ -38,6 +41,9 @@ interface WeatherDao {
 
     @Query("SELECT count(*) FROM one_call WHERE cityName = :cityName")
     fun checkIfCityExists(cityName: String): Int
+
+    @Query("SELECT * FROM one_call")
+    fun getAllOneCall(): List<OneCallEntity>
 
     @Transaction
     @Query("SELECT * FROM one_call WHERE cityName = :cityName")

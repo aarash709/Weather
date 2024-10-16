@@ -56,6 +56,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.fastMapIndexed
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
@@ -72,205 +73,211 @@ import com.weather.feature.managelocations.components.locationsClickable
 import com.weather.feature.managelocations.components.rememberDragAndDropListItem
 import com.weather.model.Coordinate
 import com.weather.model.ManageLocationsData
+import timber.log.Timber
 
 @ExperimentalFoundationApi
 @Composable
 fun ManageLocationsRoute(
-    viewModel: ManageLocationsViewModel = hiltViewModel(),
-    onBackPressed: () -> Unit,
-    onItemSelected: (String) -> Unit,
-    onNavigateToSearch: () -> Unit,
+	viewModel: ManageLocationsViewModel = hiltViewModel(),
+	onBackPressed: () -> Unit,
+	onItemSelected: (String) -> Unit,
+	onNavigateToSearch: () -> Unit,
 ) {
-    //stateful
-    val dataState by viewModel.locationsState.collectAsStateWithLifecycle()
-    val context = LocalContext.current
-    Card(modifier = Modifier) {
-        ManageLocations(
-            dataState = dataState,
-            onBackPressed = onBackPressed,
-            onItemSelected = { coordinate ->
-                onItemSelected(coordinate.cityName.toString())
-            },
-            onDeleteItem = { cityNames ->
-                viewModel.deleteWeatherByCityName(cityNames = cityNames, context = context)
-            },
-            onSetFavoriteItem = { favoriteCity ->
-                viewModel.saveFavoriteCityCoordinate(cityName = favoriteCity, context = context)
-            },
-            onNavigateToSearch = { onNavigateToSearch() },
-            onReorderEnd = { fromIndex, toIndex ->
-                viewModel.reorderDataIndexes(fromIndex, toIndex)
-            }
-        )
-    }
+	//stateful
+	val dataState by viewModel.locationsState.collectAsStateWithLifecycle()
+	val context = LocalContext.current
+	Card(modifier = Modifier) {
+		ManageLocations(
+			dataState = dataState,
+			onBackPressed = onBackPressed,
+			onItemSelected = { coordinate ->
+				onItemSelected(coordinate.cityName.toString())
+			},
+			onDeleteItem = { cityNames ->
+				viewModel.deleteWeatherByCityName(cityNames = cityNames, context = context)
+			},
+			onSetFavoriteItem = { favoriteCity ->
+				viewModel.saveFavoriteCityCoordinate(cityName = favoriteCity, context = context)
+			},
+			onNavigateToSearch = { onNavigateToSearch() },
+			onReorderEnd = { locations ->
+				viewModel.reorderDataIndexes(locations)
+			}
+		)
+	}
 }
 
 @OptIn(
-    ExperimentalMaterial3Api::class
+	ExperimentalMaterial3Api::class
 )
 @Composable
 fun ManageLocations(
-    dataState: LocationsUIState,
-    onBackPressed: () -> Unit,
-    onItemSelected: (Coordinate) -> Unit,
-    onDeleteItem: (List<String>) -> Unit,
-    onSetFavoriteItem: (String) -> Unit,
-    onNavigateToSearch: () -> Unit,
-    onReorderEnd: (Int, Int) -> Unit,
+	dataState: LocationsUIState,
+	onBackPressed: () -> Unit,
+	onItemSelected: (Coordinate) -> Unit,
+	onDeleteItem: (List<String>) -> Unit,
+	onSetFavoriteItem: (String) -> Unit,
+	onNavigateToSearch: () -> Unit,
+	onReorderEnd: (List<ManageLocationsData>) -> Unit,
 ) {
-    var selectedCities by rememberSaveable {
-        mutableStateOf(emptySet<String>())
-    }
-    val isInEditMode by remember {
-        derivedStateOf { selectedCities.isNotEmpty() }
-    }
-    var locationsList by remember {
-        mutableStateOf(emptyList<ManageLocationsData>())
-    }
-    var shouldSelectAll by rememberSaveable {
-        mutableStateOf(false)
-    }
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    LaunchedEffect(key1 = shouldSelectAll) {
-        if (shouldSelectAll) {
-            selectedCities += locationsList.map { it.locationName }
-        } else {
-            selectedCities = emptySet()
-        }
-    }
-    BackHandler(enabled = isInEditMode) {
-        if (isInEditMode)
-            selectedCities = emptySet()
-    }
-    Scaffold(
-        modifier = Modifier,
-        topBar = {
-            LocationsTopbar(
-                isInEditMode = isInEditMode,
-                selectedCitySize = selectedCities.size,
-                scrollBehavior = scrollBehavior,
-                onBackPressed = { onBackPressed() },
-                onIsAllSelected = { shouldSelectAll = !shouldSelectAll },
-                onEmptyCitySelection = { selectedCities = emptySet() }
-            )
-        },
-        bottomBar = {
-            LocationsBottomBar(
-                isInEditMode = isInEditMode,
-                selectedCitySize = selectedCities.size,
-                onDeleteItem = { onDeleteItem(selectedCities.toList()) },
-                onEmptyCitySelection = { selectedCities = emptySet() },
-                onSetFavoriteItem = {
-                    onSetFavoriteItem(selectedCities.first())
-                })
-        }
-    ) { padding ->
-        when (dataState) {
-            is LocationsUIState.Loading -> ShowLoadingText()
-            is LocationsUIState.Success -> {
-                LaunchedEffect(key1 = dataState) {
-                    locationsList = dataState.data
-                    if (locationsList.size == 1) {
-                        onSetFavoriteItem(locationsList.first().locationName)
-                    }
-                }
-                Column(
-                    modifier = Modifier
-                        .nestedScroll(scrollBehavior.nestedScrollConnection)
-                        .padding(padding)
-                        .padding(horizontal = 16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    SearchBarCard(onClick = {
-                        onNavigateToSearch()
-                    })
-                    Spacer(modifier = Modifier.height(16.dp))
+	var selectedCities by rememberSaveable {
+		mutableStateOf(emptySet<String>())
+	}
+	val isInEditMode by remember {
+		derivedStateOf { selectedCities.isNotEmpty() }
+	}
+	var locationsList by remember {
+		mutableStateOf(emptyList<ManageLocationsData>())
+	}
+	var shouldSelectAll by rememberSaveable {
+		mutableStateOf(false)
+	}
+	val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+	LaunchedEffect(key1 = shouldSelectAll) {
+		if (shouldSelectAll) {
+			selectedCities += locationsList.map { it.locationName }
+		} else {
+			selectedCities = emptySet()
+		}
+	}
+	BackHandler(enabled = isInEditMode) {
+		if (isInEditMode)
+			selectedCities = emptySet()
+	}
+	Scaffold(
+		modifier = Modifier,
+		topBar = {
+			LocationsTopbar(
+				isInEditMode = isInEditMode,
+				selectedCitySize = selectedCities.size,
+				scrollBehavior = scrollBehavior,
+				onBackPressed = { onBackPressed() },
+				onIsAllSelected = { shouldSelectAll = !shouldSelectAll },
+				onEmptyCitySelection = { selectedCities = emptySet() }
+			)
+		},
+		bottomBar = {
+			LocationsBottomBar(
+				isInEditMode = isInEditMode,
+				selectedCitySize = selectedCities.size,
+				onDeleteItem = { onDeleteItem(selectedCities.toList()) },
+				onEmptyCitySelection = { selectedCities = emptySet() },
+				onSetFavoriteItem = {
+					onSetFavoriteItem(selectedCities.first())
+				})
+		}
+	) { padding ->
+		when (dataState) {
+			is LocationsUIState.Loading -> ShowLoadingText()
+			is LocationsUIState.Success -> {
+				LaunchedEffect(key1 = dataState) {
+					locationsList = dataState.data
+					if (locationsList.size == 1) {
+						onSetFavoriteItem(locationsList.first().locationName)
+					}
+				}
+				Column(
+					modifier = Modifier
+						.nestedScroll(scrollBehavior.nestedScrollConnection)
+						.padding(padding)
+						.padding(horizontal = 16.dp),
+					horizontalAlignment = Alignment.CenterHorizontally,
+				) {
+					Spacer(modifier = Modifier.height(16.dp))
+					SearchBarCard(onClick = {
+						onNavigateToSearch()
+					})
+					Spacer(modifier = Modifier.height(16.dp))
 
-                    val inSelectionMode by remember {
-                        derivedStateOf { selectedCities.isNotEmpty() }
-                    }
-                    if (dataState.data.isEmpty()) {
-                        Text(
-                            text = stringResource(id = R.string.search_and_add_a_location),
-                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = .75f),
-                            fontSize = 12.sp
-                        )
-                    } else {
-                        var items by remember(dataState) {
-                            mutableStateOf(dataState.data)
-                        }
-                        val lazyListState = rememberLazyListState()
-                        val dragDropState =
-                            rememberDragAndDropListItem(
-                                lazyListState = lazyListState,
-                                onUpdateData = { fromIndex, toIndex ->
-                                    items = items.toMutableList().apply {
-                                        add(toIndex, removeAt(fromIndex))
-                                    }
-                                },
-                                onReorderEnd = onReorderEnd
-                            )
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .detectLongPressGesture(
-                                    lazyListState = lazyListState,
-                                    dragAndDropListItemState = dragDropState
-                                ),
-                            state = lazyListState,
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            itemsIndexed(
-                                items = dataState.data,
-                                key = { _, item ->
-                                    item.locationName
-                                }) { index, locationData ->
-                                val selected by remember(selectedCities) {
-                                    mutableStateOf(locationData.locationName in selectedCities)
-                                }
-                                SavedLocationItem(
-                                    modifier = Modifier
-                                        .bouncyTapEffect()
-                                        .locationsClickable(
-                                            inSelectionMode = inSelectionMode,
-                                            onSelectionMode = {
-                                                if (selected)
-                                                    selectedCities -= locationData.locationName
-                                                else
-                                                    selectedCities += locationData.locationName
-                                            },
-                                            onItemSelected = {
-                                                onItemSelected(
-                                                    Coordinate(
-                                                        locationData.locationName,
-                                                        locationData.latitude,
-                                                        locationData.longitude
-                                                    )
-                                                )
-                                            },
-                                            onLongClick = { selectedCities += locationData.locationName }
-                                        )
-                                        .draggableItem(
-                                            draggableState = dragDropState,
-                                            listIndex = index
-                                        )
-                                            then if (dragDropState.currentDraggableItemIndex != index) {
-                                        Modifier.animateItem()
-                                    } else {
-                                        Modifier
-                                    },
-                                    data = locationData,
-                                    inSelectionMode = inSelectionMode,
-                                    selected = selected,
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+					val inSelectionMode by remember {
+						derivedStateOf { selectedCities.isNotEmpty() }
+					}
+					if (dataState.data.isEmpty()) {
+						Text(
+							text = stringResource(id = R.string.search_and_add_a_location),
+							color = MaterialTheme.colorScheme.onBackground.copy(alpha = .75f),
+							fontSize = 12.sp
+						)
+					} else {
+						var items by remember {
+							mutableStateOf(dataState.data)
+						}
+						val lazyListState = rememberLazyListState()
+						val dragDropState =
+							rememberDragAndDropListItem(
+								lazyListState = lazyListState,
+								onUpdateData = { fromIndex, toIndex ->
+									//do the reordering first then update order to the new list`s index
+									items = items.toMutableList().apply {
+										add(toIndex, removeAt(fromIndex))
+									}.fastMapIndexed { index, item ->
+										item.copy(listOrder = index)
+									}
+								},
+								onReorderEnd = { _, _ ->
+									onReorderEnd(items)
+								}
+							)
+						LazyColumn(
+							modifier = Modifier
+								.fillMaxSize()
+								.detectLongPressGesture(
+									lazyListState = lazyListState,
+									dragAndDropListItemState = dragDropState
+								),
+							state = lazyListState,
+							verticalArrangement = Arrangement.spacedBy(16.dp)
+						) {
+							itemsIndexed(
+								items = items,
+								key = { _, item ->
+									item.locationName
+								}) { index, locationData ->
+								val selected by remember(selectedCities) {
+									mutableStateOf(locationData.locationName in selectedCities)
+								}
+								SavedLocationItem(
+									modifier = Modifier
+										.bouncyTapEffect()
+										.locationsClickable(
+											inSelectionMode = inSelectionMode,
+											onSelectionMode = {
+												if (selected)
+													selectedCities -= locationData.locationName
+												else
+													selectedCities += locationData.locationName
+											},
+											onItemSelected = {
+												onItemSelected(
+													Coordinate(
+														locationData.locationName,
+														locationData.latitude,
+														locationData.longitude
+													)
+												)
+											},
+											onLongClick = { selectedCities += locationData.locationName }
+										)
+										.draggableItem(
+											draggableState = dragDropState,
+											listIndex = index
+										)
+											then if (dragDropState.currentDraggableItemIndex != index) {
+										Modifier.animateItem()
+									} else {
+										Modifier
+									},
+									data = locationData,
+									inSelectionMode = inSelectionMode,
+									selected = selected,
+								)
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 @Composable
@@ -284,95 +291,95 @@ private fun EmptyListMassage() {
 
 @Composable
 internal fun SavedLocationItem(
-    modifier: Modifier = Modifier,
-    data: ManageLocationsData,
-    inSelectionMode: Boolean,
-    selected: Boolean,
+	modifier: Modifier = Modifier,
+	data: ManageLocationsData,
+	inSelectionMode: Boolean,
+	selected: Boolean,
 ) {
-    val isFavorite = data.isFavorite
-    Surface(
-        modifier = modifier
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(32.dp),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            AnimatedVisibility(
-                visible = inSelectionMode,
-                modifier = Modifier,
-                enter = fadeIn(animationSpec = tween(100)) + expandHorizontally(animationSpec = spring()),
-                exit = fadeOut(animationSpec = tween(25)) + shrinkHorizontally(),
-                label = "draggable icon"
-            ) {
-                Icon(
-                    imageVector = Icons.Default.DragHandle,
-                    modifier = Modifier
-                        .padding(end = 16.dp),
-                    contentDescription = "draggable icon"
-                )
-            }
-            Column(
-                modifier = Modifier.weight(1f),
-                horizontalAlignment = Alignment.Start
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = data.locationName,
-                        fontSize = 18.sp
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    if (isFavorite) {
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            modifier = Modifier.size(20.dp),
-                            tint = Color.Yellow,
-                            contentDescription = "selected icon star"
-                        )
-                    }
-                }
-            }
-            Row(
-                modifier = Modifier,
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                AsyncImage(
-                    model = "https://openweathermap.org/img/wn/${data.weatherIcon}@2x.png",
-                    modifier = Modifier,
-                    contentDescription = "weather icon"
-                )
-                Text(
-                    text = "${data.currentTemp}°",
-                    modifier = Modifier.width(60.dp),
-                    textAlign = TextAlign.End,
-                    fontSize = 28.sp
-                )
-            }
-            AnimatedVisibility(
-                visible = inSelectionMode,
-                modifier = Modifier,
-                enter = fadeIn(animationSpec = tween(100)) + expandHorizontally(animationSpec = spring()),
-                exit = fadeOut(animationSpec = tween(25)) + shrinkHorizontally(),
-                label = "selection button"
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.CheckCircle,
-                    modifier = Modifier
-                        .padding(start = 16.dp),
-                    contentDescription = "selected Icon",
-                    tint =
-                    if (selected)
-                        MaterialTheme.colorScheme.primary
-                    else
-                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
-                )
-            }
-        }
-    }
+	val isFavorite = data.isFavorite
+	Surface(
+		modifier = modifier
+			.fillMaxWidth(),
+		shape = RoundedCornerShape(32.dp),
+	) {
+		Row(
+			modifier = Modifier
+				.fillMaxWidth()
+				.padding(16.dp),
+			verticalAlignment = Alignment.CenterVertically,
+		) {
+			AnimatedVisibility(
+				visible = inSelectionMode,
+				modifier = Modifier,
+				enter = fadeIn(animationSpec = tween(100)) + expandHorizontally(animationSpec = spring()),
+				exit = fadeOut(animationSpec = tween(25)) + shrinkHorizontally(),
+				label = "draggable icon"
+			) {
+				Icon(
+					imageVector = Icons.Default.DragHandle,
+					modifier = Modifier
+						.padding(end = 16.dp),
+					contentDescription = "draggable icon"
+				)
+			}
+			Column(
+				modifier = Modifier.weight(1f),
+				horizontalAlignment = Alignment.Start
+			) {
+				Row(verticalAlignment = Alignment.CenterVertically) {
+					Text(
+						text = data.locationName,
+						fontSize = 18.sp
+					)
+					Spacer(modifier = Modifier.width(16.dp))
+					if (isFavorite) {
+						Icon(
+							imageVector = Icons.Default.Star,
+							modifier = Modifier.size(20.dp),
+							tint = Color.Yellow,
+							contentDescription = "selected icon star"
+						)
+					}
+				}
+			}
+			Row(
+				modifier = Modifier,
+				horizontalArrangement = Arrangement.Start,
+				verticalAlignment = Alignment.CenterVertically
+			) {
+				AsyncImage(
+					model = "https://openweathermap.org/img/wn/${data.weatherIcon}@2x.png",
+					modifier = Modifier,
+					contentDescription = "weather icon"
+				)
+				Text(
+					text = "${data.currentTemp}°",
+					modifier = Modifier.width(60.dp),
+					textAlign = TextAlign.End,
+					fontSize = 28.sp
+				)
+			}
+			AnimatedVisibility(
+				visible = inSelectionMode,
+				modifier = Modifier,
+				enter = fadeIn(animationSpec = tween(100)) + expandHorizontally(animationSpec = spring()),
+				exit = fadeOut(animationSpec = tween(25)) + shrinkHorizontally(),
+				label = "selection button"
+			) {
+				Icon(
+					imageVector = Icons.Filled.CheckCircle,
+					modifier = Modifier
+						.padding(start = 16.dp),
+					contentDescription = "selected Icon",
+					tint =
+					if (selected)
+						MaterialTheme.colorScheme.primary
+					else
+						MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+				)
+			}
+		}
+	}
 }
 
 
@@ -380,66 +387,81 @@ internal fun SavedLocationItem(
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 internal fun ManageLocationsPreview() {
-    val data = LocationsUIState.Success(
-        listOf(
-            ManageLocationsData(
-                locationName = "Tehran",
-                weatherIcon = "",
-                latitude = 10.toString(),
-                longitude = 10.toString(),
-                currentTemp = "2",
-                humidity = "46",
-                feelsLike = "1"
-            ),
-            ManageLocationsData(
-                locationName = "Tabriz",
-                weatherIcon = "",
-                latitude = 10.toString(),
-                longitude = 10.toString(),
-                currentTemp = "0",
-                humidity = "55",
-                feelsLike = "0"
-            )
-        )
-    )
-    WeatherTheme {
-        Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
-            ManageLocations(
-                dataState = data,
-                onBackPressed = {},
-                onItemSelected = {},
-                onDeleteItem = {},
-                onSetFavoriteItem = {},
-                onNavigateToSearch = {},
-                onReorderEnd = { _, _ -> })
-        }
-    }
+	val data = LocationsUIState.Success(
+		listOf(
+			ManageLocationsData(
+				locationName = "Tehran",
+				weatherIcon = "",
+				latitude = 10.toString(),
+				longitude = 10.toString(),
+				currentTemp = "2",
+				humidity = "46",
+				feelsLike = "1",
+				listOrder = 0,
+				timezone = "mattis",
+				timezoneOffset = 9795,
+				isFavorite = false
+			),
+			ManageLocationsData(
+				locationName = "Tabriz",
+				weatherIcon = "",
+				latitude = 10.toString(),
+				longitude = 10.toString(),
+				currentTemp = "0",
+				humidity = "55",
+				feelsLike = "0",
+				listOrder = 1,
+				timezone = "expetendis",
+				timezoneOffset = 5367,
+				isFavorite = false,
+
+				)
+		)
+	)
+	WeatherTheme {
+		Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
+			ManageLocations(
+				dataState = data,
+				onBackPressed = {},
+				onItemSelected = {},
+				onDeleteItem = {},
+				onSetFavoriteItem = {},
+				onNavigateToSearch = {},
+				onReorderEnd = { _ -> },
+			)
+		}
+	}
 }
 
 @Preview(showBackground = true)
 @Composable
 internal fun SearchCardPreview() {
-    WeatherTheme {
-        SearchBarCard(onClick = {})
-    }
+	WeatherTheme {
+		SearchBarCard(onClick = {})
+	}
 }
 
 @Preview(showBackground = false)
 @Composable
 internal fun CityItemPreview() {
-    WeatherTheme {
-        SavedLocationItem(
-            data = ManageLocationsData(
-                locationName = "Tehran",
-                weatherIcon = "",
-                latitude = 10.toString(),
-                longitude = 10.toString(),
-                currentTemp = "2",
-                humidity = "46",
-                feelsLike = "1"
-            ),
-            inSelectionMode = true,
-            selected = false
-        )
-    }
+	WeatherTheme {
+		SavedLocationItem(
+			data = ManageLocationsData(
+				locationName = "Tehran",
+				weatherIcon = "",
+				latitude = 10.toString(),
+				longitude = 10.toString(),
+				currentTemp = "2",
+				humidity = "46",
+				feelsLike = "1",
+				listOrder = 0,
+				timezone = "tation",
+				timezoneOffset = 3337,
+				isFavorite = false,
+
+				),
+			inSelectionMode = true,
+			selected = false
+		)
+	}
 }

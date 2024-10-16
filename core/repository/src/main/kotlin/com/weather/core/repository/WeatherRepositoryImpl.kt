@@ -48,21 +48,27 @@ class WeatherRepositoryImpl @Inject constructor(
     override fun getAllWeatherLocations(): Flow<List<ManageLocationsData>> {
         return localWeather.getAllLocalWeatherData().map {
             it.map { data ->
+                val oneCall = data.oneCall
+                val current = data.current
                 ManageLocationsData(
-                    locationName = data.oneCall.cityName,
-                    weatherIcon = data.current.icon,
-                    latitude = data.oneCall.lat.toString(),
-                    longitude = data.oneCall.lon.toString(),
-                    currentTemp = data.current.temp.toString(),
-                    humidity = data.current.humidity.toString(),
-                    feelsLike = data.current.feels_like.toString()
+                    locationName = oneCall.cityName,
+                    weatherIcon = current.icon,
+                    latitude = oneCall.lat.toString(),
+                    longitude = oneCall.lon.toString(),
+                    timezone = oneCall.timezone,
+                    timezoneOffset = oneCall.timezone_offset,
+                    currentTemp = current.temp.toString(),
+                    humidity = current.humidity.toString(),
+                    feelsLike = current.feels_like.toString(),
+                    listOrder = oneCall.orderIndex!!,
+
                 )
             }
         }
     }
 
-    override suspend fun reorderData(fromIndex: String, toIndex: String) {
-        localWeather.reorderData(fromIndex, toIndex)
+    override suspend fun reorderData(locations: List<ManageLocationsData>) {
+        localWeather.updateListOrder(locations)
     }
 
     override fun getLocalWeatherByCityName(cityName: String): Flow<WeatherData> {
