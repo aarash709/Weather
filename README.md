@@ -7,7 +7,6 @@ Work in progress [🚧] sample android weather app written entirely in Kotlin an
 | Active | Backlog |
 |--------|---------|
 | Forecast background colors(day,night,dawn,cloudy, etc..) | Animated weather condition shader effects |
-| Reorder saved locations| |
 
 ## Architecture
 
