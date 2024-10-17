@@ -15,26 +15,38 @@ interface WeatherDao {
     /**
      * checking if database has at least one data row, otherwise returns 0(counts rows).
      */
-    @Query("select count(cityName) from one_call")
-    fun databaseIsEmpty(): Int
+    @Query("SELECT count(cityName) FROM one_call")
+    fun countOneCall(): Int
 
     /**
      * method to store data.
      */
-    @Upsert()
+    @Upsert
     suspend fun insertOneCall(oneCall: OneCallEntity)
 
-    @Upsert()
+    @Upsert
+    suspend fun insertOneCalls(oneCalls: List<OneCallEntity>)
+
+    @Upsert
     suspend fun insertOneCallCurrent(current: CurrentEntity)
 
-    @Upsert()
+    @Upsert
     suspend fun insertOneCallCurrentWeather(weather: List<CurrentWeatherEntity>)
 
-    @Upsert()
+    @Upsert
     suspend fun insertDaily(daily: List<DailyEntity>)
 
-    @Upsert()
+    @Upsert
     suspend fun insertHourly(hourly: List<OneCallHourlyEntity>)
+
+    @Query("SELECT count(*) FROM one_call WHERE cityName = :cityName")
+    fun checkIfCityExists(cityName: String): Int
+
+    @Query("SELECT * FROM one_call")
+    fun getAllOneCall(): List<OneCallEntity>
+
+    @Query("SELECT * FROM one_call WHERE cityName = :cityName")
+    fun getOneCallByCityName(cityName: String): OneCallEntity
 
     @Transaction
     @Query("SELECT * FROM one_call WHERE cityName = :cityName")
@@ -93,5 +105,15 @@ interface WeatherDao {
         insertHourly(hourly = hourly)
     }
 
+    @Transaction
+    suspend fun reorderOneCallWeatherData(
+        from: OneCallEntity,
+        to: OneCallEntity,
+        fromIndex: Int,
+        toIndex: Int,
+    ) {
+        insertOneCall(from.copy(orderIndex = toIndex))
+        insertOneCall(to.copy(orderIndex = fromIndex))
+    }
 
 }

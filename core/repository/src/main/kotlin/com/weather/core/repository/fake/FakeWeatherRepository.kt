@@ -38,13 +38,17 @@ class FakeWeatherRepository : WeatherRepository {
             emit(listOfLocationsDataTest)
         }
 
+    override suspend fun reorderData(locations: List<ManageLocationsData>) {
+        TODO("Not yet implemented")
+    }
+
 
     override fun getAllForecastWeatherData(): Flow<List<WeatherData>> =
         flow {
             emit(listOfWeatherDataTest)
         }
 
-    override fun isDatabaseEmpty(): Int {
-        return 0
+    override fun isDatabaseEmpty(): Boolean {
+        return true
     }
 }

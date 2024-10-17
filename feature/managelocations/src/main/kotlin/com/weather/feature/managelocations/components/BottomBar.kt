@@ -63,7 +63,6 @@ internal fun LocationsBottomBar(
     }
 }
 
-
 @Composable
 internal fun BottomBarItem(
     modifier: Modifier = Modifier,

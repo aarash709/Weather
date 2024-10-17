@@ -17,14 +17,16 @@ interface WeatherRepository {
 
     suspend fun deleteWeatherByCityName(cityNames: List<String>)
 
-    suspend fun getFiveDay(coordinate: Coordinate) : List<DailyPreview>
+    suspend fun getFiveDay(coordinate: Coordinate): List<DailyPreview>
 
     fun getLocalWeatherByCityName(cityName: String): Flow<WeatherData>
 
     fun getAllWeatherLocations(): Flow<List<ManageLocationsData>>
 
+    suspend fun reorderData(locations: List<ManageLocationsData>)
+
     fun getAllForecastWeatherData(): Flow<List<WeatherData>>
 
-    fun isDatabaseEmpty(): Int
+    fun isDatabaseEmpty(): Boolean
 
 }

@@ -89,6 +89,12 @@ class ManageLocationsViewModel @Inject constructor(
         vibrator.cancel()
         vibrator.vibrate(vibrationEffect)
     }
+
+    fun reorderDataIndexes(locations: List<ManageLocationsData>) {
+        viewModelScope.launch {
+            weatherRepository.reorderData(locations)
+        }
+    }
 }
 
 sealed interface LocationsUIState {

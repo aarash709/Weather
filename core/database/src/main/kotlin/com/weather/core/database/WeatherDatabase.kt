@@ -2,7 +2,6 @@ package com.weather.core.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.weather.core.database.WeatherDao
 import com.weather.core.database.entities.geoSearch.GeoSearchItemEntity
 import com.weather.core.database.entities.onecall.*
 

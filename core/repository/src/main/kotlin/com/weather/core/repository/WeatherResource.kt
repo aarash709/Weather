@@ -10,7 +10,7 @@ fun NetworkOneCall.toEntity(cityName: String): OneCallEntity {
         lat = lat,
         lon = lon,
         timezone = timezone,
-        timezone_offset = timezone_offset
+        timezone_offset = timezone_offset,
     )
 }
 
