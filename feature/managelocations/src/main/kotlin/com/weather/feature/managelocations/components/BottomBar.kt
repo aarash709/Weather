@@ -61,9 +61,7 @@ internal fun LocationsBottomBar(
             }
         }
     }
-
 }
-
 
 @Composable
 internal fun BottomBarItem(
@@ -81,7 +79,7 @@ internal fun BottomBarItem(
             Icon(
                 imageVector = imageVector,
                 modifier = Modifier.size(28.dp),
-                contentDescription = "Delete button"
+                contentDescription = "$buttonName button"
             )
         }
         Text(text = buttonName, fontSize = 14.sp)

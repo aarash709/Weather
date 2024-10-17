@@ -2,8 +2,8 @@ plugins {
     alias (libs.plugins.weather.android.library)
     alias (libs.plugins.weather.android.compose.library)
     alias (libs.plugins.kotlinx.ksp)
-    id("dagger.hilt.android.plugin")
-    id("org.jetbrains.kotlin.plugin.serialization")
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 android {
@@ -25,7 +25,6 @@ dependencies {
 
     implementation(project(":core:repository"))
     implementation(project(":core:design"))
-    implementation(project(":feature:search"))
     implementation(project(":core:model"))
     implementation(project(":core:common"))
 

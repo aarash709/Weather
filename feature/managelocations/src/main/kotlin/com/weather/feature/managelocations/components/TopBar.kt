@@ -3,8 +3,8 @@ package com.weather.feature.managelocations.components
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.ChecklistRtl
-import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -50,7 +50,7 @@ internal fun LocationsTopbar(
                 } else {
                     IconButton(onClick = { onBackPressed() }) {
                         Icon(
-                            imageVector = Icons.Outlined.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
                             tint = MaterialTheme.colorScheme.onBackground,
                             contentDescription = "back icon"
                         )

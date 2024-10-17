@@ -1,7 +1,7 @@
 plugins {
     alias (libs.plugins.weather.android.library)
     alias (libs.plugins.weather.android.compose.library)
-    id("org.jetbrains.kotlin.plugin.serialization")
+    alias(libs.plugins.kotlinSerialization)
 }
 
 android {
@@ -29,6 +29,9 @@ dependencies {
     api(libs.compose.material.iconsExtended)
     api(libs.compose.ui.util)
     api(libs.compose.ui.toolingPreview)
+
+    implementation(libs.kotlix.serialization)
+
     debugApi(libs.compose.ui.tooling)
 
     testImplementation(project(":core:testing"))

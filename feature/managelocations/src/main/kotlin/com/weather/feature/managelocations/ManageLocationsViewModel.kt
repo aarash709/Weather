@@ -1,7 +1,11 @@
 package com.weather.feature.managelocations
 
 import android.content.Context
+import android.os.Build
+import android.os.VibrationEffect
 import android.os.Vibrator
+import android.os.VibratorManager
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.experiment.weather.core.common.extentions.convertTotoUserSettings
@@ -21,6 +25,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class ManageLocationsViewModel @Inject constructor(
@@ -55,27 +60,34 @@ class ManageLocationsViewModel @Inject constructor(
             initialValue = LocationsUIState.Loading
         )
 
-    fun saveFavoriteCityCoordinate(cityName: String, context: Context) {
-        val hapticFeedback = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+    fun saveFavoriteCityCoordinate(cityName: String) {
         viewModelScope.launch {
             userRepository.setFavoriteCityCoordinate(cityName)
-            hapticFeedback.cancel()
-            hapticFeedback.vibrate(60)
         }
     }
 
-    @ExperimentalCoroutinesApi
     private fun getFavoriteCityCoordinate(): Flow<String?> {
         return userRepository.getFavoriteCityCoordinate()
     }
 
     fun deleteWeatherByCityName(cityNames: List<String>, context: Context) {
-        val hapticFeedback = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         viewModelScope.launch(Dispatchers.IO) {
             weatherRepository.deleteWeatherByCityName(cityNames = cityNames)
-            hapticFeedback.cancel()
-            hapticFeedback.vibrate(60)
+            vibrate(context = context)
         }
+    }
+
+    private fun vibrate(context: Context) {
+        val vibrationEffect = VibrationEffect.createOneShot(75, 50)
+        val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            (context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        }
+        vibrator.cancel()
+        vibrator.vibrate(vibrationEffect)
     }
 
     fun reorderDataIndexes(locations: List<ManageLocationsData>) {
