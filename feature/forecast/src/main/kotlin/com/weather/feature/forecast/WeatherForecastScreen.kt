@@ -126,125 +126,118 @@ fun WeatherForecastScreen(
 	onNavigateToSettings: () -> Unit,
 	onRefresh: (Coordinate) -> Unit,
 ) {
-    val resource = LocalContext.current.resources
-    val speedUnit by remember(forecastData) {
-        val value = when (settingsData.windSpeedUnits) {
-            WindSpeedUnits.KM -> resource.getString(R.string.kilometer_per_hour_symbol)
-            WindSpeedUnits.MS -> resource.getString(R.string.meters_per_second_symbol)
-            WindSpeedUnits.MPH -> resource.getString(R.string.miles_per_hour_symbol)
-        }
-        mutableStateOf(value)
-    }
-    val temperatureUnit = settingsData.temperatureUnits
-    val refreshState =
-        rememberPullRefreshState(refreshing = isSyncing, onRefresh = {
-            onRefresh(
-                forecastData[0].weather.coordinates.let {
-                    Coordinate(it.name, it.lat.toString(), it.lon.toString())
-                }
-            )
-        })
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentWindowInsets = WindowInsets(0, 0, 0, 0)
-    ) { padding ->
-        WeatherBackground(
-            modifier = modifier
-                .padding(padding),
-//            background = weatherUIState.background,
-            showBackground = false
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .pullRefresh(refreshState)
-            ) {
-                CompositionLocalProvider(LocalContentColor provides Color.White) {
-                    var topAppBarSize by remember {
-                        mutableIntStateOf(0)
-                    }
-                    val density = LocalDensity.current
-                    ForecastTopBar(
-                        modifier = Modifier
-                            .statusBarsPadding()
-                            .onGloballyPositioned {
-                                topAppBarSize =
-                                    with(density) { it.size.height.toDp().value.toInt() }
-                            },
-                        onNavigateToManageLocations = { onNavigateToManageLocations() },
-                        onNavigateToSettings = { onNavigateToSettings() })
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        contentAlignment = Alignment.TopCenter
-                    ) {
-                        val pagerState = rememberPagerState(
-                            pageCount = { forecastData.size }
-                        )
-                        LaunchedEffect(key1 = favoriteCity) {
-                            val page = forecastData.indexOfFirst {
-                                it.weather.coordinates.name == (favoriteCity
-                                    ?: it.weather.coordinates.name)
-                            }
-                            pagerState.scrollToPage(page)
-                        }
-                        var currentWeatherSize by remember {
-                            mutableIntStateOf(0)
-                        }
-
-                        val currentPageIndex = pagerState.currentPage
-                        val scrollState = rememberScrollState()
-                        PullRefreshIndicator(refreshing = isSyncing, state = refreshState)
-                        CurrentWeather(
-                            modifier = Modifier
-                                .padding(top = 50.dp)
-                                .graphicsLayer {
-                                    //can be enabled after implementing independent scrolling
-                                    val scrollProgress =
-                                        (scrollState.value.toFloat() / scrollState.maxValue.toFloat())
-                                    val newAlpha = 1 - scrollProgress
-                                        .times(5)
-                                    val scale = 1 - scrollProgress
-                                    scaleX = scale
-                                    scaleY = scale
-                                    alpha = newAlpha
-                                    translationY = scrollState.value.toFloat() / 2 * -1
-                                }
-                                .onGloballyPositioned {
-                                    currentWeatherSize =
-                                        with(density) { it.size.height.toDp().value.toInt() }
-                                },
-                            weatherData = forecastData[currentPageIndex].weather,
-                            indicator = {
-                                PagerIndicators(
-                                    modifier = Modifier,
-                                    count = pagerState.pageCount,
-                                    currentPage = currentPageIndex,
-                                    size = 6.dp
-                                )
-                            }
-                        )
-                        HorizontalPager(state = pagerState, pageSpacing = 16.dp) { index ->
-                            ConditionAndDetails(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(top = 0.dp),
-                                scrollState = scrollState,
-                                weatherData = forecastData[index].weather,
-                                isDayTime = timeOfDay != TimeOfDay.Night,
-                                showPlaceholder = forecastData[index].showPlaceHolder,
-                                speedUnit = speedUnit,
-                                tempUnit = temperatureUnit,
-                                shouldChangeColor = /*scrollProgress > 10*/ false,
-                                firstItemHeight = currentWeatherSize + topAppBarSize
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
+	val resource = LocalContext.current.resources
+	val speedUnit by remember(forecastData) {
+		val value = when (settingsData.windSpeedUnits) {
+			WindSpeedUnits.KM -> resource.getString(R.string.kilometer_per_hour_symbol)
+			WindSpeedUnits.MS -> resource.getString(R.string.meters_per_second_symbol)
+			WindSpeedUnits.MPH -> resource.getString(R.string.miles_per_hour_symbol)
+		}
+		mutableStateOf(value)
+	}
+	val temperatureUnit = settingsData.temperatureUnits
+	Scaffold(
+		modifier = Modifier
+			.fillMaxSize(),
+		contentWindowInsets = WindowInsets(0, 0, 0, 0)
+	) { padding ->
+		WeatherBackground(
+			modifier = modifier
+				.padding(padding),
+			showBackground = false
+		) {
+			Column(
+				modifier = Modifier
+					.padding(16.dp)
+			) {
+				CompositionLocalProvider(LocalContentColor provides Color.White) {
+					var topAppBarSize by remember {
+						mutableIntStateOf(0)
+					}
+					val density = LocalDensity.current
+					ForecastTopBar(
+						modifier = Modifier
+							.statusBarsPadding()
+							.onGloballyPositioned {
+								topAppBarSize =
+									with(density) { it.size.height.toDp().value.toInt() }
+							},
+						onNavigateToManageLocations = { onNavigateToManageLocations() },
+						onNavigateToSettings = { onNavigateToSettings() })
+					PullToRefreshBox(
+						modifier = Modifier,
+						isRefreshing = isSyncing,
+						onRefresh = {
+							onRefresh(
+								forecastData[0].weather.coordinates.let {
+									Coordinate(it.name, it.lat.toString(), it.lon.toString())
+								}
+							)
+						},
+						contentAlignment = Alignment.TopCenter,
+						content = {
+							val pagerState = rememberPagerState(
+								pageCount = { forecastData.size }
+							)
+							LaunchedEffect(key1 = favoriteCity) {
+								val page = forecastData.indexOfFirst {
+									it.weather.coordinates.name == (favoriteCity
+										?: it.weather.coordinates.name)
+								}
+								pagerState.scrollToPage(page)
+							}
+							var currentWeatherSize by remember {
+								mutableIntStateOf(0)
+							}
+							val currentPageIndex = pagerState.currentPage
+							val scrollState = rememberScrollState()
+							CurrentWeather(
+								modifier = Modifier
+									.padding(top = 50.dp)
+									.graphicsLayer {
+										val scrollProgress =
+											(scrollState.value.toFloat() / scrollState.maxValue.toFloat())
+										val newAlpha = 1 - scrollProgress
+											.times(5)
+										val scale = 1 - scrollProgress
+										scaleX = scale
+										scaleY = scale
+										alpha = newAlpha
+										translationY = scrollState.value.toFloat() / 2 * -1
+									}
+									.onGloballyPositioned {
+										currentWeatherSize =
+											with(density) { it.size.height.toDp().value.toInt() }
+									},
+								weatherData = forecastData[currentPageIndex].weather,
+								indicator = {
+									PagerIndicators(
+										modifier = Modifier,
+										count = pagerState.pageCount,
+										currentPage = currentPageIndex,
+										size = 6.dp
+									)
+								}
+							)
+							HorizontalPager(state = pagerState, pageSpacing = 16.dp) { index ->
+								WeatherDetails(
+									modifier = Modifier
+										.padding(top = 0.dp),
+									scrollState = scrollState,
+									weatherData = forecastData[index].weather,
+									isDayTime = timeOfDay != TimeOfDay.Night,
+									showPlaceholder = forecastData[index].showPlaceHolder,
+									speedUnit = speedUnit,
+									tempUnit = temperatureUnit,
+									shouldChangeColor = /*scrollProgress > 10*/ false,
+									firstItemHeight = currentWeatherSize + topAppBarSize
+								)
+							}
+						})
+				}
+			}
+		}
+	}
 }
 
 @OptIn(ExperimentalLayoutApi::class)
