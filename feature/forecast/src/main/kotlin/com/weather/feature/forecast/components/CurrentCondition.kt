@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExposureNeg1
@@ -112,9 +114,10 @@ internal fun CurrentWeather(
 internal fun PagerIndicators(
 	modifier: Modifier = Modifier,
 	height: Dp = 8.dp,
-	count: Int,
+	pagerState: PagerState,
 	currentPage: Int,
 ) {
+	val count = pagerState.pageCount
 	Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
 		repeat(count) { iteration ->
 			val selected = currentPage == iteration
@@ -139,7 +142,10 @@ private fun IndicatorPreview() {
 			mutableIntStateOf(0)
 		}
 		Column(horizontalAlignment = Alignment.CenterHorizontally) {
-			PagerIndicators(count = 5, currentPage = currentPage)
+			val pagerState = rememberPagerState(
+				pageCount = { 5 }
+			)
+			PagerIndicators(pagerState = pagerState, currentPage = currentPage)
 			Button(onClick = { currentPage += 1 }) {
 				Icon(
 					Icons.Default.ExposurePlus1,
