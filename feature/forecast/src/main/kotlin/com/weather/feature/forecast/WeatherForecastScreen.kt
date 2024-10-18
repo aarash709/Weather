@@ -213,9 +213,9 @@ fun WeatherForecastScreen(
 								indicator = {
 									PagerIndicators(
 										modifier = Modifier,
-										count = pagerState.pageCount,
+										pagerState = pagerState,
 										currentPage = currentPageIndex,
-										size = 6.dp
+										height = 6.dp
 									)
 								}
 							)

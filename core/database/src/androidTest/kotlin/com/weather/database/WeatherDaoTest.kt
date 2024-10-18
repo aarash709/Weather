@@ -39,14 +39,14 @@ class WeatherDaoTest {
 
     @Test
     fun weatherDao_database_is_empty_with_no_data_insert_test() {
-        val isEmpty = weatherDao.databaseIsEmpty() == 0
+        val isEmpty = weatherDao.countOneCall() == 0
         assert(isEmpty)
     }
 
     @Test
     fun weatherDao_database_is_not_empty_test() = runTest {
         weatherDao.insertOneCall(oneCall = oneCall)
-        val isEmpty = weatherDao.databaseIsEmpty() == 1
+        val isEmpty = weatherDao.countOneCall() == 1
         assert(isEmpty)
     }
 
@@ -94,7 +94,7 @@ class WeatherDaoTest {
         weatherDao.deleteWeatherByCityName(
             cityNames
         )
-        val isEmpty = weatherDao.databaseIsEmpty() == 0
+        val isEmpty = weatherDao.countOneCall() == 0
         assert(
             isEmpty,
         )
