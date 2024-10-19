@@ -122,7 +122,10 @@ internal fun PagerIndicators(
 		repeat(count) { iteration ->
 			val selected = currentPage == iteration
 			val color = if (selected) Color.White else Color.DarkGray
-			val width by animateDpAsState(if (selected) 16.dp else 8.dp, label = "")
+			val width by animateDpAsState(
+				if (selected) 16.dp else 8.dp,
+				label = ""
+			)
 			Box(
 				modifier = Modifier
 					.padding(5.dp)
@@ -141,9 +144,11 @@ private fun IndicatorPreview() {
 		var currentPage by remember {
 			mutableIntStateOf(0)
 		}
+		val maxCount
+		= 10
 		Column(horizontalAlignment = Alignment.CenterHorizontally) {
 			val pagerState = rememberPagerState(
-				pageCount = { 5 }
+				pageCount = { maxCount }
 			)
 			PagerIndicators(pagerState = pagerState, currentPage = currentPage)
 			Button(onClick = { currentPage += 1 }) {
