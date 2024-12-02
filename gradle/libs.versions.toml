@@ -1,8 +1,8 @@
 [versions]
-kotlin = "2.0.21"
+kotlin = "2.1.0"
 kotlinxSerialization = "1.7.3"
 kotlinxCoroutines = "1.9.0"
-kotlinxKsp = "2.0.21-1.0.28"
+kotlinxKsp = "2.1.0-1.0.29"
 androidGradlePlugin = "8.7.2"
 androidxComposeBom = "2024.11.00"
 androidxComposeAlpha = "1.7.0-rc01"
