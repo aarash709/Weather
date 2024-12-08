@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.kotlinSerialization) apply false
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.kotlinx.ksp) apply false
+    alias(libs.plugins.detekt) apply false
 //    alias(libs.plugins.kotlinter) apply false
     alias(libs.plugins.androidTest) apply false
     alias(libs.plugins.compose) apply false
