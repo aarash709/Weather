@@ -9,24 +9,48 @@ import kotlinx.coroutines.flow.Flow
 
 interface WeatherRepository {
 
-    fun searchLocation(cityName: String): Flow<List<GeoSearchItem>>
+	fun searchLocation(cityName: String): Flow<List<GeoSearchItem>>
 
-    suspend fun syncWeather(cityName: String, coordinate: Coordinate)
+	/**
+	 * @param params are values to include in the json response for example:
+	 * "current=temperature_2m,relative_humidity_2m..."
+	 * each value should be separated with a ","
+	 * visit "https://open-meteo.com/en/docs" for more
+	 */
+	suspend fun getCurrent(latitude: String, longitude: String, params: String)
 
-    suspend fun syncWeather(coordinate: Coordinate)
+	/**
+	 * @param params are values to include in the json response for example:
+	 * "daily=weather_code,temperature_2m_max..."
+	 * each value should be separated with a ","
+	 * visit "https://open-meteo.com/en/docs" for more
+	 */
+	suspend fun getDaily(latitude: String, longitude: String, params: String)
 
-    suspend fun deleteWeatherByCityName(cityNames: List<String>)
+	/**
+	 * @param params are values to include in the json response for example:
+	 * "hourly=temperature_2m,weather_code,wind_speed_10m..."
+	 * each value should be separated with a ","
+	 * visit "https://open-meteo.com/en/docs" for more
+	 */
+	suspend fun getHourly(latitude: String, longitude: String, params: String)
 
-    suspend fun getFiveDay(coordinate: Coordinate): List<DailyPreview>
+	suspend fun syncWeather(cityName: String, coordinate: Coordinate)
 
-    fun getLocalWeatherByCityName(cityName: String): Flow<WeatherData>
+	suspend fun syncWeather(coordinate: Coordinate)
 
-    fun getAllWeatherLocations(): Flow<List<ManageLocationsData>>
+	suspend fun deleteWeatherByCityName(cityNames: List<String>)
 
-    suspend fun reorderData(locations: List<ManageLocationsData>)
+	suspend fun getFiveDay(coordinate: Coordinate): List<DailyPreview>
 
-    fun getAllForecastWeatherData(): Flow<List<WeatherData>>
+	fun getLocalWeatherByCityName(cityName: String): Flow<WeatherData>
 
-    fun isDatabaseEmpty(): Boolean
+	fun getAllWeatherLocations(): Flow<List<ManageLocationsData>>
+
+	suspend fun reorderData(locations: List<ManageLocationsData>)
+
+	fun getAllForecastWeatherData(): Flow<List<WeatherData>>
+
+	fun isDatabaseEmpty(): Boolean
 
 }
