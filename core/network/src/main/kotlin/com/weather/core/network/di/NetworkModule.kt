@@ -1,9 +1,9 @@
 package com.weather.core.network.di
 
-import com.weather.core.network.WeatherRemoteDatasource
+import com.weather.core.network.BuildConfig.BASE_URL
+import com.weather.core.network.WeatherRemoteDatasourceImpl
 import com.weather.core.network.ktor.KtorApiService
 import com.weather.core.network.ktor.KtorServiceImpl
-import com.weather.core.network.retrofit.BASE_URL
 import com.weather.core.network.retrofit.RetrofitApiService
 import com.weather.core.network.retrofit.moshi
 import dagger.Module
@@ -61,7 +61,7 @@ object NetworkModule {
     fun provideWeatherRemoteDataSource(
 //        remoteApi: RetrofitApiService,
         ktor: KtorApiService,
-    ): WeatherRemoteDatasource = WeatherRemoteDatasource(/*remoteApi,*/ ktorApi = ktor )
+    ): WeatherRemoteDatasourceImpl = WeatherRemoteDatasourceImpl(/*remoteApi,*/ ktorApi = ktor )
 
 
 }

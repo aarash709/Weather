@@ -78,7 +78,7 @@ interface WeatherDao {
     /**
      * Delete old data based on timeStamp of the network
      * */
-    @Query("delete from one_call_daily where cityName = :cityName and dt < :timeStamp")
+    @Query("delete from one_call_daily where cityName = :cityName and time < :timeStamp")
     fun deleteDaily(cityName: String, timeStamp: Long)
 
     /**

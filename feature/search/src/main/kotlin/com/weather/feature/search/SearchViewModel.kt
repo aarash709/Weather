@@ -90,16 +90,16 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    fun getFiveDayPreview(geoSearchItem: GeoSearchItem) {
-        viewModelScope.launch {
-            val data = weatherRepository.getFiveDay(
-                coordinate = Coordinate(
-                    geoSearchItem.name,
-                    geoSearchItem.lat.toString(),
-                    geoSearchItem.lon.toString()
-                )
-            ).convertTimeAndTemperature()
-            _weatherPreview.tryEmit(data)
-        }
-    }
+//    fun getFiveDayPreview(geoSearchItem: GeoSearchItem) {
+//        viewModelScope.launch {
+//            val data = weatherRepository.getFiveDay(
+//                coordinate = Coordinate(
+//                    geoSearchItem.name,
+//                    geoSearchItem.lat.toString(),
+//                    geoSearchItem.lon.toString()
+//                )
+//            ).convertTimeAndTemperature()
+//            _weatherPreview.tryEmit(data)
+//        }
+//    }
 }

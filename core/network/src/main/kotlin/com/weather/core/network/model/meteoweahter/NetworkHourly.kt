@@ -17,8 +17,8 @@ data class NetworkHourly(
 	val timezoneAbbreviation: String?,
 	@SerialName("utc_offset_seconds")
 	val utcOffsetSeconds: Int?,
-	@SerialName("daily")
-	val daily: Daily,
 	@SerialName("hourly_units")
 	val hourlyUnits: HourlyUnits,
+	@SerialName("hourly")
+	val hourly: Hourly,
 )

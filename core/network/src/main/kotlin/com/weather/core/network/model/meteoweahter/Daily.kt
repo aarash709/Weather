@@ -7,13 +7,13 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Daily(
 	@SerialName("precipitation_sum")
-	val precipitationSum: List<Double?>?,
+	val precipitationSum: List<Double>,
 	@SerialName("temperature_2m_max")
-	val temperature2mMax: List<Double?>?,
+	val temperature2mMax: List<Double>,
 	@SerialName("temperature_2m_min")
-	val temperature2mMin: List<Double?>?,
+	val temperature2mMin: List<Double>,
 	@SerialName("time")
-	val time: List<String?>?,
+	val time: List<String>,
 	@SerialName("weather_code")
-	val weatherCode: List<Int?>?
+	val weatherCode: List<Int>
 )

@@ -9,11 +9,23 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 class FakeWeatherRepository : WeatherRepository {
-    override suspend fun getFiveDay(coordinate: Coordinate): List<DailyPreview> {
+//    override suspend fun getFiveDay(coordinate: Coordinate): List<DailyPreview> {
+//        TODO("Not yet implemented")
+//    }
+
+    override fun searchLocation(cityName: String): Flow<List<GeoSearchItem>> {
         TODO("Not yet implemented")
     }
 
-    override fun searchLocation(cityName: String): Flow<List<GeoSearchItem>> {
+    override suspend fun getCurrent(latitude: String, longitude: String, params: String) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getDaily(latitude: String, longitude: String, params: String) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getHourly(latitude: String, longitude: String, params: String) {
         TODO("Not yet implemented")
     }
 

@@ -41,7 +41,7 @@ interface WeatherRepository {
 
 	suspend fun deleteWeatherByCityName(cityNames: List<String>)
 
-	suspend fun getFiveDay(coordinate: Coordinate): List<DailyPreview>
+//	suspend fun getFiveDay(coordinate: Coordinate): List<DailyPreview>
 
 	fun getLocalWeatherByCityName(cityName: String): Flow<WeatherData>
 

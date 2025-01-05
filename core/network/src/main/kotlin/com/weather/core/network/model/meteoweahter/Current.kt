@@ -6,14 +6,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Current(
-	@SerialName("current_units")
-	val currentUnits: CurrentUnits,
 	@SerialName("apparent_temperature")
 	val apparentTemperature: Double?,
 	@SerialName("interval")
 	val interval: Int?,
 	@SerialName("is_day")
-	val izDay: Int?,
+	val isDay: Int?,
 	@SerialName("precipitation")
 	val precipitation: Double?,
 	@SerialName("pressure_msl")

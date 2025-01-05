@@ -1,7 +1,7 @@
 package com.weather.core.repository
 
 import com.weather.core.database.WeatherLocalDataSource
-import com.weather.core.network.WeatherRemoteDatasource
+import com.weather.core.network.WeatherRemoteDatasourceImpl
 import com.weather.model.Coordinate
 import com.weather.model.DailyPreview
 import com.weather.model.ManageLocationsData
@@ -13,32 +13,32 @@ import java.io.IOException
 import javax.inject.Inject
 
 class WeatherRepositoryImpl @Inject constructor(
-    private val remoteWeather: WeatherRemoteDatasource,
-    private val localWeather: WeatherLocalDataSource,
+	private val remoteWeather: WeatherRemoteDatasourceImpl,
+	private val localWeather: WeatherLocalDataSource,
 ) : WeatherRepository {
     override suspend fun deleteWeatherByCityName(cityNames: List<String>) {
         localWeather.deleteWeatherByCityName(cityNames = cityNames)
     }
 
     override fun isDatabaseEmpty(): Boolean = localWeather.databaseIsEmpty()
-    override suspend fun getFiveDay(coordinate: Coordinate): List<DailyPreview> {
-        return try {
-            val data = remoteWeather.getRemoteData(coordinates = coordinate, exclude = "")
-            val daily = data.data!!.daily.slice(0..4)
-            daily.map {
-                DailyPreview(
-                    it.temp.day.toInt(),
-                    it.temp.night.toInt(),
-                    it.dt.toString(),
-                    it.weather[0].icon,
-                    it.weather[0].description
-                )
-            }
-        } catch (e: IOException) {
-            Timber.e("getFiveDay error: ${e.message}")
-            listOf()
-        }
-    }
+//    override suspend fun getFiveDay(coordinate: Coordinate): List<DailyPreview> {
+//        return try {
+//            val data = remoteWeather.getRemoteData(coordinates = coordinate, exclude = "")
+//            val daily = data.data!!.daily.slice(0..4)
+//            daily.map {
+//                DailyPreview(
+//                    it.temp.day.toInt(),
+//                    it.temp.night.toInt(),
+//                    it.dt.toString(),
+//                    it.weather[0].icon,
+//                    it.weather[0].description
+//                )
+//            }
+//        } catch (e: IOException) {
+//            Timber.e("getFiveDay error: ${e.message}")
+//            listOf()
+//        }
+//    }
 
     override fun getAllForecastWeatherData(): Flow<List<WeatherData>> {
         return localWeather.getAllForecastData()
@@ -75,62 +75,38 @@ class WeatherRepositoryImpl @Inject constructor(
         return localWeather.getLocalWeatherDataByCityName(cityName = cityName)
     }
 
-    @Deprecated("Use syncWeather with Coordinate parameter")
-    override suspend fun syncWeather(cityName: String, coordinate: Coordinate) {
-        val remoteWeatherInfo = remoteWeather.getRemoteData(
-            coordinates = coordinate,
-            exclude = "minutely"
-        )
-        Timber.e(remoteWeatherInfo.data?.timezone.toString())
-        remoteWeatherInfo.let {
-            localWeather.insertLocalData(
-                oneCall = remoteWeatherInfo.data!!.toEntity(cityName = cityName),
-                current = remoteWeatherInfo.data!!.current.toEntity(cityName = cityName),
-                currentWeather = remoteWeatherInfo.data!!.current.weather.map {
-                    it.toEntity(cityName = cityName)
-                },
-                daily = remoteWeatherInfo.data!!.daily.slice(0..3)
-                    .map { it.toEntity(cityName = cityName) },
-                hourly = remoteWeatherInfo.data!!.hourly.slice(0..12).map {
-                    it.toEntity(cityName = cityName)
-                }
-            )
-        }
-    }
-
     override suspend fun syncWeather(coordinate: Coordinate) {
         //work in progress
         try {
-            val remoteWeatherInfo = remoteWeather.getRemoteData(
+            val remoteWeatherInfo = remoteWeather.getCurrent(
                 coordinates = coordinate,
-                exclude = "minutely"
-            )
-            Timber.e("dt: ${remoteWeatherInfo.data?.daily?.first()?.dt.toString()}")
-            Timber.e("timezone: ${remoteWeatherInfo.data?.timezone.toString()}")
+            ).getOrNull()
+            Timber.e("dt: ${remoteWeatherInfo?.timezone}")
+            Timber.e("dt: ${remoteWeatherInfo?.current?.apparentTemperature}")
             remoteWeatherInfo.let {
-                localWeather.insertLocalData(
-                    oneCall = remoteWeatherInfo.data!!.toEntity(cityName = coordinate.cityName.toString()),
-                    current = remoteWeatherInfo.data!!.current.toEntity(cityName = coordinate.cityName.toString()),
-                    currentWeather = remoteWeatherInfo.data!!.current.weather.map {
-                        it.toEntity(cityName = coordinate.cityName.toString())
-                    },
-                    daily = remoteWeatherInfo.data!!.daily.slice(0..4)
-                        .map { it.toEntity(cityName = coordinate.cityName.toString()) },
-                    hourly = remoteWeatherInfo.data!!.hourly.slice(0..12).map {
-                        it.toEntity(cityName = coordinate.cityName.toString())
-                    }
-                )
-                val firstDailyTimeStamp = it.data!!.daily.first().dt
-                val firstHourlyTimeStamp = it.data!!.hourly.first().dt
-                Timber.e(firstHourlyTimeStamp.toString())
-                localWeather.deleteDaily(
-                    cityName = coordinate.cityName!!,
-                    timeStamp = firstDailyTimeStamp
-                )
-                localWeather.deleteHourly(
-                    cityName = coordinate.cityName!!,
-                    timeStamp = firstHourlyTimeStamp
-                )
+//                localWeather.insertLocalData(
+//                    oneCall = remoteWeatherInfo.data!!.toEntity(cityName = coordinate.cityName.toString()),
+//                    current = remoteWeatherInfo.data!!.current.toEntity(cityName = coordinate.cityName.toString()),
+//                    currentWeather = remoteWeatherInfo.data!!.current.weather.map {
+//                        it.toEntity(cityName = coordinate.cityName.toString())
+//                    },
+//                    daily = remoteWeatherInfo.data!!.daily.slice(0..4)
+//                        .map { it.toEntity(cityName = coordinate.cityName.toString()) },
+//                    hourly = remoteWeatherInfo.data!!.hourly.slice(0..12).map {
+//                        it.toEntity(cityName = coordinate.cityName.toString())
+//                    }
+//                )
+//                val firstDailyTimeStamp = it.data!!.daily.first().dt
+//                val firstHourlyTimeStamp = it.data!!.hourly.first().dt
+//                Timber.e(firstHourlyTimeStamp.toString())
+//                localWeather.deleteDaily(
+//                    cityName = coordinate.cityName!!,
+//                    timeStamp = firstDailyTimeStamp
+//                )
+//                localWeather.deleteHourly(
+//                    cityName = coordinate.cityName!!,
+//                    timeStamp = firstHourlyTimeStamp
+//                )
             }
         } catch (e: Exception) {
             Timber.e("sync error: ${e.message}")
@@ -145,4 +121,20 @@ class WeatherRepositoryImpl @Inject constructor(
         }.catch {
             Timber.e("search error: ${it.message}")
         }
+
+    override suspend fun getCurrent(latitude: String, longitude: String, params: String) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getDaily(latitude: String, longitude: String, params: String) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getHourly(latitude: String, longitude: String, params: String) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun syncWeather(cityName: String, coordinate: Coordinate) {
+        TODO("Not yet implemented")
+    }
 }
