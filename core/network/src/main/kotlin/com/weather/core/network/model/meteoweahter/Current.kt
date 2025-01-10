@@ -7,27 +7,27 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Current(
 	@SerialName("apparent_temperature")
-	val apparentTemperature: Double?,
+	val apparentTemperature: Double,
 	@SerialName("interval")
-	val interval: Int?,
+	val interval: Int,
 	@SerialName("is_day")
-	val isDay: Int?,
+	val isDay: Int,
 	@SerialName("precipitation")
-	val precipitation: Double?,
+	val precipitation: Double,
 	@SerialName("pressure_msl")
-	val pressureMsl: Double?,
+	val pressureMsl: Double,
 	@SerialName("relative_humidity_2m")
-	val relativeHumidity2m: Int?,
+	val relativeHumidity2m: Int,
 	@SerialName("surface_pressure")
-	val surfacePressure: Double?,
+	val surfacePressure: Double,
 	@SerialName("temperature_2m")
-	val temperature2m: Double?,
+	val temperature2m: Double,
 	@SerialName("time")
-	val time: String?,
+	val time: String,
 	@SerialName("weather_code")
-	val weatherCode: Int?,
+	val weatherCode: Int,
 	@SerialName("wind_direction_10m")
-	val windDirection10m: Int?,
+	val windDirection10m: Int,
 	@SerialName("wind_speed_10m")
-	val windSpeed10m: Double?
+	val windSpeed10m: Double
 )

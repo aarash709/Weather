@@ -3,24 +3,26 @@ package com.weather.core.repository
 import com.weather.core.database.WeatherLocalDataSource
 import com.weather.core.network.WeatherRemoteDatasourceImpl
 import com.weather.model.Coordinate
-import com.weather.model.DailyPreview
 import com.weather.model.ManageLocationsData
 import com.weather.model.WeatherData
 import com.weather.model.geocode.GeoSearchItem
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import timber.log.Timber
-import java.io.IOException
 import javax.inject.Inject
 
 class WeatherRepositoryImpl @Inject constructor(
 	private val remoteWeather: WeatherRemoteDatasourceImpl,
 	private val localWeather: WeatherLocalDataSource,
 ) : WeatherRepository {
-    override suspend fun deleteWeatherByCityName(cityNames: List<String>) {
-        localWeather.deleteWeatherByCityName(cityNames = cityNames)
-    }
+	override suspend fun deleteWeatherByCityName(cityNames: List<String>) {
+		localWeather.deleteWeatherByCityName(cityNames = cityNames)
+	}
 
-    override fun isDatabaseEmpty(): Boolean = localWeather.databaseIsEmpty()
+	override fun isDatabaseEmpty(): Boolean = localWeather.databaseIsEmpty()
+
 //    override suspend fun getFiveDay(coordinate: Coordinate): List<DailyPreview> {
 //        return try {
 //            val data = remoteWeather.getRemoteData(coordinates = coordinate, exclude = "")
@@ -40,51 +42,83 @@ class WeatherRepositoryImpl @Inject constructor(
 //        }
 //    }
 
-    override fun getAllForecastWeatherData(): Flow<List<WeatherData>> {
-        return localWeather.getAllForecastData()
-    }
+	override fun getAllForecastWeatherData(): Flow<List<WeatherData>> {
+		return localWeather.getAllForecastData()
+	}
 
 
-    override fun getAllWeatherLocations(): Flow<List<ManageLocationsData>> {
-        return localWeather.getAllLocalWeatherData().map {
-            it.map { data ->
-                val oneCall = data.oneCall
-                val current = data.current
-                ManageLocationsData(
-                    locationName = oneCall.cityName,
-                    weatherIcon = current.icon,
-                    latitude = oneCall.lat.toString(),
-                    longitude = oneCall.lon.toString(),
-                    timezone = oneCall.timezone,
-                    timezoneOffset = oneCall.timezone_offset,
-                    currentTemp = current.temp.toString(),
-                    humidity = current.humidity.toString(),
-                    feelsLike = current.feels_like.toString(),
-                    listOrder = oneCall.orderIndex!!,
+	override fun getAllWeatherLocations(): Flow<List<ManageLocationsData>> {
+		return localWeather.getAllLocalWeatherData().map {
+			it.map { data ->
+				val oneCall = data.oneCall
+				val current = data.current
+				ManageLocationsData(
+					locationName = oneCall.cityName,
+					weatherIcon = current.icon,
+					latitude = oneCall.lat.toString(),
+					longitude = oneCall.lon.toString(),
+					timezone = oneCall.timezone,
+					timezoneOffset = oneCall.timezone_offset,
+					currentTemp = current.temp.toString(),
+					humidity = current.humidity.toString(),
+					feelsLike = current.feels_like.toString(),
+					listOrder = oneCall.orderIndex!!,
 
-                )
-            }
-        }
-    }
+					)
+			}
+		}
+	}
 
-    override suspend fun reorderData(locations: List<ManageLocationsData>) {
-        localWeather.updateListOrder(locations)
-    }
+	override suspend fun reorderData(locations: List<ManageLocationsData>) {
+		localWeather.updateListOrder(locations)
+	}
 
-    override fun getLocalWeatherByCityName(cityName: String): Flow<WeatherData> {
-        return localWeather.getLocalWeatherDataByCityName(cityName = cityName)
-    }
+	override fun getLocalWeatherByCityName(cityName: String): Flow<WeatherData> {
+		return localWeather.getLocalWeatherDataByCityName(cityName = cityName)
+	}
 
-    override suspend fun syncWeather(coordinate: Coordinate) {
-        //work in progress
-        try {
-            val remoteWeatherInfo = remoteWeather.getCurrent(
-                coordinates = coordinate,
-            ).getOrNull()
-            Timber.e("dt: ${remoteWeatherInfo?.timezone}")
-            Timber.e("dt: ${remoteWeatherInfo?.current?.apparentTemperature}")
-            remoteWeatherInfo.let {
-//                localWeather.insertLocalData(
+	override suspend fun syncWeather(coordinate: Coordinate) {
+		//work in progress
+		try {
+			val current = remoteWeather.getCurrent(
+				coordinates = coordinate,
+			).getOrNull()
+			val daily = remoteWeather
+				.getDaily(coordinate)
+				.getOrNull()
+				?.daily
+				?.toEntity(coordinate.cityName!!)
+
+			val hourly = remoteWeather
+				.getHourly(coordinate)
+				.getOrNull()
+				?.hourly
+				?.toEntity(coordinate.cityName!!)
+			Timber.e("dt: ${current?.timezone}")
+			Timber.e("dt: ${current?.current?.apparentTemperature}")
+			localWeather.insertLocalData(
+				weatherLocation = current!!.toLocationEntity(
+					cityName = coordinate.cityName!!,
+					coordinate.latitude.toDouble(),
+					coordinate.longitude.toDouble()
+				),
+				current = current.toEntity(cityName = coordinate.cityName!!),
+				daily = daily!!,
+				hourly = hourly!!
+			)
+//			val firstDailyTimeStamp = it.data!!.daily.first().dt
+//                val firstHourlyTimeStamp = it.data!!.hourly.first().dt
+//                Timber.e(firstHourlyTimeStamp.toString())
+//                localWeather.deleteDaily(
+//                    cityName = coordinate.cityName!!,
+//                    timeStamp = firstDailyTimeStamp
+//                )
+//			localWeather.deleteHourly(
+//				cityName = coordinate.cityName!!,
+//				timeStamp = firstHourlyTimeStamp
+//			)
+//			remoteWeatherInfo.let {
+			//                localWeather.insertLocalData(
 //                    oneCall = remoteWeatherInfo.data!!.toEntity(cityName = coordinate.cityName.toString()),
 //                    current = remoteWeatherInfo.data!!.current.toEntity(cityName = coordinate.cityName.toString()),
 //                    currentWeather = remoteWeatherInfo.data!!.current.weather.map {
@@ -96,45 +130,35 @@ class WeatherRepositoryImpl @Inject constructor(
 //                        it.toEntity(cityName = coordinate.cityName.toString())
 //                    }
 //                )
-//                val firstDailyTimeStamp = it.data!!.daily.first().dt
-//                val firstHourlyTimeStamp = it.data!!.hourly.first().dt
-//                Timber.e(firstHourlyTimeStamp.toString())
-//                localWeather.deleteDaily(
-//                    cityName = coordinate.cityName!!,
-//                    timeStamp = firstDailyTimeStamp
-//                )
-//                localWeather.deleteHourly(
-//                    cityName = coordinate.cityName!!,
-//                    timeStamp = firstHourlyTimeStamp
-//                )
-            }
-        } catch (e: Exception) {
-            Timber.e("sync error: ${e.message}")
-        }
-    }
+//
+//			}
+		} catch (e: Exception) {
+			Timber.e("sync error: ${e.message}")
+		}
+	}
 
-    override fun searchLocation(cityName: String): Flow<List<GeoSearchItem>> =
-        flow {
-            val remoteData = remoteWeather.directGeocode(cityName = cityName)
-            if (remoteData.isNotEmpty())
-                emit(remoteData)
-        }.catch {
-            Timber.e("search error: ${it.message}")
-        }
+	override fun searchLocation(cityName: String): Flow<List<GeoSearchItem>> =
+		flow {
+			val remoteData = remoteWeather.directGeocode(cityName = cityName)
+			if (remoteData.isNotEmpty())
+				emit(remoteData)
+		}.catch {
+			Timber.e("search error: ${it.message}")
+		}
 
-    override suspend fun getCurrent(latitude: String, longitude: String, params: String) {
-        TODO("Not yet implemented")
-    }
+	override suspend fun getCurrent(latitude: String, longitude: String, params: String) {
+		TODO("Not yet implemented")
+	}
 
-    override suspend fun getDaily(latitude: String, longitude: String, params: String) {
-        TODO("Not yet implemented")
-    }
+	override suspend fun getDaily(latitude: String, longitude: String, params: String) {
+		TODO("Not yet implemented")
+	}
 
-    override suspend fun getHourly(latitude: String, longitude: String, params: String) {
-        TODO("Not yet implemented")
-    }
+	override suspend fun getHourly(latitude: String, longitude: String, params: String) {
+		TODO("Not yet implemented")
+	}
 
-    override suspend fun syncWeather(cityName: String, coordinate: Coordinate) {
-        TODO("Not yet implemented")
-    }
+	override suspend fun syncWeather(cityName: String, coordinate: Coordinate) {
+		TODO("Not yet implemented")
+	}
 }
