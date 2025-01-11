@@ -47,19 +47,23 @@ fun Daily.toEntity(cityName: String): List<DailyEntity> {
 			temperature2mMax = temperature2mMax[i],
 			temperature2mMin = temperature2mMin[i],
 			time = time,
-			weatherCode = weatherCode[i]
+			weatherCode = weatherCode[i],
+			sunrise = sunrise,
+			sunset = sunset,
+			uvIndex = uvIndex
 		)
 	}
 }
 
-fun Hourly.toEntity(cityName: String): List<HourlyEntity> {
+fun Hourly.toEntity(cityName: String,): List<HourlyEntity> {
 	return time.mapIndexed { i, time ->
 		HourlyEntity(
 			cityName = cityName,
 			temperature2m = temperature2m[i],
 			time = time,
 			weatherCode = weatherCode[i],
-			windSpeed10m = windSpeed10m[i]
+			windSpeed10m = windSpeed10m[i],
+			visibility = visibility
 		)
 	}
 }

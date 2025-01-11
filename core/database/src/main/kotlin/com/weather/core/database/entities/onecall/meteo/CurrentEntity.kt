@@ -3,6 +3,7 @@ package com.weather.core.database.entities.onecall.meteo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import com.weather.model.Current
 
 @Entity(
 	tableName = "current",
@@ -30,3 +31,24 @@ data class CurrentEntity(
 	val windDirection10m: Int,
 	val windSpeed10m: Double
 )
+
+fun CurrentEntity.asDomainModel(
+	visibility: Int,
+	uvi: Double,
+	sunrise: Int,
+	sunset: Int
+): Current {
+	return Current(
+		time = time,
+		feelsLike = apparentTemperature,
+		humidity = relativeHumidity2m,
+		pressure = pressureMsl,
+		sunrise = sunrise,
+		sunset = sunset,
+		currentTemp = temperature2m,
+		uvi = uvi,
+		visibility = visibility,
+		windDirection = windDirection10m,
+		windSpeed = windSpeed10m,
+	)
+}

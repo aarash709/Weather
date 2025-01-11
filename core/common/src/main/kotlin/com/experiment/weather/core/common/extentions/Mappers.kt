@@ -14,16 +14,14 @@ import com.weather.model.current
 import com.weather.model.currentTemp
 import com.weather.model.daily
 import com.weather.model.dayTemp
-import com.weather.model.dew_point
 import com.weather.model.feelsLike
-import com.weather.model.feels_like
 import com.weather.model.hourly
 import com.weather.model.isFavorite
 import com.weather.model.locationName
 import com.weather.model.nightTemp
 import com.weather.model.temp
 import com.weather.model.time
-import com.weather.model.wind_speed
+import com.weather.model.windSpeed
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.Instant
@@ -37,7 +35,7 @@ import kotlin.math.roundToInt
 fun WeatherData.convertToUserSettings(userSettings: SettingsData): WeatherData {
     val tempUnit = userSettings.temperatureUnits
     val windUnit = userSettings.windSpeedUnits
-    val timeOffset = coordinates.timezone_offset.toLong()
+    val timeOffset = coordinates.timezoneOffset.toLong()
     return copy {
         WeatherData.current transform {
             it.convertToUserSettings(
@@ -58,10 +56,10 @@ fun Current.convertToUserSettings(
     windSpeed: WindSpeedUnits?,
 ): Current {
     return copy {
-        Current.dew_point transform { it.convertToUserTemperature(temperature) }
-        Current.feels_like transform { it.convertToUserTemperature(temperature) }
+//        Current.dew_point transform { it.convertToUserTemperature(temperature) }
+        Current.feelsLike transform { it.convertToUserTemperature(temperature) }
         Current.currentTemp transform { it.convertToUserTemperature(temperature) }
-        Current.wind_speed transform { it.convertToUserSpeed(windSpeed) }
+        Current.windSpeed transform { it.convertToUserSpeed(windSpeed) }
     }
 
 }
@@ -70,7 +68,7 @@ fun Current.convertToUserSettings(
 fun List<Daily>.convertToUserSettings(temperature: TemperatureUnits): List<Daily> {
     return map { daily ->
         daily.copy {
-            Daily.dew_point transform { dewPoint -> dewPoint.convertToUserTemperature(temperature) }
+//            Daily.dew_point transform { dewPoint -> dewPoint.convertToUserTemperature(temperature) }
             Daily.time transform { time -> calculateUIDailyTime(time.toLong()) }
             Daily.dayTemp transform { dayTemp -> dayTemp.convertToUserTemperature(temperature) }
             Daily.nightTemp.transform { nightTemp -> nightTemp.convertToUserTemperature(temperature) }
@@ -86,11 +84,11 @@ fun List<Hourly>.convertToUserSettings(
 ): List<Hourly> {
     return map { hourly ->
         hourly.copy {
-            Hourly.dew_point transform { dewPoint ->
-                dewPoint.convertToUserTemperature(
-                    temperature
-                )
-            }
+//            Hourly.dew_point transform { dewPoint ->
+//                dewPoint.convertToUserTemperature(
+//                    temperature
+//                )
+//            }
             Hourly.time transform { timeInSeconds ->
                 calculateUIHourlyTime(
                     timeInSeconds.toLong(),
@@ -98,7 +96,7 @@ fun List<Hourly>.convertToUserSettings(
                 )
             }
             Hourly.temp transform { it.convertToUserTemperature(temperature) }
-            Hourly.wind_speed transform { it.convertToUserSpeed(windSpeed) }
+            Hourly.windSpeed transform { it.convertToUserSpeed(windSpeed) }
         }
     }
 }

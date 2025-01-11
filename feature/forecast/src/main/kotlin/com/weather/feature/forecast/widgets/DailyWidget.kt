@@ -146,11 +146,11 @@ private fun DailyItem(modifier: Modifier = Modifier, daily: Daily, tempData: Tem
                 text = daily.time, modifier = Modifier
                     .align(Alignment.CenterVertically)
             )
-            AsyncImage(
-                model = "https://openweathermap.org/img/wn/${daily.icon}@2x.png",
-                modifier = Modifier.padding(end = 16.dp),
-                contentDescription = "WeatherIcon",
-            )
+//            AsyncImage(
+//                model = "https://openweathermap.org/img/wn/${daily.icon}@2x.png",
+//                modifier = Modifier.padding(end = 16.dp),
+//                contentDescription = "WeatherIcon",
+//            )
         }
         Row(
             modifier = Modifier

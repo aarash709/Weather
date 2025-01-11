@@ -76,11 +76,11 @@ internal fun HourlyItem(
         ) {
             Text(text = item.time)
         }
-        AsyncImage(
-            model = "https://openweathermap.org/img/wn/${item.icon}@2x.png",
-            contentDescription = "Weather Icon",
-            modifier = Modifier
-        )
+//        AsyncImage(
+//            model = "https://openweathermap.org/img/wn/${item.icon}@2x.png",
+//            contentDescription = "Weather Icon",
+//            modifier = Modifier
+//        )
         Text(
             text = "${item.temp.toFloat().roundToInt()}°",
             color = LocalContentColor.current.copy(alpha = 0.5f)

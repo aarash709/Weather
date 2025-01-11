@@ -5,7 +5,7 @@ import kotlin.math.roundToInt
 
 @optics
 data class WeatherData(
-    val coordinates: OneCallCoordinates,
+    val coordinates: WeatherCoordinates,
     val current: Current,
     val daily: List<Daily>,
     val hourly: List<Hourly>,
@@ -14,32 +14,29 @@ data class WeatherData(
 }
 
 @optics
-data class OneCallCoordinates(
+data class WeatherCoordinates(
     val name: String,
     val lat: Double,
     val lon: Double,
     val timezone: String,
-    val timezone_offset: Int,
+    val timezoneOffset: Int,
 ) {
     companion object
 }
 
 @optics
 data class Current(
-    val clouds: Int,
-    val dew_point: Double,
-    val dt: Int,
-    val feels_like: Double,
+    val time: String,
+    val feelsLike: Double,
     val humidity: Int,
-    val pressure: Int,
+    val pressure: Double,
     val sunrise: Int,
     val sunset: Int,
     val currentTemp: Double,
     val uvi: Double,
     val visibility: Int,
-    val wind_deg: Int,
-    val wind_speed: Double,
-    val weather: List<Weather>,
+    val windDirection: Int,
+    val windSpeed: Double,
 ) {
     companion object
 }
@@ -109,48 +106,48 @@ data class Daily(
 
 @optics
 data class Hourly(
-    val clouds: Int,
-    val dew_point: Double,
+//    val clouds: Int,
+//    val dew_point: Double,
     val time: String,
-    val dt: Int,
+//    val dt: Int,
     val sunriseSunset: String,
-    val feels_like: Double,
+    val feelsLike: Double,
     val humidity: Int,
-    val pop: Double,
+//    val pop: Double,
     val pressure: Int,
     val temp: Double,
     val uvi: Double,
     val visibility: Int,
-    val id: Int,
-    val main: String,
-    val description: String,
-    val icon: String,
-    val wind_deg: Int,
-    val wind_gust: Double,
-    val wind_speed: Double,
+//    val id: Int,
+//    val main: String,
+//    val description: String,
+//    val icon: String,
+    val winDirection: Int,
+//    val wind_gust: Double,
+    val windSpeed: Double,
 ) {
     companion object {
         val empty = List(5) {
             Hourly(
-                clouds = 0,
-                dew_point = 0.0,
+//                clouds = 0,
+//                dew_point = 0.0,
                 time = "",
-                dt = 0,
+//                dt = 0,
                 sunriseSunset = "",
-                feels_like = 0.0,
+                feelsLike = 0.0,
                 humidity = 0,
-                pop = 0.0,
+//                pop = 0.0,
                 pressure = 0,
                 temp = 0.0,
                 uvi = 0.0,
                 visibility = 0,
-                id = 0,
-                main = "",
-                description = "",
-                icon = "",
-                wind_deg = 0,
-                wind_gust = 0.0,
-                wind_speed = 0.0
+//                id = 0,
+//                main = "",
+//                description = "",
+//                icon = "",
+                winDirection = 0,
+//                wind_gust = 0.0,
+                windSpeed = 0.0
             )
         }
     }

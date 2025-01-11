@@ -1,16 +1,17 @@
 package com.weather.core.database
 
-import com.weather.core.database.entities.onecall.OneCallEntity
 import com.weather.core.database.entities.onecall.meteo.HourlyEntity
 import com.weather.core.database.entities.onecall.meteo.WeatherLocationEntity
+import com.weather.core.database.entities.onecall.meteo.asDomainModel
+import com.weather.core.database.entities.onecall.meteo.toCoordinate
 import com.weather.core.database.entities.relation.CurrentWeatherWithDailyAndHourly
-import com.weather.core.database.entities.relation.OneCallAndCurrent
 import com.weather.core.database.entities.relation.WeatherAndCurrent
 import com.weather.model.ManageLocationsData
 import com.weather.model.WeatherData
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import java.time.Instant
 
 class WeatherLocalDataSource(
 	private val dao: WeatherDao,
@@ -24,32 +25,32 @@ class WeatherLocalDataSource(
 		}
 	}
 
-	fun getAllLocalWeatherData(): Flow<List<OneCallAndCurrent>> {
-		return dao.getAllOneCallAndCurrent().map {
-			it.sortedBy { oneCallAndCurrent -> oneCallAndCurrent.oneCall.orderIndex }
+	fun getAllLocalWeatherData(): Flow<List<WeatherAndCurrent>> {
+		return dao.getAllWeatherAndCurrent().map {
+			it.sortedBy { oneCallAndCurrent -> oneCallAndCurrent.weatherLocation.orderIndex }
 		}
 	}
 
 	suspend fun updateListOrder(locations: List<ManageLocationsData>) {
 		val oneCalls = locations.map { location ->
-			OneCallEntity(
+			WeatherLocationEntity(
 				location.locationName,
 				orderIndex = location.listOrder,
 				lat = location.latitude.toDouble(),
 				lon = location.longitude.toDouble(),
 				timezone = location.timezone,
-				timezone_offset = location.timezoneOffset
+				timezoneOffset = location.timezoneOffset
 			)
 		}
-		dao.insertOneCalls(oneCalls)
+		dao.insertWeatherLocations(oneCalls)
 	}
 
-//	fun deleteDaily(cityName: String, timeStamp: Long) = dao.deleteDaily(
-//		cityName = cityName,
-//		timeStamp = timeStamp
-//	)
-//
-	fun deleteHourly(cityName: String, timeStamp: Int) = dao.deleteHourly(
+	fun deleteDaily(cityName: String, timeStamp: String) = dao.deleteDaily(
+		cityName = cityName,
+		timeStamp = timeStamp
+	)
+
+	fun deleteHourly(cityName: String, timeStamp: String) = dao.deleteHourly(
 		cityName = cityName,
 		timeStamp = timeStamp
 	)
@@ -57,46 +58,58 @@ class WeatherLocalDataSource(
 	fun databaseIsEmpty(): Boolean = dao.countColumns() == 0
 
 	suspend fun deleteWeatherByCityName(cityNames: List<String>) =
-		dao.deleteWeatherByCityName(cityName = cityNames)
+		dao.deleteMultipleWeather(cityName = cityNames)
 
-	suspend fun deleteWeather(cityName: String) = dao.deleteWeather(cityName = cityName)
+	suspend fun deleteWeather(cityName: String) = dao.deleteOneWeather(cityName = cityName)
 
 	fun getAllWeatherForecast(): Flow<List<CurrentWeatherWithDailyAndHourly>> {
 		return dao.getAllWeatherData()
 	}
 
 	fun getAllForecastData(): Flow<List<WeatherData>> =
-		dao.getAllOneCallWithCurrentAndDailyAndHourly().map { weatherList ->
+		dao.getAllWeatherData().map { weatherList ->
 			weatherList.map { weather ->
+				val current = weather.current
+				val daily = weather.daily
+				val hourly = weather.hourly
+				val sunrise = Instant.parse(daily.first().sunrise).epochSecond.toInt()
+				val sunset = Instant.parse(daily.first().sunset).epochSecond.toInt()
 				WeatherData(
-					weather.oneCall.asDomainModel(),
-					weather.current.current.asDomainModel(
-						weather.current.weather.map { it ->
-							it.asDomainModel()
-						}),
-					weather.daily.map { it.asDomainModel() },
-					weather.hourly.map { it.asDomainModel() }
+					coordinates = weather.weatherLocation.toCoordinate(cityName = current.cityName),
+					current = current.asDomainModel(
+						visibility = hourly.first().visibility.toInt(),
+						uvi = daily.first().uvIndex,
+						sunrise = sunrise,
+						sunset = sunset
+					),
+					daily = daily.map { it.asDomainModel() },
+					hourly = hourly.map { it.asDomainModel() },
 				)
 			}
 		}
 
-	fun getLocalWeatherDataByCityName(cityName: String): Flow<WeatherData> = combine(
-		dao.getOneCallAndCurrentByCityName(cityName),
-		dao.getCurrentWithWeatherByCityName(cityName),
-		dao.getDailyByCityName(cityName)
-	) { oneCallAndCurrent, currentWeather, daily ->
-		val oneCall = oneCallAndCurrent.oneCall.asDomainModel()
-		val weather = currentWeather.weather.map {
-			it.asDomainModel()
-		}
-		val current = oneCallAndCurrent.current.asDomainModel(weather)
-		WeatherData(
-			coordinates = oneCall,
-			current = current,
-			daily = daily.map { it.asDomainModel() },
-			hourly = emptyList()
-		)
-	}
+	fun getLocalWeatherDataByCityName(cityName: String): Flow<WeatherData> =
+		dao.getAllWeatherData()
+			.filter { it.first().weatherLocation.cityName == cityName }
+			.map { weatherList ->
+				val weather = weatherList.first()
+				val current = weather.current
+				val daily = weather.daily
+				val hourly = weather.hourly
+				val sunrise = Instant.parse(daily.first().sunrise).epochSecond.toInt()
+				val sunset = Instant.parse(daily.first().sunset).epochSecond.toInt()
+				WeatherData(
+					coordinates = weather.weatherLocation.toCoordinate(cityName = current.cityName),
+					current = current.asDomainModel(
+						visibility = hourly.first().visibility.toInt(),
+						uvi = daily.first().uvIndex,
+						sunrise = sunrise,
+						sunset = sunset
+					),
+					daily = daily.map { it.asDomainModel() },
+					hourly = hourly.map { it.asDomainModel() },
+				)
+			}
 
 	suspend fun insertLocalData(
 		weatherLocation: WeatherLocationEntity,

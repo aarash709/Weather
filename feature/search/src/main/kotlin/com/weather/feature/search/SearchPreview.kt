@@ -45,10 +45,10 @@ private fun SearchDailyItem(daily: DailyPreview,modifier: Modifier= Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(text = daily.time, fontSize = 14.sp)
-        AsyncImage(
-            model = "https://openweathermap.org/img/wn/${daily.icon}@2x.png",
-            contentDescription = "Weather Icon"
-        )
+//        AsyncImage(
+//            model = "https://openweathermap.org/img/wn/${daily.icon}@2x.png",
+//            contentDescription = "Weather Icon"
+//        )
         Spacer(modifier = Modifier.height(2.dp))
         Text(text = "${daily.tempDay}°",fontSize = 16.sp)
         Text(text = "${daily.tempNight}°",fontSize = 16.sp)
@@ -68,32 +68,32 @@ val dailyDummyData = listOf(
         tempDay = 20,
         tempNight = 11,
         time = "Today",
-        icon = "",
-        condition = ""
+//        icon = "",
+//        condition = ""
     ),
     DailyPreview(
         tempDay = 21,
         tempNight = 12,
         time = "Tomorrow",
-        icon = "",
-        condition = ""
+//        icon = "",
+//        condition = ""
     ), DailyPreview(
         tempDay = 18,
         tempNight = 10,
         time = "Tue",
-        icon = "",
-        condition = ""
+//        icon = "",
+//        condition = ""
     ), DailyPreview(
         tempDay = 15,
         tempNight = 8,
         time = "Wed",
-        icon = "",
-        condition = ""
+//        icon = "",
+//        condition = ""
     ), DailyPreview(
         tempDay = 14,
         tempNight = 6,
         time = "Thur",
-        icon = "",
-        condition = ""
+//        icon = "",
+//        condition = ""
     )
 )

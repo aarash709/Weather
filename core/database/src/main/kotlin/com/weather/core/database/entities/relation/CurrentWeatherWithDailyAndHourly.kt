@@ -12,11 +12,11 @@ data class CurrentWeatherWithDailyAndHourly(
 	val weatherLocation: WeatherLocationEntity,
 
 	@Relation(entity = CurrentEntity::class, parentColumn = "cityName", entityColumn = "cityName")
-	val current: WeatherAndCurrent,
+	val current: CurrentEntity,
 
 	@Relation(entity = DailyEntity::class, parentColumn = "cityName", entityColumn = "cityName")
-	val daily: List<WeatherAndDaily>,
+	val daily: List<DailyEntity>,
 
 	@Relation(entity = HourlyEntity::class, parentColumn = "cityName", entityColumn = "cityName")
-	val hourly: List<WeatherAndHourly>
+	val hourly: List<HourlyEntity>
 )

@@ -91,7 +91,7 @@ class WeatherDaoTest {
             hourly
         )
         val cityNames = listOf(oneCall.cityName)
-        weatherDao.deleteWeatherByCityName(
+        weatherDao.deleteMultipleWeather(
             cityNames
         )
         val isEmpty = weatherDao.countOneCall() == 0

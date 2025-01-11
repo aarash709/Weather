@@ -14,6 +14,12 @@ data class Daily(
 	val temperature2mMin: List<Double>,
 	@SerialName("time")
 	val time: List<String>,
+	@SerialName("sunrise")
+	val sunrise: String,
+	@SerialName("sunset")
+	val sunset: String,
+	@SerialName("un-index-max")
+	val uvIndex: Double,
 	@SerialName("weather_code")
 	val weatherCode: List<Int>
 )

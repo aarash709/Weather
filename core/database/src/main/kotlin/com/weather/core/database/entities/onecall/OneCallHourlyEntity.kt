@@ -43,25 +43,25 @@ data class OneCallHourlyEntity(
 ) {
     fun asDomainModel(): Hourly {
         return Hourly(
-            clouds = clouds,
-            dew_point = dew_point,
+//            clouds = clouds,
+//            dew_point = dew_point,
             time = dt.toString(),
-            dt = dt,
+//            dt = dt,
             sunriseSunset = "",
-            feels_like = feels_like,
+            feelsLike = feels_like,
             humidity = humidity,
-            pop = pop,
+//            pop = pop,
             pressure = pressure,
             temp = temp,
             uvi = uvi,
             visibility = visibility,
-            id = id,
-            main = main,
-            description = description,
-            icon = icon,
-            wind_deg = wind_deg,
-            wind_gust = wind_gust,
-            wind_speed = wind_speed
+//            id = id,
+//            main = main,
+//            description = description,
+//            icon = icon,
+            winDirection = wind_deg,
+//            wind_gust = wind_gust,
+            windSpeed = wind_speed
         )
     }
 }

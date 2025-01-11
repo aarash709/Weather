@@ -48,25 +48,25 @@ class WeatherRepositoryImpl @Inject constructor(
 
 
 	override fun getAllWeatherLocations(): Flow<List<ManageLocationsData>> {
-		return localWeather.getAllLocalWeatherData().map {
-			it.map { data ->
-				val oneCall = data.oneCall
-				val current = data.current
-				ManageLocationsData(
-					locationName = oneCall.cityName,
-					weatherIcon = current.icon,
-					latitude = oneCall.lat.toString(),
-					longitude = oneCall.lon.toString(),
-					timezone = oneCall.timezone,
-					timezoneOffset = oneCall.timezone_offset,
-					currentTemp = current.temp.toString(),
-					humidity = current.humidity.toString(),
-					feelsLike = current.feels_like.toString(),
-					listOrder = oneCall.orderIndex!!,
-
+		return localWeather.getAllLocalWeatherData()
+			.map { weatherList ->
+				weatherList.map { data ->
+					val oneCall = data.weatherLocation
+					val current = data.current
+					ManageLocationsData(
+						locationName = oneCall.cityName,
+						weatherIcon = "current.icon",
+						latitude = oneCall.lat.toString(),
+						longitude = oneCall.lon.toString(),
+						timezone = oneCall.timezone,
+						timezoneOffset = oneCall.timezoneOffset,
+						currentTemp = current.temperature2m.toString(),
+						humidity = current.relativeHumidity2m.toString(),
+						feelsLike = current.apparentTemperature.toString(),
+						listOrder = oneCall.orderIndex!!,
 					)
+				}
 			}
-		}
 	}
 
 	override suspend fun reorderData(locations: List<ManageLocationsData>) {
@@ -80,9 +80,17 @@ class WeatherRepositoryImpl @Inject constructor(
 	override suspend fun syncWeather(coordinate: Coordinate) {
 		//work in progress
 		try {
-			val current = remoteWeather.getCurrent(
-				coordinates = coordinate,
-			).getOrNull()
+			val remoteCurrent = remoteWeather
+				.getCurrent(
+					coordinates = coordinate
+				)
+				.getOrNull()
+			val locationInfo = remoteCurrent
+				?.toLocationEntity(
+					cityName = coordinate.cityName!!,
+					coordinate.latitude.toDouble(),
+					coordinate.longitude.toDouble()
+				)
 			val daily = remoteWeather
 				.getDaily(coordinate)
 				.getOrNull()
@@ -94,29 +102,25 @@ class WeatherRepositoryImpl @Inject constructor(
 				.getOrNull()
 				?.hourly
 				?.toEntity(coordinate.cityName!!)
-			Timber.e("dt: ${current?.timezone}")
-			Timber.e("dt: ${current?.current?.apparentTemperature}")
+			Timber.e("dt: ${remoteCurrent?.timezone}")
+			Timber.e("dt: ${remoteCurrent?.current?.apparentTemperature}")
 			localWeather.insertLocalData(
-				weatherLocation = current!!.toLocationEntity(
-					cityName = coordinate.cityName!!,
-					coordinate.latitude.toDouble(),
-					coordinate.longitude.toDouble()
-				),
-				current = current.toEntity(cityName = coordinate.cityName!!),
+				weatherLocation = locationInfo!!,
+				current = remoteCurrent.toEntity(cityName = coordinate.cityName!!),
 				daily = daily!!,
 				hourly = hourly!!
 			)
-//			val firstDailyTimeStamp = it.data!!.daily.first().dt
-//                val firstHourlyTimeStamp = it.data!!.hourly.first().dt
-//                Timber.e(firstHourlyTimeStamp.toString())
-//                localWeather.deleteDaily(
-//                    cityName = coordinate.cityName!!,
-//                    timeStamp = firstDailyTimeStamp
-//                )
-//			localWeather.deleteHourly(
-//				cityName = coordinate.cityName!!,
-//				timeStamp = firstHourlyTimeStamp
-//			)
+			val firstDailyTimeStamp = remoteCurrent.current.time
+			val firstHourlyTimeStamp = hourly.first().time
+			Timber.e(firstHourlyTimeStamp)
+			localWeather.deleteDaily(
+				cityName = coordinate.cityName!!,
+				timeStamp = firstDailyTimeStamp
+			)
+			localWeather.deleteHourly(
+				cityName = coordinate.cityName!!,
+				timeStamp = firstHourlyTimeStamp
+			)
 //			remoteWeatherInfo.let {
 			//                localWeather.insertLocalData(
 //                    oneCall = remoteWeatherInfo.data!!.toEntity(cityName = coordinate.cityName.toString()),

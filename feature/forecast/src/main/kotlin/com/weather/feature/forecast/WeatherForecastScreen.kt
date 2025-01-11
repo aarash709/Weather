@@ -2,6 +2,9 @@ package com.weather.feature.forecast
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import android.icu.util.LocaleData
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOutCubic
@@ -69,7 +72,7 @@ import com.weather.feature.forecast.widgets.UVWidget
 import com.weather.feature.forecast.widgets.WindWidget
 import com.weather.model.Coordinate
 import com.weather.model.Current
-import com.weather.model.OneCallCoordinates
+import com.weather.model.WeatherCoordinates
 import com.weather.model.SavableForecastData
 import com.weather.model.SettingsData
 import com.weather.model.TemperatureUnits
@@ -79,6 +82,10 @@ import com.weather.model.WindSpeedUnits
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
@@ -323,7 +330,7 @@ internal fun WeatherDetails(
 					"HH:mm",
 					Locale.getDefault()
 				)
-				val offset = weatherData.coordinates.timezone_offset
+				val offset = weatherData.coordinates.timezoneOffset
 				val sunrise = weatherData.current.sunrise.plus(offset).toLong()
 				val sunset = weatherData.current.sunset.plus(offset).toLong()
 				sdf.timeZone = TimeZone.getTimeZone("UTC")
@@ -336,7 +343,7 @@ internal fun WeatherDetails(
 				formattedSunrise = formattedSunrise,
 				formattedSunset = formattedSunset,
 				weatherData = weatherData,
-				currentTimeSeconds = weatherData.current.dt,
+				currentTimeSeconds = Instant.parse(weatherData.current.time).epochSecond.toInt(),
 				surfaceColor = surfaceColor
 			)
 		}
@@ -344,7 +351,7 @@ internal fun WeatherDetails(
 			RealFeelWidget(
 				modifier = Modifier
 					.weight(1f),
-				realFeel = weatherData.current.feels_like.roundToInt(),
+				realFeel = weatherData.current.feelsLike.roundToInt(),
 				surfaceColor = surfaceColor
 			)
 			HumidityWidget(
@@ -364,7 +371,7 @@ internal fun WeatherDetails(
 			PressureWidget(
 				modifier = Modifier
 					.weight(1f),
-				pressure = weatherData.current.pressure,
+				pressure = weatherData.current.pressure.toInt(),
 				surfaceColor = surfaceColor
 			)
 		}
@@ -387,30 +394,28 @@ private fun MainPagePreview() {
 		val data = listOf(
 			SavableForecastData(
 				weather = WeatherData(
-					coordinates = OneCallCoordinates(
+					coordinates = WeatherCoordinates(
 						name = "Tehran",
 						lat = 0.0,
 						lon = 0.0,
 						timezone = "tehran",
-						timezone_offset = 0
+						timezoneOffset = 0
 					),
 					current = Current(
-						clouds = 27,
-						dew_point = 273.46,
-						dt = 1674649142,
-						feels_like = 286.08,
+						time = "time",
+//						clouds = 27,
+//						dew_point = 273.46,
+//						dt = 1674649142,
+						feelsLike = 286.08,
 						humidity = 38,
-						pressure = 1017,
+						pressure = 1017.0,
 						sunrise = 1674617749,
 						sunset = 1674655697,
 						currentTemp = 287.59,
 						uvi = 0.91,
 						visibility = 10000,
-						wind_deg = 246,
-						wind_speed = 2.64,
-						weather = listOf(
-							Weather("Light snow", "", 0, "Snow")
-						)
+						windDirection = 246,
+						windSpeed = 2.64,
 					),
 					daily = DailyStaticData,
 					hourly = HourlyStaticData,

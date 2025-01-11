@@ -1,9 +1,8 @@
 package com.weather.core.database.entities.onecall
 
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.weather.model.OneCallCoordinates
+import com.weather.model.WeatherCoordinates
 
 @Entity(tableName = "one_call")
 data class OneCallEntity(
@@ -15,13 +14,13 @@ data class OneCallEntity(
     val timezone: String,
     val timezone_offset: Int,
 ) {
-    fun asDomainModel(): OneCallCoordinates {
-        return OneCallCoordinates(
+    fun asDomainModel(): WeatherCoordinates {
+        return WeatherCoordinates(
             name = cityName,
             lat = lat,
             lon = lon,
             timezone = timezone,
-            timezone_offset = timezone_offset
+            timezoneOffset = timezone_offset
         )
     }
 }

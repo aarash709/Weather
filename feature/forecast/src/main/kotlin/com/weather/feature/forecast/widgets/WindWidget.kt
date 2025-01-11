@@ -52,8 +52,8 @@ internal fun WindWidget(
     surfaceColor: Color,
 ) {
     val context = LocalContext.current
-    val windDirection = weatherData.current.wind_deg
-    val windSpeed = weatherData.current.wind_speed.roundToInt()
+    val windDirection = weatherData.current.windDirection
+    val windSpeed = weatherData.current.windSpeed.roundToInt()
     val direction by remember(windDirection) {
         val directions = context.resources.getStringArray(array.wind_directions)
         val value = when (windDirection) {
