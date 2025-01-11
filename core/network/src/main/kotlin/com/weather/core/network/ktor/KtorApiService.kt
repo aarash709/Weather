@@ -20,7 +20,7 @@ const val currentParams =
 	"temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,pressure_msl,surface_pressure,wind_speed_10m,wind_direction_10m"
 const val dailyParams =
 	"weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,sunrise,sunset,uv_index_max"
-const val hourlyParams = "temperature_2m,weather_code,wind_speed_10m,visibility&forecast_days=1"
+const val hourlyParams = "temperature_2m,weather_code,wind_speed_10m,visibility&forecast_days=12"
 
 interface KtorApiService {
 
@@ -71,9 +71,6 @@ class KtorServiceImpl(
 	private val client: HttpClient,
 ) : KtorApiService {
 
-	private val forecastPath = URLBuilder().path("v1/forecast")
-	private val geoSearchPath = URLBuilder().path("v1/forecast")
-
 	override suspend fun getCurrent(
 		lat: String,
 		lon: String,
@@ -81,7 +78,7 @@ class KtorServiceImpl(
 	): NetworkCurrent {
 		return client.get(BASE_URL) {
 			url {
-				forecastPath
+				path("v1/forecast")
 				parameters.append("latitude", lat)
 				parameters.append("longitude", lon)
 				parameters.append("current", currentParams)
@@ -92,7 +89,7 @@ class KtorServiceImpl(
 	override suspend fun getDaily(lat: String, lon: String, dailyParams: String): NetworkDaily {
 		return client.get(BASE_URL) {
 			url {
-				forecastPath
+				path("v1/forecast")
 				parameters.append("latitude", lat)
 				parameters.append("longitude", lon)
 				parameters.append("daily", dailyParams)
@@ -103,7 +100,7 @@ class KtorServiceImpl(
 	override suspend fun getHourly(lat: String, lon: String, hourlyParams: String): NetworkHourly {
 		return client.get(BASE_URL) {
 			url {
-				forecastPath
+				path("v1/forecast")
 				parameters.append("latitude", lat)
 				parameters.append("longitude", lon)
 				parameters.append("hourly", hourlyParams)

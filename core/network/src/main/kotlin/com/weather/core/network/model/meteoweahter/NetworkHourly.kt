@@ -1,7 +1,9 @@
 package com.weather.core.network.model.meteoweahter
 
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class NetworkHourly(
 	@SerialName("elevation")
 	val elevation: Double?,
