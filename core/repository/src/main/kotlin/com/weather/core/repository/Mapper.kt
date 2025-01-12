@@ -48,9 +48,9 @@ fun Daily.toEntity(cityName: String): List<DailyEntity> {
 			temperature2mMin = temperature2mMin[i],
 			time = time,
 			weatherCode = weatherCode[i],
-			sunrise = sunrise,
-			sunset = sunset,
-			uvIndex = uvIndex
+			sunrise = sunrise[i],
+			sunset = sunset[i],
+			uvIndex = uvIndex[i]
 		)
 	}
 }
@@ -63,7 +63,7 @@ fun Hourly.toEntity(cityName: String,): List<HourlyEntity> {
 			time = time,
 			weatherCode = weatherCode[i],
 			windSpeed10m = windSpeed10m[i],
-			visibility = visibility
+			visibility = visibility[i]
 		)
 	}
 }

@@ -19,7 +19,7 @@ data class NetworkDaily(
 	val timezoneAbbreviation: String?,
 	@SerialName("utc_offset_seconds")
 	val utcOffsetSeconds: Int?,
-	@SerialName("daily-units")
+	@SerialName("daily_units")
 	val dailyUnits: DailyUnits,
 	@SerialName("daily")
 	val daily: Daily,

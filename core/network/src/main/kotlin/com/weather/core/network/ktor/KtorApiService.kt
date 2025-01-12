@@ -12,6 +12,7 @@ import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.request.get
 import io.ktor.http.URLBuilder
 import io.ktor.http.path
+import timber.log.Timber
 
 
 const val allWeatherUrl =
@@ -20,12 +21,12 @@ const val currentParams =
 	"temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,pressure_msl,surface_pressure,wind_speed_10m,wind_direction_10m"
 const val dailyParams =
 	"weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,sunrise,sunset,uv_index_max"
-const val hourlyParams = "temperature_2m,weather_code,wind_speed_10m,visibility&forecast_days=12"
+const val hourlyParams = "temperature_2m,weather_code,visibility,wind_speed_10m"
 
 interface KtorApiService {
 
 	/**
-	 * @param params are values to include in the json response for example:
+	 * @param currentParams are values to include in the json response for example:
 	 * "current=temperature_2m,relative_humidity_2m..."
 	 * each value should be separated with a ","
 	 * visit "https://open-meteo.com/en/docs" for more
@@ -37,7 +38,7 @@ interface KtorApiService {
 	): NetworkCurrent
 
 	/**
-	 * @param params are values to include in the json response for example:
+	 * @param dailyParams are values to include in the json response for example:
 	 * "daily=weather_code,temperature_2m_max..."
 	 * each value should be separated with a ","
 	 * visit "https://open-meteo.com/en/docs" for more
@@ -49,7 +50,7 @@ interface KtorApiService {
 	): NetworkDaily
 
 	/**
-	 * @param params are values to include in the json response for example:
+	 * @param hourlyParams are values to include in the json response for example:
 	 * "hourly=temperature_2m,weather_code,wind_speed_10m..."
 	 * each value should be separated with a ","
 	 * visit "https://open-meteo.com/en/docs" for more
@@ -87,14 +88,16 @@ class KtorServiceImpl(
 	}
 
 	override suspend fun getDaily(lat: String, lon: String, dailyParams: String): NetworkDaily {
-		return client.get(BASE_URL) {
-			url {
+		val value = client.get(BASE_URL) {
+			  url {
 				path("v1/forecast")
 				parameters.append("latitude", lat)
 				parameters.append("longitude", lon)
 				parameters.append("daily", dailyParams)
 			}
-		}.body()
+		}
+		Timber.e(value.body<NetworkDaily>().toString())
+		return  value.body()
 	}
 
 	override suspend fun getHourly(lat: String, lon: String, hourlyParams: String): NetworkHourly {

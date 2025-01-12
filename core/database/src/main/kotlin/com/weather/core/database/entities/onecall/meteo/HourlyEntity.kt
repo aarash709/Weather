@@ -6,7 +6,7 @@ import com.weather.model.Hourly
 
 @Entity(
 	tableName = "hourly",
-	primaryKeys = ["cityName","time"],
+	primaryKeys = ["cityName", "time"],
 	foreignKeys = [ForeignKey(
 		entity = WeatherLocationEntity::class,
 		parentColumns = arrayOf("cityName"),
@@ -25,25 +25,30 @@ data class HourlyEntity(
 	val visibility: Double
 )
 
-fun HourlyEntity.asDomainModel(): Hourly {
+fun HourlyEntity.asDomainModel(
+	humidity: Int,
+	pressure: Int,
+	uvi: Double,
+	windDirection: Int
+): Hourly {
 	return Hourly(
 		time = time,
 //		clouds = TODO(),
 //		dew_point = TODO(),
 //		dt = 0,
-		sunriseSunset = TODO(),
-		feelsLike = TODO(),
-		humidity = TODO(),
+		sunriseSunset = "TODO()",
+//		feelsLike = feelsLike,
+		humidity = humidity,
 //		pop = TODO(),
-		pressure = TODO(),
+		pressure = pressure,
 		temp = temperature2m,
-		uvi = TODO(),
-		visibility = TODO(),
+		uvi = uvi,
+		visibility = visibility.toInt(),
 //		id = TODO(),
 //		main = TODO(),
 //		description = TODO(),
 //		icon = TODO(),
-		winDirection = TODO(),
+		winDirection = windDirection,
 //		wind_gust = TODO(),
 		windSpeed = windSpeed10m,
 	)

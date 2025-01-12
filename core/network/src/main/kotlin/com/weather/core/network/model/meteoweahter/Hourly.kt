@@ -15,5 +15,5 @@ data class Hourly(
     @SerialName("wind_speed_10m")
     val windSpeed10m: List<Double>,
     @SerialName("visibility")
-    val visibility: Double
+    val visibility: List<Double>
 )

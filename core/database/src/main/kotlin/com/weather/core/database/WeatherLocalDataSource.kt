@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 class WeatherLocalDataSource(
 	private val dao: WeatherDao,
@@ -72,8 +74,12 @@ class WeatherLocalDataSource(
 				val current = weather.current
 				val daily = weather.daily
 				val hourly = weather.hourly
-				val sunrise = Instant.parse(daily.first().sunrise).epochSecond.toInt()
-				val sunset = Instant.parse(daily.first().sunset).epochSecond.toInt()
+//				val sunrise = Instant.parse(daily.first().sunrise).epochSecond.toInt()
+				val sunrise =
+					LocalDateTime.parse(daily.first().sunrise).toEpochSecond(ZoneOffset.UTC).toInt()
+//				val sunset = Instant.parse(daily.first().sunset).epochSecond.toInt()
+				val sunset =
+					LocalDateTime.parse(daily.first().sunset).toEpochSecond(ZoneOffset.UTC).toInt()
 				WeatherData(
 					coordinates = weather.weatherLocation.toCoordinate(cityName = current.cityName),
 					current = current.asDomainModel(
@@ -83,7 +89,14 @@ class WeatherLocalDataSource(
 						sunset = sunset
 					),
 					daily = daily.map { it.asDomainModel() },
-					hourly = hourly.map { it.asDomainModel() },
+					hourly = hourly.map {
+						it.asDomainModel(
+							humidity = 0,
+							pressure = current.pressureMsl.toInt(),
+							daily.first().uvIndex,
+							windDirection = 12
+						)
+					},
 				)
 			}
 		}
@@ -96,8 +109,12 @@ class WeatherLocalDataSource(
 				val current = weather.current
 				val daily = weather.daily
 				val hourly = weather.hourly
-				val sunrise = Instant.parse(daily.first().sunrise).epochSecond.toInt()
-				val sunset = Instant.parse(daily.first().sunset).epochSecond.toInt()
+//				val sunrise = Instant.parse(daily.first().sunrise).epochSecond.toInt()
+				val sunrise =
+					LocalDateTime.parse(daily.first().sunrise).toEpochSecond(ZoneOffset.UTC).toInt()
+//				val sunset = Instant.parse(daily.first().sunset).epochSecond.toInt()
+				val sunset =
+					LocalDateTime.parse(daily.first().sunset).toEpochSecond(ZoneOffset.UTC).toInt()
 				WeatherData(
 					coordinates = weather.weatherLocation.toCoordinate(cityName = current.cityName),
 					current = current.asDomainModel(
@@ -107,7 +124,14 @@ class WeatherLocalDataSource(
 						sunset = sunset
 					),
 					daily = daily.map { it.asDomainModel() },
-					hourly = hourly.map { it.asDomainModel() },
+					hourly = hourly.map {
+						it.asDomainModel(
+							humidity = 0,
+							pressure = current.pressureMsl.toInt(),
+							daily.first().uvIndex,
+							12
+						)
+					},
 				)
 			}
 

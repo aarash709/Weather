@@ -83,6 +83,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.time.Instant
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -343,7 +344,7 @@ internal fun WeatherDetails(
 				formattedSunrise = formattedSunrise,
 				formattedSunset = formattedSunset,
 				weatherData = weatherData,
-				currentTimeSeconds = Instant.parse(weatherData.current.time).epochSecond.toInt(),
+				currentTimeSeconds = 173668548,
 				surfaceColor = surfaceColor
 			)
 		}

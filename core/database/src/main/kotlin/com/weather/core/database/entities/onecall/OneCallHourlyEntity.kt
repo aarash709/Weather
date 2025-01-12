@@ -48,7 +48,7 @@ data class OneCallHourlyEntity(
             time = dt.toString(),
 //            dt = dt,
             sunriseSunset = "",
-            feelsLike = feels_like,
+//            feelsLike = feels_like,
             humidity = humidity,
 //            pop = pop,
             pressure = pressure,

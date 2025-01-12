@@ -34,6 +34,7 @@ import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Date
@@ -117,7 +118,7 @@ class ForecastViewModel @Inject constructor(
 						data.weather.coordinates.lat.toString(),
 						data.weather.coordinates.lon.toString()
 					)
-					if (isDataExpired(dataTimestamp = currentForecastTime, minutesThreshold = 30)) {
+					if (/*isDataExpired(dataTimestamp = currentForecastTime, minutesThreshold = 30)*/true) {
 						sync(coordinate)
 					}
 				}
@@ -214,8 +215,9 @@ class ForecastViewModel @Inject constructor(
 	 * we can sync data or not.
 	 */
 	internal fun isDataExpired(dataTimestamp: String, minutesThreshold: Int): Boolean {
-		val currentTime = Instant.now().epochSecond
-		val dataTimeStampSeconds = LocalDateTime.parse(dataTimestamp).second
+//		val currentTime = Instant.now().epochSecond
+		val currentTime = System.currentTimeMillis()
+		val dataTimeStampSeconds = LocalDateTime.parse(dataTimestamp).toEpochSecond(ZoneOffset.UTC)
 		val differanceInSeconds = currentTime.minus(dataTimeStampSeconds)
 		val differanceInMinutes = Duration.ofSeconds(differanceInSeconds).toMinutes()
 		Timber.e((differanceInMinutes > minutesThreshold).toString())

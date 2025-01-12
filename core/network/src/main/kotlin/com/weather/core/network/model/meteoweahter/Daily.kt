@@ -15,11 +15,11 @@ data class Daily(
 	@SerialName("time")
 	val time: List<String>,
 	@SerialName("sunrise")
-	val sunrise: String,
+	val sunrise: List<String>,
 	@SerialName("sunset")
-	val sunset: String,
-	@SerialName("un-index-max")
-	val uvIndex: Double,
+	val sunset: List<String>,
+	@SerialName("uv_index_max")
+	val uvIndex: List<Double>,
 	@SerialName("weather_code")
 	val weatherCode: List<Int>
 )
