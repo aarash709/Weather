@@ -1,6 +1,6 @@
 package com.weather.core.network.ktor
 
-import com.weather.core.network.BuildConfig.API_KEYclean
+import com.weather.core.network.BuildConfig.API_KEY
 import com.weather.core.network.BuildConfig.BASE_URL
 import com.weather.core.network.model.geosearch.GeoSearchItemDto
 import com.weather.core.network.model.meteoweahter.NetworkCurrent
