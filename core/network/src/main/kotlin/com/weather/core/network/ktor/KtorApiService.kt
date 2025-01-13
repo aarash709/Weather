@@ -1,6 +1,6 @@
 package com.weather.core.network.ktor
 
-import com.weather.core.network.BuildConfig.API_KEY
+import com.weather.core.network.BuildConfig.API_KEYclean
 import com.weather.core.network.BuildConfig.BASE_URL
 import com.weather.core.network.model.geosearch.GeoSearchItemDto
 import com.weather.core.network.model.meteoweahter.NetworkCurrent
@@ -10,9 +10,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.request.get
-import io.ktor.http.URLBuilder
 import io.ktor.http.path
-import timber.log.Timber
 
 
 const val allWeatherUrl =
@@ -88,16 +86,14 @@ class KtorServiceImpl(
 	}
 
 	override suspend fun getDaily(lat: String, lon: String, dailyParams: String): NetworkDaily {
-		val value = client.get(BASE_URL) {
+		return client.get(BASE_URL) {
 			  url {
 				path("v1/forecast")
 				parameters.append("latitude", lat)
 				parameters.append("longitude", lon)
 				parameters.append("daily", dailyParams)
 			}
-		}
-		Timber.e(value.body<NetworkDaily>().toString())
-		return  value.body()
+		}.body()
 	}
 
 	override suspend fun getHourly(lat: String, lon: String, hourlyParams: String): NetworkHourly {
