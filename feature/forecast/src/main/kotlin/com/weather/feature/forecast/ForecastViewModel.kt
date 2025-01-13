@@ -2,7 +2,7 @@ package com.weather.feature.forecast
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.experiment.weather.core.common.extentions.convertToUserSettings
+import com.experiment.weather.core.common.extentions.applySettings
 import com.weather.core.repository.UserRepository
 import com.weather.core.repository.WeatherRepository
 import com.weather.model.Coordinate
@@ -33,10 +33,7 @@ import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
@@ -87,17 +84,18 @@ class ForecastViewModel @Inject constructor(
 			getUserSettings()
 		) { allWeather, favoriteCity, setting ->
 			allWeather.map { weather ->
-				val newWeather = weather.convertToUserSettings(userSettings = setting)
-				val hourly = newWeather.hourly
+				Timber.e("timeee: ${weather.current.time}")
+				val newWeather = weather.applySettings(userSettings = setting)
 				val current = newWeather.current
-				val timezoneOffset = newWeather.coordinates.timezoneOffset
-				val hourlyData = calculateSunriseAndSunset(
+				val hourly = newWeather.hourly
+				val timezoneOffset = newWeather.coordinates.timezoneOffset.toLong()
+				/*val hourlyData = calculateSunriseAndSunset(
 					hourlyData = hourly,
 					sunrise = current.sunrise,
 					sunset = current.sunset,
-					timezoneOffset = timezoneOffset.toLong()
-				)
-				SavableForecastData(weather = newWeather.copy(hourly = hourlyData))
+					timezoneOffset = timezoneOffset
+				)*/
+				SavableForecastData(weather = newWeather.copy(/*hourly = hourlyData*/))
 			}
 		}
 			.onEach { allForecast ->
@@ -106,12 +104,14 @@ class ForecastViewModel @Inject constructor(
 					val current = data.weather.current
 					Timber.e("time ${allForecast.first().weather.hourly.first().time}")
 					_timeOfDay.update {
-						calculateTimeOfDay(
-							currentForecastTime = currentForecastTime.toLong(),
-							sunrise = current.sunrise.toLong(),
-							sunset = current.sunset.toLong(),
-							30
-						)
+						it
+//						calculateTimeOfDay(
+//							currentForecastTime = currentForecastTime.toLong(),
+//							sunrise = current.sunrise.toLong(),
+//							sunset = current.sunset.toLong(),
+//							30
+//						)
+						//todo needs fix
 					}
 					val coordinate = Coordinate(
 						data.weather.coordinates.name,
@@ -119,14 +119,14 @@ class ForecastViewModel @Inject constructor(
 						data.weather.coordinates.lon.toString()
 					)
 					if (/*isDataExpired(dataTimestamp = currentForecastTime, minutesThreshold = 30)*/true) {
-						sync(coordinate)
+//						sync(coordinate)
 					}
 				}
 			}
 			.retry(2)
-			.catch {
-				Timber.e("data error:${it.message}")
-			}
+//			.catch {
+//				Timber.e("data error:${it.message}")
+//			}
 	}
 
 	@Deprecated("Use getAllLocationsData() instead")
@@ -143,7 +143,7 @@ class ForecastViewModel @Inject constructor(
 			.flowOn(Dispatchers.IO)
 			.combine(getUserSettings()) { weather, userSettings ->
 				userSettings.setDefaultIfNull()
-				val newWeather = weather.convertToUserSettings(userSettings = userSettings)
+				val newWeather = weather.applySettings(userSettings = userSettings)
 				val hourly = newWeather.hourly
 				val current = newWeather.current
 				val timezoneOffset = newWeather.coordinates.timezoneOffset

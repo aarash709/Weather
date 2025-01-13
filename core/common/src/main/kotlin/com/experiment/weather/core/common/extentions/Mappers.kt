@@ -22,147 +22,98 @@ import com.weather.model.nightTemp
 import com.weather.model.temp
 import com.weather.model.time
 import com.weather.model.windSpeed
-import java.text.SimpleDateFormat
-import java.time.Duration
-import java.time.Instant
-import java.time.LocalDateTime
-import java.util.Date
-import java.util.Locale
-import java.util.TimeZone
 import kotlin.math.roundToInt
 
+fun WeatherData.applySettings(userSettings: SettingsData): WeatherData {
+	val tempUnit = userSettings.temperatureUnits
+	val windUnit = userSettings.windSpeedUnits
+	val timeOffset = coordinates.timezoneOffset.toLong()
+	return copy {
+		WeatherData.current transform {
+			it.applySettings(
+				tempUnit,
+				windUnit
+			)
+		}
+		WeatherData.daily transform {
+			it.applySettings(tempUnit)
+		}
+		WeatherData.hourly transform { it.applySettings(tempUnit, windUnit, timeOffset) }
 
-fun WeatherData.convertToUserSettings(userSettings: SettingsData): WeatherData {
-    val tempUnit = userSettings.temperatureUnits
-    val windUnit = userSettings.windSpeedUnits
-    val timeOffset = coordinates.timezoneOffset.toLong()
-    return copy {
-        WeatherData.current transform {
-            it.convertToUserSettings(
-                tempUnit,
-                windUnit
-            )
-        }
-        WeatherData.daily transform {
-            it.convertToUserSettings(tempUnit)
-        }
-        WeatherData.hourly transform { it.convertToUserSettings(tempUnit, windUnit, timeOffset) }
-
-    }
+	}
 }
 
-fun Current.convertToUserSettings(
-    temperature: TemperatureUnits?,
-    windSpeed: WindSpeedUnits?,
+fun Current.applySettings(
+	temperature: TemperatureUnits?,
+	windSpeed: WindSpeedUnits?,
 ): Current {
-    return copy {
-//        Current.dew_point transform { it.convertToUserTemperature(temperature) }
-        Current.feelsLike transform { it.convertToUserTemperature(temperature) }
-        Current.currentTemp transform { it.convertToUserTemperature(temperature) }
-        Current.windSpeed transform { it.convertToUserSpeed(windSpeed) }
-    }
+	return copy {
+		Current.feelsLike transform { it.convertToUserTemperature(temperature) }
+		Current.currentTemp transform { it.convertToUserTemperature(temperature) }
+		Current.windSpeed transform { it.convertToUserSpeed(windSpeed) }
+	}
 
 }
 
 @JvmName("convertListDailyToUserSettings")
-fun List<Daily>.convertToUserSettings(temperature: TemperatureUnits): List<Daily> {
-    return map { daily ->
-        daily.copy {
-//            Daily.dew_point transform { dewPoint -> dewPoint.convertToUserTemperature(temperature) }
-            Daily.time transform { time -> calculateUIDailyTime(time.toLong()) }
-            Daily.dayTemp transform { dayTemp -> dayTemp.convertToUserTemperature(temperature) }
-            Daily.nightTemp.transform { nightTemp -> nightTemp.convertToUserTemperature(temperature) }
-        }
-    }
+fun List<Daily>.applySettings(temperature: TemperatureUnits): List<Daily> {
+	return map { daily ->
+		daily.copy {
+			Daily.time transform { isoDate -> calculateUIDailyTime(isoDate) }
+			Daily.dayTemp transform { dayTemp -> dayTemp.convertToUserTemperature(temperature) }
+			Daily.nightTemp.transform { nightTemp -> nightTemp.convertToUserTemperature(temperature) }
+		}
+	}
 }
 
 @JvmName("convertListHourlyToUserSettings")
-fun List<Hourly>.convertToUserSettings(
-    temperature: TemperatureUnits,
-    windSpeed: WindSpeedUnits,
-    timeOffset: Long,
+fun List<Hourly>.applySettings(
+	temperature: TemperatureUnits,
+	windSpeed: WindSpeedUnits,
+	timeOffset: Long,
 ): List<Hourly> {
-    return map { hourly ->
-        hourly.copy {
-//            Hourly.dew_point transform { dewPoint ->
-//                dewPoint.convertToUserTemperature(
-//                    temperature
-//                )
-//            }
-            Hourly.time transform { timeInSeconds ->
-                calculateUIHourlyTime(
-                    timeInSeconds.toLong(),
-                    timeOffset
-                )
-            }
-            Hourly.temp transform { it.convertToUserTemperature(temperature) }
-            Hourly.windSpeed transform { it.convertToUserSpeed(windSpeed) }
-        }
-    }
+	return map { hourly ->
+		hourly.copy {
+			Hourly.time transform { isoDateTime ->
+				calculateUIHourlyTime(
+					isoTime = isoDateTime,
+					offsetSeconds = timeOffset
+				)
+			}
+			Hourly.temp transform { it.convertToUserTemperature(temperature) }
+			Hourly.windSpeed transform { it.convertToUserSpeed(windSpeed) }
+		}
+	}
 }
 
-fun List<ManageLocationsData>.convertTotoUserSettings(
-    tempUnit: TemperatureUnits,
-    favoriteCityName: String?,
+fun List<ManageLocationsData>.applySettings(
+	tempUnit: TemperatureUnits,
+	favoriteCityName: String?,
 ): List<ManageLocationsData> {
-    return map { manageLocations ->
-        manageLocations.copy {
-            val isFavorite = ManageLocationsData
-                .locationName
-                .get(manageLocations) == favoriteCityName
-            ManageLocationsData.currentTemp transform {
-                it.toDouble().convertToUserTemperature(userTempUnit = tempUnit).roundToInt()
-                    .toString()
-            }
-            ManageLocationsData.feelsLike transform {
-                it.toDouble().convertToUserTemperature(userTempUnit = tempUnit)
-                    .roundToInt().toString()
-            }
-            ManageLocationsData.isFavorite set isFavorite
-        }
-    }
+	return map { manageLocations ->
+		manageLocations.copy {
+			val isFavorite = ManageLocationsData
+				.locationName
+				.get(manageLocations) == favoriteCityName
+			ManageLocationsData.currentTemp transform {
+				it.toDouble().convertToUserTemperature(userTempUnit = tempUnit).roundToInt()
+					.toString()
+			}
+			ManageLocationsData.feelsLike transform {
+				it.toDouble().convertToUserTemperature(userTempUnit = tempUnit)
+					.roundToInt().toString()
+			}
+			ManageLocationsData.isFavorite set isFavorite
+		}
+	}
 }
 
 fun List<DailyPreview>.convertTimeAndTemperature(): List<DailyPreview> {
-    return map { dailyPreview ->
-        dailyPreview.copy(
-            time = calculateUIDailyTime(dailyPreview.time.toLong()),
-            tempDay = dailyPreview.tempDay.minus(273.15).roundToInt(),
-            tempNight = dailyPreview.tempNight.minus(273.15).roundToInt()
-        )
-    }
-}
-
-private fun unixMillisToHumanDate(
-    unixTimeStampInSeconds: Long,
-    pattern: String,
-): String {
-    val formatter = SimpleDateFormat(pattern, Locale.getDefault())
-    val date = Date(unixTimeStampInSeconds * 1000) //to millisecond
-    formatter.timeZone = TimeZone.getTimeZone("UTC")
-    return formatter.format(date)
-}
-
-private fun calculateUIHourlyTime(hourlyTimeSeconds: Long, timeOffsetSeconds: Long): String {
-    val differenceInMinutes =
-        Duration.ofSeconds(hourlyTimeSeconds.minus(Instant.now().epochSecond)).toMinutes()
-    return if (differenceInMinutes in hourlyRangeThreshold)
-        NOW
-    else
-        unixMillisToHumanDate(hourlyTimeSeconds.plus(timeOffsetSeconds), HOURLY_PATTERN)
-}
-
-private fun calculateUIDailyTime(hourlyTimeSeconds: Long): String {
-    val dayOfWeekOfDailyData =
-        unixMillisToHumanDate(
-            unixTimeStampInSeconds = hourlyTimeSeconds,
-            pattern = DAILY_PATTERN
-        )
-    val localToday = LocalDateTime.now().dayOfWeek.name
-    val localTomorrow = LocalDateTime.now().plusDays(1).dayOfWeek.name
-    return when (dayOfWeekOfDailyData.uppercase()) {
-        localToday -> TODAY
-        localTomorrow -> TOMORROW
-        else -> dayOfWeekOfDailyData.slice(0..2)
-    }
+	return map { dailyPreview ->
+		dailyPreview.copy(
+			time = calculateUIDailyTime(dailyPreview.time),
+			tempDay = dailyPreview.tempDay.minus(273.15).roundToInt(),
+			tempNight = dailyPreview.tempNight.minus(273.15).roundToInt()
+		)
+	}
 }
