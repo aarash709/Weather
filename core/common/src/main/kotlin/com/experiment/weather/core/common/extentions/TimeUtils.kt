@@ -1,5 +1,6 @@
 package com.experiment.weather.core.common.extentions
 
+import android.util.Log
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
@@ -15,9 +16,11 @@ import java.util.Locale
  * @param isoTime is in iso8601
  */
 internal fun calculateUIHourlyTime(isoTime: String, offsetSeconds: Long): String {
-	val localDateTime = LocalDateTime.parse(isoTime).toEpochSecond(ZoneOffset.UTC)
+	val givenDateTimeUTC = LocalDateTime.parse(isoTime).toEpochSecond(ZoneOffset.UTC)
 	val differenceInMinutes =
-		Duration.ofSeconds(localDateTime.minus(Instant.now().epochSecond)).toMinutes()
+		Duration.ofSeconds(givenDateTimeUTC
+			.minus(Instant.now().epochSecond))
+			.toMinutes()
 	return if (differenceInMinutes in hourlyRangeThreshold)
 		NOW
 	else
@@ -67,11 +70,16 @@ private fun convertDateTimeToReadableHours(
 	offsetSeconds: Long,
 	pattern: String = HOURLY_PATTERN,
 ): String {
-	val localDateTime = LocalDateTime.parse(isoDateTime)
+	//todo needs some work zone offset wont work, added offset to localdatetime for now
+	val localDateTime = LocalDateTime.parse(isoDateTime).plusSeconds(12600)
 	val zoneOffset = ZoneOffset.ofTotalSeconds(offsetSeconds.toInt())
-	val offset = OffsetDateTime.of(localDateTime, zoneOffset)
+	val offsetDateTime = OffsetDateTime.of(localDateTime, zoneOffset)
 	val formatter = DateTimeFormatter.ofPattern(pattern)
-	val timeString = formatter.format(offset)
+	val timeString = localDateTime.format(formatter)
+	Log.e("converter","localdatetime :$localDateTime")
+//	Log.e("converter","zoneOfset: $zoneOffset")
+	Log.e("converter","offset: $offsetDateTime")
+	Log.e("converter","time: $timeString")
 	return timeString
 }
 

@@ -81,6 +81,7 @@ class KtorServiceImpl(
 				parameters.append("latitude", lat)
 				parameters.append("longitude", lon)
 				parameters.append("current", currentParams)
+				parameters.append("timezone", "auto")
 			}
 		}.body()
 	}
@@ -92,6 +93,7 @@ class KtorServiceImpl(
 				parameters.append("latitude", lat)
 				parameters.append("longitude", lon)
 				parameters.append("daily", dailyParams)
+				  parameters.append("timezone", "auto")
 			}
 		}.body()
 	}
@@ -103,6 +105,7 @@ class KtorServiceImpl(
 				parameters.append("latitude", lat)
 				parameters.append("longitude", lon)
 				parameters.append("hourly", hourlyParams)
+				parameters.append("timezone", "auto")
 			}
 		}.body()
 	}

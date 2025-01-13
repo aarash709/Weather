@@ -11,6 +11,10 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class WeatherRepositoryImpl @Inject constructor(
@@ -102,24 +106,29 @@ class WeatherRepositoryImpl @Inject constructor(
 				.getOrNull()
 				?.hourly
 				?.toEntity(coordinate.cityName!!)
-			Timber.e("dt: ${remoteCurrent?.timezone}")
-			Timber.e("dt: ${remoteCurrent?.current?.apparentTemperature}")
+			Timber.e("timezone: ${remoteCurrent?.timezone}")
+			Timber.e("daily count: ${daily?.count()}")
+			Timber.e("daily time: ${daily?.first()?.time}")
 			localWeather.insertLocalData(
 				weatherLocation = locationInfo!!,
 				current = remoteCurrent.toEntity(cityName = coordinate.cityName!!),
 				daily = daily!!,
 				hourly = hourly!!
 			)
-			val firstDailyTimeStamp = remoteCurrent.current.time
+			val firstDailyTimeStamp = daily.first().time
 			val firstHourlyTimeStamp = hourly.first().time
 			Timber.e(firstHourlyTimeStamp)
 			localWeather.deleteDaily(
 				cityName = coordinate.cityName!!,
 				timeStamp = firstDailyTimeStamp
 			)
+			//subtract current local time by 1 hour then delete data older than specified time
+			val pattern = "yyyy-MM-dd'T'HH:mm"
+			val utcMinusOneHour = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC).minusHours(1)
+			val utcTime = DateTimeFormatter.ofPattern(pattern).format(utcMinusOneHour)
 			localWeather.deleteHourly(
 				cityName = coordinate.cityName!!,
-				timeStamp = firstHourlyTimeStamp
+				timeStamp = utcTime
 			)
 //			remoteWeatherInfo.let {
 			//                localWeather.insertLocalData(
