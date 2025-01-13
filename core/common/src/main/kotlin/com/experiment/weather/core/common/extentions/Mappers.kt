@@ -44,13 +44,13 @@ fun WeatherData.applySettings(userSettings: SettingsData): WeatherData {
 }
 
 fun Current.applySettings(
-	temperature: TemperatureUnits?,
-	windSpeed: WindSpeedUnits?,
+	temperatureUnit: TemperatureUnits?,
+	windSpeedUnit: WindSpeedUnits?,
 ): Current {
 	return copy {
-		Current.feelsLike transform { it.convertToUserTemperature(temperature) }
-		Current.currentTemp transform { it.convertToUserTemperature(temperature) }
-		Current.windSpeed transform { it.convertToUserSpeed(windSpeed) }
+		Current.feelsLike transform { it.applySettingsTemperatureUnit(temperatureUnit) }
+		Current.currentTemp transform { it.applySettingsTemperatureUnit(temperatureUnit) }
+		Current.windSpeed transform { it.convertToUserSpeed(windSpeedUnit) }
 	}
 
 }
@@ -60,8 +60,8 @@ fun List<Daily>.applySettings(temperature: TemperatureUnits): List<Daily> {
 	return map { daily ->
 		daily.copy {
 			Daily.time transform { isoDate -> calculateUIDailyTime(isoDate) }
-			Daily.dayTemp transform { dayTemp -> dayTemp.convertToUserTemperature(temperature) }
-			Daily.nightTemp.transform { nightTemp -> nightTemp.convertToUserTemperature(temperature) }
+			Daily.dayTemp transform { dayTemp -> dayTemp.applySettingsTemperatureUnit(temperature) }
+			Daily.nightTemp.transform { nightTemp -> nightTemp.applySettingsTemperatureUnit(temperature) }
 		}
 	}
 }
@@ -80,7 +80,7 @@ fun List<Hourly>.applySettings(
 					offsetSeconds = timeOffset
 				)
 			}
-			Hourly.temp transform { it.convertToUserTemperature(temperature) }
+			Hourly.temp transform { it.applySettingsTemperatureUnit(temperature) }
 			Hourly.windSpeed transform { it.convertToUserSpeed(windSpeed) }
 		}
 	}
@@ -96,11 +96,11 @@ fun List<ManageLocationsData>.applySettings(
 				.locationName
 				.get(manageLocations) == favoriteCityName
 			ManageLocationsData.currentTemp transform {
-				it.toDouble().convertToUserTemperature(userTempUnit = tempUnit).roundToInt()
+				it.toDouble().applySettingsTemperatureUnit(userTempUnit = tempUnit).roundToInt()
 					.toString()
 			}
 			ManageLocationsData.feelsLike transform {
-				it.toDouble().convertToUserTemperature(userTempUnit = tempUnit)
+				it.toDouble().applySettingsTemperatureUnit(userTempUnit = tempUnit)
 					.roundToInt().toString()
 			}
 			ManageLocationsData.isFavorite set isFavorite
