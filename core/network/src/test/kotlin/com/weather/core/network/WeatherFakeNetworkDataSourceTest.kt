@@ -83,17 +83,13 @@ val networkDirectGeoCodeSampleData = listOf(
     GeoSearchItem(
         country = "iran",
         lat = 123.0,
-        local_names = null,
         lon = 123.123,
         name = "tehran",
-        state = "tehranprov"
     ),
     GeoSearchItem(
         country = "USA",
         lat = 124.0,
-        local_names = null,
         lon = 1234.1234,
         name = "NewYork",
-        state = "NewYorkState"
     )
 )
