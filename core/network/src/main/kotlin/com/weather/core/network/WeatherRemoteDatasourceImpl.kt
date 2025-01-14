@@ -1,10 +1,10 @@
 package com.weather.core.network
 
 import com.weather.core.network.BuildConfig.API_KEY
+import com.weather.core.network.BuildConfig.CURRENT_PARAMS
+import com.weather.core.network.BuildConfig.DAILY_PARAMS
+import com.weather.core.network.BuildConfig.HOURLY_PARAMS
 import com.weather.core.network.ktor.KtorApiService
-import com.weather.core.network.ktor.currentParams
-import com.weather.core.network.ktor.dailyParams
-import com.weather.core.network.ktor.hourlyParams
 import com.weather.core.network.model.meteoweahter.NetworkCurrent
 import com.weather.core.network.model.meteoweahter.NetworkDaily
 import com.weather.core.network.model.meteoweahter.NetworkHourly
@@ -22,7 +22,7 @@ class WeatherRemoteDatasourceImpl(
             val current = ktorApi.getCurrent(
                 lat = coordinates.latitude,
                 lon = coordinates.longitude,
-				currentParams = currentParams
+				currentParams = CURRENT_PARAMS
             )
             Result.success(current)
         } catch (e: IOException) {
@@ -36,7 +36,7 @@ class WeatherRemoteDatasourceImpl(
 			val current = ktorApi.getDaily(
 				lat = coordinates.latitude,
 				lon = coordinates.longitude,
-				dailyParams = dailyParams
+				dailyParams = DAILY_PARAMS
 			)
 			Result.success(current)
 		} catch (e: IOException) {
@@ -51,7 +51,7 @@ class WeatherRemoteDatasourceImpl(
 			val current = ktorApi.getHourly(
 				lat = coordinates.latitude,
 				lon = coordinates.longitude,
-				hourlyParams = hourlyParams
+				hourlyParams = HOURLY_PARAMS
 			)
 			Result.success(current)
 		} catch (e: IOException) {

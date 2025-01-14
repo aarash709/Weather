@@ -1,9 +1,11 @@
 package com.weather.core.database
 
-import com.weather.core.database.entities.onecall.meteo.HourlyEntity
-import com.weather.core.database.entities.onecall.meteo.WeatherLocationEntity
-import com.weather.core.database.entities.onecall.meteo.asDomainModel
-import com.weather.core.database.entities.onecall.meteo.toCoordinate
+import com.weather.core.database.entities.meteo.CurrentEntity
+import com.weather.core.database.entities.meteo.DailyEntity
+import com.weather.core.database.entities.meteo.HourlyEntity
+import com.weather.core.database.entities.meteo.WeatherLocationEntity
+import com.weather.core.database.entities.meteo.asDomainModel
+import com.weather.core.database.entities.meteo.toCoordinate
 import com.weather.core.database.entities.relation.CurrentWeatherWithDailyAndHourly
 import com.weather.core.database.entities.relation.WeatherAndCurrent
 import com.weather.model.ManageLocationsData
@@ -136,8 +138,8 @@ class WeatherLocalDataSource(
 
 	suspend fun insertLocalData(
 		weatherLocation: WeatherLocationEntity,
-		current: com.weather.core.database.entities.onecall.meteo.CurrentEntity,
-		daily: List<com.weather.core.database.entities.onecall.meteo.DailyEntity>,
+		current: CurrentEntity,
+		daily: List<DailyEntity>,
 		hourly: List<HourlyEntity>,
 	) {
 		val dataBaseCount = dao.countColumns()

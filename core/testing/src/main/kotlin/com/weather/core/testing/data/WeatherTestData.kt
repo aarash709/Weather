@@ -1,19 +1,20 @@
 package com.weather.core.testing.data
 
-import com.weather.core.database.entities.onecall.CurrentWeatherEntity
-import com.weather.core.database.entities.onecall.OneCallEntity
-import com.weather.core.database.entities.onecall.meteo.HourlyEntity
+import com.weather.core.database.entities.meteo.CurrentEntity
+import com.weather.core.database.entities.meteo.DailyEntity
+import com.weather.core.database.entities.meteo.HourlyEntity
+import com.weather.core.database.entities.meteo.WeatherLocationEntity
 
-val oneCall = OneCallEntity(
+val weatherLocationInfo = WeatherLocationEntity(
 	cityName = "Sommersdale",
 	orderIndex = 0,
 	lat = 4.5,
 	lon = 6.7,
 	timezone = "graecis",
-	timezone_offset = 5109
+	timezoneOffset = 5109
 
 )
-val current = com.weather.core.database.entities.onecall.meteo.CurrentEntity(
+val current = CurrentEntity(
 	cityName = "Elk Grove",
 	apparentTemperature = 12.13,
 	isDay = 5917,
@@ -27,18 +28,8 @@ val current = com.weather.core.database.entities.onecall.meteo.CurrentEntity(
 	windDirection10m = 8474,
 	windSpeed10m = 22.23
 )
-val currentWeather = listOf(
-	CurrentWeatherEntity(
-		cityName = "Sommersdale",
-		description = "eius",
-		icon = "docendi",
-		id = 3682,
-		main = "deseruisse"
-
-	)
-)
 val daily = listOf(
-	com.weather.core.database.entities.onecall.meteo.DailyEntity(
+	DailyEntity(
 		cityName = "Oakston",
 		precipitationSum = 32.33,
 		temperature2mMax = 34.35,

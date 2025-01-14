@@ -1,7 +1,8 @@
 package com.weather.core.network
 
-import com.weather.core.network.model.weather.NetworkCurrent
-import com.weather.core.network.model.weather.NetworkOneCall
+import com.weather.core.network.model.meteoweahter.Current
+import com.weather.core.network.model.meteoweahter.CurrentUnits
+import com.weather.core.network.model.meteoweahter.NetworkCurrent
 import com.weather.model.geocode.GeoSearchItem
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -24,7 +25,7 @@ class WeatherFakeNetworkDataSourceTest {
     @Test
     fun `network serialization test`() = runTest(testDispatcher) {
         val networkOnceCallSample = networkOneCallTestData
-        assertEquals(networkOnceCallSample.timezone, subject.getRemoteData().data?.timezone)
+        assertEquals(networkOnceCallSample.timezone, subject.getRemoteData().getOrNull()?.timezone)
     }
 
     @Test
@@ -39,29 +40,43 @@ class WeatherFakeNetworkDataSourceTest {
     }
 }
 
-val networkOneCallTestData = NetworkOneCall(
-    current = NetworkCurrent(
-        clouds = 8117,
-        dew_point = 14.15,
-        dt = 5003,
-        feels_like = 16.17,
-        humidity = 9320,
-        pressure = 6578,
-        sunrise = 2961,
-        sunset = 6806,
-        temp = 18.19,
-        uvi = 20.21,
-        visibility = 6648,
-        wind_deg = 6847,
-        wind_speed = 22.23,
-        weather = listOf()
+val networkOneCallTestData = NetworkCurrent(
+    elevation = 86.87,
+    generationTimeMs = 88.89,
+    latitude = 90.91,
+    longitude = 92.93,
+    timezone = "sagittis",
+    timezoneAbbreviation = "ne",
+    utcOffsetSeconds = 2011,
+    currentUnits = CurrentUnits(
+        apparentTemperature = "tempor",
+        interval = "vim",
+        isDay = "vituperata",
+        precipitation = "varius",
+        pressureMsl = "tale",
+        relativeHumidity2m = "tractatos",
+        surfacePressure = "phasellus",
+        temperature2m = "doctus",
+        time = "melius",
+        weatherCode = "hac",
+        windDirection10m = "dico",
+        windSpeed10m = "no"
     ),
-    lat = 24.25,
-    lon = 26.27,
-    timezone = "tehran",
-    timezone_offset = 3977,
-    daily = listOf(),
-    hourly = listOf()
+    current = Current(
+        apparentTemperature = 94.95,
+        interval = 8725,
+        isDay = 8925,
+        precipitation = 96.97,
+        pressureMsl = 98.99,
+        relativeHumidity2m = 5104,
+        surfacePressure = 100.101,
+        temperature2m = 102.103,
+        time = "liber",
+        weatherCode = 8556,
+        windDirection10m = 2997,
+        windSpeed10m = 104.105
+    )
+
 
 )
 val networkDirectGeoCodeSampleData = listOf(

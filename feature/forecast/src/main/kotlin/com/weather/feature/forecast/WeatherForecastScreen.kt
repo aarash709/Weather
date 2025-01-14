@@ -2,9 +2,6 @@ package com.weather.feature.forecast
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import android.icu.util.LocaleData
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOutCubic
@@ -72,21 +69,15 @@ import com.weather.feature.forecast.widgets.UVWidget
 import com.weather.feature.forecast.widgets.WindWidget
 import com.weather.model.Coordinate
 import com.weather.model.Current
-import com.weather.model.WeatherCoordinates
 import com.weather.model.SavableForecastData
 import com.weather.model.SettingsData
 import com.weather.model.TemperatureUnits
-import com.weather.model.Weather
+import com.weather.model.WeatherCoordinates
 import com.weather.model.WeatherData
 import com.weather.model.WindSpeedUnits
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone

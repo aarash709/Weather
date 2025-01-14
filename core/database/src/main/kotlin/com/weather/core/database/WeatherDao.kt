@@ -3,10 +3,10 @@ package com.weather.core.database
 import androidx.room.*
 import androidx.room.OnConflictStrategy.Companion.REPLACE
 import com.weather.core.database.entities.geoSearch.GeoSearchItemEntity
-import com.weather.core.database.entities.onecall.meteo.CurrentEntity
-import com.weather.core.database.entities.onecall.meteo.DailyEntity
-import com.weather.core.database.entities.onecall.meteo.HourlyEntity
-import com.weather.core.database.entities.onecall.meteo.WeatherLocationEntity
+import com.weather.core.database.entities.meteo.CurrentEntity
+import com.weather.core.database.entities.meteo.DailyEntity
+import com.weather.core.database.entities.meteo.HourlyEntity
+import com.weather.core.database.entities.meteo.WeatherLocationEntity
 import com.weather.core.database.entities.relation.CurrentWeatherWithDailyAndHourly
 import com.weather.core.database.entities.relation.WeatherAndCurrent
 import kotlinx.coroutines.flow.Flow

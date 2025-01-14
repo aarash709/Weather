@@ -13,14 +13,6 @@ import io.ktor.client.request.get
 import io.ktor.http.path
 
 
-const val allWeatherUrl =
-	"https://api.open-meteo.com/v1/forecast?latitude=35.6944&longitude=51.4215&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,pressure_msl,surface_pressure,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto&forecast_days=1"
-const val currentParams =
-	"temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,pressure_msl,surface_pressure,wind_speed_10m,wind_direction_10m"
-const val dailyParams =
-	"weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,sunrise,sunset,uv_index_max"
-const val hourlyParams = "temperature_2m,weather_code,visibility,wind_speed_10m"
-
 interface KtorApiService {
 
 	/**

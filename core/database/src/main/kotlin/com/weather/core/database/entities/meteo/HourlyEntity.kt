@@ -1,4 +1,4 @@
-package com.weather.core.database.entities.onecall.meteo
+package com.weather.core.database.entities.meteo
 
 import androidx.room.Entity
 import androidx.room.ForeignKey

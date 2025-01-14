@@ -1,9 +1,9 @@
 package com.weather.core.repository
 
-import com.weather.core.database.entities.onecall.meteo.CurrentEntity
-import com.weather.core.database.entities.onecall.meteo.DailyEntity
-import com.weather.core.database.entities.onecall.meteo.HourlyEntity
-import com.weather.core.database.entities.onecall.meteo.WeatherLocationEntity
+import com.weather.core.database.entities.meteo.CurrentEntity
+import com.weather.core.database.entities.meteo.DailyEntity
+import com.weather.core.database.entities.meteo.HourlyEntity
+import com.weather.core.database.entities.meteo.WeatherLocationEntity
 import com.weather.core.network.model.meteoweahter.Daily
 import com.weather.core.network.model.meteoweahter.Hourly
 import com.weather.core.network.model.meteoweahter.NetworkCurrent
