@@ -62,10 +62,8 @@ class FakeWeatherRemoteDataSource(
 				GeoSearchItem(
 					country = "iran",
 					lat = 123.0,
-					local_names = null,
 					lon = 123.123,
 					name = "tehran",
-					state = "tehranprov"
 				)
 			)
 		}

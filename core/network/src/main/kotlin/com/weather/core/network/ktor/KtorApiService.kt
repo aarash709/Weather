@@ -1,8 +1,8 @@
 package com.weather.core.network.ktor
 
-import com.weather.core.network.BuildConfig.API_KEY
 import com.weather.core.network.BuildConfig.BASE_URL
-import com.weather.core.network.model.geosearch.GeoSearchItemDto
+import com.weather.core.network.BuildConfig.SEARCH_URL
+import com.weather.core.network.model.geosearch.MeteoSearchItem
 import com.weather.core.network.model.meteoweahter.NetworkCurrent
 import com.weather.core.network.model.meteoweahter.NetworkDaily
 import com.weather.core.network.model.meteoweahter.NetworkHourly
@@ -52,10 +52,8 @@ interface KtorApiService {
 	): NetworkHourly
 
 	suspend fun getGeoSearch(
-		location: String,
-		limit: String,
-		appId: String,
-	): List<GeoSearchItemDto>
+		cityName: String,
+	): Result<MeteoSearchItem>
 }
 
 class KtorServiceImpl(
@@ -80,12 +78,12 @@ class KtorServiceImpl(
 
 	override suspend fun getDaily(lat: String, lon: String, dailyParams: String): NetworkDaily {
 		return client.get(BASE_URL) {
-			  url {
+			url {
 				path("v1/forecast")
 				parameters.append("latitude", lat)
 				parameters.append("longitude", lon)
 				parameters.append("daily", dailyParams)
-				  parameters.append("timezone", "auto")
+				parameters.append("timezone", "auto")
 			}
 		}.body()
 	}
@@ -104,25 +102,24 @@ class KtorServiceImpl(
 	}
 
 	override suspend fun getGeoSearch(
-		location: String,
-		limit: String,
-		appId: String,
-	): List<GeoSearchItemDto> {
+		cityName: String,
+	): Result<MeteoSearchItem> {
 		try {
-			val geoItems: List<GeoSearchItemDto> = client.get("https://api.openweathermap.org/") {
+			val searchItem: MeteoSearchItem = client.get(SEARCH_URL) {
 				url {
-					path("geo/1.0/direct")
-					parameters.append("q", location)
-					parameters.append("limit", "5")
-					parameters.append("appid", API_KEY)
+					path("v1/search")
+					parameters.append("name", cityName)
+					parameters.append("count", "10")
+					parameters.append("language", "en")
+					parameters.append("format", "json")
 				}
 			}.body()
-			return geoItems
+			return Result.success(searchItem)
 
 		} catch (e: ClientRequestException) {
 			// 4xx - responses
 			println("Error: ${e.response.status.description}")
-			return emptyList()
+			return Result.failure(e)
 		}
 	}
 }

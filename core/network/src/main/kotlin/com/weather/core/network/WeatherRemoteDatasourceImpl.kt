@@ -1,10 +1,10 @@
 package com.weather.core.network
 
-import com.weather.core.network.BuildConfig.API_KEY
 import com.weather.core.network.BuildConfig.CURRENT_PARAMS
 import com.weather.core.network.BuildConfig.DAILY_PARAMS
 import com.weather.core.network.BuildConfig.HOURLY_PARAMS
 import com.weather.core.network.ktor.KtorApiService
+import com.weather.core.network.model.geosearch.toGeoSearchItem
 import com.weather.core.network.model.meteoweahter.NetworkCurrent
 import com.weather.core.network.model.meteoweahter.NetworkDaily
 import com.weather.core.network.model.meteoweahter.NetworkHourly
@@ -63,9 +63,9 @@ class WeatherRemoteDatasourceImpl(
 
 	override suspend fun directGeocode(cityName: String): List<GeoSearchItem> {
 		return try {
-			ktorApi.getGeoSearch(location = cityName, limit = "5", API_KEY).map {
+			ktorApi.getGeoSearch(cityName = cityName).map {
 				it.toGeoSearchItem()
-			}
+			}.getOrNull()!!
 		} catch (e: Exception) {
 			Timber.e("direct geo error: ${e.message}")
 			return emptyList()

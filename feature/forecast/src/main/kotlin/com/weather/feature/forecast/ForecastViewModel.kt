@@ -124,9 +124,9 @@ class ForecastViewModel @Inject constructor(
 				}
 			}
 			.retry(2)
-//			.catch {
-//				Timber.e("data error:${it.message}")
-//			}
+			.catch {
+				Timber.e("data error:${it.message}")
+			}
 	}
 
 	@Deprecated("Use getAllLocationsData() instead")
