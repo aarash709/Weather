@@ -272,7 +272,7 @@ private fun DrawScope.drawCircleIndicator(
 @PreviewLightDark
 @Composable
 private fun UVPreview() {
-    val position = 50
+    val position = 20
     WeatherTheme {
         val color = MaterialTheme.colorScheme.background
         FlowRow(maxItemsInEachRow = 2, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -300,7 +300,7 @@ private fun UVPreview() {
 @PreviewLightDark
 @Composable
 private fun UVSinglePreview() {
-    val position = 50
+    val position = 20
     WeatherTheme {
         val color = MaterialTheme.colorScheme.background
         FlowRow(maxItemsInEachRow = 2, horizontalArrangement = Arrangement.spacedBy(16.dp)) {

@@ -75,10 +75,8 @@ class WeatherLocalDataSource(
 				val current = weather.current
 				val daily = weather.daily
 				val hourly = weather.hourly
-//				val sunrise = Instant.parse(daily.first().sunrise).epochSecond.toInt()
 				val sunrise =
 					LocalDateTime.parse(daily.first().sunrise).toEpochSecond(ZoneOffset.UTC).toInt()
-//				val sunset = Instant.parse(daily.first().sunset).epochSecond.toInt()
 				val sunset =
 					LocalDateTime.parse(daily.first().sunset).toEpochSecond(ZoneOffset.UTC).toInt()
 				WeatherData(

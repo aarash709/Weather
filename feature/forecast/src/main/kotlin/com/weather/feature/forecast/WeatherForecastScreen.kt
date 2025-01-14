@@ -78,6 +78,7 @@ import com.weather.model.WindSpeedUnits
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
@@ -322,12 +323,15 @@ internal fun WeatherDetails(
 					"HH:mm",
 					Locale.getDefault()
 				)
-				val offset = weatherData.coordinates.timezoneOffset
-				val sunrise = weatherData.current.sunrise.plus(offset).toLong()
-				val sunset = weatherData.current.sunset.plus(offset).toLong()
+				val sunrise = weatherData.current.sunrise.toLong()
+				val sunset = weatherData.current.sunset.toLong()
 				sdf.timeZone = TimeZone.getTimeZone("UTC")
 				formattedSunrise = sdf.format(Date(sunrise * 1000))
 				formattedSunset = sdf.format(Date(sunset * 1000))
+			}
+			val offset = weatherData.coordinates.timezoneOffset.toLong()
+			val currentTimeSeconds by remember(weatherData) {
+				mutableIntStateOf(Instant.now().plusSeconds(offset).epochSecond.toInt())
 			}
 			SunWidget(
 				modifier = Modifier
@@ -335,7 +339,7 @@ internal fun WeatherDetails(
 				formattedSunrise = formattedSunrise,
 				formattedSunset = formattedSunset,
 				weatherData = weatherData,
-				currentTimeSeconds = 173668548,
+				currentTimeSeconds = currentTimeSeconds,
 				surfaceColor = surfaceColor
 			)
 		}
