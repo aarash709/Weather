@@ -100,15 +100,13 @@ class WeatherRepositoryImpl @Inject constructor(
 				.getOrNull()
 				?.daily
 				?.toEntity(coordinate.cityName!!)
+				?.slice(0..4)
 
 			val hourly = remoteWeather
 				.getHourly(coordinate)
 				.getOrNull()
 				?.hourly
 				?.toEntity(coordinate.cityName!!)
-			Timber.e("timezone: ${remoteCurrent?.timezone}")
-			Timber.e("daily count: ${daily?.count()}")
-			Timber.e("daily time: ${daily?.first()?.time}")
 			localWeather.insertLocalData(
 				weatherLocation = locationInfo!!,
 				current = remoteCurrent.toEntity(cityName = coordinate.cityName!!),
@@ -116,8 +114,6 @@ class WeatherRepositoryImpl @Inject constructor(
 				hourly = hourly!!
 			)
 			val firstDailyTimeStamp = daily.first().time
-			val firstHourlyTimeStamp = hourly.first().time
-			Timber.e(firstHourlyTimeStamp)
 			localWeather.deleteDaily(
 				cityName = coordinate.cityName!!,
 				timeStamp = firstDailyTimeStamp
@@ -125,26 +121,11 @@ class WeatherRepositoryImpl @Inject constructor(
 			//subtract current local time by 1 hour then delete data older than specified time
 			val pattern = "yyyy-MM-dd'T'HH:mm"
 			val utcMinusOneHour = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC).minusHours(1)
-			val utcTime = DateTimeFormatter.ofPattern(pattern).format(utcMinusOneHour)
+			val formattedTime = DateTimeFormatter.ofPattern(pattern).format(utcMinusOneHour)
 			localWeather.deleteHourly(
 				cityName = coordinate.cityName!!,
-				timeStamp = utcTime
+				timeStamp = formattedTime
 			)
-//			remoteWeatherInfo.let {
-			//                localWeather.insertLocalData(
-//                    oneCall = remoteWeatherInfo.data!!.toEntity(cityName = coordinate.cityName.toString()),
-//                    current = remoteWeatherInfo.data!!.current.toEntity(cityName = coordinate.cityName.toString()),
-//                    currentWeather = remoteWeatherInfo.data!!.current.weather.map {
-//                        it.toEntity(cityName = coordinate.cityName.toString())
-//                    },
-//                    daily = remoteWeatherInfo.data!!.daily.slice(0..4)
-//                        .map { it.toEntity(cityName = coordinate.cityName.toString()) },
-//                    hourly = remoteWeatherInfo.data!!.hourly.slice(0..12).map {
-//                        it.toEntity(cityName = coordinate.cityName.toString())
-//                    }
-//                )
-//
-//			}
 		} catch (e: Exception) {
 			Timber.e("sync error: ${e.message}")
 		}
@@ -159,19 +140,4 @@ class WeatherRepositoryImpl @Inject constructor(
 			Timber.e("search error: ${it.message}")
 		}
 
-	override suspend fun getCurrent(latitude: String, longitude: String, params: String) {
-		TODO("Not yet implemented")
-	}
-
-	override suspend fun getDaily(latitude: String, longitude: String, params: String) {
-		TODO("Not yet implemented")
-	}
-
-	override suspend fun getHourly(latitude: String, longitude: String, params: String) {
-		TODO("Not yet implemented")
-	}
-
-	override suspend fun syncWeather(cityName: String, coordinate: Coordinate) {
-		TODO("Not yet implemented")
-	}
 }

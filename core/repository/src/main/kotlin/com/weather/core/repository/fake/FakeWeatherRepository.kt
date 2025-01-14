@@ -17,22 +17,6 @@ class FakeWeatherRepository : WeatherRepository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getCurrent(latitude: String, longitude: String, params: String) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun getDaily(latitude: String, longitude: String, params: String) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun getHourly(latitude: String, longitude: String, params: String) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun syncWeather(cityName: String, coordinate: Coordinate) {
-        TODO("Not yet implemented")
-    }
-
     override suspend fun syncWeather(coordinate: Coordinate) {
         TODO("Not yet implemented")
     }

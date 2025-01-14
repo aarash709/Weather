@@ -55,7 +55,7 @@ fun Daily.toEntity(cityName: String): List<DailyEntity> {
 	}
 }
 
-fun Hourly.toEntity(cityName: String,): List<HourlyEntity> {
+fun Hourly.toEntity(cityName: String): List<HourlyEntity> {
 	return time.mapIndexed { i, time ->
 		HourlyEntity(
 			cityName = cityName,

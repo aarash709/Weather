@@ -106,6 +106,7 @@ class KtorServiceImpl(
 				parameters.append("longitude", lon)
 				parameters.append("hourly", hourlyParams)
 				parameters.append("timezone", "auto")
+				parameters.append("forecast_days", "1")
 			}
 		}.body()
 	}
