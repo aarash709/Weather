@@ -143,20 +143,20 @@ private fun DailyItem(modifier: Modifier = Modifier, daily: Daily, tempData: Tem
         Row(
             modifier = Modifier
                 .padding(start = 0.dp)
-                .weight(1f),
+                .weight(1.25f),
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = "${daily.nightTemp.roundToInt()}°",
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.weight(1f).padding(horizontal = 16.dp),
                 textAlign = TextAlign.Center,
                 fontSize = 14.sp,
             )
-            TempBar(tempData = tempData)
+            TempBar(tempData = tempData, modifier = Modifier.weight(1.5f))
             Text(
                 text = "${daily.dayTemp.roundToInt()}°",
-                modifier = Modifier.padding(start = 16.dp),
+                modifier = Modifier.weight(1f).padding(start = 16.dp),
                 textAlign = TextAlign.Center,
                 fontSize = 14.sp,
             )
