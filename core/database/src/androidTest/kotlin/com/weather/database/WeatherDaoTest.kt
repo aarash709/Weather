@@ -5,11 +5,10 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.weather.core.database.WeatherDao
 import com.weather.core.database.WeatherDatabase
-import com.weather.core.testing.data.currentWeather
 import com.weather.core.testing.data.current
 import com.weather.core.testing.data.daily
 import com.weather.core.testing.data.hourly
-import com.weather.core.testing.data.oneCall
+import com.weather.core.testing.data.weatherLocationInfo
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -39,41 +38,38 @@ class WeatherDaoTest {
 
     @Test
     fun weatherDao_database_is_empty_with_no_data_insert_test() {
-        val isEmpty = weatherDao.countOneCall() == 0
+        val isEmpty = weatherDao.countColumns() == 0
         assert(isEmpty)
     }
 
     @Test
     fun weatherDao_database_is_not_empty_test() = runTest {
-        weatherDao.insertOneCall(oneCall = oneCall)
-        val isEmpty = weatherDao.countOneCall() == 1
+        weatherDao.insertWeatherLocation(weatherLocation = weatherLocationInfo)
+        val isEmpty = weatherDao.countColumns() == 1
         assert(isEmpty)
     }
 
     @Test
     fun weatherDao_weatherData_is_upsert_atomically_test() = runTest {
         weatherDao.insertData(
-            oneCall,
+            weatherLocationInfo,
             current,
-            currentWeather,
             daily,
             hourly
         )
         val weatherData = weatherDao
-            .getAllOneCallWithCurrentAndDailyAndHourly()
+            .getAllWeatherData()
             .first()
         assertEquals(
             listOf(
-                weatherData.first().oneCall.cityName,
-                weatherData.first().current.current.cityName,
-                weatherData.first().current.weather.first().cityName,
+                weatherData.first().weatherLocation.cityName,
+                weatherData.first().current.cityName,
                 weatherData.first().daily.first().cityName,
                 weatherData.first().hourly.first().cityName,
             ),
             listOf(
-                oneCall.cityName,
+                weatherLocationInfo.cityName,
                 current.cityName,
-                currentWeather.first().cityName,
                 daily.first().cityName,
                 hourly.first().cityName,
 
@@ -84,17 +80,16 @@ class WeatherDaoTest {
     @Test
     fun weatherDao_upsert_then_delete_then_check_database_is_empty_test() = runTest {
         weatherDao.insertData(
-            oneCall,
+            weatherLocationInfo,
             current,
-            currentWeather,
             daily,
             hourly
         )
-        val cityNames = listOf(oneCall.cityName)
-        weatherDao.deleteWeatherByCityName(
+        val cityNames = listOf(weatherLocationInfo.cityName)
+        weatherDao.deleteMultipleWeather(
             cityNames
         )
-        val isEmpty = weatherDao.countOneCall() == 0
+        val isEmpty = weatherDao.countColumns() == 0
         assert(
             isEmpty,
         )

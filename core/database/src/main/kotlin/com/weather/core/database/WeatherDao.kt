@@ -3,117 +3,154 @@ package com.weather.core.database
 import androidx.room.*
 import androidx.room.OnConflictStrategy.Companion.REPLACE
 import com.weather.core.database.entities.geoSearch.GeoSearchItemEntity
-import com.weather.core.database.entities.onecall.*
-import com.weather.core.database.entities.relation.CurrentWithWeather
-import com.weather.core.database.entities.relation.OneCallAndCurrent
-import com.weather.core.database.entities.relation.OneCallWithCurrentAndDailyAndHourly
+import com.weather.core.database.entities.meteo.CurrentEntity
+import com.weather.core.database.entities.meteo.DailyEntity
+import com.weather.core.database.entities.meteo.HourlyEntity
+import com.weather.core.database.entities.meteo.WeatherLocationEntity
+import com.weather.core.database.entities.relation.CurrentWeatherWithDailyAndHourly
+import com.weather.core.database.entities.relation.WeatherAndCurrent
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WeatherDao {
 
-    /**
-     * checking if database has at least one data row, otherwise returns 0(counts rows).
-     */
-    @Query("SELECT count(cityName) FROM one_call")
-    fun countOneCall(): Int
+	/**
+	 * counts the number of locations stored, returns 0 if database is empty.
+	 * also used for incrementing the value of order index of new location.
+	 */
+	@Query("SELECT count(cityName) FROM weather_location")
+	fun countColumns(): Int
 
-    /**
-     * method to store data.
-     */
-    @Upsert
-    suspend fun insertOneCall(oneCall: OneCallEntity)
+	/**
+	 * meteo
+	 */
+	@Upsert
+	suspend fun insertWeatherLocation(weatherLocation: WeatherLocationEntity)
 
-    @Upsert
-    suspend fun insertOneCalls(oneCalls: List<OneCallEntity>)
+	/**
+	 * used to update list order
+	 */
+	@Upsert
+	suspend fun insertWeatherLocations(oneCalls: List<WeatherLocationEntity>)
 
-    @Upsert
-    suspend fun insertOneCallCurrent(current: CurrentEntity)
+	@Upsert
+	suspend fun insertCurrent(currentEntity: CurrentEntity)
 
-    @Upsert
-    suspend fun insertOneCallCurrentWeather(weather: List<CurrentWeatherEntity>)
+	@Upsert
+	suspend fun insertDaily(daily: List<DailyEntity>)
 
-    @Upsert
-    suspend fun insertDaily(daily: List<DailyEntity>)
+	@Upsert
+	suspend fun insertHourly(hourly: List<HourlyEntity>)
 
-    @Upsert
-    suspend fun insertHourly(hourly: List<OneCallHourlyEntity>)
+	@Query("select * from weather_location where cityName= :cityName")
+	fun getWeatherLocation(cityName: String): WeatherLocationEntity
 
-    @Query("SELECT count(*) FROM one_call WHERE cityName = :cityName")
-    fun checkIfCityExists(cityName: String): Int
+	@Transaction
+	@Query("select * from weather_location")
+	fun getAllWeatherData(): Flow<List<CurrentWeatherWithDailyAndHourly>>
 
-    @Query("SELECT * FROM one_call")
-    fun getAllOneCall(): List<OneCallEntity>
+	@Transaction
+	@Query("select * from weather_location")
+	fun getWeatherLocations(): Flow<List<WeatherAndCurrent>>
 
-    @Query("SELECT * FROM one_call WHERE cityName = :cityName")
-    fun getOneCallByCityName(cityName: String): OneCallEntity
+	/**
+	 * method to store data.
+	 */
+//	@Upsert
+//	suspend fun insertOneCall(oneCall: OneCallEntity)
 
-    @Transaction
-    @Query("SELECT * FROM one_call WHERE cityName = :cityName")
-    fun getOneCallAndCurrentByCityName(cityName: String): Flow<OneCallAndCurrent>
+//	@Upsert
+//	suspend fun insertOneCalls(oneCalls: List<OneCallEntity>)
 
-    @Transaction
-    @Query("SELECT * FROM one_call_current WHERE cityName = :cityName")
-    fun getCurrentWithWeatherByCityName(cityName: String): Flow<CurrentWithWeather>
+//	@Upsert
+//	suspend fun insertOneCallCurrent(current: com.weather.core.database.entities.onecall.CurrentEntity)
+//
+//	@Upsert
+//	suspend fun insertOneCallCurrentWeather(weather: List<CurrentWeatherEntity>)
+//
+//	@Upsert
+//	suspend fun insertDaily(daily: List<com.weather.core.database.entities.onecall.DailyEntity>)
+//
+//	@Upsert
+//	suspend fun insertHourly(hourly: List<OneCallHourlyEntity>)
 
-    @Transaction
-    @Query("SELECT * FROM one_call")
-    fun getAllOneCallAndCurrent(): Flow<List<OneCallAndCurrent>>
+	@Query("SELECT count(*) FROM weather_location WHERE cityName = :cityName")
+	fun checkIfCityExists(cityName: String): Int
 
-    //delete
-    @Query("DELETE FROM one_call WHERE cityName in (:cityName)")
-    suspend fun deleteWeatherByCityName(cityName: List<String>)
+//	@Query("SELECT * FROM one_call")
+//	fun getAllOneCall(): List<OneCallEntity>
+//
+//	@Query("SELECT * FROM one_call WHERE cityName = :cityName")
+//	fun getOneCallByCityName(cityName: String): OneCallEntity
+//
+//	@Transaction
+//	@Query("SELECT * FROM one_call WHERE cityName = :cityName")
+//	fun getOneCallAndCurrentByCityName(cityName: String): Flow<OneCallAndCurrent>
+//
+//	@Transaction
+//	@Query("SELECT * FROM one_call_current WHERE cityName = :cityName")
+//	fun getCurrentWithWeatherByCityName(cityName: String): Flow<CurrentWithWeather>
+//
+	@Transaction
+	@Query("SELECT * FROM weather_location")
+	fun getAllWeatherAndCurrent(): Flow<List<WeatherAndCurrent>>
 
-    @Query("select * from one_call_daily where cityName= :cityName")
-    fun getDailyByCityName(cityName: String): Flow<List<DailyEntity>>
+	//delete
 
-    // geo
-    @Insert(onConflict = REPLACE)
-    suspend fun insertGeoSearch(geoSearch: GeoSearchItemEntity)
+	@Query("delete from weather_location where cityName= :cityName")
+	fun deleteOneWeather(cityName: String)
 
-    @Transaction
-    @Query("select * from one_call")
-    fun getAllOneCallWithCurrentAndDailyAndHourly(): Flow<List<OneCallWithCurrentAndDailyAndHourly>> //experimental
+	@Query("DELETE FROM weather_location WHERE cityName in (:cityName)")
+	suspend fun deleteMultipleWeather(cityName: List<String>)
+//
+//	@Query("select * from one_call_daily where cityName= :cityName")
+//	fun getDailyByCityName(cityName: String): Flow<List<DailyEntity>>
 
-    /**
-     * Delete old data based on timeStamp of the network
-     * */
-    @Query("delete from one_call_daily where cityName = :cityName and dt < :timeStamp")
-    fun deleteDaily(cityName: String, timeStamp: Long)
+	// geo
+	@Insert(onConflict = REPLACE)
+	suspend fun insertGeoSearch(geoSearch: GeoSearchItemEntity)
 
-    /**
-     * Delete old data based on timeStamp of the network
-     * */
-    @Query("delete from one_call_hourly where cityName = :cityName and dt < :timeStamp")
-    fun deleteHourly(cityName: String, timeStamp: Int)
+//	@Transaction
+//	@Query("select * from one_call")
+//	fun getAllOneCallWithCurrentAndDailyAndHourly(): Flow<List<OneCallWithCurrentAndDailyAndHourly>> //experimental
 
-    /**
-     * insert data atomic, so we don`t get NPE.
-     */
-    @Transaction
-    suspend fun insertData(
-        oneCall: OneCallEntity,
-        oneCallCurrent: CurrentEntity,
-        currentWeatherList: List<CurrentWeatherEntity>,
-        daily: List<DailyEntity>,
-        hourly: List<OneCallHourlyEntity>,
-    ) {
-        insertOneCall(oneCall = oneCall)
-        insertOneCallCurrent(current = oneCallCurrent)
-        insertOneCallCurrentWeather(weather = currentWeatherList)
-        insertDaily(daily = daily)
-        insertHourly(hourly = hourly)
-    }
+	/**
+	 * Delete old data based on timeStamp of the network
+//	 * */
+	@Query("delete from daily where cityName = :cityName and time < :timeStamp")
+	fun deleteDaily(cityName: String, timeStamp: String)
 
-    @Transaction
-    suspend fun reorderOneCallWeatherData(
-        from: OneCallEntity,
-        to: OneCallEntity,
-        fromIndex: Int,
-        toIndex: Int,
-    ) {
-        insertOneCall(from.copy(orderIndex = toIndex))
-        insertOneCall(to.copy(orderIndex = fromIndex))
-    }
+	/**
+	 * Delete old data based on timeStamp of the network
+	 * */
+	@Query("delete from hourly where cityName = :cityName and time < :timeStamp")
+	fun deleteHourly(cityName: String, timeStamp: String)
+
+	/**
+	 * NPE safe data insert
+	 */
+	@Transaction
+	suspend fun insertData(
+		weatherLocation: WeatherLocationEntity,
+		current: CurrentEntity,
+		daily: List<DailyEntity>,
+		hourly: List<HourlyEntity>,
+	) {
+		insertWeatherLocation(weatherLocation)
+		insertCurrent(current)
+		insertDaily(daily)
+		insertHourly(hourly)
+	}
+
+//	@Transaction
+//	suspend fun reorderOneCallWeatherData(
+//		from: OneCallEntity,
+//		to: OneCallEntity,
+//		fromIndex: Int,
+//		toIndex: Int,
+//	) {
+//		insertOneCall(from.copy(orderIndex = toIndex))
+//		insertOneCall(to.copy(orderIndex = fromIndex))
+//	}
 
 }

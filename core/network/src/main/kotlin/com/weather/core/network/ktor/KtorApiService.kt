@@ -1,115 +1,125 @@
 package com.weather.core.network.ktor
 
-import com.weather.core.network.BuildConfig.API_KEY
 import com.weather.core.network.BuildConfig.BASE_URL
-import com.weather.core.network.model.geosearch.GeoSearchItemDto
-import com.weather.core.network.model.weather.NetworkOneCall
+import com.weather.core.network.BuildConfig.SEARCH_URL
+import com.weather.core.network.model.geosearch.MeteoSearchItem
+import com.weather.core.network.model.meteoweahter.NetworkCurrent
+import com.weather.core.network.model.meteoweahter.NetworkDaily
+import com.weather.core.network.model.meteoweahter.NetworkHourly
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.engine.android.Android
 import io.ktor.client.plugins.ClientRequestException
-import io.ktor.client.plugins.HttpResponseValidator
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logger
-import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.get
 import io.ktor.http.path
-import io.ktor.serialization.kotlinx.json.json
-import kotlinx.serialization.json.Json
-import timber.log.Timber
+
 
 interface KtorApiService {
 
-    suspend fun getGeoSearch(
-        location: String,
-        limit: String,
-        appId: String,
-    ): List<GeoSearchItemDto>
+	/**
+	 * @param currentParams are values to include in the json response for example:
+	 * "current=temperature_2m,relative_humidity_2m..."
+	 * each value should be separated with a ","
+	 * visit "https://open-meteo.com/en/docs" for more
+	 */
+	suspend fun getCurrent(
+		lat: String,
+		lon: String,
+		currentParams: String
+	): NetworkCurrent
 
-    suspend fun getOneCall(
-        lat: String,
-        lon: String,
-        exclude: String,
-        appId: String,
-    ): NetworkOneCall
+	/**
+	 * @param dailyParams are values to include in the json response for example:
+	 * "daily=weather_code,temperature_2m_max..."
+	 * each value should be separated with a ","
+	 * visit "https://open-meteo.com/en/docs" for more
+	 */
+	suspend fun getDaily(
+		lat: String,
+		lon: String,
+		dailyParams: String
+	): NetworkDaily
 
-    companion object {
-//        fun create(): KtorApiService {
-//            return KtorServiceImpl(
-//                client = HttpClient(Android) {
-//                    install(ContentNegotiation) {
-//                        expectSuccess = true
-//                        json(Json {
-////                            ignoreUnknownKeys = true
-//                            prettyPrint = true
-//                            isLenient = false
-////                            useAlternativeNames = true
-////                            encodeDefaults = false
-//                        })
-//                    }
-//                    install(Logging) {
-//                        logger = object : Logger {
-//                            override fun log(message: String) {
-//                                Timber.e(message)
-//                            }
-//                        }
-//                        level = LogLevel.ALL
-//                    }
-//                    HttpResponseValidator {
-//                        validateResponse { response ->
-//                            val error: Error = response.body()
-//                            Timber.e(error.message)
-//                        }
-//                    }
-//                }
-//
-//            )
-//        }
-    }
+	/**
+	 * @param hourlyParams are values to include in the json response for example:
+	 * "hourly=temperature_2m,weather_code,wind_speed_10m..."
+	 * each value should be separated with a ","
+	 * visit "https://open-meteo.com/en/docs" for more
+	 */
+	suspend fun getHourly(
+		lat: String,
+		lon: String,
+		hourlyParams: String
+	): NetworkHourly
+
+	suspend fun getGeoSearch(
+		cityName: String,
+	): Result<MeteoSearchItem>
 }
 
 class KtorServiceImpl(
-    private val client: HttpClient,
+	private val client: HttpClient,
 ) : KtorApiService {
 
-    override suspend fun getOneCall(
-        lat: String,
-        lon: String,
-        exclude: String,
-        appId: String,
-    ): NetworkOneCall {
-            return client.get(BASE_URL) {
-                url {
-                    path("data/2.5/onecall")
-                    parameters.append("lat", lat)
-                    parameters.append("lon", lon)
-                    parameters.append("exclude", exclude)
-                    parameters.append("appid", API_KEY)
-                }
-            }.body()
-    }
+	override suspend fun getCurrent(
+		lat: String,
+		lon: String,
+		currentParams: String
+	): NetworkCurrent {
+		return client.get(BASE_URL) {
+			url {
+				path("v1/forecast")
+				parameters.append("latitude", lat)
+				parameters.append("longitude", lon)
+				parameters.append("current", currentParams)
+				parameters.append("timezone", "auto")
+			}
+		}.body()
+	}
 
-    override suspend fun getGeoSearch(
-        location: String,
-        limit: String,
-        appId: String,
-    ): List<GeoSearchItemDto> {
-        try {
-            val geoItems: List<GeoSearchItemDto> = client.get(BASE_URL) {
-                url {
-                    path("geo/1.0/direct")
-                    parameters.append("q", location)
-                    parameters.append("limit", "5")
-                    parameters.append("appid", API_KEY)
-                }
-            }.body()
-            return geoItems
+	override suspend fun getDaily(lat: String, lon: String, dailyParams: String): NetworkDaily {
+		return client.get(BASE_URL) {
+			url {
+				path("v1/forecast")
+				parameters.append("latitude", lat)
+				parameters.append("longitude", lon)
+				parameters.append("daily", dailyParams)
+				parameters.append("timezone", "auto")
+			}
+		}.body()
+	}
 
-        } catch (e: ClientRequestException) {
-            // 4xx - responses
-            println("Error: ${e.response.status.description}")
-            return emptyList()
-        }
-    }
+	override suspend fun getHourly(lat: String, lon: String, hourlyParams: String): NetworkHourly {
+		return client.get(BASE_URL) {
+			url {
+				path("v1/forecast")
+				parameters.append("latitude", lat)
+				parameters.append("longitude", lon)
+				parameters.append("hourly", hourlyParams)
+				parameters.append("timezone", "auto")
+				parameters.append("forecast_days", "1")
+			}
+		}.body()
+	}
+
+	override suspend fun getGeoSearch(
+		cityName: String,
+	): Result<MeteoSearchItem> {
+		try {
+			val searchItem: MeteoSearchItem = client.get(SEARCH_URL) {
+				url {
+					path("v1/search")
+					parameters.append("name", cityName)
+					parameters.append("count", "10")
+					parameters.append("language", "en")
+					parameters.append("format", "json")
+				}
+			}.body()
+			return Result.success(searchItem)
+
+		} catch (e: ClientRequestException) {
+			// 4xx - responses
+			println("Error: ${e.response.status.description}")
+			return Result.failure(e)
+		}
+	}
 }

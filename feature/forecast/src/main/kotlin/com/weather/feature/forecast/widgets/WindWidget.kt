@@ -38,7 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.experiment.weather.core.common.R.array
 import com.weather.core.design.components.WeatherSquareWidget
-import com.weather.core.repository.fake.data.listOfWeatherDataTest
+import com.weather.core.repository.data.listOfWeatherDataTest
 import com.weather.model.WeatherData
 import kotlin.math.cos
 import kotlin.math.roundToInt
@@ -52,8 +52,8 @@ internal fun WindWidget(
     surfaceColor: Color,
 ) {
     val context = LocalContext.current
-    val windDirection = weatherData.current.wind_deg
-    val windSpeed = weatherData.current.wind_speed.roundToInt()
+    val windDirection = weatherData.current.windDirection
+    val windSpeed = weatherData.current.windSpeed.roundToInt()
     val direction by remember(windDirection) {
         val directions = context.resources.getStringArray(array.wind_directions)
         val value = when (windDirection) {

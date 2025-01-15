@@ -1,11 +1,8 @@
 package com.weather.core.network.di
 
-import com.weather.core.network.WeatherRemoteDatasource
+import com.weather.core.network.WeatherRemoteDatasourceImpl
 import com.weather.core.network.ktor.KtorApiService
 import com.weather.core.network.ktor.KtorServiceImpl
-import com.weather.core.network.retrofit.BASE_URL
-import com.weather.core.network.retrofit.RetrofitApiService
-import com.weather.core.network.retrofit.moshi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,9 +12,6 @@ import io.ktor.client.engine.android.Android
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
-import retrofit2.create
 import javax.inject.Singleton
 
 @Module
@@ -29,9 +23,6 @@ object NetworkModule {
     fun provideKtorService(): KtorApiService {
         return KtorServiceImpl(
             client = HttpClient(Android) {
-//                expectSuccess = true
-//                useDefaultTransformers = true
-//                followRedirects = true
                 install(ContentNegotiation) {
                     json(
                         Json {
@@ -46,22 +37,9 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideWeatherApi(
-    ): RetrofitApiService {
-        return Retrofit
-            .Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .build()
-            .create()
-    }
-
-    @Singleton
-    @Provides
     fun provideWeatherRemoteDataSource(
-//        remoteApi: RetrofitApiService,
         ktor: KtorApiService,
-    ): WeatherRemoteDatasource = WeatherRemoteDatasource(/*remoteApi,*/ ktorApi = ktor )
+    ): WeatherRemoteDatasourceImpl = WeatherRemoteDatasourceImpl(ktorApi = ktor )
 
 
 }

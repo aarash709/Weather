@@ -34,7 +34,7 @@ import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.feature.forecast.components.TempBar
 import com.weather.feature.forecast.components.TempData
-import com.weather.feature.forecast.components.hourlydata.DailyPreviewStaticData
+import com.weather.feature.forecast.hourlydata.DailyPreviewStaticData
 import com.weather.model.Daily
 import com.weather.model.TemperatureUnits
 import kotlin.math.roundToInt
@@ -117,18 +117,6 @@ private fun DailyTitle(modifier: Modifier = Modifier, contentColor: Color) {
                 color = contentColor
             )
         }
-//        Row(verticalAlignment = Alignment.CenterVertically) {
-//            Text(
-//                text = stringResource(id = string.more_details),
-//                fontSize = 14.sp,
-//                color = contentColor
-//            )
-//            Icon(
-//                imageVector = Icons.AutoMirrored.Rounded.ArrowRight,
-//                tint = contentColor,
-//                contentDescription = null
-//            )
-//        }
     }
 }
 
@@ -147,7 +135,7 @@ private fun DailyItem(modifier: Modifier = Modifier, daily: Daily, tempData: Tem
                     .align(Alignment.CenterVertically)
             )
             AsyncImage(
-                model = "https://openweathermap.org/img/wn/${daily.icon}@2x.png",
+                model = daily.iconUrl,
                 modifier = Modifier.padding(end = 16.dp),
                 contentDescription = "WeatherIcon",
             )
@@ -155,20 +143,20 @@ private fun DailyItem(modifier: Modifier = Modifier, daily: Daily, tempData: Tem
         Row(
             modifier = Modifier
                 .padding(start = 0.dp)
-                .weight(1f),
+                .weight(1.25f),
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = "${daily.nightTemp.roundToInt()}°",
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.weight(1f).padding(horizontal = 16.dp),
                 textAlign = TextAlign.Center,
                 fontSize = 14.sp,
             )
-            TempBar(tempData = tempData)
+            TempBar(tempData = tempData, modifier = Modifier.weight(1.5f))
             Text(
                 text = "${daily.dayTemp.roundToInt()}°",
-                modifier = Modifier.padding(start = 16.dp),
+                modifier = Modifier.weight(1f).padding(start = 16.dp),
                 textAlign = TextAlign.Center,
                 fontSize = 14.sp,
             )

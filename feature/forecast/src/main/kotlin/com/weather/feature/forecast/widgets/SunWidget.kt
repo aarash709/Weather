@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.sp
 import com.experiment.weather.core.common.R.string
 import com.weather.core.design.components.WeatherSquareWidget
 import com.weather.core.design.theme.WeatherTheme
-import com.weather.core.repository.fake.data.listOfWeatherDataTest
+import com.weather.core.repository.data.listOfWeatherDataTest
 import com.weather.model.WeatherData
 
 @Composable
@@ -272,7 +272,7 @@ private fun DrawScope.drawCircleIndicator(
 @PreviewLightDark
 @Composable
 private fun UVPreview() {
-    val position = 50
+    val position = 20
     WeatherTheme {
         val color = MaterialTheme.colorScheme.background
         FlowRow(maxItemsInEachRow = 2, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -300,7 +300,7 @@ private fun UVPreview() {
 @PreviewLightDark
 @Composable
 private fun UVSinglePreview() {
-    val position = 50
+    val position = 20
     WeatherTheme {
         val color = MaterialTheme.colorScheme.background
         FlowRow(maxItemsInEachRow = 2, horizontalArrangement = Arrangement.spacedBy(16.dp)) {

@@ -53,7 +53,7 @@ internal fun CurrentWeather(
 	val today = weatherData.daily.first()
 	val highTemp = today.dayTemp.roundToInt().toString()
 	val lowTemp = today.nightTemp.roundToInt().toString()
-	val condition = weatherData.current.weather.first().description
+//	val condition = weatherData.current..first().description
 	Row(
 		modifier = modifier
 			.fillMaxWidth()
@@ -75,7 +75,7 @@ internal fun CurrentWeather(
 				)
 				indicator()
 				Text(
-					text = condition,
+					text = weatherData.current.condition,
 					fontSize = 14.sp,
 					color = LocalContentColor.current.copy(alpha = 0.75f)
 				)

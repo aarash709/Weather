@@ -34,11 +34,11 @@ fun WeatherBackground(
     ) {
         if (showBackground) {
             val contentScale = ContentScale.Crop
-            Image(
-                painter = painterResource(id = R.drawable.dawn),
-                contentScale = contentScale,
-                contentDescription = "background image"
-            )
+//            Image(
+//                painter = painterResource(id = R.drawable.dawn),
+//                contentScale = contentScale,
+//                contentDescription = "background image"
+//            )
         }
         content()
     }

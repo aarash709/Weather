@@ -2,9 +2,10 @@ package com.weather.feature.forecast
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.experiment.weather.core.common.extentions.convertToUserSettings
+import com.experiment.weather.core.common.extentions.applySettings
 import com.weather.core.repository.UserRepository
 import com.weather.core.repository.WeatherRepository
+import com.weather.core.repository.data.getWeatherCondition
 import com.weather.model.Coordinate
 import com.weather.model.Hourly
 import com.weather.model.SavableForecastData
@@ -32,266 +33,293 @@ import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 import javax.inject.Inject
 
 enum class TimeOfDay {
-    Day,
-    Night,
-    Dawn
+	Day,
+	Night,
+	Dawn
 }
 
 @HiltViewModel
 class ForecastViewModel @Inject constructor(
-    private val syncStatus: SyncManager,
-    private val weatherRepository: WeatherRepository,
-    private val userRepository: UserRepository,
+	private val syncStatus: SyncManager,
+	private val weatherRepository: WeatherRepository,
+	private val userRepository: UserRepository,
 //    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    //    private val cityName = savedStateHandle.get<String>("cityName").orEmpty()
-    private val _timeOfDay = MutableStateFlow(TimeOfDay.Day)
-    internal val timeOfDay = _timeOfDay
-    internal var isSyncing = syncStatus.isSyncing
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), false)
+	//    private val cityName = savedStateHandle.get<String>("cityName").orEmpty()
+	private val _timeOfDay = MutableStateFlow(TimeOfDay.Day)
+	internal val timeOfDay = _timeOfDay
+	internal var isSyncing = syncStatus.isSyncing
+		.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), false)
 
-    internal val userSettings = getUserSettings().stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(1000),
-        initialValue = SettingsData()
-    )
-    internal val favoriteCity = getFavoriteCityCoordinate().stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(1000),
-        initialValue = ""
-    )
+	internal val userSettings = getUserSettings().stateIn(
+		scope = viewModelScope,
+		started = SharingStarted.WhileSubscribed(1000),
+		initialValue = SettingsData()
+	)
+	internal val favoriteCity = getFavoriteCityCoordinate().stateIn(
+		scope = viewModelScope,
+		started = SharingStarted.WhileSubscribed(1000),
+		initialValue = ""
+	)
 
-    @ExperimentalCoroutinesApi
-    internal val weatherUIState = getAllLocationsData().stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(1000),
-        initialValue = listOf(SavableForecastData.placeholderDefault)
-    )
+	@ExperimentalCoroutinesApi
+	internal val weatherUIState = getAllLocationsData().stateIn(
+		scope = viewModelScope,
+		started = SharingStarted.WhileSubscribed(1000),
+		initialValue = listOf(SavableForecastData.placeholderDefault)
+	)
 
-    private fun getAllLocationsData(): Flow<List<SavableForecastData>> {
-        return combine(
-            weatherRepository.getAllForecastWeatherData(),
-            getFavoriteCityCoordinate(),
-            getUserSettings()
-        ) { allWeather, favoriteCity, setting ->
-            allWeather.map { weather ->
-                val newWeather = weather.convertToUserSettings(userSettings = setting)
-                val hourly = newWeather.hourly
-                val current = newWeather.current
-                val timezoneOffset = newWeather.coordinates.timezone_offset
-                val hourlyData = calculateSunriseAndSunset(
-                    hourlyData = hourly,
-                    sunrise = current.sunrise,
-                    sunset = current.sunset,
-                    timezoneOffset = timezoneOffset.toLong()
-                )
-                SavableForecastData(weather = newWeather.copy(hourly = hourlyData))
-            }
-        }
-            .onEach { allForecast ->
-                allForecast.map { data ->
-                    val currentForecastTime = data.weather.current.dt
-                    val current = data.weather.current
-                    Timber.e("time ${allForecast.first().weather.hourly.first().time}")
-                    _timeOfDay.update {
-                        calculateTimeOfDay(
-                            currentForecastTime = currentForecastTime.toLong(),
-                            sunrise = current.sunrise.toLong(),
-                            sunset = current.sunset.toLong(),
-                            30
-                        )
-                    }
-                    val coordinate = Coordinate(
-                        data.weather.coordinates.name,
-                        data.weather.coordinates.lat.toString(),
-                        data.weather.coordinates.lon.toString()
-                    )
-                    if (isDataExpired(dataTimestamp = currentForecastTime, minutesThreshold = 30)) {
-                        sync(coordinate)
-                    }
-                }
-            }
-            .retry(2)
-            .catch {
-                Timber.e("data error:${it.message}")
-            }
-    }
+	private fun getAllLocationsData(): Flow<List<SavableForecastData>> {
+		return combine(
+			weatherRepository.getAllForecastWeatherData(),
+			getFavoriteCityCoordinate(),
+			getUserSettings()
+		) { allWeather, favoriteCity, setting ->
+			allWeather.map { weather ->
+				Timber.e("timeee: ${weather.current.time}")
+				val newWeather = weather.applySettings(userSettings = setting)
+				val daily = newWeather.daily.map {
+					val weatherCondition =
+						getWeatherCondition(
+							wmoCode = it.weatherCode.toString(),
+							isDay = 1
+						) // 1 is day time to fetch day icons
+					it.copy(iconUrl = weatherCondition.image)
+				}
+				val hourly = newWeather.hourly.map {
+					val weatherCondition =
+						getWeatherCondition(wmoCode = it.weatherCode.toString(), isDay = it.isDay)
+					it.copy(iconUrl = weatherCondition.image)
+				}
+				val current = newWeather.current.copy(
+					condition = getWeatherCondition(
+						wmoCode = daily.first().weatherCode.toString(),
+						isDay = 1
+					).description
+				)
+				val timezoneOffset = newWeather.coordinates.timezoneOffset.toLong()
 
-    @Deprecated("Use getAllLocationsData() instead")
-    private fun getFavoriteWeatherData(): Flow<SavableForecastData> {
-        return weatherRepository.getAllForecastWeatherData()
-            .combine(getFavoriteCityCoordinate()) { allWeather, favoriteCityName ->
-                if (favoriteCityName.isNullOrBlank() ||
-                    allWeather.all { it.coordinates.name != favoriteCityName }
-                )
-                    allWeather.first()
-                else
-                    allWeather.first { it.coordinates.name == favoriteCityName }
-            }
-            .flowOn(Dispatchers.IO)
-            .combine(getUserSettings()) { weather, userSettings ->
-                userSettings.setDefaultIfNull()
-                val newWeather = weather.convertToUserSettings(userSettings = userSettings)
-                val hourly = newWeather.hourly
-                val current = newWeather.current
-                val timezoneOffset = newWeather.coordinates.timezone_offset
-                val hourlyData = calculateSunriseAndSunset(
-                    hourlyData = hourly,
-                    sunrise = current.sunrise.plus(newWeather.coordinates.timezone_offset),
-                    sunset = current.sunset.plus(newWeather.coordinates.timezone_offset),
-                    timezoneOffset = timezoneOffset.toLong()
-                )
-                SavableForecastData(
-                    weather = newWeather.copy(hourly = hourlyData),
-                    showPlaceHolder = false
-                )
-            }
-            .onEach { forecastData ->
-                val currentForecastTime = forecastData.weather.current.dt
-                val current = forecastData.weather.current
-                _timeOfDay.update {
-                    calculateTimeOfDay(
-                        currentForecastTime = currentForecastTime.toLong(),
-                        sunrise = current.sunrise.toLong(),
-                        sunset = current.sunset.toLong(),
-                        30
-                    )
-                }
-                val coordinate = Coordinate(
-                    forecastData.weather.coordinates.name,
-                    forecastData.weather.coordinates.lat.toString(),
-                    forecastData.weather.coordinates.lon.toString()
-                )
-                if (isDataExpired(dataTimestamp = currentForecastTime, minutesThreshold = 30)) {
-                    sync(coordinate)
-                }
-            }
-            .retry(2)
-            .catch {
-                Timber.e("data error:${it.message}")
-            }
-    }
+				/*val hourlyData = calculateSunriseAndSunset(
+					hourlyData = hourly,
+					sunrise = current.sunrise,
+					sunset = current.sunset,
+					timezoneOffset = timezoneOffset
+				)*/
+				SavableForecastData(
+					weather = newWeather.copy(
+						current = current,
+						hourly = hourly,
+						daily = daily
+					)
+				)
+			}
+		}
+			.onEach { allForecast ->
+				allForecast.map { data ->
+					val currentForecastTime = data.weather.current.time
+					val current = data.weather.current
+					Timber.e("time ${allForecast.first().weather.hourly.first().time}")
+					_timeOfDay.update {
+						it
+//						calculateTimeOfDay(
+//							currentForecastTime = currentForecastTime.toLong(),
+//							sunrise = current.sunrise.toLong(),
+//							sunset = current.sunset.toLong(),
+//							30
+//						)
+						//todo needs fix
+					}
+					val coordinate = Coordinate(
+						data.weather.coordinates.name,
+						data.weather.coordinates.lat.toString(),
+						data.weather.coordinates.lon.toString()
+					)
+					if (/*isDataExpired(dataTimestamp = currentForecastTime, minutesThreshold = 30)*/true) {
+//						sync(coordinate)
+					}
+				}
+			}
+			.retry(2)
+			.catch {
+				Timber.e("data error:${it.message}")
+			}
+	}
 
-    private fun getFavoriteCityCoordinate(): Flow<String?> {
-        return userRepository.getFavoriteCityCoordinate()
-    }
+	@Deprecated("Use getAllLocationsData() instead")
+	private fun getFavoriteWeatherData(): Flow<SavableForecastData> {
+		return weatherRepository.getAllForecastWeatherData()
+			.combine(getFavoriteCityCoordinate()) { allWeather, favoriteCityName ->
+				if (favoriteCityName.isNullOrBlank() ||
+					allWeather.all { it.coordinates.name != favoriteCityName }
+				)
+					allWeather.first()
+				else
+					allWeather.first { it.coordinates.name == favoriteCityName }
+			}
+			.flowOn(Dispatchers.IO)
+			.combine(getUserSettings()) { weather, userSettings ->
+				userSettings.setDefaultIfNull()
+				val newWeather = weather.applySettings(userSettings = userSettings)
+				val hourly = newWeather.hourly
+				val current = newWeather.current
+				val timezoneOffset = newWeather.coordinates.timezoneOffset
+				val hourlyData = calculateSunriseAndSunset(
+					hourlyData = hourly,
+					sunrise = current.sunrise.plus(newWeather.coordinates.timezoneOffset),
+					sunset = current.sunset.plus(newWeather.coordinates.timezoneOffset),
+					timezoneOffset = timezoneOffset.toLong()
+				)
+				SavableForecastData(
+					weather = newWeather.copy(hourly = hourlyData),
+					showPlaceHolder = false
+				)
+			}
+			.onEach { forecastData ->
+				val currentForecastTime = forecastData.weather.current.time
+				val current = forecastData.weather.current
+				_timeOfDay.update {
+					calculateTimeOfDay(
+						currentForecastTime = currentForecastTime.toLong(),
+						sunrise = current.sunrise.toLong(),
+						sunset = current.sunset.toLong(),
+						30
+					)
+				}
+				val coordinate = Coordinate(
+					forecastData.weather.coordinates.name,
+					forecastData.weather.coordinates.lat.toString(),
+					forecastData.weather.coordinates.lon.toString()
+				)
+				if (isDataExpired(dataTimestamp = currentForecastTime, minutesThreshold = 30)) {
+					sync(coordinate)
+				}
+			}
+			.retry(2)
+			.catch {
+				Timber.e("data error:${it.message}")
+			}
+	}
 
-    internal fun sync(savedCityCoordinate: Coordinate) {
-        viewModelScope.launch {
-            val coordinate = Coordinate(
-                cityName = savedCityCoordinate.cityName,
-                latitude = savedCityCoordinate.latitude,
-                longitude = savedCityCoordinate.longitude
-            )
-            syncStatus.syncWithCoordinate(coordinate)
-        }
-    }
+	private fun getFavoriteCityCoordinate(): Flow<String?> {
+		return userRepository.getFavoriteCityCoordinate()
+	}
 
-    internal fun getUserSettings(): Flow<SettingsData> {
-        return userRepository.getTemperatureUnitSetting()
-            .combine(userRepository.getWindSpeedUnitSetting()) { temp, wind ->
-                //default settings if not set by user yet || null
-                val winUnit = wind ?: KM
-                val tempUnit = temp ?: C
-                SettingsData(windSpeedUnits = winUnit, temperatureUnits = tempUnit)
-            }
-    }
+	internal fun sync(savedCityCoordinate: Coordinate) {
+		viewModelScope.launch {
+			val coordinate = Coordinate(
+				cityName = savedCityCoordinate.cityName,
+				latitude = savedCityCoordinate.latitude,
+				longitude = savedCityCoordinate.longitude
+			)
+			syncStatus.syncWithCoordinate(coordinate)
+		}
+	}
 
-    internal fun isDataExpired(dataTimestamp: Int, minutesThreshold: Int): Boolean {
-        val currentTime = Instant.now().epochSecond
-        val differanceInSeconds = currentTime.minus(dataTimestamp)
-        val differanceInMinutes = Duration.ofSeconds(differanceInSeconds).toMinutes()
-        Timber.e((differanceInMinutes > minutesThreshold).toString())
-        return differanceInMinutes > minutesThreshold
-    }
+	internal fun getUserSettings(): Flow<SettingsData> {
+		return userRepository.getTemperatureUnitSetting()
+			.combine(userRepository.getWindSpeedUnitSetting()) { temp, wind ->
+				//default settings if not set by user yet || null
+				val winUnit = wind ?: KM
+				val tempUnit = temp ?: C
+				SettingsData(windSpeedUnits = winUnit, temperatureUnits = tempUnit)
+			}
+	}
 
-    private suspend fun SettingsData.setDefaultIfNull(
-        defaultWindSpeedUnits: WindSpeedUnits = KM,
-        defaultTemperature: TemperatureUnits = C,
-    ) {
-        windSpeedUnits ?: userRepository.setWindSpeedUnitSetting(defaultWindSpeedUnits)
-        temperatureUnits ?: userRepository.setTemperatureUnitSetting(defaultTemperature)
-    }
+	/**
+	 * timestamp is iso8601 standard
+	 * @param minutesThreshold is the time in minutes specified to see if
+	 * we can sync data or not.
+	 */
+	internal fun isDataExpired(dataTimestamp: String, minutesThreshold: Int): Boolean {
+//		val currentTime = Instant.now().epochSecond
+		val currentTime = System.currentTimeMillis()
+		val dataTimeStampSeconds = LocalDateTime.parse(dataTimestamp).toEpochSecond(ZoneOffset.UTC)
+		val differanceInSeconds = currentTime.minus(dataTimeStampSeconds)
+		val differanceInMinutes = Duration.ofSeconds(differanceInSeconds).toMinutes()
+		Timber.e((differanceInMinutes > minutesThreshold).toString())
+		return differanceInMinutes > minutesThreshold
+	}
 
-    private fun calculateTimeOfDay(
-        currentForecastTime: Long,
-        sunrise: Long,
-        sunset: Long,
-        dawnMinutesThreshold: Int = 30,
-    ): TimeOfDay {
-        val sunriseDifference = Duration.ofSeconds(currentForecastTime - sunrise).toMinutes()
-        val sunsetDifference = -Duration.ofSeconds(currentForecastTime - sunset).toMinutes()
-        Timber.e("$sunriseDifference")
-        Timber.e("$sunsetDifference")
-        return when {
-            currentForecastTime > sunset || currentForecastTime < sunrise -> TimeOfDay.Night
-            sunriseDifference < dawnMinutesThreshold -> TimeOfDay.Dawn
-            sunsetDifference < dawnMinutesThreshold -> TimeOfDay.Dawn
-            else -> TimeOfDay.Day
-        }
-    }
+	private suspend fun SettingsData.setDefaultIfNull(
+		defaultWindSpeedUnits: WindSpeedUnits = KM,
+		defaultTemperature: TemperatureUnits = C,
+	) {
+		windSpeedUnits ?: userRepository.setWindSpeedUnitSetting(defaultWindSpeedUnits)
+		temperatureUnits ?: userRepository.setTemperatureUnitSetting(defaultTemperature)
+	}
 
-    private fun calculateSunriseAndSunset(
-        hourlyData: List<Hourly>,
-        sunrise: Int,
-        sunset: Int,
-        timezoneOffset: Long,
-    ): List<Hourly> {
-        val mutableHourly = hourlyData.toMutableList()
-        val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
-        formatter.timeZone = TimeZone.getTimeZone("GMT")
-        val sunsetOffset = sunset.toLong().plus(timezoneOffset)
-        val sunriseOffset = sunrise.toLong().plus(timezoneOffset)
-        val formattedSunset = formatter.format(Date(sunsetOffset * 1000))
-        val formattedSunrise = formatter.format(Date(sunriseOffset * 1000))
-        hourlyData.lastOrNull { it.dt <= sunset }
-            ?.let { hourly ->
-                val index = hourlyData.indexOf(hourly)
-                val sunsetHourly = hourly.copy(
-                    sunriseSunset = "Sunset",
-                    time = formattedSunset,
-                    dt = sunset
-                )
-                mutableHourly.add(index + 1, sunsetHourly)
-            }
-        hourlyData.lastOrNull { it.dt <= sunrise }
-            ?.let { hourly ->
-                val index = hourlyData.indexOf(hourly)
-                val sunsetHourly = hourly.copy(
-                    sunriseSunset = "Sunrise",
-                    time = formattedSunrise,
-                    dt = sunrise
-                )
-                mutableHourly.add(index + 1, sunsetHourly)
-            }
-        return mutableHourly.toList()
-    }
+	private fun calculateTimeOfDay(
+		currentForecastTime: Long,
+		sunrise: Long,
+		sunset: Long,
+		dawnMinutesThreshold: Int = 30,
+	): TimeOfDay {
+		val sunriseDifference = Duration.ofSeconds(currentForecastTime - sunrise).toMinutes()
+		val sunsetDifference = -Duration.ofSeconds(currentForecastTime - sunset).toMinutes()
+		Timber.e("$sunriseDifference")
+		Timber.e("$sunsetDifference")
+		return when {
+			currentForecastTime > sunset || currentForecastTime < sunrise -> TimeOfDay.Night
+			sunriseDifference < dawnMinutesThreshold -> TimeOfDay.Dawn
+			sunsetDifference < dawnMinutesThreshold -> TimeOfDay.Dawn
+			else -> TimeOfDay.Day
+		}
+	}
 
-    private fun weatherBackgroundDrawableRes(conditionID: Int, timeOfDay: TimeOfDay): Int {
-        //more details -> https://openweathermap.org/weather-conditions#Weather-Condition-Codes-2
-        return when (conditionID) {
-            800 -> {
-                when (timeOfDay) {
-                    TimeOfDay.Day -> R.drawable.day_clear
-                    TimeOfDay.Night -> R.drawable.night_clear
-                    TimeOfDay.Dawn -> R.drawable.dawn
-                }
-            }
+	/**
+	 * sunrise and sunset will be iso8601 standard
+	 * @param timezoneOffset is in seconds
+	 */
+	private fun calculateSunriseAndSunset(
+		hourlyData: List<Hourly>,
+		sunrise: Int,
+		sunset: Int,
+		timezoneOffset: Long,
+	): List<Hourly> {
+		val mutableHourly = hourlyData.toMutableList()
+		val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
+		formatter.timeZone = TimeZone.getTimeZone("GMT")
+		val sunsetOffset = sunset.toLong().plus(timezoneOffset)
+		val sunriseOffset = sunrise.toLong().plus(timezoneOffset)
+		val formattedSunset = formatter.format(Date(sunsetOffset * 1000))
+		val formattedSunrise = formatter.format(Date(sunriseOffset * 1000))
 
-            in 200..232 -> R.drawable.thunderstorm //Thunderstorm
-            in 300..321 -> R.drawable.thunderstorm //Drizzle
-            in 500..531 -> R.drawable.snow //Rain
-            in 600..622 -> R.drawable.snow //Snow
-            in 701..787 -> R.drawable.fog //Atmosphere(only fog is shown. will add more)
-            in 801..804 -> R.drawable.clouds //clouds
-            else -> R.drawable.day_clear
-        }
-    }
+		hourlyData.lastOrNull {
+			val weatherTimeSeconds = Instant.parse(it.time).epochSecond
+			weatherTimeSeconds <= sunset
+		}
+			?.let { hourly ->
+				val index = hourlyData.indexOf(hourly)
+				val sunsetHourly = hourly.copy(
+					sunriseSunset = "Sunset",
+					time = formattedSunset,
+//                    dt = sunset
+				)
+				mutableHourly.add(index + 1, sunsetHourly)
+			}
+		hourlyData.lastOrNull {
+			val weatherTimeSeconds = Instant.parse(it.time).epochSecond
+			weatherTimeSeconds <= sunrise
+		}
+			?.let { hourly ->
+				val index = hourlyData.indexOf(hourly)
+				val sunsetHourly = hourly.copy(
+					sunriseSunset = "Sunrise",
+					time = formattedSunrise,
+//                    dt = sunrise
+				)
+				mutableHourly.add(index + 1, sunsetHourly)
+			}
+		return mutableHourly.toList()
+	}
+
 }

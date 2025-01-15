@@ -1,7 +1,7 @@
 package com.weather.core.repository.fake
 
 import com.weather.core.repository.UserRepository
-import com.weather.core.repository.fake.data.listOfWeatherDataTest
+import com.weather.core.repository.data.listOfWeatherDataTest
 import com.weather.model.TemperatureUnits
 import com.weather.model.WindSpeedUnits
 import kotlinx.coroutines.flow.Flow

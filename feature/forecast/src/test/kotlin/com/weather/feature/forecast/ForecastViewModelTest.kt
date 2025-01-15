@@ -1,28 +1,22 @@
 package com.weather.feature.forecast
 
-import androidx.lifecycle.SavedStateHandle
-import com.weather.core.repository.UserRepository
 import com.weather.core.repository.fake.FakeUserRepository
 import com.weather.core.repository.fake.FakeWeatherRepository
 import com.weather.model.SettingsData
-import com.weather.model.TemperatureUnits
-import com.weather.model.WindSpeedUnits
 import com.weather.sync.work.fake.FakeSyncManager
-import com.weather.sync.work.utils.SyncManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.*
-
-import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.time.Duration
-import java.time.LocalTime
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ForecastViewModelTest {
@@ -50,9 +44,14 @@ class ForecastViewModelTest {
     @Test
     fun `Test Data expiration Calculation`() {
         val sampleTime = 1681033210
-        val thirtyMinutesBeforeNow = Duration.ofMillis(System.currentTimeMillis()).minus(Duration.ofMinutes(30)).toSeconds().toInt()
+//        val thirtyMinutesBeforeNow = Duration.ofMillis(System.currentTimeMillis()).minus(Duration.ofMinutes(30)).toSeconds().toInt()
+//        val instantNow = Instant.ofEpochMilli(System.currentTimeMillis())
+//        val time = "2025-01-12T12:00"
+//        val thirtyMinutesBeforeNow = DateTimeFormatter.ISO_DATE_TIME.
+//            .format(Instant.ofEpochMilli(System.currentTimeMillis()).minusSeconds(180))
+        val formatter = DateTimeFormatter.ofPattern("yyy-MM-dd'T'HH:mm").format(LocalDateTime.now().minusMinutes(30))
         //assert if our timestamp(database in this case) is older than our threshold minutes.
-        assertTrue(forecastViewModel.isDataExpired(thirtyMinutesBeforeNow, 20))
+        assertTrue(forecastViewModel.isDataExpired(formatter, 20))
     }
 
     @Test

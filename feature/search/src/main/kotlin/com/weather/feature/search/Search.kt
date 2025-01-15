@@ -87,7 +87,7 @@ fun SearchRoute(
     }
     LaunchedEffect(key1 = searchUIState) {
         searchUIState.geoSearchItems[0].name?.let {
-            searchViewModel.getFiveDayPreview(searchUIState.geoSearchItems[0])
+            searchViewModel.getFiveDayPreview(searchUIState.geoSearchItems.first())
         }
     }
     Box(
@@ -399,7 +399,7 @@ private fun SearchPreview() {
         Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
             SearchScreenContent(
                 searchUIState = SavableSearchState(GeoSearchItem.empty, true),
-                weatherPreview = dailyDummyData,
+                weatherPreview = dailyPreviewDummyData,
                 searchInputText = inputText,
                 shouldRequestFocus = false,
                 popularCities = popularCities,

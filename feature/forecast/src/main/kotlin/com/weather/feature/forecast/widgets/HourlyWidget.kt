@@ -4,14 +4,11 @@ import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PhotoLibrary
@@ -24,7 +21,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
@@ -38,9 +34,10 @@ import coil.compose.AsyncImage
 import com.experiment.weather.core.common.R.string
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.feature.forecast.components.HourlyTemperatureGraph
-import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
+import com.weather.feature.forecast.hourlydata.HourlyStaticData
 import com.weather.model.Hourly
 import com.weather.model.TemperatureUnits
+import timber.log.Timber
 
 @Composable
 internal fun HourlyWidget(
@@ -88,15 +85,16 @@ internal fun HourlyWidget(
                 },
                 hourlyTimeStamps = {
                     val time = hourly[it].time
-                    val icon = hourly[it].icon
-                    val windSpeed = hourly[it].wind_speed.toString()
+                    val icon = hourly[it].iconUrl
+                    Timber.e(icon)
+                    val windSpeed = hourly[it].windSpeed.toString()
                     Column(
                         modifier = Modifier
                             .width(80.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         AsyncImage(
-                            model = "https://openweathermap.org/img/wn/${icon}@2x.png",
+                            model = icon,
                             contentDescription = ""
                         )
                         if (hourly[it].sunriseSunset.isNotEmpty()) {

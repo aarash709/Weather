@@ -6,27 +6,24 @@ import com.weather.model.WindSpeedUnits
 import com.weather.model.WindSpeedUnits.*
 import kotlin.math.roundToInt
 
-fun Double.convertToUserTemperature(
-    userTempUnit: TemperatureUnits?,
+fun Double.applySettingsTemperatureUnit(
+	userTempUnit: TemperatureUnits?,
 ): Double {
-    return when (userTempUnit) {
-        C -> this.minus(273.15)
-        F -> this.minus(273.15).times(1.8f).plus(32)
-        null -> {
-            this.minus(273.15)
-        }
-    }
+	return when (userTempUnit) {
+		C, null -> this
+		F -> this.times(1.8f).plus(32)
+	}
 }
 
 fun Double.convertToUserSpeed(
-    userTempUnit: WindSpeedUnits?,
+	userTempUnit: WindSpeedUnits?,
 ): Double {
-    return when (userTempUnit) {
-        KM -> this.times(3.6f).times(100).roundToInt().toDouble().div(100)
-        MS -> this
-        MPH -> this.times(2.2369f).times(100).roundToInt().toDouble().div(100)
-        null -> {
-            this.times(3.6f).times(100).roundToInt().toDouble().div(100)
-        }
-    }
+	return when (userTempUnit) {
+		KM -> this.times(3.6f).times(100).roundToInt().toDouble().div(100)
+		MS -> this
+		MPH -> this.times(2.2369f).times(100).roundToInt().toDouble().div(100)
+		null -> {
+			this.times(3.6f).times(100).roundToInt().toDouble().div(100)
+		}
+	}
 }

@@ -9,24 +9,22 @@ import kotlinx.coroutines.flow.Flow
 
 interface WeatherRepository {
 
-    fun searchLocation(cityName: String): Flow<List<GeoSearchItem>>
+	fun searchLocation(cityName: String): Flow<List<GeoSearchItem>>
 
-    suspend fun syncWeather(cityName: String, coordinate: Coordinate)
+	suspend fun syncWeather(coordinate: Coordinate)
 
-    suspend fun syncWeather(coordinate: Coordinate)
+	suspend fun deleteWeatherByCityName(cityNames: List<String>)
 
-    suspend fun deleteWeatherByCityName(cityNames: List<String>)
+	suspend fun getFiveDay(coordinate: Coordinate): List<DailyPreview>
 
-    suspend fun getFiveDay(coordinate: Coordinate): List<DailyPreview>
+	fun getLocalWeatherByCityName(cityName: String): Flow<WeatherData>
 
-    fun getLocalWeatherByCityName(cityName: String): Flow<WeatherData>
+	fun getAllWeatherLocations(): Flow<List<ManageLocationsData>>
 
-    fun getAllWeatherLocations(): Flow<List<ManageLocationsData>>
+	suspend fun reorderData(locations: List<ManageLocationsData>)
 
-    suspend fun reorderData(locations: List<ManageLocationsData>)
+	fun getAllForecastWeatherData(): Flow<List<WeatherData>>
 
-    fun getAllForecastWeatherData(): Flow<List<WeatherData>>
-
-    fun isDatabaseEmpty(): Boolean
+	fun isDatabaseEmpty(): Boolean
 
 }

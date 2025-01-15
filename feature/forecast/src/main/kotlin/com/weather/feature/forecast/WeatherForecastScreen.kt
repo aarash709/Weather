@@ -57,8 +57,8 @@ import com.weather.feature.forecast.components.CurrentWeather
 import com.weather.feature.forecast.components.ForecastTopBar
 import com.weather.feature.forecast.components.PagerIndicators
 import com.weather.feature.forecast.components.WeatherBackground
-import com.weather.feature.forecast.components.hourlydata.DailyStaticData
-import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
+import com.weather.feature.forecast.hourlydata.DailyDummyData
+import com.weather.feature.forecast.hourlydata.HourlyStaticData
 import com.weather.feature.forecast.widgets.DailyWidget
 import com.weather.feature.forecast.widgets.HourlyWidget
 import com.weather.feature.forecast.widgets.HumidityWidget
@@ -69,16 +69,16 @@ import com.weather.feature.forecast.widgets.UVWidget
 import com.weather.feature.forecast.widgets.WindWidget
 import com.weather.model.Coordinate
 import com.weather.model.Current
-import com.weather.model.OneCallCoordinates
 import com.weather.model.SavableForecastData
 import com.weather.model.SettingsData
 import com.weather.model.TemperatureUnits
-import com.weather.model.Weather
+import com.weather.model.WeatherCoordinates
 import com.weather.model.WeatherData
 import com.weather.model.WindSpeedUnits
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
@@ -323,12 +323,15 @@ internal fun WeatherDetails(
 					"HH:mm",
 					Locale.getDefault()
 				)
-				val offset = weatherData.coordinates.timezone_offset
-				val sunrise = weatherData.current.sunrise.plus(offset).toLong()
-				val sunset = weatherData.current.sunset.plus(offset).toLong()
+				val sunrise = weatherData.current.sunrise.toLong()
+				val sunset = weatherData.current.sunset.toLong()
 				sdf.timeZone = TimeZone.getTimeZone("UTC")
 				formattedSunrise = sdf.format(Date(sunrise * 1000))
 				formattedSunset = sdf.format(Date(sunset * 1000))
+			}
+			val offset = weatherData.coordinates.timezoneOffset.toLong()
+			val currentTimeSeconds by remember(weatherData) {
+				mutableIntStateOf(Instant.now().plusSeconds(offset).epochSecond.toInt())
 			}
 			SunWidget(
 				modifier = Modifier
@@ -336,7 +339,7 @@ internal fun WeatherDetails(
 				formattedSunrise = formattedSunrise,
 				formattedSunset = formattedSunset,
 				weatherData = weatherData,
-				currentTimeSeconds = weatherData.current.dt,
+				currentTimeSeconds = currentTimeSeconds,
 				surfaceColor = surfaceColor
 			)
 		}
@@ -344,7 +347,7 @@ internal fun WeatherDetails(
 			RealFeelWidget(
 				modifier = Modifier
 					.weight(1f),
-				realFeel = weatherData.current.feels_like.roundToInt(),
+				realFeel = weatherData.current.feelsLike.roundToInt(),
 				surfaceColor = surfaceColor
 			)
 			HumidityWidget(
@@ -364,7 +367,7 @@ internal fun WeatherDetails(
 			PressureWidget(
 				modifier = Modifier
 					.weight(1f),
-				pressure = weatherData.current.pressure,
+				pressure = weatherData.current.pressure.toInt(),
 				surfaceColor = surfaceColor
 			)
 		}
@@ -387,32 +390,28 @@ private fun MainPagePreview() {
 		val data = listOf(
 			SavableForecastData(
 				weather = WeatherData(
-					coordinates = OneCallCoordinates(
+					coordinates = WeatherCoordinates(
 						name = "Tehran",
 						lat = 0.0,
 						lon = 0.0,
 						timezone = "tehran",
-						timezone_offset = 0
+						timezoneOffset = 0
 					),
 					current = Current(
-						clouds = 27,
-						dew_point = 273.46,
-						dt = 1674649142,
-						feels_like = 286.08,
+						time = "time",
+						feelsLike = 286.08,
 						humidity = 38,
-						pressure = 1017,
+						pressure = 1017.0,
 						sunrise = 1674617749,
 						sunset = 1674655697,
 						currentTemp = 287.59,
 						uvi = 0.91,
 						visibility = 10000,
-						wind_deg = 246,
-						wind_speed = 2.64,
-						weather = listOf(
-							Weather("Light snow", "", 0, "Snow")
-						)
+						windDirection = 246,
+						windSpeed = 2.64,
+						condition = ""
 					),
-					daily = DailyStaticData,
+					daily = DailyDummyData,
 					hourly = HourlyStaticData,
 				),
 				showPlaceHolder = placeholder

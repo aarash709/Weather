@@ -5,10 +5,9 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.experiment.weather.core.common.extentions.convertTotoUserSettings
+import com.experiment.weather.core.common.extentions.applySettings
 import com.weather.core.repository.UserRepository
 import com.weather.core.repository.WeatherRepository
 import com.weather.model.ManageLocationsData
@@ -25,7 +24,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class ManageLocationsViewModel @Inject constructor(
@@ -44,7 +42,7 @@ class ManageLocationsViewModel @Inject constructor(
             temperatureSetting,
         ->
         val tempUnit = temperatureSetting ?: C
-        val locationData = weatherList.convertTotoUserSettings(
+        val locationData = weatherList.applySettings(
             tempUnit = tempUnit,
             favoriteCityName = favoriteCityName
         )
