@@ -34,6 +34,8 @@ fun DailyEntity.asDomainModel(): Daily {
 	return Daily(
 		time = time,
 		dayTemp = temperature2mMax,
-		nightTemp = temperature2mMin
+		nightTemp = temperature2mMin,
+		weatherCode = weatherCode,
+		iconUrl = ""
 	)
 }

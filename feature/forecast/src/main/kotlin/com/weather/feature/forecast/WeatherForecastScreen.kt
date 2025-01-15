@@ -57,7 +57,7 @@ import com.weather.feature.forecast.components.CurrentWeather
 import com.weather.feature.forecast.components.ForecastTopBar
 import com.weather.feature.forecast.components.PagerIndicators
 import com.weather.feature.forecast.components.WeatherBackground
-import com.weather.feature.forecast.hourlydata.DailyStaticData
+import com.weather.feature.forecast.hourlydata.DailyDummyData
 import com.weather.feature.forecast.hourlydata.HourlyStaticData
 import com.weather.feature.forecast.widgets.DailyWidget
 import com.weather.feature.forecast.widgets.HourlyWidget
@@ -413,7 +413,7 @@ private fun MainPagePreview() {
 						windDirection = 246,
 						windSpeed = 2.64,
 					),
-					daily = DailyStaticData,
+					daily = DailyDummyData,
 					hourly = HourlyStaticData,
 				),
 				showPlaceHolder = placeholder

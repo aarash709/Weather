@@ -12,4 +12,5 @@ data class DailyPreview(
     val tempDay: Int,
     val tempNight: Int,
     val time: String,
+    val iconUrl: String
 )

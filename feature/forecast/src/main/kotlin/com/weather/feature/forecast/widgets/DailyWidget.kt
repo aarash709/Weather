@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.experiment.weather.core.common.R.string
 import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
@@ -116,18 +117,6 @@ private fun DailyTitle(modifier: Modifier = Modifier, contentColor: Color) {
                 color = contentColor
             )
         }
-//        Row(verticalAlignment = Alignment.CenterVertically) {
-//            Text(
-//                text = stringResource(id = string.more_details),
-//                fontSize = 14.sp,
-//                color = contentColor
-//            )
-//            Icon(
-//                imageVector = Icons.AutoMirrored.Rounded.ArrowRight,
-//                tint = contentColor,
-//                contentDescription = null
-//            )
-//        }
     }
 }
 
@@ -145,11 +134,11 @@ private fun DailyItem(modifier: Modifier = Modifier, daily: Daily, tempData: Tem
                 text = daily.time, modifier = Modifier
                     .align(Alignment.CenterVertically)
             )
-//            AsyncImage(
-//                model = "https://openweathermap.org/img/wn/${daily.icon}@2x.png",
-//                modifier = Modifier.padding(end = 16.dp),
-//                contentDescription = "WeatherIcon",
-//            )
+            AsyncImage(
+                model = daily.iconUrl,
+                modifier = Modifier.padding(end = 16.dp),
+                contentDescription = "WeatherIcon",
+            )
         }
         Row(
             modifier = Modifier

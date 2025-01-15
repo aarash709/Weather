@@ -399,7 +399,7 @@ private fun SearchPreview() {
         Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
             SearchScreenContent(
                 searchUIState = SavableSearchState(GeoSearchItem.empty, true),
-                weatherPreview = dailyDummyData,
+                weatherPreview = dailyPreviewDummyData,
                 searchInputText = inputText,
                 shouldRequestFocus = false,
                 popularCities = popularCities,

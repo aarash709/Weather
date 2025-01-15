@@ -46,6 +46,8 @@ data class Daily(
 	val time: String,
 	val dayTemp: Double,
 	val nightTemp: Double,
+	val weatherCode: Int,
+	val iconUrl: String,
 ) {
 	companion object {
 		val empty = List(4) {
@@ -53,8 +55,9 @@ data class Daily(
 				time = "",
 				dayTemp = 0.0,
 				nightTemp = 0.0,
-
-				)
+				iconUrl = "",
+				weatherCode = 0,
+			)
 		}
 	}
 
@@ -63,6 +66,7 @@ data class Daily(
 			tempDay = dayTemp.roundToInt(),
 			tempNight = nightTemp.roundToInt(),
 			time = time,
+			iconUrl = iconUrl
 		)
 	}
 }
