@@ -1,4 +1,4 @@
-package com.weather.core.repository.fake.data
+package com.weather.core.repository.data
 
 import com.weather.model.Current
 import com.weather.model.WeatherCoordinates
@@ -15,9 +15,6 @@ val listOfWeatherDataTest = listOf(
 		),
 		Current(
 			time = "",
-//            clouds = 0,
-//            dew_point = 0.0,
-//            dt = 0,
 			feelsLike = 0.0,
 			humidity = 0,
 			pressure = 0.0,

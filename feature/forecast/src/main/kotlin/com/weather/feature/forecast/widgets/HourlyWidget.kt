@@ -34,9 +34,10 @@ import coil.compose.AsyncImage
 import com.experiment.weather.core.common.R.string
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.feature.forecast.components.HourlyTemperatureGraph
-import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
+import com.weather.feature.forecast.hourlydata.HourlyStaticData
 import com.weather.model.Hourly
 import com.weather.model.TemperatureUnits
+import timber.log.Timber
 
 @Composable
 internal fun HourlyWidget(
@@ -84,17 +85,18 @@ internal fun HourlyWidget(
                 },
                 hourlyTimeStamps = {
                     val time = hourly[it].time
-//                    val icon = hourly[it].icon
+                    val icon = hourly[it].iconUrl
+                    Timber.e(icon)
                     val windSpeed = hourly[it].windSpeed.toString()
                     Column(
                         modifier = Modifier
                             .width(80.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-//                        AsyncImage(
-//                            model = "https://openweathermap.org/img/wn/${icon}@2x.png",
-//                            contentDescription = ""
-//                        )
+                        AsyncImage(
+                            model = icon,
+                            contentDescription = ""
+                        )
                         if (hourly[it].sunriseSunset.isNotEmpty()) {
                             Text(
                                 text = hourly[it].sunriseSunset,

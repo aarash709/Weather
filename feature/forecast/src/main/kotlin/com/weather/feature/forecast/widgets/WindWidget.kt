@@ -38,7 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.experiment.weather.core.common.R.array
 import com.weather.core.design.components.WeatherSquareWidget
-import com.weather.core.repository.fake.data.listOfWeatherDataTest
+import com.weather.core.repository.data.listOfWeatherDataTest
 import com.weather.model.WeatherData
 import kotlin.math.cos
 import kotlin.math.roundToInt

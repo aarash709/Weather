@@ -1,4 +1,4 @@
-package com.weather.core.repository.fake.data
+package com.weather.core.repository.data
 
 import com.weather.model.ManageLocationsData
 

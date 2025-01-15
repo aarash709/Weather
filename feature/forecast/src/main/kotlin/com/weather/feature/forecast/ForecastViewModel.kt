@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.experiment.weather.core.common.extentions.applySettings
 import com.weather.core.repository.UserRepository
 import com.weather.core.repository.WeatherRepository
+import com.weather.core.repository.data.getWeatherCondition
 import com.weather.model.Coordinate
 import com.weather.model.Hourly
 import com.weather.model.SavableForecastData
@@ -87,15 +88,21 @@ class ForecastViewModel @Inject constructor(
 				Timber.e("timeee: ${weather.current.time}")
 				val newWeather = weather.applySettings(userSettings = setting)
 				val current = newWeather.current
-				val hourly = newWeather.hourly
+
+				val hourly = newWeather.hourly.map {
+					val weatherCondition =
+						getWeatherCondition(wmoCode = it.weatherCode.toString(), isDay = it.isDay)
+					it.copy(iconUrl = weatherCondition.image)
+				}
 				val timezoneOffset = newWeather.coordinates.timezoneOffset.toLong()
+
 				/*val hourlyData = calculateSunriseAndSunset(
 					hourlyData = hourly,
 					sunrise = current.sunrise,
 					sunset = current.sunset,
 					timezoneOffset = timezoneOffset
 				)*/
-				SavableForecastData(weather = newWeather.copy(/*hourly = hourlyData*/))
+				SavableForecastData(weather = newWeather.copy(hourly = hourly))
 			}
 		}
 			.onEach { allForecast ->

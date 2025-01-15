@@ -63,7 +63,8 @@ fun Hourly.toEntity(cityName: String): List<HourlyEntity> {
 			time = time,
 			weatherCode = weatherCode[i],
 			windSpeed10m = windSpeed10m[i],
-			visibility = visibility[i]
+			visibility = visibility[i],
+			isDay = isDay[i]
 		)
 	}
 }

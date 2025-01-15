@@ -93,7 +93,8 @@ class WeatherLocalDataSource(
 							humidity = 0,
 							pressure = current.pressureMsl.toInt(),
 							daily.first().uvIndex,
-							windDirection = 12
+							windDirection = 12,
+							iconUrl = ""
 						)
 					},
 				)
@@ -128,7 +129,8 @@ class WeatherLocalDataSource(
 							humidity = 0,
 							pressure = current.pressureMsl.toInt(),
 							daily.first().uvIndex,
-							12
+							12,
+							iconUrl = ""
 						)
 					},
 				)

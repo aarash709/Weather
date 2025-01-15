@@ -28,13 +28,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 import com.experiment.weather.core.common.R.string
 import com.weather.core.design.modifiers.bouncyTapEffect
 import com.weather.core.design.theme.WeatherTheme
 import com.weather.feature.forecast.components.TempBar
 import com.weather.feature.forecast.components.TempData
-import com.weather.feature.forecast.components.hourlydata.DailyPreviewStaticData
+import com.weather.feature.forecast.hourlydata.DailyPreviewStaticData
 import com.weather.model.Daily
 import com.weather.model.TemperatureUnits
 import kotlin.math.roundToInt

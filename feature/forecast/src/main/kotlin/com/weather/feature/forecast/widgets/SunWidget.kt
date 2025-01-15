@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.sp
 import com.experiment.weather.core.common.R.string
 import com.weather.core.design.components.WeatherSquareWidget
 import com.weather.core.design.theme.WeatherTheme
-import com.weather.core.repository.fake.data.listOfWeatherDataTest
+import com.weather.core.repository.data.listOfWeatherDataTest
 import com.weather.model.WeatherData
 
 @Composable

@@ -22,7 +22,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
+import com.weather.feature.forecast.hourlydata.HourlyStaticData
 import com.weather.feature.forecast.tempColor
 import com.weather.model.Hourly
 import com.weather.model.TemperatureUnits

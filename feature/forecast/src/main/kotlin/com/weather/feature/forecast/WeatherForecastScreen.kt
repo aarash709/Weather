@@ -57,8 +57,8 @@ import com.weather.feature.forecast.components.CurrentWeather
 import com.weather.feature.forecast.components.ForecastTopBar
 import com.weather.feature.forecast.components.PagerIndicators
 import com.weather.feature.forecast.components.WeatherBackground
-import com.weather.feature.forecast.components.hourlydata.DailyStaticData
-import com.weather.feature.forecast.components.hourlydata.HourlyStaticData
+import com.weather.feature.forecast.hourlydata.DailyStaticData
+import com.weather.feature.forecast.hourlydata.HourlyStaticData
 import com.weather.feature.forecast.widgets.DailyWidget
 import com.weather.feature.forecast.widgets.HourlyWidget
 import com.weather.feature.forecast.widgets.HumidityWidget

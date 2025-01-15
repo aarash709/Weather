@@ -1,8 +1,8 @@
 package com.weather.core.repository.fake
 
 import com.weather.core.repository.WeatherRepository
-import com.weather.core.repository.fake.data.listOfLocationsDataTest
-import com.weather.core.repository.fake.data.listOfWeatherDataTest
+import com.weather.core.repository.data.listOfLocationsDataTest
+import com.weather.core.repository.data.listOfWeatherDataTest
 import com.weather.model.*
 import com.weather.model.geocode.GeoSearchItem
 import kotlinx.coroutines.flow.Flow

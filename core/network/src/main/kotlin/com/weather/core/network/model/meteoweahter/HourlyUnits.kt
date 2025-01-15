@@ -13,5 +13,7 @@ data class HourlyUnits(
     @SerialName("weather_code")
     val weatherCode: String?,
     @SerialName("wind_speed_10m")
-    val windSpeed10m: String?
+    val windSpeed10m: String?,
+    @SerialName("is_day")
+    val isDay: String?
 )
