@@ -48,6 +48,7 @@ val hourly = listOf(
 		time = "laoreet",
 		weatherCode = 1157,
 		windSpeed10m = 48.49,
-		visibility = 50.51
+		visibility = 50.51,
+		isDay = 0
 	)
 )
