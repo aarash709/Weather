@@ -112,8 +112,8 @@ fun List<DailyPreview>.convertTimeAndTemperature(): List<DailyPreview> {
 	return map { dailyPreview ->
 		dailyPreview.copy(
 			time = calculateUIDailyTime(dailyPreview.time),
-			tempDay = dailyPreview.tempDay.minus(273.15).roundToInt(),
-			tempNight = dailyPreview.tempNight.minus(273.15).roundToInt()
+			tempDay = dailyPreview.tempDay,
+			tempNight = dailyPreview.tempNight,
 		)
 	}
 }

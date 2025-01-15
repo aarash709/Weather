@@ -22,6 +22,7 @@ data class SavableForecastData(
                     visibility = 0,
                     windDirection = 0,
                     windSpeed = 0.0,
+                    condition = ""
                 ), daily = Daily.empty,
                 hourly = Hourly.empty
             ),

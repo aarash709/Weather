@@ -50,5 +50,6 @@ fun CurrentEntity.asDomainModel(
 		visibility = visibility,
 		windDirection = windDirection10m,
 		windSpeed = windSpeed10m,
+		condition = ""
 	)
 }

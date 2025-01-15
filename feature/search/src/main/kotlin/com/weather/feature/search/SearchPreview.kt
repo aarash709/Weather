@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,7 +45,7 @@ private fun SearchDailyItem(dailyPreview: DailyPreview, modifier: Modifier = Mod
 		verticalArrangement = Arrangement.spacedBy(12.dp),
 		horizontalAlignment = Alignment.CenterHorizontally
 	) {
-		Text(text = dailyPreview.time, fontSize = 14.sp)
+		Text(text = dailyPreview.time, fontSize = 14.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
 		AsyncImage(
 			model = dailyPreview.iconUrl,
 			contentDescription = "Weather Icon"
@@ -68,27 +69,32 @@ val dailyPreviewDummyData = listOf(
 		tempDay = 20,
 		tempNight = 11,
 		time = "Today",
+		weatherCode = 0,
 		iconUrl = ""
 	),
 	DailyPreview(
 		tempDay = 21,
 		tempNight = 12,
 		time = "Tomorrow",
+		weatherCode = 0,
 		iconUrl = "",
 	), DailyPreview(
 		tempDay = 18,
 		tempNight = 10,
 		time = "Tue",
+		weatherCode = 0,
 		iconUrl = ""
 	), DailyPreview(
 		tempDay = 15,
 		tempNight = 8,
 		time = "Wed",
+		weatherCode = 0,
 		iconUrl = ""
 	), DailyPreview(
 		tempDay = 14,
 		tempNight = 6,
 		time = "Thur",
+		weatherCode = 0,
 		iconUrl = "",
 	)
 )

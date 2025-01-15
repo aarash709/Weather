@@ -87,10 +87,12 @@ class ForecastViewModel @Inject constructor(
 			allWeather.map { weather ->
 				Timber.e("timeee: ${weather.current.time}")
 				val newWeather = weather.applySettings(userSettings = setting)
-				val current = newWeather.current
 				val daily = newWeather.daily.map {
 					val weatherCondition =
-						getWeatherCondition(wmoCode = it.weatherCode.toString(), isDay = 1) // 1 is day time to fetch day icons
+						getWeatherCondition(
+							wmoCode = it.weatherCode.toString(),
+							isDay = 1
+						) // 1 is day time to fetch day icons
 					it.copy(iconUrl = weatherCondition.image)
 				}
 				val hourly = newWeather.hourly.map {
@@ -98,6 +100,12 @@ class ForecastViewModel @Inject constructor(
 						getWeatherCondition(wmoCode = it.weatherCode.toString(), isDay = it.isDay)
 					it.copy(iconUrl = weatherCondition.image)
 				}
+				val current = newWeather.current.copy(
+					condition = getWeatherCondition(
+						wmoCode = daily.first().weatherCode.toString(),
+						isDay = 1
+					).description
+				)
 				val timezoneOffset = newWeather.coordinates.timezoneOffset.toLong()
 
 				/*val hourlyData = calculateSunriseAndSunset(
@@ -106,7 +114,13 @@ class ForecastViewModel @Inject constructor(
 					sunset = current.sunset,
 					timezoneOffset = timezoneOffset
 				)*/
-				SavableForecastData(weather = newWeather.copy(hourly = hourly, daily = daily))
+				SavableForecastData(
+					weather = newWeather.copy(
+						current = current,
+						hourly = hourly,
+						daily = daily
+					)
+				)
 			}
 		}
 			.onEach { allForecast ->

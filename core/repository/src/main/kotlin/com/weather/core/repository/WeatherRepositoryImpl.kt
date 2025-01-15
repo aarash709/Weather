@@ -2,7 +2,9 @@ package com.weather.core.repository
 
 import com.weather.core.database.WeatherLocalDataSource
 import com.weather.core.network.WeatherRemoteDatasourceImpl
+import com.weather.core.network.model.meteoweahter.toDailyPreview
 import com.weather.model.Coordinate
+import com.weather.model.DailyPreview
 import com.weather.model.ManageLocationsData
 import com.weather.model.WeatherData
 import com.weather.model.geocode.GeoSearchItem
@@ -11,6 +13,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
+import java.io.IOException
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -27,24 +30,16 @@ class WeatherRepositoryImpl @Inject constructor(
 
 	override fun isDatabaseEmpty(): Boolean = localWeather.databaseIsEmpty()
 
-//    override suspend fun getFiveDay(coordinate: Coordinate): List<DailyPreview> {
-//        return try {
-//            val data = remoteWeather.getRemoteData(coordinates = coordinate, exclude = "")
-//            val daily = data.data!!.daily.slice(0..4)
-//            daily.map {
-//                DailyPreview(
-//                    it.temp.day.toInt(),
-//                    it.temp.night.toInt(),
-//                    it.dt.toString(),
-//                    it.weather[0].icon,
-//                    it.weather[0].description
-//                )
-//            }
-//        } catch (e: IOException) {
-//            Timber.e("getFiveDay error: ${e.message}")
-//            listOf()
-//        }
-//    }
+	override suspend fun getFiveDay(coordinate: Coordinate): List<DailyPreview> {
+		return try {
+			val data = remoteWeather.getDaily(coordinates = coordinate)
+			val daily = data.getOrNull()!!.daily
+			daily.toDailyPreview()
+		} catch (e: IOException) {
+			Timber.e("getFiveDay error: ${e.message}")
+			listOf()
+		}
+	}
 
 	override fun getAllForecastWeatherData(): Flow<List<WeatherData>> {
 		return localWeather.getAllForecastData()
@@ -120,7 +115,8 @@ class WeatherRepositoryImpl @Inject constructor(
 			)
 			//subtract current local time by 1 hour then delete data older than specified time
 			val pattern = "yyyy-MM-dd'T'HH:mm"
-			val utcMinusOneHour = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC).minusHours(1)
+			val utcMinusOneHour =
+				LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC).minusHours(1)
 			val formattedTime = DateTimeFormatter.ofPattern(pattern).format(utcMinusOneHour)
 			localWeather.deleteHourly(
 				cityName = coordinate.cityName!!,

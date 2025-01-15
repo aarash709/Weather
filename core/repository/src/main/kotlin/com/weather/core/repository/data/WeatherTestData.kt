@@ -24,8 +24,8 @@ val listOfWeatherDataTest = listOf(
 			uvi = 0.0,
 			visibility = 0,
 			windDirection = 0,
-//            wind_gust = 0.0,
 			windSpeed = 12.0,
+			condition = "Rain"
 		),
 		daily = listOf(),
 		hourly = listOf()

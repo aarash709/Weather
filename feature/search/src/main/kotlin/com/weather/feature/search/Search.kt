@@ -87,7 +87,7 @@ fun SearchRoute(
     }
     LaunchedEffect(key1 = searchUIState) {
         searchUIState.geoSearchItems[0].name?.let {
-//            searchViewModel.getFiveDayPreview(searchUIState.geoSearchItems[0])
+            searchViewModel.getFiveDayPreview(searchUIState.geoSearchItems.first())
         }
     }
     Box(

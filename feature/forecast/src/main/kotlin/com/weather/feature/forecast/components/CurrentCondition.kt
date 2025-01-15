@@ -75,7 +75,7 @@ internal fun CurrentWeather(
 				)
 				indicator()
 				Text(
-					text = "condition",
+					text = weatherData.current.condition,
 					fontSize = 14.sp,
 					color = LocalContentColor.current.copy(alpha = 0.75f)
 				)

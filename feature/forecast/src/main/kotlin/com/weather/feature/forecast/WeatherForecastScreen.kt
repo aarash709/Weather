@@ -399,9 +399,6 @@ private fun MainPagePreview() {
 					),
 					current = Current(
 						time = "time",
-//						clouds = 27,
-//						dew_point = 273.46,
-//						dt = 1674649142,
 						feelsLike = 286.08,
 						humidity = 38,
 						pressure = 1017.0,
@@ -412,6 +409,7 @@ private fun MainPagePreview() {
 						visibility = 10000,
 						windDirection = 246,
 						windSpeed = 2.64,
+						condition = ""
 					),
 					daily = DailyDummyData,
 					hourly = HourlyStaticData,

@@ -37,6 +37,7 @@ data class Current(
 	val visibility: Int,
 	val windDirection: Int,
 	val windSpeed: Double,
+	val condition: String,
 ) {
 	companion object
 }
@@ -66,6 +67,7 @@ data class Daily(
 			tempDay = dayTemp.roundToInt(),
 			tempNight = nightTemp.roundToInt(),
 			time = time,
+			weatherCode = weatherCode,
 			iconUrl = iconUrl
 		)
 	}

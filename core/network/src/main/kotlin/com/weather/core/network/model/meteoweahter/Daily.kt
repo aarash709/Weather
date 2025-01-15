@@ -1,6 +1,7 @@
 package com.weather.core.network.model.meteoweahter
 
 
+import com.weather.model.DailyPreview
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -23,3 +24,15 @@ data class Daily(
 	@SerialName("weather_code")
 	val weatherCode: List<Int>
 )
+
+fun Daily.toDailyPreview(): List<DailyPreview> {
+	return time.mapIndexed { index, time ->
+		DailyPreview(
+			tempDay = temperature2mMax[index].toInt(),
+			tempNight = temperature2mMin[index].toInt(),
+			time = time,
+			weatherCode = weatherCode[index],
+			iconUrl = ""
+		)
+	}
+}
