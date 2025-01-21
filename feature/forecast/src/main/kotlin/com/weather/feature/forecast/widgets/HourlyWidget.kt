@@ -86,7 +86,6 @@ internal fun HourlyWidget(
                 hourlyTimeStamps = {
                     val time = hourly[it].time
                     val icon = hourly[it].iconUrl
-                    Timber.e(icon)
                     val windSpeed = hourly[it].windSpeed.toString()
                     Column(
                         modifier = Modifier
