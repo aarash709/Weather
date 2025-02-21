@@ -441,17 +441,3 @@ private fun MainPagePreview() {
 		}
 	}
 }
-
-
-@Preview(showBackground = false, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-private fun WindPreview() {
-	ForecastTheme {
-		val animateDegree = remember {
-			Animatable(25f)
-		}
-		LaunchedEffect(key1 = Unit) {
-			animateDegree.animateTo(113f, tween(1000, 100, easing = EaseOutCubic))
-		}
-	}
-}
