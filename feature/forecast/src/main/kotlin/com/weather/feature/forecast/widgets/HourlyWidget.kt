@@ -49,7 +49,7 @@ internal fun HourlyWidget(
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(32.dp),
+        shape = RoundedCornerShape(16.dp),
         color = surfaceColor,
     ) {
         val contentColor = LocalContentColor.current
