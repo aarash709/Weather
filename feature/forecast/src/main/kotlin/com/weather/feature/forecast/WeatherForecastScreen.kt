@@ -148,7 +148,6 @@ fun WeatherForecastScreen(
 		) {
 			Column(
 				modifier = Modifier
-					.padding(16.dp)
 			) {
 				CompositionLocalProvider(LocalContentColor provides Color.White) {
 					var topAppBarSize by remember {
@@ -165,7 +164,7 @@ fun WeatherForecastScreen(
 						onNavigateToManageLocations = { onNavigateToManageLocations() },
 						onNavigateToSettings = { onNavigateToSettings() })
 					PullToRefreshBox(
-						modifier = Modifier,
+						modifier = Modifier.padding(horizontal = 16.dp),
 						isRefreshing = isSyncing,
 						onRefresh = {
 							onRefresh(
@@ -276,7 +275,7 @@ internal fun WeatherDetails(
 	)
 	//if background is disabled use this color for widgets surface color
 	val surfaceColor = ForecastTheme.colorScheme.surface
-	val rowPadding = 16.dp
+	val rowPadding = 8.dp
 	val topPadding = firstItemHeight.plus(50).dp
 	FlowRow(
 		modifier

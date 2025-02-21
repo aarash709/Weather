@@ -36,7 +36,7 @@ fun WeatherSquareWidget(
 ) {
     Surface(
         modifier = Modifier.aspectRatio(1.1f) then modifier,
-        shape = RoundedCornerShape(32.dp),
+        shape = RoundedCornerShape(16.dp),
         color = surfaceColor
     ) {
         val paleOnSurfaceColor = LocalContentColor.current.copy(alpha = 0.7f)
