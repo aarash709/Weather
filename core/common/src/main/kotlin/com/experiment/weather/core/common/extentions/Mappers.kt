@@ -27,7 +27,7 @@ import kotlin.math.roundToInt
 fun WeatherData.applySettings(userSettings: SettingsData): WeatherData {
 	val tempUnit = userSettings.temperatureUnits
 	val windUnit = userSettings.windSpeedUnits
-	val timeOffset = coordinates.timezoneOffset.toLong()
+	val currentIsoTime = current.time
 	return copy {
 		WeatherData.current transform {
 			it.applySettings(
@@ -38,7 +38,7 @@ fun WeatherData.applySettings(userSettings: SettingsData): WeatherData {
 		WeatherData.daily transform {
 			it.applySettings(tempUnit)
 		}
-		WeatherData.hourly transform { it.applySettings(tempUnit, windUnit, timeOffset) }
+		WeatherData.hourly transform { it.applySettings(tempUnit, windUnit, currentIsoTime) }
 
 	}
 }
@@ -61,7 +61,11 @@ fun List<Daily>.applySettings(temperature: TemperatureUnits): List<Daily> {
 		daily.copy {
 			Daily.time transform { isoDate -> calculateUIDailyTime(isoDate) }
 			Daily.dayTemp transform { dayTemp -> dayTemp.applySettingsTemperatureUnit(temperature) }
-			Daily.nightTemp.transform { nightTemp -> nightTemp.applySettingsTemperatureUnit(temperature) }
+			Daily.nightTemp.transform { nightTemp ->
+				nightTemp.applySettingsTemperatureUnit(
+					temperature
+				)
+			}
 		}
 	}
 }
@@ -70,14 +74,14 @@ fun List<Daily>.applySettings(temperature: TemperatureUnits): List<Daily> {
 fun List<Hourly>.applySettings(
 	temperature: TemperatureUnits,
 	windSpeed: WindSpeedUnits,
-	timeOffset: Long,
+	currentIsoTime: String,
 ): List<Hourly> {
 	return map { hourly ->
 		hourly.copy {
 			Hourly.time transform { isoDateTime ->
 				calculateUIHourlyTime(
-					isoTime = isoDateTime,
-					offsetSeconds = timeOffset
+					hourlyIsoTime = isoDateTime,
+					currentIsoTime = currentIsoTime,
 				)
 			}
 			Hourly.temp transform { it.applySettingsTemperatureUnit(temperature) }

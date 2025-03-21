@@ -137,7 +137,12 @@ class ForecastViewModel @Inject constructor(
 						data.weather.coordinates.lat.toString(),
 						data.weather.coordinates.lon.toString()
 					)
-					if (isDataExpired(dataTimestamp = dataCurrentDateTimeString, triggerThreshold = 30)) {
+					if (isDataExpired(
+							dataTimestamp = dataCurrentDateTimeString,
+							dataTimeOffset = data.weather.coordinates.timezoneOffset,
+							triggerThreshold = 30
+						)
+					) {
 						sync(coordinate)
 					}
 				}
@@ -178,8 +183,12 @@ class ForecastViewModel @Inject constructor(
 	 * @param triggerThreshold is the time in minutes specified after which
 	 * we can start to sync data.
 	 */
-	internal fun isDataExpired(dataTimestamp: String, triggerThreshold: Int): Boolean {
-		val currentTime = System.currentTimeMillis() / 1000
+	internal fun isDataExpired(
+		dataTimestamp: String,
+		dataTimeOffset: Int,
+		triggerThreshold: Int
+	): Boolean {
+		val currentTime = (Instant.now().epochSecond).plus(dataTimeOffset)
 		val dataTimeStampSeconds = LocalDateTime.parse(dataTimestamp).toEpochSecond(ZoneOffset.UTC)
 		val differanceInSeconds = currentTime.minus(dataTimeStampSeconds)
 		val differanceInMinutes = Duration.ofSeconds(differanceInSeconds).toMinutes()
