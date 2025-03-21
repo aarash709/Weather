@@ -3,8 +3,6 @@ package com.weather.feature.forecast
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.EaseOutCubic
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -163,22 +161,22 @@ fun WeatherForecastScreen(
 							},
 						onNavigateToManageLocations = { onNavigateToManageLocations() },
 						onNavigateToSettings = { onNavigateToSettings() })
+					val pagerState = rememberPagerState(
+						pageCount = { forecastData.size }
+					)
 					PullToRefreshBox(
 						modifier = Modifier.padding(horizontal = 16.dp),
 						isRefreshing = isSyncing,
 						onRefresh = {
 							onRefresh(
-								forecastData[0].weather.coordinates.let {
+								forecastData[pagerState.currentPage].weather.coordinates.let {
 									Coordinate(it.name, it.lat.toString(), it.lon.toString())
 								}
 							)
 						},
 						contentAlignment = Alignment.TopCenter,
 						content = {
-							val pagerState = rememberPagerState(
-								pageCount = { forecastData.size }
-							)
-							LaunchedEffect(key1 = favoriteCity) {
+														LaunchedEffect(key1 = favoriteCity) {
 								val page = forecastData.indexOfFirst {
 									it.weather.coordinates.name == (favoriteCity
 										?: it.weather.coordinates.name)
