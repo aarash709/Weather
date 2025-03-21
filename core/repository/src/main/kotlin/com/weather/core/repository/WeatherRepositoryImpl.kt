@@ -113,14 +113,13 @@ class WeatherRepositoryImpl @Inject constructor(
 				cityName = coordinate.cityName!!,
 				timeStamp = firstDailyTimeStamp
 			)
-			//subtract current local time by 1 hour then delete data older than specified time
-			val pattern = "yyyy-MM-dd'T'HH:mm"
-			val utcMinusOneHour =
+			//subtract current database time by 1 hour then delete data older than specified time
 				LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC).minusHours(1)
-			val formattedTime = DateTimeFormatter.ofPattern(pattern).format(utcMinusOneHour)
+			val dataTime = LocalDateTime.parse(remoteCurrent.current.time).minusHours(1).format(
+				DateTimeFormatter.ISO_DATE_TIME)
 			localWeather.deleteHourly(
 				cityName = coordinate.cityName!!,
-				timeStamp = formattedTime
+				timeStamp = dataTime
 			)
 		} catch (e: Exception) {
 			Timber.e("sync error: ${e.message}")

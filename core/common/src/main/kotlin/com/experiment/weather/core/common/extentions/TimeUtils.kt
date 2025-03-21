@@ -1,7 +1,6 @@
 package com.experiment.weather.core.common.extentions
 
 import java.time.Duration
-import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -9,20 +8,24 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
-internal fun calculateUIHourlyTime(isoTime: String, offsetSeconds: Long): String {
-	val givenDateTimeUTC = LocalDateTime.parse(isoTime).toEpochSecond(ZoneOffset.UTC)
+internal fun calculateUIHourlyTime(
+	currentIsoTime: String,
+	hourlyIsoTime: String,
+): String {
+	val databaseCurrentTime =
+		LocalDateTime.parse(currentIsoTime).toEpochSecond(ZoneOffset.UTC)
+	val givenDateTimeUTC = LocalDateTime.parse(hourlyIsoTime).toEpochSecond(ZoneOffset.UTC)
 	val differenceInMinutes =
 		Duration.ofSeconds(
 			givenDateTimeUTC
-				.minus(Instant.now().epochSecond)
+				.minus(databaseCurrentTime)
 		)
 			.toMinutes()
 	return if (differenceInMinutes in hourlyRangeThreshold)
 		NOW
 	else
 		convertDateTimeToReadableHours(
-			isoDateTime = isoTime,
-			offsetSeconds = offsetSeconds,
+			isoDateTime = hourlyIsoTime,
 			pattern = HOURLY_PATTERN
 		)
 }
