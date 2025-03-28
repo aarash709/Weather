@@ -28,7 +28,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -71,319 +70,312 @@ import kotlinx.coroutines.FlowPreview
 @FlowPreview
 @Composable
 fun SearchRoute(
-    searchViewModel: SearchViewModel = hiltViewModel(),
-    shouldRequestFocus: Boolean = true,
-    onSelectSearchItem: () -> Unit,
+	searchViewModel: SearchViewModel = hiltViewModel(),
+	shouldRequestFocus: Boolean = true,
+	onSelectSearchItem: () -> Unit,
 ) {
-    //stateful
-    val searchUIState by searchViewModel.searchUIState.collectAsStateWithLifecycle()
-    val weatherPreview by searchViewModel.weatherPreview.collectAsStateWithLifecycle()
-    val context = LocalContext.current
-    var inputText by remember {
-        mutableStateOf(TextFieldValue(""))
-    }
-    LaunchedEffect(key1 = inputText) {
-        searchViewModel.setSearchQuery(cityName = inputText.text.trim())
-    }
-    LaunchedEffect(key1 = searchUIState) {
-        searchUIState.geoSearchItems[0].name?.let {
-            searchViewModel.getFiveDayPreview(searchUIState.geoSearchItems.first())
-        }
-    }
-    Box(
-        modifier = Modifier
-            .background(
-                color = MaterialTheme.colorScheme.background
-            )
-            .statusBarsPadding()
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 0.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            SearchScreenContent(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                searchUIState = searchUIState,
-                weatherPreview = weatherPreview,
-                shouldRequestFocus = shouldRequestFocus,
-                searchInputText = inputText,
-                popularCities = stringArrayResource(id = R.array.popular_cities).toList(),
-                popularCityIndex = { cityIndex ->
-                    val value = context.resources.getStringArray(R.array.popular_cities)[cityIndex]
-                    inputText = TextFieldValue(
-                        text = value,
-                        selection = TextRange(value.length)
-                    )
-                },
-                onSearchTextChange = { cityName ->
-                    inputText = cityName
-                },
-                onClearSearch = {
-                    inputText = TextFieldValue(text = "")
-                }
-            ) { searchItem ->
-                searchViewModel.syncWeather(searchItem)
-                onSelectSearchItem()
-            }
-        }
-    }
+	//stateful
+	val searchUIState by searchViewModel.searchUIState.collectAsStateWithLifecycle()
+	val weatherPreview by searchViewModel.weatherPreview.collectAsStateWithLifecycle()
+	val context = LocalContext.current
+	var inputText by remember {
+		mutableStateOf(TextFieldValue(""))
+	}
+	LaunchedEffect(key1 = inputText) {
+		searchViewModel.setSearchQuery(cityName = inputText.text.trim())
+	}
+	LaunchedEffect(key1 = searchUIState) {
+		searchUIState.geoSearchItems.first().name?.let {
+			searchViewModel.getFiveDayPreview(searchUIState.geoSearchItems.first())
+		}
+	}
+	Box(
+		modifier = Modifier
+			.background(
+				color = MaterialTheme.colorScheme.background
+			)
+			.statusBarsPadding()
+	) {
+		Column(
+			modifier = Modifier
+				.fillMaxSize()
+				.padding(horizontal = 0.dp),
+			verticalArrangement = Arrangement.spacedBy(8.dp),
+		) {
+			SearchScreenContent(
+				modifier = Modifier.padding(horizontal = 16.dp),
+				searchUIState = searchUIState,
+				weatherPreview = weatherPreview,
+				shouldRequestFocus = shouldRequestFocus,
+				searchInputText = inputText,
+				popularCities = stringArrayResource(id = R.array.popular_cities).toList(),
+				popularCityIndex = { cityIndex ->
+					val value = context.resources.getStringArray(R.array.popular_cities)[cityIndex]
+					inputText = TextFieldValue(
+						text = value,
+						selection = TextRange(value.length)
+					)
+				},
+				onSearchTextChange = { cityName ->
+					inputText = cityName
+				},
+				onClearSearch = {
+					inputText = TextFieldValue(text = "")
+				}
+			) { searchItem ->
+				searchViewModel.syncWeather(searchItem)
+				onSelectSearchItem()
+			}
+		}
+	}
 }
 
 @Composable
 fun SearchScreenContent(
-    modifier: Modifier = Modifier,
-    searchUIState: SavableSearchState,
-    weatherPreview: List<DailyPreview>,
-    shouldRequestFocus: Boolean = true,
-    searchInputText: TextFieldValue,
-    popularCities: List<String>,
-    popularCityIndex: (Int) -> Unit,
-    onSearchTextChange: (TextFieldValue) -> Unit,
-    onClearSearch: () -> Unit,
-    selectedSearchItem: (GeoSearchItem) -> Unit,
+	modifier: Modifier = Modifier,
+	searchUIState: SavableSearchState,
+	weatherPreview: List<DailyPreview>,
+	shouldRequestFocus: Boolean = true,
+	searchInputText: TextFieldValue,
+	popularCities: List<String>,
+	popularCityIndex: (Int) -> Unit,
+	onSearchTextChange: (TextFieldValue) -> Unit,
+	onClearSearch: () -> Unit,
+	selectedSearchItem: (GeoSearchItem) -> Unit,
 ) {
-    //stateless
-    Column(
-        modifier = modifier.fillMaxSize()
-    ) {
-        TopSearchBar(
-            modifier = Modifier.padding(top = 16.dp),
-            searchText = searchInputText,
-            shouldRequestFocus = shouldRequestFocus,
-            onTextChange = {
-                onSearchTextChange(it)
-            },
-            onClearSearch = {
-                onClearSearch()
-            }
-        )
-        AnimatedContent(
-            targetState = searchInputText.text.isEmpty(),
-            label = "search content"
-        ) { isTextSearchEmpty ->
-            Column {
-                if (isTextSearchEmpty) {
-                    Text(
-                        text = stringResource(id = R.string.popular_cities),
-                        modifier = Modifier.padding(top = 24.dp),
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-                        fontSize = 14.sp
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    PopularCities(
-                        modifier = Modifier,
-                        popularCities = popularCities,
-                        popularCityIndex = { popularCityIndex(it) })
+	//stateless
+	Column(
+		modifier = modifier.fillMaxSize()
+	) {
+		TopSearchBar(
+			modifier = Modifier.padding(top = 16.dp),
+			searchText = searchInputText,
+			shouldRequestFocus = shouldRequestFocus,
+			onTextChange = {
+				onSearchTextChange(it)
+			},
+			onClearSearch = {
+				onClearSearch()
+			}
+		)
+		AnimatedContent(
+			targetState = searchInputText.text.isEmpty(),
+			label = "search content"
+		) { isTextSearchEmpty ->
+			Column {
+				if (isTextSearchEmpty) {
+					Text(
+						text = stringResource(id = R.string.popular_cities),
+						modifier = Modifier.padding(top = 24.dp),
+						color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+						fontSize = 14.sp
+					)
+					Spacer(modifier = Modifier.height(16.dp))
+					PopularCities(
+						modifier = Modifier,
+						popularCities = popularCities,
+						popularCityIndex = { popularCityIndex(it) })
 
-                } else {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    SearchList(
-                        searchList = searchUIState.geoSearchItems,
-                        showPlaceholder = searchUIState.showPlaceholder,
-                        weatherPreview = weatherPreview,
-                        onSearchItemSelected = { searchItem ->
-                            selectedSearchItem(searchItem)
-                            //fetch and store weather based on selection
-                            //maybe navigate to main page after successful IO
-                        })
-                }
-            }
-        }
-    }
+				} else {
+					Spacer(modifier = Modifier.height(16.dp))
+					SearchList(
+						searchList = searchUIState.geoSearchItems,
+						showPlaceholder = searchUIState.showPlaceholder,
+						weatherPreview = weatherPreview,
+						onSearchItemSelected = { searchItem ->
+							selectedSearchItem(searchItem)
+							//fetch and store weather based on selection
+							//maybe navigate to main page after successful IO
+						})
+				}
+			}
+		}
+	}
 }
 
 
 @Composable
 private fun TopSearchBar(
-    modifier: Modifier,
-    searchText: TextFieldValue,
-    shouldRequestFocus: Boolean,
-    onTextChange: (TextFieldValue) -> Unit,
-    onClearSearch: () -> Unit,
+	modifier: Modifier,
+	searchText: TextFieldValue,
+	shouldRequestFocus: Boolean,
+	onTextChange: (TextFieldValue) -> Unit,
+	onClearSearch: () -> Unit,
 ) {
-    val textFieldColors = TextFieldDefaults.colors(
-        focusedTextColor = MaterialTheme.colorScheme.onSurface,
-        focusedContainerColor = MaterialTheme.colorScheme.surface,
-        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-        focusedIndicatorColor = Color.Transparent,
-        unfocusedIndicatorColor = Color.Transparent,
-        errorIndicatorColor = Color.Transparent,
-    )
-    val focusRequester = remember {
-        FocusRequester()
-    }
-    if (shouldRequestFocus) {
-        LaunchedEffect(key1 = Unit) {
-            focusRequester.requestFocus()
-        }
-    }
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        TextField(
-            value = searchText,
-            onValueChange = { onTextChange(it) },
-            modifier = Modifier
-                .focusRequester(focusRequester)
-                .weight(weight = 1f, fill = true),
-            placeholder = {
-                Text(
-                    text = "Search",
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                )
-            },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    contentDescription = "Search Icon"
-                )
+	val textFieldColors = TextFieldDefaults.colors(
+		focusedTextColor = MaterialTheme.colorScheme.onSurface,
+		focusedContainerColor = MaterialTheme.colorScheme.surface,
+		unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+		focusedIndicatorColor = Color.Transparent,
+		unfocusedIndicatorColor = Color.Transparent,
+		errorIndicatorColor = Color.Transparent,
+	)
+	val focusRequester = remember {
+		FocusRequester()
+	}
+	if (shouldRequestFocus) {
+		LaunchedEffect(key1 = Unit) {
+			focusRequester.requestFocus()
+		}
+	}
+	Row(
+		modifier = modifier.fillMaxWidth(),
+		verticalAlignment = Alignment.CenterVertically,
+		horizontalArrangement = Arrangement.Center
+	) {
+		TextField(
+			value = searchText,
+			onValueChange = { onTextChange(it) },
+			modifier = Modifier
+				.focusRequester(focusRequester)
+				.weight(weight = 1f, fill = true),
+			placeholder = {
+				Text(
+					text = "Search",
+					color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+				)
+			},
+			leadingIcon = {
+				Icon(
+					imageVector = Icons.Default.Search,
+					modifier = Modifier.padding(horizontal = 16.dp),
+					contentDescription = "Search Icon"
+				)
 
-            },
-            trailingIcon = {
-                if (searchText.text.isNotEmpty()) {
-                    TextButton(
-                        onClick = { onClearSearch() },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Transparent,
-                            contentColor = Color.DarkGray
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Microphone Icon"
-                        )
-                    }
-                }
-            },
-            shape = CircleShape,
-            colors = textFieldColors,
-        )
+			},
+			trailingIcon = {
+				if (searchText.text.isNotEmpty()) {
+					TextButton(
+						onClick = { onClearSearch() },
+						colors = ButtonDefaults.buttonColors(
+							containerColor = Color.Transparent,
+							contentColor = Color.DarkGray
+						)
+					) {
+						Icon(
+							imageVector = Icons.Default.Close,
+							contentDescription = "Microphone Icon"
+						)
+					}
+				}
+			},
+			shape = CircleShape,
+			colors = textFieldColors,
+		)
 
-    }
+	}
 }
 
 //search results
 @Composable
 private fun SearchList(
-    searchList: List<GeoSearchItem>,
-    weatherPreview: List<DailyPreview>?,
-    showPlaceholder: Boolean,
-    onSearchItemSelected: (GeoSearchItem) -> Unit,
+	searchList: List<GeoSearchItem>,
+	weatherPreview: List<DailyPreview>?,
+	showPlaceholder: Boolean,
+	onSearchItemSelected: (GeoSearchItem) -> Unit,
 ) {
-    //max 5 item per search list
-    LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        itemsIndexed(searchList) { index, searchItemItem ->
-            if(!weatherPreview.isNullOrEmpty()) {
-                if (index == 1) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        FiveDaySearchPreview(weatherPreview = weatherPreview)
-                        HorizontalDivider(
-                            modifier = Modifier
-                                .padding(bottom = 16.dp)
-                                .fillMaxWidth(0.9f)
-                        )
-                    }
-                }
-            }
-            SearchItem(
-                modifier = Modifier
-                    .bouncyTapEffect()
-                    .clip(RoundedCornerShape(16.dp))
-                    .weatherPlaceholder(
-                        visible = showPlaceholder
-                    )
-                    .clickable { onSearchItemSelected(searchItemItem) },
-                item = searchItemItem
-            )
-        }
-    }
+	//max 5 item per search list
+	LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+		itemsIndexed(searchList) { index, searchItemItem ->
+			if (!weatherPreview.isNullOrEmpty()) {
+				if (index == 1) {
+					FiveDaySearchPreview(weatherPreview = weatherPreview)
+				}
+			}
+			SearchItem(
+				modifier = Modifier
+					.bouncyTapEffect()
+					.clip(RoundedCornerShape(16.dp))
+					.weatherPlaceholder(
+						visible = showPlaceholder
+					)
+					.clickable { onSearchItemSelected(searchItemItem) },
+				item = searchItemItem
+			)
+		}
+	}
 }
 
 @Composable
 private fun SearchItem(
-    modifier: Modifier = Modifier,
-    item: GeoSearchItem,
+	modifier: Modifier = Modifier,
+	item: GeoSearchItem,
 ) {
-    Card(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.background
-        ),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column {
-                Text(
-                    text = item.name.toString(),
-                    fontSize = 14.sp
-                )
-                Text(
-                    text = "${item.name}, ${item.country}",
-                    fontSize = 10.sp,
-                )
-            }
-            Icon(imageVector = Icons.Default.Add, contentDescription = "Add Icon")
-        }
-    }
+	Card(
+		modifier = modifier,
+		colors = CardDefaults.cardColors(
+			containerColor = MaterialTheme.colorScheme.background
+		),
+	) {
+		Row(
+			modifier = Modifier
+				.fillMaxWidth()
+				.padding(horizontal = 8.dp, vertical = 8.dp),
+			horizontalArrangement = Arrangement.SpaceBetween,
+			verticalAlignment = Alignment.CenterVertically
+		) {
+			Column {
+				Text(
+					text = item.name.toString(),
+					fontSize = 14.sp
+				)
+				Text(
+					text = "${item.name}, ${item.country}",
+					fontSize = 10.sp,
+				)
+			}
+			Icon(imageVector = Icons.Default.Add, contentDescription = "Add Icon")
+		}
+	}
 }
 
 //popular city
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun PopularCities(
-    modifier: Modifier = Modifier,
-    popularCities: List<String>,
-    popularCityIndex: (Int) -> Unit,
+	modifier: Modifier = Modifier,
+	popularCities: List<String>,
+	popularCityIndex: (Int) -> Unit,
 ) {
-    FlowRow(
-        modifier = Modifier.fillMaxWidth() then modifier,
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        popularCities.forEachIndexed { index, cityName ->
-            PopularCityItem(
-                modifier = Modifier
-                    .bouncyTapEffect(targetScale = 0.9f)
-                    .clip(shape = RoundedCornerShape(size = 16.dp))
-                    .clickable { popularCityIndex(index) },
-                cityName = cityName
-            )
-        }
-    }
+	FlowRow(
+		modifier = Modifier.fillMaxWidth() then modifier,
+		horizontalArrangement = Arrangement.spacedBy(16.dp),
+		verticalArrangement = Arrangement.spacedBy(16.dp)
+	) {
+		popularCities.forEachIndexed { index, cityName ->
+			PopularCityItem(
+				modifier = Modifier
+					.bouncyTapEffect(targetScale = 0.9f)
+					.clip(shape = RoundedCornerShape(size = 16.dp))
+					.clickable { popularCityIndex(index) },
+				cityName = cityName
+			)
+		}
+	}
 
 }
 
 @Composable
 private fun PopularCityItem(
-    modifier: Modifier = Modifier,
-    cityName: String,
+	modifier: Modifier = Modifier,
+	cityName: String,
 ) {
-    Card(
-        modifier = Modifier then modifier,
-        shape = RoundedCornerShape(size = 16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f)
-        )
-    ) {
-        Text(
-            text = cityName,
-            modifier = Modifier.padding(
-                horizontal = 16.dp,
-                vertical = 8.dp
-            )
-        )
-    }
+	Card(
+		modifier = Modifier then modifier,
+		shape = RoundedCornerShape(size = 16.dp),
+		colors = CardDefaults.cardColors(
+			containerColor = MaterialTheme.colorScheme.surface,
+			contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f)
+		)
+	) {
+		Text(
+			text = cityName,
+			modifier = Modifier.padding(
+				horizontal = 16.dp,
+				vertical = 8.dp
+			)
+		)
+	}
 
 }
 
@@ -392,84 +384,84 @@ private fun PopularCityItem(
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO)
 @Composable
 private fun SearchPreview() {
-    WeatherTheme {
-        var inputText by remember {
-            mutableStateOf(TextFieldValue(text = "Tehran"))
-        }
-        Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
-            SearchScreenContent(
-                searchUIState = SavableSearchState(GeoSearchItem.empty, true),
-                weatherPreview = dailyPreviewDummyData,
-                searchInputText = inputText,
-                shouldRequestFocus = false,
-                popularCities = popularCities,
-                popularCityIndex = {},
-                onClearSearch = {},
-                onSearchTextChange = { inputText = it },
-            ) {}
-        }
-    }
+	WeatherTheme {
+		var inputText by remember {
+			mutableStateOf(TextFieldValue(text = "Tehran"))
+		}
+		Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
+			SearchScreenContent(
+				searchUIState = SavableSearchState(GeoSearchItem.empty, true),
+				weatherPreview = dailyPreviewDummyData,
+				searchInputText = inputText,
+				shouldRequestFocus = false,
+				popularCities = popularCities,
+				popularCityIndex = {},
+				onClearSearch = {},
+				onSearchTextChange = { inputText = it },
+			) {}
+		}
+	}
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun TopSearchBarPreview() {
-    WeatherTheme {
-        TopSearchBar(
-            Modifier,
-            searchText = TextFieldValue(""),
-            onTextChange = {},
-            onClearSearch = {},
-            shouldRequestFocus = false
-        )
-    }
+	WeatherTheme {
+		TopSearchBar(
+			Modifier,
+			searchText = TextFieldValue(""),
+			onTextChange = {},
+			onClearSearch = {},
+			shouldRequestFocus = false
+		)
+	}
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun PopularCityPreview() {
-    WeatherTheme {
-        PopularCities(
-            popularCities = popularCities,
-            popularCityIndex = {}
-        )
-    }
+	WeatherTheme {
+		PopularCities(
+			popularCities = popularCities,
+			popularCityIndex = {}
+		)
+	}
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun SearchItemPreview() {
-    WeatherTheme {
-        val item = GeoSearchItem("Iran", name = "Tehran")
-        SearchItem(Modifier, item)
-    }
+	WeatherTheme {
+		val item = GeoSearchItem("Iran", name = "Tehran")
+		SearchItem(Modifier, item)
+	}
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun SearchCityWeatherPreview() {
-    WeatherTheme {
-    }
+	WeatherTheme {
+	}
 }
 
 val popularCities = listOf(
-    "Tehran",
-    "Beijing",
-    "Hong Kong",
-    "Rome",
-    "Shang Hai",
-    "Moscow",
-    "Los Angeles",
-    "Chicago",
-    "Bangkok",
-    "Seoul",
-    "Kuala Lumpur",
-    "New York",
-    "Munich",
-    "Boston",
-    "Singapore",
-    "Shiraz",
-    "Berlin",
+	"Tehran",
+	"Beijing",
+	"Hong Kong",
+	"Rome",
+	"Shang Hai",
+	"Moscow",
+	"Los Angeles",
+	"Chicago",
+	"Bangkok",
+	"Seoul",
+	"Kuala Lumpur",
+	"New York",
+	"Munich",
+	"Boston",
+	"Singapore",
+	"Shiraz",
+	"Berlin",
 )
 
 //internal val items = listOf(

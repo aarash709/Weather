@@ -16,7 +16,10 @@ data class MeteoSearchItem(
 fun MeteoSearchItem.toGeoSearchItem(): List<GeoSearchItem> {
 	return results.map {
 		GeoSearchItem(
-			country = it.country, lat = it.latitude, lon = it.longitude, name = it.name
+			country = it.country ?: "",
+			lat = it.latitude ?: 0.0,
+			lon = it.longitude ?: 0.0,
+			name = it.name ?: ""
 
 		)
 	}

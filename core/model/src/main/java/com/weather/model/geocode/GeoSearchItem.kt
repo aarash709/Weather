@@ -9,24 +9,18 @@ data class SavableSearchState(
             geoSearchItems = GeoSearchItem.empty,
             showPlaceholder = true
         )
-
     }
 }
 
 data class GeoSearchItem(
-    val country: String? = null,
-    val lat: Double? = null,
-    val lon: Double? = null,
-    val name: String? = null,
+    val country: String = "",
+    val lat: Double = 0.0,
+    val lon: Double = 0.0,
+    val name: String = "",
 ) {
     companion object {
         val empty = List(4) {
-            GeoSearchItem(
-                country = null,
-                lat = null,
-                lon = null,
-                name = null,
-            )
+            GeoSearchItem()
         }
     }
 }
