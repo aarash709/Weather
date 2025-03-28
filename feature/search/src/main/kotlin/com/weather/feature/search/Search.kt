@@ -86,7 +86,7 @@ fun SearchRoute(
         searchViewModel.setSearchQuery(cityName = inputText.text.trim())
     }
     LaunchedEffect(key1 = searchUIState) {
-        searchUIState.geoSearchItems[0].name?.let {
+        searchUIState.geoSearchItems.first().name?.let {
             searchViewModel.getFiveDayPreview(searchUIState.geoSearchItems.first())
         }
     }

@@ -140,7 +140,7 @@ class ForecastViewModel @Inject constructor(
 					if (isDataExpired(
 							dataTimestamp = dataCurrentDateTimeString,
 							dataTimeOffset = data.weather.coordinates.timezoneOffset,
-							triggerThreshold = 30
+							triggerThreshold = 30 //minutes
 						)
 					) {
 						sync(coordinate)
