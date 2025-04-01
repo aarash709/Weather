@@ -7,8 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,7 +22,7 @@ import com.weather.model.DailyPreview
 
 @Composable
 fun FiveDaySearchPreview(weatherPreview: List<DailyPreview>) {
-	Surface(color = MaterialTheme.colorScheme.background) {
+	Card {
 		Row(
 			modifier = Modifier
 				.fillMaxWidth()
@@ -41,7 +40,7 @@ fun FiveDaySearchPreview(weatherPreview: List<DailyPreview>) {
 @Composable
 private fun SearchDailyItem(dailyPreview: DailyPreview, modifier: Modifier = Modifier) {
 	Column(
-		modifier = Modifier.padding(vertical = 0.dp) then modifier,
+		modifier = Modifier then modifier,
 		verticalArrangement = Arrangement.spacedBy(12.dp),
 		horizontalAlignment = Alignment.CenterHorizontally
 	) {
