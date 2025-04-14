@@ -39,7 +39,7 @@ detekt = "1.23.8"
 kotlinter = "5.0.1"
 lottie = "6.6.4"
 rive = "10.0.4"
-haze = "1.5.2"
+haze = "1.5.3"
 
 [libraries]
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
