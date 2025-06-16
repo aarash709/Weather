@@ -38,7 +38,7 @@ arrow = "2.1.2"
 detekt = "1.23.8"
 kotlinter = "5.1.0"
 lottie = "6.6.6"
-rive = "10.1.4"
+rive = "10.1.7"
 haze = "1.6.3"
 
 [libraries]
