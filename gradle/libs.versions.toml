@@ -31,14 +31,12 @@ timberLogger = "5.0.1"
 retrofit = "3.0.0"
 moshi = "1.15.2"
 coil = "2.7.0"
-ktor = "3.2.0"
+ktor = "3.2.1"
 gradleSecret = "2.0.1"
 junit = "4.13.2"
 arrow = "2.1.2"
 detekt = "1.23.8"
 kotlinter = "5.1.1"
-lottie = "6.6.7"
-rive = "10.2.0"
 haze = "1.6.6"
 
 [libraries]
@@ -110,8 +108,6 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 arrow-stack = { module = "io.arrow-kt:arrow-stack", version.ref = "arrow" }
 arrow_optics = { module = "io.arrow-kt:arrow-optics" }
 arrow_optics_ksp = { module = "io.arrow-kt:arrow-optics-ksp-plugin", version.ref = "arrow" }
-lottie = { module = "com.airbnb.android:lottie", version.ref = "lottie" }
-rive = { module = "app.rive:rive-android", version.ref = "rive" }
 
 #build-logic dependecies
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
