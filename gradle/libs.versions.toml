@@ -62,7 +62,7 @@ androidx-splashScreen = { group = "androidx.core", name = "core-splashscreen", v
 androidx-window = { group = "androidx.window", name = "window", version.ref = "androidxWindow" }
 androidx-benchmark-macro = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "androidxMacroBenchmark" }
 androidx-work = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "androidxWork" }
-androidx-work-testing = { group = "androidx.work", name = "work-testing", version = "2.10.2" }
+androidx-work-testing = { group = "androidx.work", name = "work-testing", version = "2.10.3" }
 androidx-navigationCompose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxNavigation" }
 androidx-navigation-testing = { group = "androidx.navigation", name = "navigation-testing", version.ref = "androidxNavigation" }
 androidx-lifecycle-runtimeKtx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidxLifecycle" }
