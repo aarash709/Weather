@@ -37,7 +37,7 @@ junit = "4.13.2"
 arrow = "2.2.0"
 detekt = "1.23.8"
 kotlinter = "5.3.0"
-haze = "1.6.10"
+haze = "1.7.1"
 
 [libraries]
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
