@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias (libs.plugins.weather.android.library)
     alias (libs.plugins.weather.android.compose.library)
@@ -14,9 +16,7 @@ android {
     }
     buildTypes {
     }
-    kotlinOptions {
-        jvmTarget = "17"
-    }
+    kotlin.compilerOptions.jvmTarget= JvmTarget.JVM_17
 }
 
 dependencies {

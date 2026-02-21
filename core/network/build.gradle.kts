@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.weather.android.library)
     alias(libs.plugins.secrets)
@@ -15,9 +17,8 @@ android {
 
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
+    kotlin.compilerOptions.jvmTarget= JvmTarget.JVM_17
+
     secrets {
         defaultPropertiesFileName = "secrets.default.properties"
     }
