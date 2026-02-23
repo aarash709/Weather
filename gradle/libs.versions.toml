@@ -36,7 +36,7 @@ gradleSecret = "2.0.1"
 junit = "4.13.2"
 arrow = "2.2.1.1"
 detekt = "1.23.8"
-kotlinter = "5.4.0"
+kotlinter = "5.4.2"
 haze = "1.7.1"
 
 [libraries]
